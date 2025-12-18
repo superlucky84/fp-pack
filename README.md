@@ -1,6 +1,16 @@
 # fp-kit
 
-A lightweight functional programming utilities library for TypeScript.
+**Practical functional programming utilities for everyday JavaScript developers.**
+
+No magic, no complex abstractions—just a straightforward collection of commonly-used functions that make functional programming accessible and productive. Built with TypeScript for excellent type inference, fp-kit provides the essential tools you actually need in real-world applications.
+
+## Why fp-kit?
+
+- ✨ **No Magic** - Clear, understandable implementations without heavy abstractions
+- 👥 **Developer-Friendly** - Written for regular JavaScript developers, not FP academics
+- 🎯 **Practical** - Functions you'll actually use daily, not theoretical constructs
+- 📘 **Typed** - Full TypeScript support with excellent type inference
+- 🪶 **Lightweight** - Tree-shakeable and minimal bundle impact (~5KB)
 
 ## Installation
 
@@ -178,13 +188,13 @@ Functions for debugging and development.
 - **invariant** - Check invariant contracts
 - **log** - Log value and pass through
 
-## Features
+## What You Get
 
-- 🎯 **100% TypeScript** - Full type safety with excellent inference
-- 🪶 **Lightweight** - Tree-shakeable, only ~5KB minified
-- 🔧 **Functional** - Immutable, pure functions, curried APIs
-- 📦 **Modern** - ESM and UMD builds included
-- 🎨 **Composable** - Designed for function composition and pipelines
+- 🔧 **96 Utility Functions** - Organized into 10 practical categories
+- 🎨 **Composable Design** - Built for pipes, currying, and function composition
+- 📦 **Modern Builds** - ESM and UMD formats for any environment
+- 🌳 **Tree-Shakeable** - Import only what you need
+- ⚡ **Zero Dependencies** - No bloat, just pure JavaScript/TypeScript
 
 ## Development
 
