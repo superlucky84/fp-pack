@@ -1,0 +1,12 @@
+export { default as add } from './add';
+export { default as sub } from './sub';
+export { default as mul } from './mul';
+export { default as div } from './div';
+export { default as sum } from './sum';
+export { default as mean } from './mean';
+export { default as min } from './min';
+export { default as max } from './max';
+export { default as round } from './round';
+export { default as floor } from './floor';
+export { default as ceil } from './ceil';
+export { default as randomInt } from './randomInt';

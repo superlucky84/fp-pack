@@ -1,5 +1,29 @@
-import curryFn from './implement/curry';
-import pipeFn from './implement/pipe';
+// Composition
+export * from './implement/composition';
 
-export const curry = curryFn;
-export const pipe = pipeFn;
+// Control
+export * from './implement/control';
+
+// Array
+export * from './implement/array';
+
+// Object
+export * from './implement/object';
+
+// Equality
+export * from './implement/equality';
+
+// Math
+export * from './implement/math';
+
+// String
+export * from './implement/string';
+
+// Async
+export * from './implement/async';
+
+// Maybe
+export * from './implement/maybe';
+
+// Debug
+export * from './implement/debug';
