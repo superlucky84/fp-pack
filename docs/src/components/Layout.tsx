@@ -10,6 +10,10 @@ import { Compose } from '@/pages/Compose';
 import { Compose_ko } from '@/pages/Compose_ko';
 import { Curry } from '@/pages/Curry';
 import { Curry_ko } from '@/pages/Curry_ko';
+import { Flip } from '@/pages/Flip';
+import { Flip_ko } from '@/pages/Flip_ko';
+import { Identity } from '@/pages/Identity';
+import { Identity_ko } from '@/pages/Identity_ko';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PageComponent = () => any;
@@ -28,6 +32,10 @@ const routes: Record<string, PageComponent> = {
   '/ko/composition/compose': Compose_ko,
   '/composition/curry': Curry,
   '/ko/composition/curry': Curry_ko,
+  '/composition/flip': Flip,
+  '/ko/composition/flip': Flip_ko,
+  '/composition/identity': Identity,
+  '/ko/composition/identity': Identity_ko,
 };
 
 const resolveRoute = (path: string): PageComponent => {
