@@ -22,6 +22,7 @@ export const Sidebar = mount(renew => {
           { title: 'curry', path: '/composition/curry' },
           { title: 'flip', path: '/composition/flip' },
           { title: 'identity', path: '/composition/identity' },
+          { title: 'memoize', path: '/composition/memoize' },
         ],
       },
     ];

@@ -14,6 +14,8 @@ import { Flip } from '@/pages/Flip';
 import { Flip_ko } from '@/pages/Flip_ko';
 import { Identity } from '@/pages/Identity';
 import { Identity_ko } from '@/pages/Identity_ko';
+import { Memoize } from '@/pages/Memoize';
+import { Memoize_ko } from '@/pages/Memoize_ko';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PageComponent = () => any;
@@ -36,6 +38,8 @@ const routes: Record<string, PageComponent> = {
   '/ko/composition/flip': Flip_ko,
   '/composition/identity': Identity,
   '/ko/composition/identity': Identity_ko,
+  '/composition/memoize': Memoize,
+  '/ko/composition/memoize': Memoize_ko,
 };
 
 const resolveRoute = (path: string): PageComponent => {
