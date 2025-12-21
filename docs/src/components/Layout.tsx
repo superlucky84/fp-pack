@@ -28,6 +28,16 @@ import { Chunk } from '@/pages/Chunk';
 import { Chunk_ko } from '@/pages/Chunk_ko';
 import { Drop } from '@/pages/Drop';
 import { Drop_ko } from '@/pages/Drop_ko';
+import { Every } from '@/pages/Every';
+import { Every_ko } from '@/pages/Every_ko';
+import { Filter } from '@/pages/Filter';
+import { Filter_ko } from '@/pages/Filter_ko';
+import { Find } from '@/pages/Find';
+import { Find_ko } from '@/pages/Find_ko';
+import { FlatMap } from '@/pages/FlatMap';
+import { FlatMap_ko } from '@/pages/FlatMap_ko';
+import { GroupBy } from '@/pages/GroupBy';
+import { GroupBy_ko } from '@/pages/GroupBy_ko';
 import { Maybe } from '@/pages/Maybe';
 import { Maybe_ko } from '@/pages/Maybe_ko';
 
@@ -66,6 +76,16 @@ const routes: Record<string, PageComponent> = {
   '/ko/array/chunk': Chunk_ko,
   '/array/drop': Drop,
   '/ko/array/drop': Drop_ko,
+  '/array/every': Every,
+  '/ko/array/every': Every_ko,
+  '/array/filter': Filter,
+  '/ko/array/filter': Filter_ko,
+  '/array/find': Find,
+  '/ko/array/find': Find_ko,
+  '/array/flatMap': FlatMap,
+  '/ko/array/flatMap': FlatMap_ko,
+  '/array/groupBy': GroupBy,
+  '/ko/array/groupBy': GroupBy_ko,
   '/maybe/maybe': Maybe,
   '/ko/maybe/maybe': Maybe_ko,
 };

@@ -27,9 +27,6 @@ export const Chunk = () => (
       <br />
       This is useful for <strong>pagination</strong>, <strong>batch processing</strong>,
       <strong>grid layouts</strong>, and <strong>splitting data into groups</strong>.
-      <br />
-      <br />
-      The function is curried, so you can pre-configure the chunk size and reuse it.
     </p>
 
     <CodeBlock
@@ -38,13 +35,13 @@ export const Chunk = () => (
 
 const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-chunk(3)(numbers);
+chunk(3, numbers);
 // [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
 
-chunk(4)(numbers);
+chunk(4, numbers);
 // [[1, 2, 3, 4], [5, 6, 7, 8], [9]]
 
-chunk(2)(numbers);
+chunk(2, numbers);
 // [[1, 2], [3, 4], [5, 6], [7, 8], [9]]`}
     />
 
@@ -56,10 +53,10 @@ chunk(2)(numbers);
 
     <CodeBlock
       language="typescript"
-      code={`function chunk<T>(size: number): (arr: T[]) => T[][];
+      code={`function chunk<T>(size: number, arr: T[]): T[][];
 
-// Takes a chunk size
-// Returns a function that takes an array and returns an array of chunks`}
+// Takes chunk size and array
+// Returns an array of chunks`}
     />
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
@@ -82,35 +79,16 @@ chunk(2)(numbers);
       code={`import { chunk } from 'fp-kit';
 
 // Split into pairs
-const pairs = chunk(2)([1, 2, 3, 4, 5, 6]);
+const pairs = chunk(2, [1, 2, 3, 4, 5, 6]);
 // [[1, 2], [3, 4], [5, 6]]
 
 // Split into triplets
-const triplets = chunk(3)(['a', 'b', 'c', 'd', 'e', 'f', 'g']);
+const triplets = chunk(3, ['a', 'b', 'c', 'd', 'e', 'f', 'g']);
 // [['a', 'b', 'c'], ['d', 'e', 'f'], ['g']]
 
 // Last chunk may be smaller
-const groups = chunk(5)([1, 2, 3, 4, 5, 6, 7]);
+const groups = chunk(5, [1, 2, 3, 4, 5, 6, 7]);
 // [[1, 2, 3, 4, 5], [6, 7]]`}
-    />
-
-    <h3 class="text-xl md:text-2xl font-medium text-gray-900 dark:text-white mb-4 mt-6">
-      Reusable Chunk Function
-    </h3>
-
-    <CodeBlock
-      language="typescript"
-      code={`import { chunk } from 'fp-kit';
-
-// Create reusable chunkers
-const chunkByThree = chunk(3);
-const chunkByFive = chunk(5);
-
-chunkByThree([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-// [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
-
-chunkByFive([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
-// [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11]]`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -144,7 +122,7 @@ const products: Product[] = [
 ];
 
 const ITEMS_PER_PAGE = 3;
-const pages = chunk(ITEMS_PER_PAGE)(products);
+const pages = chunk(ITEMS_PER_PAGE, products);
 
 // Page 1: [{ id: 1, ... }, { id: 2, ... }, { id: 3, ... }]
 // Page 2: [{ id: 4, ... }, { id: 5, ... }, { id: 6, ... }]
@@ -175,7 +153,7 @@ const images = [
 ];
 
 const COLUMNS = 3;
-const rows = chunk(COLUMNS)(images);
+const rows = chunk(COLUMNS, images);
 
 // Render as grid
 rows.forEach(row => {
@@ -188,7 +166,7 @@ rows.forEach(row => {
 
 // In React
 function ImageGrid({ images }: { images: string[] }) {
-  const rows = chunk(3)(images);
+  const rows = chunk(3, images);
 
   return (
     <div>
@@ -217,7 +195,7 @@ async function processInBatches<T>(
   batchSize: number,
   processor: (batch: T[]) => Promise<void>
 ) {
-  const batches = chunk(batchSize)(items);
+  const batches = chunk(batchSize, items);
 
   for (const batch of batches) {
     await processor(batch);
@@ -249,7 +227,7 @@ async function fetchWithRateLimit(
   urls: string[],
   maxConcurrent: number
 ): Promise<Response[]> {
-  const batches = chunk(maxConcurrent)(urls);
+  const batches = chunk(maxConcurrent, urls);
   const results: Response[] = [];
 
   for (const batch of batches) {
@@ -291,7 +269,7 @@ const temperatures = [
 ];
 
 // Average every 4 hours
-const hourlyGroups = chunk(4)(temperatures);
+const hourlyGroups = chunk(4, temperatures);
 const averages = hourlyGroups.map(group =>
   group.reduce((sum, temp) => sum + temp, 0) / group.length
 );
@@ -302,7 +280,7 @@ console.log(averages);
 // Create histogram bins
 function createHistogram(data: number[], binSize: number) {
   const sorted = [...data].sort((a, b) => a - b);
-  const bins = chunk(binSize)(sorted);
+  const bins = chunk(binSize, sorted);
 
   return bins.map((bin, i) => ({
     range: \`\${bin[0]}-\${bin[bin.length - 1]}\`,
@@ -322,7 +300,7 @@ function createHistogram(data: number[], binSize: number) {
 
 const processData = pipe(
   (data: number[]) => data.filter(n => n > 0),
-  chunk(5),
+  (data: number[]) => chunk(5, data),
   (chunks: number[][]) => chunks.map(chunk => ({
     items: chunk,
     sum: chunk.reduce((a, b) => a + b, 0),
@@ -350,25 +328,25 @@ const result = processData(data);
       code={`import { chunk } from 'fp-kit';
 
 // Empty array
-chunk(3)([]);
+chunk(3, []);
 // []
 
 // Size larger than array
-chunk(10)([1, 2, 3]);
+chunk(10, [1, 2, 3]);
 // [[1, 2, 3]]
 
 // Size of 1
-chunk(1)([1, 2, 3]);
+chunk(1, [1, 2, 3]);
 // [[1], [2], [3]]
 
 // Invalid sizes return empty array
-chunk(0)([1, 2, 3]);      // []
-chunk(-5)([1, 2, 3]);     // []
-chunk(Infinity)([1, 2]);  // []
-chunk(NaN)([1, 2]);       // []
+chunk(0, [1, 2, 3]);      // []
+chunk(-5, [1, 2, 3]);     // []
+chunk(Infinity, [1, 2]);  // []
+chunk(NaN, [1, 2]);       // []
 
 // Decimal sizes are floored
-chunk(2.7)([1, 2, 3, 4, 5]);
+chunk(2.7, [1, 2, 3, 4, 5]);
 // [[1, 2], [3, 4], [5]]  (treated as size 2)`}
     />
 
@@ -384,19 +362,17 @@ chunk(2.7)([1, 2, 3, 4, 5]);
 
     <CodeBlock
       language="typescript"
-      code={`function chunk<T>(size: number): (arr: T[]) => T[][] {
-  return (arr: T[]) => {
-    const chunkSize = Math.floor(size);
-    if (!Number.isFinite(chunkSize) || chunkSize <= 0) {
-      return [];
-    }
+      code={`function chunk<T>(size: number, arr: T[]): T[][] {
+  const chunkSize = Math.floor(size);
+  if (!Number.isFinite(chunkSize) || chunkSize <= 0) {
+    return [];
+  }
 
-    const result: T[][] = [];
-    for (let i = 0; i < arr.length; i += chunkSize) {
-      result.push(arr.slice(i, i + chunkSize));
-    }
-    return result;
-  };
+  const result: T[][] = [];
+  for (let i = 0; i < arr.length; i += chunkSize) {
+    result.push(arr.slice(i, i + chunkSize));
+  }
+  return result;
 }`}
     />
 
@@ -413,18 +389,18 @@ chunk(2.7)([1, 2, 3, 4, 5]);
 
     <div class="grid gap-6 mt-6">
       <a
-        href="/array/take"
+        href="/array/drop"
         onClick={(e: Event) => {
           e.preventDefault();
-          navigateTo('/array/take');
+          navigateTo('/array/drop');
         }}
         class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer"
       >
         <h3 class="text-lg md:text-xl font-medium text-blue-600 dark:text-blue-400 mb-2">
-          take →
+          drop →
         </h3>
         <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          Learn about take for getting the first n elements of an array.
+          Learn about drop for removing the first n elements of an array.
         </p>
       </a>
 

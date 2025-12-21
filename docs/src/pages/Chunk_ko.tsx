@@ -27,9 +27,6 @@ export const Chunk_ko = () => (
       <br />
       이는 <strong>페이지네이션</strong>, <strong>배치 처리</strong>,
       <strong>그리드 레이아웃</strong>, 그리고 <strong>데이터를 그룹으로 분할</strong>하는 데 유용합니다.
-      <br />
-      <br />
-      함수는 커리되어 있어 청크 크기를 미리 설정하고 재사용할 수 있습니다.
     </p>
 
     <CodeBlock
@@ -38,13 +35,13 @@ export const Chunk_ko = () => (
 
 const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-chunk(3)(numbers);
+chunk(3, numbers);
 // [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
 
-chunk(4)(numbers);
+chunk(4, numbers);
 // [[1, 2, 3, 4], [5, 6, 7, 8], [9]]
 
-chunk(2)(numbers);
+chunk(2, numbers);
 // [[1, 2], [3, 4], [5, 6], [7, 8], [9]]`}
     />
 
@@ -56,10 +53,10 @@ chunk(2)(numbers);
 
     <CodeBlock
       language="typescript"
-      code={`function chunk<T>(size: number): (arr: T[]) => T[][];
+      code={`function chunk<T>(size: number, arr: T[]): T[][];
 
-// 청크 크기를 받음
-// 배열을 받아 청크 배열을 반환하는 함수를 반환`}
+// 청크 크기와 배열을 받음
+// 청크 배열을 반환`}
     />
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
@@ -82,35 +79,16 @@ chunk(2)(numbers);
       code={`import { chunk } from 'fp-kit';
 
 // 쌍으로 분할
-const pairs = chunk(2)([1, 2, 3, 4, 5, 6]);
+const pairs = chunk(2, [1, 2, 3, 4, 5, 6]);
 // [[1, 2], [3, 4], [5, 6]]
 
 // 3개씩 분할
-const triplets = chunk(3)(['a', 'b', 'c', 'd', 'e', 'f', 'g']);
+const triplets = chunk(3, ['a', 'b', 'c', 'd', 'e', 'f', 'g']);
 // [['a', 'b', 'c'], ['d', 'e', 'f'], ['g']]
 
 // 마지막 청크는 더 작을 수 있음
-const groups = chunk(5)([1, 2, 3, 4, 5, 6, 7]);
+const groups = chunk(5, [1, 2, 3, 4, 5, 6, 7]);
 // [[1, 2, 3, 4, 5], [6, 7]]`}
-    />
-
-    <h3 class="text-xl md:text-2xl font-medium text-gray-900 dark:text-white mb-4 mt-6">
-      재사용 가능한 청크 함수
-    </h3>
-
-    <CodeBlock
-      language="typescript"
-      code={`import { chunk } from 'fp-kit';
-
-// 재사용 가능한 청크 함수 생성
-const chunkByThree = chunk(3);
-const chunkByFive = chunk(5);
-
-chunkByThree([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-// [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
-
-chunkByFive([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
-// [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11]]`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -144,7 +122,7 @@ const products: Product[] = [
 ];
 
 const ITEMS_PER_PAGE = 3;
-const pages = chunk(ITEMS_PER_PAGE)(products);
+const pages = chunk(ITEMS_PER_PAGE, products);
 
 // 페이지 1: [{ id: 1, ... }, { id: 2, ... }, { id: 3, ... }]
 // 페이지 2: [{ id: 4, ... }, { id: 5, ... }, { id: 6, ... }]
@@ -175,7 +153,7 @@ const images = [
 ];
 
 const COLUMNS = 3;
-const rows = chunk(COLUMNS)(images);
+const rows = chunk(COLUMNS, images);
 
 // 그리드로 렌더링
 rows.forEach(row => {
@@ -188,7 +166,7 @@ rows.forEach(row => {
 
 // React에서
 function ImageGrid({ images }: { images: string[] }) {
-  const rows = chunk(3)(images);
+  const rows = chunk(3, images);
 
   return (
     <div>
@@ -217,7 +195,7 @@ async function processInBatches<T>(
   batchSize: number,
   processor: (batch: T[]) => Promise<void>
 ) {
-  const batches = chunk(batchSize)(items);
+  const batches = chunk(batchSize, items);
 
   for (const batch of batches) {
     await processor(batch);
@@ -249,7 +227,7 @@ async function fetchWithRateLimit(
   urls: string[],
   maxConcurrent: number
 ): Promise<Response[]> {
-  const batches = chunk(maxConcurrent)(urls);
+  const batches = chunk(maxConcurrent, urls);
   const results: Response[] = [];
 
   for (const batch of batches) {
@@ -291,7 +269,7 @@ const temperatures = [
 ];
 
 // 4시간마다 평균
-const hourlyGroups = chunk(4)(temperatures);
+const hourlyGroups = chunk(4, temperatures);
 const averages = hourlyGroups.map(group =>
   group.reduce((sum, temp) => sum + temp, 0) / group.length
 );
@@ -302,7 +280,7 @@ console.log(averages);
 // 히스토그램 빈 생성
 function createHistogram(data: number[], binSize: number) {
   const sorted = [...data].sort((a, b) => a - b);
-  const bins = chunk(binSize)(sorted);
+  const bins = chunk(binSize, sorted);
 
   return bins.map((bin, i) => ({
     range: \`\${bin[0]}-\${bin[bin.length - 1]}\`,
@@ -322,7 +300,7 @@ function createHistogram(data: number[], binSize: number) {
 
 const processData = pipe(
   (data: number[]) => data.filter(n => n > 0),
-  chunk(5),
+  (data: number[]) => chunk(5, data),
   (chunks: number[][]) => chunks.map(chunk => ({
     items: chunk,
     sum: chunk.reduce((a, b) => a + b, 0),
@@ -350,25 +328,25 @@ const result = processData(data);
       code={`import { chunk } from 'fp-kit';
 
 // 빈 배열
-chunk(3)([]);
+chunk(3, []);
 // []
 
 // 배열보다 큰 크기
-chunk(10)([1, 2, 3]);
+chunk(10, [1, 2, 3]);
 // [[1, 2, 3]]
 
 // 크기 1
-chunk(1)([1, 2, 3]);
+chunk(1, [1, 2, 3]);
 // [[1], [2], [3]]
 
 // 유효하지 않은 크기는 빈 배열 반환
-chunk(0)([1, 2, 3]);      // []
-chunk(-5)([1, 2, 3]);     // []
-chunk(Infinity)([1, 2]);  // []
-chunk(NaN)([1, 2]);       // []
+chunk(0, [1, 2, 3]);      // []
+chunk(-5, [1, 2, 3]);     // []
+chunk(Infinity, [1, 2]);  // []
+chunk(NaN, [1, 2]);       // []
 
 // 소수 크기는 내림됨
-chunk(2.7)([1, 2, 3, 4, 5]);
+chunk(2.7, [1, 2, 3, 4, 5]);
 // [[1, 2], [3, 4], [5]]  (크기 2로 처리됨)`}
     />
 
@@ -384,19 +362,17 @@ chunk(2.7)([1, 2, 3, 4, 5]);
 
     <CodeBlock
       language="typescript"
-      code={`function chunk<T>(size: number): (arr: T[]) => T[][] {
-  return (arr: T[]) => {
-    const chunkSize = Math.floor(size);
-    if (!Number.isFinite(chunkSize) || chunkSize <= 0) {
-      return [];
-    }
+      code={`function chunk<T>(size: number, arr: T[]): T[][] {
+  const chunkSize = Math.floor(size);
+  if (!Number.isFinite(chunkSize) || chunkSize <= 0) {
+    return [];
+  }
 
-    const result: T[][] = [];
-    for (let i = 0; i < arr.length; i += chunkSize) {
-      result.push(arr.slice(i, i + chunkSize));
-    }
-    return result;
-  };
+  const result: T[][] = [];
+  for (let i = 0; i < arr.length; i += chunkSize) {
+    result.push(arr.slice(i, i + chunkSize));
+  }
+  return result;
 }`}
     />
 
@@ -413,18 +389,18 @@ chunk(2.7)([1, 2, 3, 4, 5]);
 
     <div class="grid gap-6 mt-6">
       <a
-        href="/array/take"
+        href="/array/drop"
         onClick={(e: Event) => {
           e.preventDefault();
-          navigateTo('/array/take');
+          navigateTo('/array/drop');
         }}
         class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer"
       >
         <h3 class="text-lg md:text-xl font-medium text-blue-600 dark:text-blue-400 mb-2">
-          take →
+          drop →
         </h3>
         <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          배열의 처음 n개 요소를 가져오는 take에 대해 알아보세요.
+          배열의 앞 n개 요소를 제외하는 drop에 대해 알아보세요.
         </p>
       </a>
 
