@@ -13,5 +13,6 @@ export { default as unzip } from './unzip';
 export { default as uniq } from './uniq';
 export { default as uniqBy } from './uniqBy';
 export { default as sortBy } from './sortBy';
+export { default as sort } from './sort';
 export { default as groupBy } from './groupBy';
 export { default as zipIndex } from './zipIndex';

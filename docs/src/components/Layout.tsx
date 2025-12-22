@@ -44,6 +44,12 @@ import { Reduce } from '@/pages/Reduce';
 import { Reduce_ko } from '@/pages/Reduce_ko';
 import { Some } from '@/pages/Some';
 import { Some_ko } from '@/pages/Some_ko';
+import { Sort } from '@/pages/Sort';
+import { Sort_ko } from '@/pages/Sort_ko';
+import { SortBy } from '@/pages/SortBy';
+import { SortBy_ko } from '@/pages/SortBy_ko';
+import { Take } from '@/pages/Take';
+import { Take_ko } from '@/pages/Take_ko';
 import { ZipIndex } from '@/pages/ZipIndex';
 import { ZipIndex_ko } from '@/pages/ZipIndex_ko';
 import { Zip } from '@/pages/Zip';
@@ -102,6 +108,12 @@ const routes: Record<string, PageComponent> = {
   '/ko/array/reduce': Reduce_ko,
   '/array/some': Some,
   '/ko/array/some': Some_ko,
+  '/array/sort': Sort,
+  '/ko/array/sort': Sort_ko,
+  '/array/sortBy': SortBy,
+  '/ko/array/sortBy': SortBy_ko,
+  '/array/take': Take,
+  '/ko/array/take': Take_ko,
   '/array/zip': Zip,
   '/ko/array/zip': Zip_ko,
   '/array/zipIndex': ZipIndex,
