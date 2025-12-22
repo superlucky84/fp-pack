@@ -1,23 +1,47 @@
-# fp-kit
+## fp-kit
 
-**Practical functional programming utilities for everyday JavaScript developers.**
+**A practical, immutable-first functional toolkit for everyday JavaScript.**
 
-No magic, no complex abstractions—just a straightforward collection of commonly-used functions that make functional programming accessible and productive. Built with TypeScript for excellent type inference, fp-kit provides the essential tools you actually need in real-world applications.
+fp-kit is a small, focused collection of functional programming utilities designed for real-world JavaScript applications.  
+It emphasizes **immutability, purity, and clarity by default**, while remaining approachable for everyday developers.
+
+There’s no framework, no hidden runtime, and no heavy abstractions—just well-chosen helpers that make functional style easier to adopt and maintain in production code.
+
+---
 
 ## Why fp-kit?
 
-- ✨ **No Magic** - Clear, understandable implementations without heavy abstractions
-- 👥 **Developer-Friendly** - Written for regular JavaScript developers, not FP academics
-- 🎯 **Practical** - Functions you'll actually use daily, not theoretical constructs
-- 📘 **Typed** - Full TypeScript support with excellent type inference
-- 🪶 **Lightweight** - Tree-shakeable and minimal bundle impact (~5KB)
+- ✨ **Immutable by Default**  
+  All helpers avoid in-place mutation and favor predictable, immutable transformations.
+
+- 👥 **Designed for JavaScript Developers**  
+  No academic FP concepts required. If you know arrays, objects, and functions, you’re good to go.
+
+- 🎯 **Focused on Real Use Cases**  
+  Covers the patterns you actually write every day—data transformation, composition, control flow, and safe defaults.
+
+- 📘 **TypeScript-First**  
+  Built with TypeScript from the ground up for strong inference and minimal annotation.
+
+- 🪶 **Lightweight & Modular**  
+  Zero dependencies, tree-shakeable modules, and a tiny footprint (~5KB).
+
+---
 
 ## Design Principles
 
-- **Immutable & Pure by default**: Functions avoid in-place mutation; return new values. Behavior is deterministic and side-effect-free unless explicitly named (e.g., `tap`).
-- **Small, focused helpers**: One operation per module, zero runtime deps, tree-shakeable.
-- **Async-friendly**: Async namespace (`go`, `pipeAsync`, `timeout`, `retry`, `debounce`, `throttle`) covers common patterns without introducing frameworks.
-- **Iterable-first**: Array helpers leave inputs untouched; async utilities compose cleanly with promises. Streaming/lazy-friendly helpers are added where useful rather than baking in a custom iterator type.
+- **Immutable & Pure by default**  
+  Core utilities are synchronous, deterministic, and side-effect free. Any exception is explicitly named (e.g. `tap`).
+
+- **Small, explicit helpers**  
+  Each function does one thing well. No magic behavior, no hidden control flow.
+
+- **Async as an extension, not a foundation**  
+  Common async patterns (`go`, `pipeAsync`, retries, timing helpers) are provided without turning fp-kit into a framework.
+
+- **Iterable-friendly, not stream-centric**  
+  Array helpers remain simple and eager.  
+  Lazy / iterable helpers are provided *optionally* for advanced cases, without introducing custom stream abstractions.
 
 ## Installation
 
