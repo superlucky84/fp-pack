@@ -216,6 +216,29 @@ console.log(account.getBalance());  // 50`}
     />
 
     <h3 class="text-xl md:text-2xl font-medium text-gray-900 dark:text-white mb-4 mt-6">
+      Pipeline Validation with pipe
+    </h3>
+
+    <CodeBlock
+      language="typescript"
+      code={`import { assert, pipe } from 'fp-kit';
+
+const ensurePositive = (n: number) => {
+  assert(n > 0, 'Value must be positive');
+  return n;
+};
+
+const parsePositive = pipe(
+  (raw: string) => raw.trim(),
+  (raw) => Number(raw),
+  ensurePositive
+);
+
+parsePositive(' 42 '); // 42
+parsePositive(' -3 '); // Error: Value must be positive`}
+    />
+
+    <h3 class="text-xl md:text-2xl font-medium text-gray-900 dark:text-white mb-4 mt-6">
       Type Guards
     </h3>
 

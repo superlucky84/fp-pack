@@ -375,13 +375,13 @@ processData(5);  // 개발 환경일 때만 로깅`}
           <a
             onClick={(e: Event) => {
               e.preventDefault();
-              navigateTo('/debug/trace');
+              navigateTo('/debug/assert');
             }}
             class="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
           >
-            trace
+            assert
           </a>{' '}
-          - log와 유사하며, 특히 파이프라인 변환 추적용
+          - 조건 검증과 빠른 실패 처리
         </li>
         <li>
           <a

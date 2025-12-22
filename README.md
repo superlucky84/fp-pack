@@ -215,7 +215,6 @@ Functions for handling nullable values and errors.
 
 Functions for debugging and development.
 
-- **trace** - Log intermediate values in pipeline
 - **assert** - Assert condition with error message
 - **invariant** - Check invariant contracts
 - **log** - Log value and pass through

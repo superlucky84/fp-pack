@@ -46,7 +46,6 @@ export const Sidebar = mount(renew => {
           { title: 'assert', path: '/debug/assert' },
           { title: 'invariant', path: '/debug/invariant' },
           { title: 'log', path: '/debug/log' },
-          { title: 'trace', path: '/debug/trace' },
         ],
       },
       {

@@ -200,6 +200,29 @@ client.makeRequest('/users');  // OK`}
     />
 
     <h3 class="text-xl md:text-2xl font-medium text-gray-900 dark:text-white mb-4 mt-6">
+      Pipeline Contracts with pipe
+    </h3>
+
+    <CodeBlock
+      language="typescript"
+      code={`import { invariant, pipe } from 'fp-kit';
+
+const ensureNonEmpty = (s: string) => {
+  invariant(s.length > 0, 'Input must not be empty');
+  return s;
+};
+
+const normalizeUserId = pipe(
+  (raw: string) => raw.trim(),
+  ensureNonEmpty,
+  (raw) => raw.toLowerCase()
+);
+
+normalizeUserId(' Alice '); // 'alice'
+normalizeUserId('   ');     // Error: Input must not be empty`}
+    />
+
+    <h3 class="text-xl md:text-2xl font-medium text-gray-900 dark:text-white mb-4 mt-6">
       State Machine Invariants
     </h3>
 
@@ -443,13 +466,13 @@ validateOrder({
           <a
             onClick={(e: Event) => {
               e.preventDefault();
-              navigateTo('/debug/trace');
+              navigateTo('/debug/log');
             }}
             class="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
           >
-            trace
+            log
           </a>{' '}
-          - Debug pipeline transformations by logging intermediate values
+          - Log values and pass them through
         </li>
       </ul>
     </div>

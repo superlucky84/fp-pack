@@ -200,6 +200,29 @@ client.makeRequest('/users');  // OK`}
     />
 
     <h3 class="text-xl md:text-2xl font-medium text-gray-900 dark:text-white mb-4 mt-6">
+      pipe로 계약 검증하기
+    </h3>
+
+    <CodeBlock
+      language="typescript"
+      code={`import { invariant, pipe } from 'fp-kit';
+
+const ensureNonEmpty = (s: string) => {
+  invariant(s.length > 0, '입력은 비어 있을 수 없습니다');
+  return s;
+};
+
+const normalizeUserId = pipe(
+  (raw: string) => raw.trim(),
+  ensureNonEmpty,
+  (raw) => raw.toLowerCase()
+);
+
+normalizeUserId(' Alice '); // 'alice'
+normalizeUserId('   ');     // Error: 입력은 비어 있을 수 없습니다`}
+    />
+
+    <h3 class="text-xl md:text-2xl font-medium text-gray-900 dark:text-white mb-4 mt-6">
       상태 머신 불변식
     </h3>
 
@@ -443,13 +466,13 @@ validateOrder({
           <a
             onClick={(e: Event) => {
               e.preventDefault();
-              navigateTo('/debug/trace');
+              navigateTo('/debug/log');
             }}
             class="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
           >
-            trace
+            log
           </a>{' '}
-          - 중간 값을 로깅하여 파이프라인 변환 디버깅
+          - 값을 기록하고 그대로 전달
         </li>
       </ul>
     </div>

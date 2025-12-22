@@ -376,13 +376,13 @@ processData(5);  // Logs only if in development`}
           <a
             onClick={(e: Event) => {
               e.preventDefault();
-              navigateTo('/debug/trace');
+              navigateTo('/debug/assert');
             }}
             class="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
           >
-            trace
+            assert
           </a>{' '}
-          - Similar to log, specifically for tracing pipeline transformations
+          - Validate conditions and fail fast
         </li>
         <li>
           <a
