@@ -42,6 +42,8 @@ import { GroupBy } from '@/pages/GroupBy';
 import { GroupBy_ko } from '@/pages/GroupBy_ko';
 import { Reduce } from '@/pages/Reduce';
 import { Reduce_ko } from '@/pages/Reduce_ko';
+import { Some } from '@/pages/Some';
+import { Some_ko } from '@/pages/Some_ko';
 import { ZipIndex } from '@/pages/ZipIndex';
 import { ZipIndex_ko } from '@/pages/ZipIndex_ko';
 import { Zip } from '@/pages/Zip';
@@ -98,6 +100,8 @@ const routes: Record<string, PageComponent> = {
   '/ko/array/groupBy': GroupBy_ko,
   '/array/reduce': Reduce,
   '/ko/array/reduce': Reduce_ko,
+  '/array/some': Some,
+  '/ko/array/some': Some_ko,
   '/array/zip': Zip,
   '/ko/array/zip': Zip_ko,
   '/array/zipIndex': ZipIndex,

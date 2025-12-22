@@ -41,6 +41,7 @@ export const Sidebar = mount(renew => {
           { title: 'flatMap', path: '/array/flatMap' },
           { title: 'groupBy', path: '/array/groupBy' },
           { title: 'reduce', path: '/array/reduce' },
+          { title: 'some', path: '/array/some' },
           { title: 'zip', path: '/array/zip' },
           { title: 'zipIndex', path: '/array/zipIndex' },
         ],
