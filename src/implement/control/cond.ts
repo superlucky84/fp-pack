@@ -4,8 +4,14 @@
 function cond<T, R>(
   conditions: Array<[(value: T) => boolean, (value: T) => R]>
 ): (value: T) => R | undefined {
-  // TODO: implement
-  return (value: T) => undefined;
+  return (value: T) => {
+    for (const [predicate, handler] of conditions) {
+      if (predicate(value)) {
+        return handler(value);
+      }
+    }
+    return undefined;
+  };
 }
 
 export default cond;

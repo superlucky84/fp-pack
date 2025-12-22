@@ -30,6 +30,12 @@ export const Sidebar = mount(renew => {
         ],
       },
       {
+        title: isKorean ? '제어' : 'Control',
+        items: [
+          { title: 'cond', path: '/control/cond' },
+        ],
+      },
+      {
         title: isKorean ? '배열' : 'Array',
         items: [
           { title: 'chunk', path: '/array/chunk' },

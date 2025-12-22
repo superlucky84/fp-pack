@@ -5,8 +5,7 @@ function when<T>(
   predicate: (value: T) => boolean,
   fn: (value: T) => T
 ): (value: T) => T {
-  // TODO: implement
-  return (value: T) => value;
+  return (value: T) => (predicate(value) ? fn(value) : value);
 }
 
 export default when;

@@ -26,6 +26,8 @@ import { Tap } from '@/pages/Tap';
 import { Tap_ko } from '@/pages/Tap_ko';
 import { Chunk } from '@/pages/Chunk';
 import { Chunk_ko } from '@/pages/Chunk_ko';
+import { Cond } from '@/pages/Cond';
+import { Cond_ko } from '@/pages/Cond_ko';
 import { Drop } from '@/pages/Drop';
 import { Drop_ko } from '@/pages/Drop_ko';
 import { Every } from '@/pages/Every';
@@ -94,6 +96,8 @@ const routes: Record<string, PageComponent> = {
   '/ko/composition/once': Once_ko,
   '/composition/tap': Tap,
   '/ko/composition/tap': Tap_ko,
+  '/control/cond': Cond,
+  '/ko/control/cond': Cond_ko,
   '/array/chunk': Chunk,
   '/ko/array/chunk': Chunk_ko,
   '/array/drop': Drop,

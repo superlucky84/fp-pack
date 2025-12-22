@@ -5,8 +5,7 @@ function guard<T>(
   predicate: (value: T) => boolean,
   defaultValue: T
 ): (value: T) => T {
-  // TODO: implement
-  return (value: T) => value;
+  return (value: T) => (predicate(value) ? value : defaultValue);
 }
 
 export default guard;
