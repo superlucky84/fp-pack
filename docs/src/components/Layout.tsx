@@ -50,6 +50,12 @@ import { SortBy } from '@/pages/SortBy';
 import { SortBy_ko } from '@/pages/SortBy_ko';
 import { Take } from '@/pages/Take';
 import { Take_ko } from '@/pages/Take_ko';
+import { Uniq } from '@/pages/Uniq';
+import { Uniq_ko } from '@/pages/Uniq_ko';
+import { UniqBy } from '@/pages/UniqBy';
+import { UniqBy_ko } from '@/pages/UniqBy_ko';
+import { Unzip } from '@/pages/Unzip';
+import { Unzip_ko } from '@/pages/Unzip_ko';
 import { ZipIndex } from '@/pages/ZipIndex';
 import { ZipIndex_ko } from '@/pages/ZipIndex_ko';
 import { Zip } from '@/pages/Zip';
@@ -114,6 +120,12 @@ const routes: Record<string, PageComponent> = {
   '/ko/array/sortBy': SortBy_ko,
   '/array/take': Take,
   '/ko/array/take': Take_ko,
+  '/array/uniq': Uniq,
+  '/ko/array/uniq': Uniq_ko,
+  '/array/uniqBy': UniqBy,
+  '/ko/array/uniqBy': UniqBy_ko,
+  '/array/unzip': Unzip,
+  '/ko/array/unzip': Unzip_ko,
   '/array/zip': Zip,
   '/ko/array/zip': Zip_ko,
   '/array/zipIndex': ZipIndex,

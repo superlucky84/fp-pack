@@ -12,6 +12,13 @@ No magic, no complex abstractions—just a straightforward collection of commonl
 - 📘 **Typed** - Full TypeScript support with excellent type inference
 - 🪶 **Lightweight** - Tree-shakeable and minimal bundle impact (~5KB)
 
+## Design Principles
+
+- **Immutable & Pure by default**: Functions avoid in-place mutation; return new values. Behavior is deterministic and side-effect-free unless explicitly named (e.g., `tap`).
+- **Small, focused helpers**: One operation per module, zero runtime deps, tree-shakeable.
+- **Async-friendly**: Async namespace (`go`, `pipeAsync`, `timeout`, `retry`, `debounce`, `throttle`) covers common patterns without introducing frameworks.
+- **Iterable-first**: Array helpers leave inputs untouched; async utilities compose cleanly with promises. Streaming/lazy-friendly helpers are added where useful rather than baking in a custom iterator type.
+
 ## Installation
 
 ```bash
