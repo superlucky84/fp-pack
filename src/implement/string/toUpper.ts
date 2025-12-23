@@ -1,6 +1,5 @@
 /** toUpper - 대문자 변환 */
 function toUpper(str: string): string {
-  // TODO: implement
-  return '';
+  return str.toUpperCase();
 }
 export default toUpper;

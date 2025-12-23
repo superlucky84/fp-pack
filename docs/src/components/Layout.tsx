@@ -102,6 +102,8 @@ import { Maybe } from '@/pages/Maybe';
 import { Maybe_ko } from '@/pages/Maybe_ko';
 import { EndsWith } from '@/pages/EndsWith';
 import { EndsWith_ko } from '@/pages/EndsWith_ko';
+import { StartsWith } from '@/pages/StartsWith';
+import { StartsWith_ko } from '@/pages/StartsWith_ko';
 import { Join } from '@/pages/Join';
 import { Join_ko } from '@/pages/Join_ko';
 import { Match } from '@/pages/Match';
@@ -110,6 +112,12 @@ import { Replace } from '@/pages/Replace';
 import { Replace_ko } from '@/pages/Replace_ko';
 import { Split } from '@/pages/Split';
 import { Split_ko } from '@/pages/Split_ko';
+import { ToLower } from '@/pages/ToLower';
+import { ToLower_ko } from '@/pages/ToLower_ko';
+import { ToUpper } from '@/pages/ToUpper';
+import { ToUpper_ko } from '@/pages/ToUpper_ko';
+import { Trim } from '@/pages/Trim';
+import { Trim_ko } from '@/pages/Trim_ko';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PageComponent = () => any;
@@ -218,6 +226,10 @@ const routes: Record<string, PageComponent> = {
   '/ko/array/zipIndex': ZipIndex_ko,
   '/string/endsWith': EndsWith,
   '/ko/string/endsWith': EndsWith_ko,
+  '/string/startsWith': StartsWith,
+  '/ko/string/startsWith': StartsWith_ko,
+  '/string/toLower': ToLower,
+  '/ko/string/toLower': ToLower_ko,
   '/string/join': Join,
   '/ko/string/join': Join_ko,
   '/string/match': Match,
@@ -226,6 +238,10 @@ const routes: Record<string, PageComponent> = {
   '/ko/string/replace': Replace_ko,
   '/string/split': Split,
   '/ko/string/split': Split_ko,
+  '/string/toUpper': ToUpper,
+  '/ko/string/toUpper': ToUpper_ko,
+  '/string/trim': Trim,
+  '/ko/string/trim': Trim_ko,
   '/maybe/maybe': Maybe,
   '/ko/maybe/maybe': Maybe_ko,
 };

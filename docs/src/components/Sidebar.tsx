@@ -89,7 +89,11 @@ export const Sidebar = mount(renew => {
       {
         title: isKorean ? '문자열' : 'String',
         items: [
+          { title: 'startsWith', path: '/string/startsWith' },
           { title: 'endsWith', path: '/string/endsWith' },
+          { title: 'toLower', path: '/string/toLower' },
+          { title: 'toUpper', path: '/string/toUpper' },
+          { title: 'trim', path: '/string/trim' },
           { title: 'join', path: '/string/join' },
           { title: 'match', path: '/string/match' },
           { title: 'replace', path: '/string/replace' },
