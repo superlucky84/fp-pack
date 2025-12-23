@@ -93,6 +93,7 @@ export const Sidebar = mount(renew => {
           { title: 'join', path: '/string/join' },
           { title: 'match', path: '/string/match' },
           { title: 'replace', path: '/string/replace' },
+          { title: 'split', path: '/string/split' },
         ],
       },
       {

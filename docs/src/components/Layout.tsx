@@ -108,6 +108,8 @@ import { Match } from '@/pages/Match';
 import { Match_ko } from '@/pages/Match_ko';
 import { Replace } from '@/pages/Replace';
 import { Replace_ko } from '@/pages/Replace_ko';
+import { Split } from '@/pages/Split';
+import { Split_ko } from '@/pages/Split_ko';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PageComponent = () => any;
@@ -222,6 +224,8 @@ const routes: Record<string, PageComponent> = {
   '/ko/string/match': Match_ko,
   '/string/replace': Replace,
   '/ko/string/replace': Replace_ko,
+  '/string/split': Split,
+  '/ko/string/split': Split_ko,
   '/maybe/maybe': Maybe,
   '/ko/maybe/maybe': Maybe_ko,
 };
