@@ -44,6 +44,12 @@ import { Invariant } from '@/pages/Invariant';
 import { Invariant_ko } from '@/pages/Invariant_ko';
 import { Log } from '@/pages/Log';
 import { Log_ko } from '@/pages/Log_ko';
+import { Debounce } from '@/pages/Debounce';
+import { Debounce_ko } from '@/pages/Debounce_ko';
+import { DebounceLeading } from '@/pages/DebounceLeading';
+import { DebounceLeading_ko } from '@/pages/DebounceLeading_ko';
+import { DebounceLeadingTrailing } from '@/pages/DebounceLeadingTrailing';
+import { DebounceLeadingTrailing_ko } from '@/pages/DebounceLeadingTrailing_ko';
 import { Clamp } from '@/pages/Clamp';
 import { Clamp_ko } from '@/pages/Clamp_ko';
 import { Equals } from '@/pages/Equals';
@@ -168,6 +174,12 @@ const routes: Record<string, PageComponent> = {
   '/ko/debug/invariant': Invariant_ko,
   '/debug/log': Log,
   '/ko/debug/log': Log_ko,
+  '/async/debounce': Debounce,
+  '/ko/async/debounce': Debounce_ko,
+  '/async/debounceLeading': DebounceLeading,
+  '/ko/async/debounceLeading': DebounceLeading_ko,
+  '/async/debounceLeadingTrailing': DebounceLeadingTrailing,
+  '/ko/async/debounceLeadingTrailing': DebounceLeadingTrailing_ko,
   '/equality/isEmpty': IsEmpty,
   '/ko/equality/isEmpty': IsEmpty_ko,
   '/equality/isNil': IsNil,

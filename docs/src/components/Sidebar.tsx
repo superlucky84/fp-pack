@@ -49,6 +49,14 @@ export const Sidebar = mount(renew => {
         ],
       },
       {
+        title: isKorean ? '비동기' : 'Async',
+        items: [
+          { title: 'debounce', path: '/async/debounce' },
+          { title: 'debounceLeading', path: '/async/debounceLeading' },
+          { title: 'debounceLeadingTrailing', path: '/async/debounceLeadingTrailing' },
+        ],
+      },
+      {
         title: isKorean ? '동등성' : 'Equality',
         items: [
           { title: 'includes', path: '/equality/includes' },
