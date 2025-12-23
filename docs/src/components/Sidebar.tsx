@@ -51,8 +51,15 @@ export const Sidebar = mount(renew => {
       {
         title: isKorean ? '동등성' : 'Equality',
         items: [
+          { title: 'isType', path: '/equality/isType' },
+          { title: 'isNil', path: '/equality/isNil' },
+          { title: 'isEmpty', path: '/equality/isEmpty' },
           { title: 'clamp', path: '/equality/clamp' },
           { title: 'equals', path: '/equality/equals' },
+          { title: 'gt', path: '/equality/gt' },
+          { title: 'gte', path: '/equality/gte' },
+          { title: 'lt', path: '/equality/lt' },
+          { title: 'lte', path: '/equality/lte' },
         ],
       },
       {

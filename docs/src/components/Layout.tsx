@@ -48,6 +48,20 @@ import { Clamp } from '@/pages/Clamp';
 import { Clamp_ko } from '@/pages/Clamp_ko';
 import { Equals } from '@/pages/Equals';
 import { Equals_ko } from '@/pages/Equals_ko';
+import { IsEmpty } from '@/pages/IsEmpty';
+import { IsEmpty_ko } from '@/pages/IsEmpty_ko';
+import { IsNil } from '@/pages/IsNil';
+import { IsNil_ko } from '@/pages/IsNil_ko';
+import { IsType } from '@/pages/IsType';
+import { IsType_ko } from '@/pages/IsType_ko';
+import { Gt } from '@/pages/Gt';
+import { Gt_ko } from '@/pages/Gt_ko';
+import { Gte } from '@/pages/Gte';
+import { Gte_ko } from '@/pages/Gte_ko';
+import { Lt } from '@/pages/Lt';
+import { Lt_ko } from '@/pages/Lt_ko';
+import { Lte } from '@/pages/Lte';
+import { Lte_ko } from '@/pages/Lte_ko';
 import { Drop } from '@/pages/Drop';
 import { Drop_ko } from '@/pages/Drop_ko';
 import { Every } from '@/pages/Every';
@@ -134,10 +148,24 @@ const routes: Record<string, PageComponent> = {
   '/ko/debug/invariant': Invariant_ko,
   '/debug/log': Log,
   '/ko/debug/log': Log_ko,
+  '/equality/isEmpty': IsEmpty,
+  '/ko/equality/isEmpty': IsEmpty_ko,
+  '/equality/isNil': IsNil,
+  '/ko/equality/isNil': IsNil_ko,
+  '/equality/isType': IsType,
+  '/ko/equality/isType': IsType_ko,
   '/equality/clamp': Clamp,
   '/ko/equality/clamp': Clamp_ko,
   '/equality/equals': Equals,
   '/ko/equality/equals': Equals_ko,
+  '/equality/gt': Gt,
+  '/ko/equality/gt': Gt_ko,
+  '/equality/gte': Gte,
+  '/ko/equality/gte': Gte_ko,
+  '/equality/lt': Lt,
+  '/ko/equality/lt': Lt_ko,
+  '/equality/lte': Lte,
+  '/ko/equality/lte': Lte_ko,
   '/array/chunk': Chunk,
   '/ko/array/chunk': Chunk_ko,
   '/array/drop': Drop,

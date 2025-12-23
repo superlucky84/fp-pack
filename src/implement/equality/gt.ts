@@ -1,6 +1,5 @@
 /** gt - 초과 비교 */
 function gt(a: number): (b: number) => boolean {
-  // TODO: implement
-  return (b: number) => false;
+  return (b: number) => b > a;
 }
 export default gt;
