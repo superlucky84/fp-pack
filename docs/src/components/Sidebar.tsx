@@ -90,6 +90,9 @@ export const Sidebar = mount(renew => {
         title: isKorean ? '문자열' : 'String',
         items: [
           { title: 'endsWith', path: '/string/endsWith' },
+          { title: 'join', path: '/string/join' },
+          { title: 'match', path: '/string/match' },
+          { title: 'replace', path: '/string/replace' },
         ],
       },
       {

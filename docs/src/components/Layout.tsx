@@ -102,6 +102,12 @@ import { Maybe } from '@/pages/Maybe';
 import { Maybe_ko } from '@/pages/Maybe_ko';
 import { EndsWith } from '@/pages/EndsWith';
 import { EndsWith_ko } from '@/pages/EndsWith_ko';
+import { Join } from '@/pages/Join';
+import { Join_ko } from '@/pages/Join_ko';
+import { Match } from '@/pages/Match';
+import { Match_ko } from '@/pages/Match_ko';
+import { Replace } from '@/pages/Replace';
+import { Replace_ko } from '@/pages/Replace_ko';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PageComponent = () => any;
@@ -210,6 +216,12 @@ const routes: Record<string, PageComponent> = {
   '/ko/array/zipIndex': ZipIndex_ko,
   '/string/endsWith': EndsWith,
   '/ko/string/endsWith': EndsWith_ko,
+  '/string/join': Join,
+  '/ko/string/join': Join_ko,
+  '/string/match': Match,
+  '/ko/string/match': Match_ko,
+  '/string/replace': Replace,
+  '/ko/string/replace': Replace_ko,
   '/maybe/maybe': Maybe,
   '/ko/maybe/maybe': Maybe_ko,
 };
