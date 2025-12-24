@@ -53,6 +53,8 @@ export const Sidebar = mount(renew => {
         items: [
           { title: 'pipeAsync', path: '/async/pipeAsync' },
           { title: 'delay', path: '/async/delay' },
+          { title: 'timeout', path: '/async/timeout' },
+          { title: 'retry', path: '/async/retry' },
           { title: 'debounce', path: '/async/debounce' },
           { title: 'debounceLeading', path: '/async/debounceLeading' },
           { title: 'debounceLeadingTrailing', path: '/async/debounceLeadingTrailing' },

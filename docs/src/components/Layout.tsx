@@ -52,6 +52,8 @@ import { DebounceLeadingTrailing } from '@/pages/DebounceLeadingTrailing';
 import { DebounceLeadingTrailing_ko } from '@/pages/DebounceLeadingTrailing_ko';
 import { Delay } from '@/pages/Delay';
 import { Delay_ko } from '@/pages/Delay_ko';
+import { Timeout } from '@/pages/Timeout';
+import { Timeout_ko } from '@/pages/Timeout_ko';
 import { Clamp } from '@/pages/Clamp';
 import { Clamp_ko } from '@/pages/Clamp_ko';
 import { Equals } from '@/pages/Equals';
@@ -128,6 +130,8 @@ import { Trim } from '@/pages/Trim';
 import { Trim_ko } from '@/pages/Trim_ko';
 import { PipeAsync } from '@/pages/PipeAsync';
 import { PipeAsync_ko } from '@/pages/PipeAsync_ko';
+import { Retry } from '@/pages/Retry';
+import { Retry_ko } from '@/pages/Retry_ko';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PageComponent = () => any;
@@ -164,6 +168,10 @@ const routes: Record<string, PageComponent> = {
   '/ko/async/pipeAsync': PipeAsync_ko,
   '/async/delay': Delay,
   '/ko/async/delay': Delay_ko,
+  '/async/timeout': Timeout,
+  '/ko/async/timeout': Timeout_ko,
+  '/async/retry': Retry,
+  '/ko/async/retry': Retry_ko,
   '/control/when': When,
   '/ko/control/when': When_ko,
   '/control/unless': Unless,
