@@ -1,6 +1,6 @@
 /** max - 최대값 */
 function max(arr: number[]): number {
-  // TODO: implement
-  return 0;
+  if (arr.length === 0) return -Infinity;
+  return Math.max(...arr);
 }
 export default max;

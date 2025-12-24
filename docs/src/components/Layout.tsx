@@ -78,6 +78,12 @@ import { Drop } from '@/pages/Drop';
 import { Drop_ko } from '@/pages/Drop_ko';
 import { Every } from '@/pages/Every';
 import { Every_ko } from '@/pages/Every_ko';
+import { Ceil } from '@/pages/Ceil';
+import { Ceil_ko } from '@/pages/Ceil_ko';
+import { Floor } from '@/pages/Floor';
+import { Floor_ko } from '@/pages/Floor_ko';
+import { Div } from '@/pages/Div';
+import { Div_ko } from '@/pages/Div_ko';
 import { Map } from '@/pages/Map';
 import { Map_ko } from '@/pages/Map_ko';
 import { Filter } from '@/pages/Filter';
@@ -132,6 +138,12 @@ import { PipeAsync } from '@/pages/PipeAsync';
 import { PipeAsync_ko } from '@/pages/PipeAsync_ko';
 import { Retry } from '@/pages/Retry';
 import { Retry_ko } from '@/pages/Retry_ko';
+import { Throttle } from '@/pages/Throttle';
+import { Throttle_ko } from '@/pages/Throttle_ko';
+import { Add } from '@/pages/Add';
+import { Add_ko } from '@/pages/Add_ko';
+import { Max } from '@/pages/Max';
+import { Max_ko } from '@/pages/Max_ko';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PageComponent = () => any;
@@ -172,6 +184,18 @@ const routes: Record<string, PageComponent> = {
   '/ko/async/timeout': Timeout_ko,
   '/async/retry': Retry,
   '/ko/async/retry': Retry_ko,
+  '/async/throttle': Throttle,
+  '/ko/async/throttle': Throttle_ko,
+  '/math/add': Add,
+  '/ko/math/add': Add_ko,
+  '/math/ceil': Ceil,
+  '/ko/math/ceil': Ceil_ko,
+  '/math/floor': Floor,
+  '/ko/math/floor': Floor_ko,
+  '/math/div': Div,
+  '/ko/math/div': Div_ko,
+  '/math/max': Max,
+  '/ko/math/max': Max_ko,
   '/control/when': When,
   '/ko/control/when': When_ko,
   '/control/unless': Unless,

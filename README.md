@@ -160,10 +160,10 @@ Functions for comparing and checking values.
 
 Mathematical operations and utilities.
 
-- **add** - Curried addition
-- **sub** - Curried subtraction
-- **mul** - Curried multiplication
-- **div** - Curried division
+- **add** - Addition
+- **sub** - Subtraction
+- **mul** - Multiplication
+- **div** - Division
 - **sum** - Sum of array elements
 - **mean** - Average of array elements
 - **min** - Minimum value in array

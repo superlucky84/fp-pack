@@ -1,6 +1,5 @@
-/** mul - 커리된 곱셈 */
-function mul(a: number): (b: number) => number {
-  // TODO: implement
-  return (b: number) => 0;
+/** mul - 곱셈 */
+function mul(a: number, b: number): number {
+  return a * b;
 }
 export default mul;

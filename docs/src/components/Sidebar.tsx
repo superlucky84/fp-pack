@@ -55,6 +55,7 @@ export const Sidebar = mount(renew => {
           { title: 'delay', path: '/async/delay' },
           { title: 'timeout', path: '/async/timeout' },
           { title: 'retry', path: '/async/retry' },
+          { title: 'throttle', path: '/async/throttle' },
           { title: 'debounce', path: '/async/debounce' },
           { title: 'debounceLeading', path: '/async/debounceLeading' },
           { title: 'debounceLeadingTrailing', path: '/async/debounceLeadingTrailing' },
@@ -96,6 +97,16 @@ export const Sidebar = mount(renew => {
           { title: 'unzip', path: '/array/unzip' },
           { title: 'zip', path: '/array/zip' },
           { title: 'zipIndex', path: '/array/zipIndex' },
+        ],
+      },
+      {
+        title: isKorean ? '수학' : 'Math',
+        items: [
+          { title: 'add', path: '/math/add' },
+          { title: 'ceil', path: '/math/ceil' },
+          { title: 'floor', path: '/math/floor' },
+          { title: 'div', path: '/math/div' },
+          { title: 'max', path: '/math/max' },
         ],
       },
       {
