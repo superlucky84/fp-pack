@@ -144,6 +144,10 @@ import { Add } from '@/pages/Add';
 import { Add_ko } from '@/pages/Add_ko';
 import { Max } from '@/pages/Max';
 import { Max_ko } from '@/pages/Max_ko';
+import { Mean } from '@/pages/Mean';
+import { Mean_ko } from '@/pages/Mean_ko';
+import { Min } from '@/pages/Min';
+import { Min_ko } from '@/pages/Min_ko';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PageComponent = () => any;
@@ -196,6 +200,10 @@ const routes: Record<string, PageComponent> = {
   '/ko/math/div': Div_ko,
   '/math/max': Max,
   '/ko/math/max': Max_ko,
+  '/math/mean': Mean,
+  '/ko/math/mean': Mean_ko,
+  '/math/min': Min,
+  '/ko/math/min': Min_ko,
   '/control/when': When,
   '/ko/control/when': When_ko,
   '/control/unless': Unless,

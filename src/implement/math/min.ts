@@ -1,6 +1,6 @@
 /** min - 최소값 */
 function min(arr: number[]): number {
-  // TODO: implement
-  return 0;
+  if (arr.length === 0) return Infinity;
+  return Math.min(...arr);
 }
 export default min;

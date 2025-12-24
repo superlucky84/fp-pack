@@ -107,6 +107,8 @@ export const Sidebar = mount(renew => {
           { title: 'floor', path: '/math/floor' },
           { title: 'div', path: '/math/div' },
           { title: 'max', path: '/math/max' },
+          { title: 'mean', path: '/math/mean' },
+          { title: 'min', path: '/math/min' },
         ],
       },
       {
