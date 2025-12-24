@@ -191,7 +191,6 @@ Functions for string manipulation.
 
 Functions for asynchronous operations.
 
-- **go** - Execute async pipeline sequentially
 - **pipeAsync** - Compose async functions
 - **delay** - Wait for specified milliseconds
 - **timeout** - Execute promise with timeout limit

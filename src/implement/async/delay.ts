@@ -1,6 +1,7 @@
 /** delay - 일정 시간 대기 */
 function delay(ms: number): Promise<void> {
-  // TODO: implement
-  return Promise.resolve();
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
 }
 export default delay;

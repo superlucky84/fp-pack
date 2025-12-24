@@ -1,4 +1,3 @@
-export { default as go } from './go';
 export { default as pipeAsync } from './pipeAsync';
 export { default as delay } from './delay';
 export { default as timeout } from './timeout';
