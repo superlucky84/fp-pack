@@ -3,7 +3,11 @@ function fold<T, R>(
   onNone: () => R,
   onSome: (value: T) => R
 ): (value: T | null | undefined) => R {
-  // TODO: implement
-  return (value: T | null | undefined) => onNone();
+  return (value: T | null | undefined) => {
+    if (value === null || value === undefined) {
+      return onNone();
+    }
+    return onSome(value);
+  };
 }
 export default fold;

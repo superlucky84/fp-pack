@@ -134,6 +134,8 @@ export const Sidebar = mount(renew => {
         title: 'Maybe',
         items: [
           { title: 'maybe', path: '/maybe/maybe' },
+          { title: 'fold', path: '/maybe/fold' },
+          { title: 'getOrElse', path: '/maybe/getOrElse' },
         ],
       },
     ];

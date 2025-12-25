@@ -118,6 +118,10 @@ import { Zip } from '@/pages/Zip';
 import { Zip_ko } from '@/pages/Zip_ko';
 import { Maybe } from '@/pages/Maybe';
 import { Maybe_ko } from '@/pages/Maybe_ko';
+import { Fold } from '@/pages/Fold';
+import { Fold_ko } from '@/pages/Fold_ko';
+import { GetOrElse } from '@/pages/GetOrElse';
+import { GetOrElse_ko } from '@/pages/GetOrElse_ko';
 import { EndsWith } from '@/pages/EndsWith';
 import { EndsWith_ko } from '@/pages/EndsWith_ko';
 import { StartsWith } from '@/pages/StartsWith';
@@ -324,6 +328,10 @@ const routes: Record<string, PageComponent> = {
   '/ko/string/trim': Trim_ko,
   '/maybe/maybe': Maybe,
   '/ko/maybe/maybe': Maybe_ko,
+  '/maybe/fold': Fold,
+  '/ko/maybe/fold': Fold_ko,
+  '/maybe/getOrElse': GetOrElse,
+  '/ko/maybe/getOrElse': GetOrElse_ko,
 };
 
 const resolveRoute = (path: string): PageComponent => {
