@@ -84,6 +84,8 @@ import { Floor } from '@/pages/Floor';
 import { Floor_ko } from '@/pages/Floor_ko';
 import { Div } from '@/pages/Div';
 import { Div_ko } from '@/pages/Div_ko';
+import { Sub } from '@/pages/Sub';
+import { Sub_ko } from '@/pages/Sub_ko';
 import { Map } from '@/pages/Map';
 import { Map_ko } from '@/pages/Map_ko';
 import { Filter } from '@/pages/Filter';
@@ -148,6 +150,14 @@ import { Mean } from '@/pages/Mean';
 import { Mean_ko } from '@/pages/Mean_ko';
 import { Min } from '@/pages/Min';
 import { Min_ko } from '@/pages/Min_ko';
+import { Mul } from '@/pages/Mul';
+import { Mul_ko } from '@/pages/Mul_ko';
+import { RandomInt } from '@/pages/RandomInt';
+import { RandomInt_ko } from '@/pages/RandomInt_ko';
+import { Round } from '@/pages/Round';
+import { Round_ko } from '@/pages/Round_ko';
+import { Sum } from '@/pages/Sum';
+import { Sum_ko } from '@/pages/Sum_ko';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PageComponent = () => any;
@@ -192,6 +202,8 @@ const routes: Record<string, PageComponent> = {
   '/ko/async/throttle': Throttle_ko,
   '/math/add': Add,
   '/ko/math/add': Add_ko,
+  '/math/sub': Sub,
+  '/ko/math/sub': Sub_ko,
   '/math/ceil': Ceil,
   '/ko/math/ceil': Ceil_ko,
   '/math/floor': Floor,
@@ -204,6 +216,14 @@ const routes: Record<string, PageComponent> = {
   '/ko/math/mean': Mean_ko,
   '/math/min': Min,
   '/ko/math/min': Min_ko,
+  '/math/mul': Mul,
+  '/ko/math/mul': Mul_ko,
+  '/math/sum': Sum,
+  '/ko/math/sum': Sum_ko,
+  '/math/round': Round,
+  '/ko/math/round': Round_ko,
+  '/math/randomInt': RandomInt,
+  '/ko/math/randomInt': RandomInt_ko,
   '/control/when': When,
   '/ko/control/when': When_ko,
   '/control/unless': Unless,

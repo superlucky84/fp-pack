@@ -1,6 +1,5 @@
 /** round - 반올림 */
 function round(value: number): number {
-  // TODO: implement
-  return 0;
+  return Math.round(value);
 }
 export default round;

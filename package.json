@@ -14,8 +14,20 @@
       "require": "./dist/fp-kit.umd.js"
     },
     "./monad": {
-      "types": "./dist/implement/monad/index.d.ts",
-      "import": "./dist/implement/monad/index.mjs"
+      "types": "./dist/monad/index.d.ts",
+      "import": "./dist/monad/index.mjs"
+    },
+    "./stream": {
+      "types": "./dist/stream/index.d.ts",
+      "import": "./dist/stream/index.mjs"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "monad": ["dist/monad/index.d.ts"],
+      "monad/*": ["dist/monad/*"],
+      "stream": ["dist/stream/index.d.ts"],
+      "stream/*": ["dist/stream/*"]
     }
   },
   "files": [

@@ -1,3 +1,7 @@
+// Ensure subpath entrypoints are emitted in the build output.
+import './stream/index';
+import './monad/index';
+
 // Composition
 export * from './implement/composition';
 
