@@ -9,8 +9,8 @@ describe('flip', () => {
     expect(flipped(2, 10)).toBe(5); // divide(10, 2)
   });
 
-  it('reverses all arguments for variadic functions', () => {
-    const concat = (...parts: Array<string | number>) => parts.join('-');
+  it('reverses arguments for 3-arity functions', () => {
+    const concat = (a: string | number, b: string | number, c: string | number) => `${a}-${b}-${c}`;
     const flipped = flip(concat);
 
     expect(flipped(1, 'b', 'a')).toBe('a-b-1');

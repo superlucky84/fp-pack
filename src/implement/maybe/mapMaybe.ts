@@ -1,6 +1,18 @@
-/** mapMaybe - 값 있을 때만 적용 */
-function mapMaybe<T, R>(fn: (value: T) => R): (value: T | null | undefined) => R | null {
-  // TODO: implement
-  return (value: T | null | undefined) => null;
+/** mapMaybe - 값이 있는 항목만 변환 */
+function mapMaybe<T, R>(
+  fn: (value: T) => R | null | undefined
+): (values: T[]) => R[] {
+  return (values: T[]) => {
+    const results: R[] = [];
+
+    for (const value of values) {
+      const mapped = fn(value);
+      if (mapped !== null && mapped !== undefined) {
+        results.push(mapped);
+      }
+    }
+
+    return results;
+  };
 }
 export default mapMaybe;

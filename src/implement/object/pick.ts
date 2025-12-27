@@ -1,9 +1,16 @@
 /**
  * pick - 일부 속성 선택
  */
-function pick<T, K extends keyof T>(keys: K[]): (obj: T) => Pick<T, K> {
-  // TODO: implement
-  return (obj: T) => ({} as Pick<T, K>);
+function pick<T extends object, K extends keyof T = keyof T>(keys: K[]): (obj: T) => Pick<T, K> {
+  return (obj: T) => {
+    const result = {} as Pick<T, K>;
+    for (const key of keys) {
+      if (key in obj) {
+        result[key] = obj[key];
+      }
+    }
+    return result;
+  };
 }
 
 export default pick;

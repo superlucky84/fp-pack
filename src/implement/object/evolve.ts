@@ -4,8 +4,16 @@
 function evolve<T extends object>(
   transformations: Partial<{ [K in keyof T]: (value: T[K]) => any }>
 ): (obj: T) => T {
-  // TODO: implement
-  return (obj: T) => obj;
+  return (obj: T) => {
+    const result = { ...(obj as object) } as T;
+    for (const key of Object.keys(transformations) as Array<keyof T>) {
+      const transformer = transformations[key];
+      if (typeof transformer === 'function') {
+        result[key] = transformer(obj[key]);
+      }
+    }
+    return result;
+  };
 }
 
 export default evolve;

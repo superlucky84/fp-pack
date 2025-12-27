@@ -122,6 +122,12 @@ import { Fold } from '@/pages/Fold';
 import { Fold_ko } from '@/pages/Fold_ko';
 import { GetOrElse } from '@/pages/GetOrElse';
 import { GetOrElse_ko } from '@/pages/GetOrElse_ko';
+import { MapMaybe } from '@/pages/MapMaybe';
+import { MapMaybe_ko } from '@/pages/MapMaybe_ko';
+import { Result } from '@/pages/Result';
+import { Result_ko } from '@/pages/Result_ko';
+import { Assoc } from '@/pages/Assoc';
+import { Assoc_ko } from '@/pages/Assoc_ko';
 import { EndsWith } from '@/pages/EndsWith';
 import { EndsWith_ko } from '@/pages/EndsWith_ko';
 import { StartsWith } from '@/pages/StartsWith';
@@ -332,6 +338,12 @@ const routes: Record<string, PageComponent> = {
   '/ko/maybe/fold': Fold_ko,
   '/maybe/getOrElse': GetOrElse,
   '/ko/maybe/getOrElse': GetOrElse_ko,
+  '/maybe/mapMaybe': MapMaybe,
+  '/ko/maybe/mapMaybe': MapMaybe_ko,
+  '/maybe/result': Result,
+  '/ko/maybe/result': Result_ko,
+  '/object/assoc': Assoc,
+  '/ko/object/assoc': Assoc_ko,
 };
 
 const resolveRoute = (path: string): PageComponent => {

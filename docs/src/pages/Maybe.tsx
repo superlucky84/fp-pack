@@ -534,7 +534,7 @@ processIfActive(null);                              // null`}
           mapMaybe →
         </h3>
         <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          Discover mapMaybe for transforming Maybe values in different ways.
+          Use mapMaybe to map arrays while filtering out null/undefined results.
         </p>
       </a>
     </div>

@@ -1,9 +1,9 @@
 /**
  * guard - 조건 불만족 시 early return
  */
-function guard<T>(
+function guard<T, U extends T>(
   predicate: (value: T) => boolean,
-  defaultValue: T
+  defaultValue: U
 ): (value: T) => T {
   return (value: T) => (predicate(value) ? value : defaultValue);
 }

@@ -100,6 +100,12 @@ export const Sidebar = mount(renew => {
         ],
       },
       {
+        title: isKorean ? '객체' : 'Object',
+        items: [
+          { title: 'assoc', path: '/object/assoc' },
+        ],
+      },
+      {
         title: isKorean ? '수학' : 'Math',
         items: [
           { title: 'add', path: '/math/add' },
@@ -136,6 +142,8 @@ export const Sidebar = mount(renew => {
           { title: 'maybe', path: '/maybe/maybe' },
           { title: 'fold', path: '/maybe/fold' },
           { title: 'getOrElse', path: '/maybe/getOrElse' },
+          { title: 'mapMaybe', path: '/maybe/mapMaybe' },
+          { title: 'result', path: '/maybe/result' },
         ],
       },
     ];

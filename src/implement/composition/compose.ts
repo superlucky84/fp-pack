@@ -9,7 +9,7 @@ type ComposeChain<Fns extends UnaryFn<any, any>[]> = Fns extends [UnaryFn<infer 
   ? UnaryFn<A, R>
   : Fns extends [UnaryFn<infer A, infer R>, ...infer Rest]
     ? Rest extends [UnaryFn<R, any>, ...UnaryFn<any, any>[]]
-      ? ComposeChain<Rest> extends UnaryFn<infer NextA, infer NextR>
+      ? ComposeChain<Rest> extends UnaryFn<any, infer NextR>
         ? UnaryFn<A, NextR>
         : never
       : never

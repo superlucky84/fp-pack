@@ -4,7 +4,7 @@ const FL_AP_SYMBOL = typeof Symbol === 'function' ? Symbol.for(FL_AP) : undefine
 /**
  * ap - Apply/Applicative ap (객체의 ap 구현에 위임)
  */
-function ap<T, R>(applyFunctor: unknown): (valueFunctor: unknown) => unknown {
+function ap(applyFunctor: unknown): (valueFunctor: unknown) => unknown {
   return (valueFunctor: unknown) => {
     if (applyFunctor === null || applyFunctor === undefined) {
       throw new TypeError('ap: applyFunctor is null or undefined');

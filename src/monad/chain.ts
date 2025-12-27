@@ -4,7 +4,7 @@ const FL_CHAIN_SYMBOL = typeof Symbol === 'function' ? Symbol.for(FL_CHAIN) : un
 /**
  * chain - Monad chain/flatMap (객체의 chain/flatMap 구현에 위임)
  */
-function chain<T, R>(fn: (value: T) => unknown): (monad: unknown) => unknown {
+function chain<T>(fn: (value: T) => unknown): (monad: unknown) => unknown {
   return (monad: unknown) => {
     if (monad === null || monad === undefined) {
       throw new TypeError('chain: monad is null or undefined');

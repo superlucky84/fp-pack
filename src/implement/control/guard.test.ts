@@ -13,7 +13,7 @@ describe('guard', () => {
   });
 
   it('works with objects', () => {
-    const fn = guard<{ ok?: boolean }>((v) => v.ok === true, { ok: false });
+    const fn = guard((v: { ok?: boolean }) => v.ok === true, { ok: false });
     expect(fn({ ok: true })).toEqual({ ok: true });
     expect(fn({ ok: false })).toEqual({ ok: false });
   });

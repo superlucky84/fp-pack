@@ -1,9 +1,14 @@
 /**
  * omit - 일부 속성 제거
  */
-function omit<T, K extends keyof T>(keys: K[]): (obj: T) => Omit<T, K> {
-  // TODO: implement
-  return (obj: T) => ({} as Omit<T, K>);
+function omit<T, K extends keyof T = keyof T>(keys: K[]): (obj: T) => Omit<T, K> {
+  return (obj: T) => {
+    const result = { ...(obj as object) } as T;
+    for (const key of keys) {
+      delete (result as Record<PropertyKey, unknown>)[key];
+    }
+    return result as Omit<T, K>;
+  };
 }
 
 export default omit;

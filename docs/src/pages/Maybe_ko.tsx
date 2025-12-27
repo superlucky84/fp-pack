@@ -534,7 +534,7 @@ processIfActive(null);                              // null`}
           mapMaybe →
         </h3>
         <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          Maybe 값을 다양한 방식으로 변환하는 mapMaybe를 알아보세요.
+          배열을 매핑하면서 null/undefined 결과를 제거하는 mapMaybe를 확인하세요.
         </p>
       </a>
     </div>
