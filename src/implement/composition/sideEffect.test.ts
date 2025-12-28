@@ -4,7 +4,7 @@ import SideEffect, { matchSideEffect, runPipeResult } from './sideEffect';
 describe('SideEffect', () => {
   it('does not execute effect automatically', () => {
     const effect = vi.fn(() => 'done');
-    const sideEffect = new SideEffect(effect);
+    const sideEffect = SideEffect.of(effect);
 
     expect(effect).not.toHaveBeenCalled();
     expect(sideEffect).toBeInstanceOf(SideEffect);
@@ -27,7 +27,7 @@ describe('SideEffect', () => {
 
   it('runPipeResult executes SideEffect explicitly', () => {
     const effect = vi.fn(() => 'ran');
-    const sideEffect = new SideEffect(effect);
+    const sideEffect = SideEffect.of(effect);
 
     expect(runPipeResult(sideEffect)).toBe('ran');
     expect(runPipeResult(5)).toBe(5);

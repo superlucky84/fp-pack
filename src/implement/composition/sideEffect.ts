@@ -7,6 +7,10 @@ export class SideEffect<T = unknown> {
   constructor(effect: () => T) {
     this.effect = effect;
   }
+
+  static of<T>(effect: () => T): SideEffect<T> {
+    return new SideEffect(effect);
+  }
 }
 
 type MatchHandlers<T, RValue, REffect> = {
