@@ -24,6 +24,8 @@ import { Once } from '@/pages/Once';
 import { Once_ko } from '@/pages/Once_ko';
 import { Tap } from '@/pages/Tap';
 import { Tap_ko } from '@/pages/Tap_ko';
+import { SideEffect } from '@/pages/SideEffect';
+import { SideEffect_ko } from '@/pages/SideEffect_ko';
 import { Chunk } from '@/pages/Chunk';
 import { Chunk_ko } from '@/pages/Chunk_ko';
 import { Cond } from '@/pages/Cond';
@@ -206,6 +208,8 @@ const routes: Record<string, PageComponent> = {
   '/ko/composition/once': Once_ko,
   '/composition/tap': Tap,
   '/ko/composition/tap': Tap_ko,
+  '/composition/sideEffect': SideEffect,
+  '/ko/composition/sideEffect': SideEffect_ko,
   '/async/pipeAsync': PipeAsync,
   '/ko/async/pipeAsync': PipeAsync_ko,
   '/async/delay': Delay,

@@ -1,3 +1,5 @@
+import SideEffect from '../composition/sideEffect';
+
 /** pipeAsync - 비동기 함수 합성 */
 type AsyncOrSync<A, R> = (a: A) => R | Promise<R>;
 type PipeInput<Fns extends AsyncOrSync<any, any>[]> = Fns extends [AsyncOrSync<infer A, any>, ...AsyncOrSync<any, any>[]]
@@ -10,7 +12,7 @@ type PipeOutput<Fns extends AsyncOrSync<any, any>[]> = Fns extends [AsyncOrSync<
       ? PipeOutput<Rest>
       : never
     : never;
-type PipeAsync<Fns extends AsyncOrSync<any, any>[]> = (input: PipeInput<Fns>) => Promise<PipeOutput<Fns>>;
+type PipeAsync<Fns extends AsyncOrSync<any, any>[]> = (input: PipeInput<Fns>) => Promise<PipeOutput<Fns> | SideEffect>;
 
 function pipeAsync<A, R>(ab: AsyncOrSync<A, R>): (a: A) => Promise<Awaited<R>>;
 function pipeAsync<A, B, R>(
@@ -42,6 +44,9 @@ function pipeAsync(...funcs: Array<(arg: any) => any>) {
   return async (value: any) => {
     let acc = value;
     for (const fn of funcs) {
+      if (acc instanceof SideEffect) {
+        return acc;
+      }
       acc = await fn(acc);
     }
     return acc;
