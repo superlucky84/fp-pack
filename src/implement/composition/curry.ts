@@ -72,6 +72,14 @@ type CurryVariadic<Fn extends (...args: any[]) => any> = Fn extends (...args: in
     ) => T extends P ? R : P extends [...T, ...infer Rest] ? CurryVariadic<(...args: Rest) => R> : never
   : never;
 
+function curry<A>(fn: <T>(a: A, b: T[]) => T[]): {
+  (a: A): <T>(b: T[]) => T[];
+  <T>(a: A, b: T[]): T[];
+};
+function curry<A>(fn: <T>(a: A, b: T[]) => T[][]): {
+  (a: A): <T>(b: T[]) => T[][];
+  <T>(a: A, b: T[]): T[][];
+};
 // Overloads for 2-5 parameter functions
 function curry<Fn extends <A, B>(a: A, b: B) => any>(fn: Fn): Curry2Generic<Fn>;
 function curry<Fn extends <A, B, C>(a: A, b: B, c: C) => any>(fn: Fn): Curry3Generic<Fn>;
