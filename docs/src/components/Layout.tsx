@@ -142,6 +142,25 @@ import { Evolve } from '@/pages/Evolve';
 import { Evolve_ko } from '@/pages/Evolve_ko';
 import { Has } from '@/pages/Has';
 import { Has_ko } from '@/pages/Has_ko';
+import { HasPath } from '@/pages/HasPath';
+import { HasPath_ko } from '@/pages/HasPath_ko';
+import { Keys } from '@/pages/Keys';
+import { Keys_ko } from '@/pages/Keys_ko';
+import { MapValues } from '@/pages/MapValues';
+import { MapValues_ko } from '@/pages/MapValues_ko';
+import { Merge } from '@/pages/Merge';
+import { Merge_ko } from '@/pages/Merge_ko';
+import { MergeDeep } from '@/pages/MergeDeep';
+import { MergeDeep_ko } from '@/pages/MergeDeep_ko';
+import { Omit } from '@/pages/Omit';
+import { Omit_ko } from '@/pages/Omit_ko';
+import { Path } from '@/pages/Path';
+import { Path_ko } from '@/pages/Path_ko';
+import { Pick } from '@/pages/Pick';
+import { Pick_ko } from '@/pages/Pick_ko';
+import { Prop } from '@/pages/Prop';
+import { Prop_ko } from '@/pages/Prop_ko';
+// mapValues 문서가 없는 상태이므로 주석 처리/임포트 제거
 import { EndsWith } from '@/pages/EndsWith';
 import { EndsWith_ko } from '@/pages/EndsWith_ko';
 import { StartsWith } from '@/pages/StartsWith';
@@ -372,6 +391,24 @@ const routes: Record<string, PageComponent> = {
   '/ko/object/evolve': Evolve_ko,
   '/object/has': Has,
   '/ko/object/has': Has_ko,
+  '/object/hasPath': HasPath,
+  '/ko/object/hasPath': HasPath_ko,
+  '/object/keys': Keys,
+  '/ko/object/keys': Keys_ko,
+  '/object/mapValues': MapValues,
+  '/ko/object/mapValues': MapValues_ko,
+  '/object/merge': Merge,
+  '/ko/object/merge': Merge_ko,
+  '/object/mergeDeep': MergeDeep,
+  '/ko/object/mergeDeep': MergeDeep_ko,
+  '/object/omit': Omit,
+  '/ko/object/omit': Omit_ko,
+  '/object/path': Path,
+  '/ko/object/path': Path_ko,
+  '/object/pick': Pick,
+  '/ko/object/pick': Pick_ko,
+  '/object/prop': Prop,
+  '/ko/object/prop': Prop_ko,
 };
 
 const resolveRoute = (path: string): PageComponent => {

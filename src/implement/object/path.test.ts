@@ -4,8 +4,6 @@ import path from './path';
 describe('path', () => {
   it('gets nested values', () => {
     const user = { profile: { name: 'A' } };
-    const getName = path<string>(['profile', 'name']);
-
-    expect(getName(user)).toBe('A');
+    expect(path<string>(['profile', 'name'], user)).toBe('A');
   });
 });
