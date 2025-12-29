@@ -1,3 +1,5 @@
+import curry from '../composition/curry';
+
 /** randomInt - 범위 랜덤 정수 */
 function randomInt(min: number, max: number): number {
   const lower = Math.ceil(min);
@@ -9,4 +11,4 @@ function randomInt(min: number, max: number): number {
 
   return Math.floor(Math.random() * (upper - lower + 1)) + lower;
 }
-export default randomInt;
+export default curry(randomInt);

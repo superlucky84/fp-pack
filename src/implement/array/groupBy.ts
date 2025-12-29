@@ -1,3 +1,5 @@
+import curry from '../composition/curry';
+
 /**
  * groupBy - 키 기준 그룹화
  */
@@ -12,4 +14,4 @@ function groupBy<T>(fn: (value: T) => string, arr: T[]): Record<string, T[]> {
   }, {});
 }
 
-export default groupBy;
+export default curry(groupBy);

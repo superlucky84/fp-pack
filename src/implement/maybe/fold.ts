@@ -1,3 +1,5 @@
+import curry from '../composition/curry';
+
 /** fold - Maybe/Result 처리 */
 function fold<T, R>(
   onNone: () => R,
@@ -10,4 +12,4 @@ function fold<T, R>(
     return onSome(value);
   };
 }
-export default fold;
+export default curry(fold);

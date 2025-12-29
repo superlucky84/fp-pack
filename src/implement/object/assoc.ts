@@ -1,3 +1,5 @@
+import curry from '../composition/curry';
+
 type AssocKey = string | number | symbol;
 
 type AssocValue<T, K extends AssocKey, V> = K extends keyof T
@@ -31,4 +33,4 @@ function assoc<T, K extends AssocKey, V>(key: K, value: V, obj: T): AssocResult<
   return { [key]: value } as AssocResult<T, K, V>;
 }
 
-export default assoc;
+export default curry(assoc);

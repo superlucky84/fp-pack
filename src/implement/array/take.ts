@@ -1,3 +1,5 @@
+import curry from '../composition/curry';
+
 /**
  * take - 앞에서 n개 선택
  */
@@ -7,4 +9,4 @@ function take<T>(n: number, arr: T[]): T[] {
   return arr.slice(0, n);
 }
 
-export default take;
+export default curry(take);

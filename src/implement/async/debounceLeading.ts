@@ -1,3 +1,5 @@
+import curry from '../composition/curry';
+
 /** debounceLeading - 첫 호출만 실행하는 디바운스 */
 function debounceLeading<T extends (...args: any[]) => any>(fn: T, ms: number): T {
   let timer: ReturnType<typeof setTimeout> | undefined;
@@ -14,4 +16,4 @@ function debounceLeading<T extends (...args: any[]) => any>(fn: T, ms: number): 
   return debounced as T;
 }
 
-export default debounceLeading;
+export default curry(debounceLeading);

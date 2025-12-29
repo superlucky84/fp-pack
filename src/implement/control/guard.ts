@@ -1,3 +1,5 @@
+import curry from '../composition/curry';
+
 /**
  * guard - 조건 불만족 시 early return
  */
@@ -8,4 +10,4 @@ function guard<T, U extends T>(
   return (value: T) => (predicate(value) ? value : defaultValue);
 }
 
-export default guard;
+export default curry(guard);

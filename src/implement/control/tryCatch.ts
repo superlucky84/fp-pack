@@ -1,3 +1,5 @@
+import curry from '../composition/curry';
+
 /**
  * tryCatch - 예외를 함수형으로 처리
  */
@@ -15,4 +17,4 @@ function tryCatch<T, R>(
   };
 }
 
-export default tryCatch;
+export default curry(tryCatch);

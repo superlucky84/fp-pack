@@ -1,3 +1,5 @@
+import curry from '../composition/curry';
+
 /**
  * reduce - 누적 연산
  */
@@ -9,4 +11,4 @@ function reduce<T, R>(
   return arr.reduce(fn, initial);
 }
 
-export default reduce;
+export default curry(reduce);

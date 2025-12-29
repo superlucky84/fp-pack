@@ -1,3 +1,5 @@
+import curry from '../composition/curry';
+
 /** debounceLeadingTrailing - 처음과 마지막에만 실행하는 디바운스 */
 function debounceLeadingTrailing<T extends (...args: any[]) => any>(fn: T, ms: number): T {
   let timer: ReturnType<typeof setTimeout> | undefined;
@@ -30,4 +32,4 @@ function debounceLeadingTrailing<T extends (...args: any[]) => any>(fn: T, ms: n
   return debounced as T;
 }
 
-export default debounceLeadingTrailing;
+export default curry(debounceLeadingTrailing);

@@ -1,3 +1,5 @@
+import curry from '../composition/curry';
+
 /** equals - 깊은 비교 */
 function equals(a: any, b: any): boolean {
   return deepEqual(a, b, new WeakMap());
@@ -82,4 +84,4 @@ function deepEqual(a: any, b: any, seen: WeakMap<object, object>): boolean {
   return true;
 }
 
-export default equals;
+export default curry(equals);

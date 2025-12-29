@@ -1,3 +1,5 @@
+import curry from '../composition/curry';
+
 /**
  * zip - 배열 병합
  */
@@ -12,4 +14,4 @@ function zip<T, U>(arr2: U[], arr1: T[]): Array<[T, U]> {
   return result;
 }
 
-export default zip;
+export default curry(zip);

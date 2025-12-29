@@ -1,3 +1,5 @@
+import curry from '../composition/curry';
+
 /**
  * drop - 앞에서 n개 제외
  */
@@ -9,4 +11,4 @@ function drop<T>(n: number, arr: T[]): T[] {
   return arr.slice(count);
 }
 
-export default drop;
+export default curry(drop);

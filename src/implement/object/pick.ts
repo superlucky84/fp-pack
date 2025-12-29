@@ -1,3 +1,5 @@
+import curry from '../composition/curry';
+
 /**
  * pick - 일부 속성 선택
  */
@@ -11,4 +13,4 @@ function pick<T extends object, K extends keyof T = keyof T>(keys: K[], obj: T):
   return result;
 }
 
-export default pick;
+export default curry(pick);

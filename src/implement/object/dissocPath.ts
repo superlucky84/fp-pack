@@ -1,3 +1,5 @@
+import curry from '../composition/curry';
+
 type PathKey = string | number | symbol;
 
 const isIndexKey = (key: PathKey): key is number | `${number}` => {
@@ -69,4 +71,4 @@ function dissocPath<T = unknown>(pathArray: PathKey[], obj: T): T {
   return result as T;
 }
 
-export default dissocPath;
+export default curry(dissocPath);

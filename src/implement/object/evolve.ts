@@ -1,3 +1,5 @@
+import curry from '../composition/curry';
+
 /**
  * evolve - 구조 기반 변환
  */
@@ -15,4 +17,4 @@ function evolve<T extends object>(
   return result;
 }
 
-export default evolve;
+export default curry(evolve);

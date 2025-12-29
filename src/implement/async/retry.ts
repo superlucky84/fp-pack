@@ -1,5 +1,6 @@
 /** retry - 실패 시 재시도 (옵션 대기 시간 포함) */
 import delay from './delay';
+import curry from '../composition/curry';
 
 function retry<T>(times: number, fn: () => Promise<T>, delayMs = 0): Promise<T> {
   return (async () => {
@@ -17,4 +18,4 @@ function retry<T>(times: number, fn: () => Promise<T>, delayMs = 0): Promise<T> 
     }
   })();
 }
-export default retry;
+export default curry(retry);

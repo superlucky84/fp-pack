@@ -1,3 +1,5 @@
+import curry from '../composition/curry';
+
 /** throttle - 호출 제어 (쓰로틀) */
 function throttle<T extends (...args: any[]) => any>(fn: T, ms: number): T {
   let lastCall = 0;
@@ -36,4 +38,4 @@ function throttle<T extends (...args: any[]) => any>(fn: T, ms: number): T {
 
   return throttled;
 }
-export default throttle;
+export default curry(throttle);

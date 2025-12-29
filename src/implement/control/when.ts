@@ -1,3 +1,5 @@
+import curry from '../composition/curry';
+
 /**
  * when - 조건이 true일 때만 적용
  */
@@ -8,4 +10,4 @@ function when<T>(
   return (value: T) => (predicate(value) ? fn(value) : value);
 }
 
-export default when;
+export default curry(when);

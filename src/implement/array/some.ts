@@ -1,3 +1,5 @@
+import curry from '../composition/curry';
+
 /**
  * some - 조건 검사 (하나라도 만족)
  */
@@ -8,4 +10,4 @@ function some<T>(predicate: (value: T) => boolean, arr: T[]): boolean {
   return false;
 }
 
-export default some;
+export default curry(some);

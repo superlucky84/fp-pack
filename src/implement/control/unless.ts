@@ -1,3 +1,5 @@
+import curry from '../composition/curry';
+
 /**
  * unless - 조건이 false일 때만 적용
  */
@@ -8,4 +10,4 @@ function unless<T>(
   return (value: T) => (predicate(value) ? value : fn(value));
 }
 
-export default unless;
+export default curry(unless);

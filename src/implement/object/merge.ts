@@ -1,3 +1,5 @@
+import curry from '../composition/curry';
+
 /**
  * merge - 객체 병합 (얕은 병합)
  */
@@ -8,4 +10,4 @@ function merge<T, U>(obj1: T, obj2: U): T & U {
   } as T & U;
 }
 
-export default merge;
+export default curry(merge);
