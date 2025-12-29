@@ -5,9 +5,10 @@ import curry from '../composition/curry';
  */
 function when<T>(
   predicate: (value: T) => boolean,
-  fn: (value: T) => T
-): (value: T) => T {
-  return (value: T) => (predicate(value) ? fn(value) : value);
+  fn: (value: T) => T,
+  value: T
+): T {
+  return predicate(value) ? fn(value) : value;
 }
 
 export default curry(when);

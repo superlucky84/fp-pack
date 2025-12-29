@@ -3,13 +3,12 @@ import curry from '../composition/curry';
 /** fold - Maybe/Result 처리 */
 function fold<T, R>(
   onNone: () => R,
-  onSome: (value: T) => R
-): (value: T | null | undefined) => R {
-  return (value: T | null | undefined) => {
-    if (value === null || value === undefined) {
-      return onNone();
-    }
-    return onSome(value);
-  };
+  onSome: (value: T) => R,
+  value: T | null | undefined
+): R {
+  if (value === null || value === undefined) {
+    return onNone();
+  }
+  return onSome(value);
 }
 export default curry(fold);

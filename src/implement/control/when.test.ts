@@ -3,18 +3,20 @@ import when from './when';
 
 describe('when', () => {
   it('applies fn when predicate is true', () => {
-    const fn = when(
+    const result = when(
       (n: number) => n > 0,
-      (n) => n * 2
+      (n) => n * 2,
+      3
     );
-    expect(fn(3)).toBe(6);
+    expect(result).toBe(6);
   });
 
   it('returns original value when predicate is false', () => {
-    const fn = when(
+    const result = when(
       (n: number) => n > 0,
-      (n) => n * 2
+      (n) => n * 2,
+      -2
     );
-    expect(fn(-2)).toBe(-2);
+    expect(result).toBe(-2);
   });
 });

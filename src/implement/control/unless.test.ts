@@ -3,18 +3,20 @@ import unless from './unless';
 
 describe('unless', () => {
   it('applies fn when predicate is false', () => {
-    const fn = unless(
+    const result = unless(
       (n: number) => n > 0,
-      (n) => n * -1
+      (n) => n * -1,
+      -3
     );
-    expect(fn(-3)).toBe(3);
+    expect(result).toBe(3);
   });
 
   it('returns original value when predicate is true', () => {
-    const fn = unless(
+    const result = unless(
       (n: number) => n > 0,
-      (n) => n * -1
+      (n) => n * -1,
+      5
     );
-    expect(fn(5)).toBe(5);
+    expect(result).toBe(5);
   });
 });

@@ -5,9 +5,10 @@ import curry from '../composition/curry';
  */
 function unless<T>(
   predicate: (value: T) => boolean,
-  fn: (value: T) => T
-): (value: T) => T {
-  return (value: T) => (predicate(value) ? value : fn(value));
+  fn: (value: T) => T,
+  value: T
+): T {
+  return predicate(value) ? value : fn(value);
 }
 
 export default curry(unless);

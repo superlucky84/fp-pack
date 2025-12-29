@@ -3,48 +3,66 @@ import ifElse from './ifElse';
 
 describe('ifElse', () => {
   it('runs onTrue when predicate is true', () => {
-    const fn = ifElse(
+    const result = ifElse(
       (n: number) => n > 0,
       (n) => `positive ${n}`,
-      (n) => `non-positive ${n}`
+      (n) => `non-positive ${n}`,
+      3
     );
-    expect(fn(3)).toBe('positive 3');
+    expect(result).toBe('positive 3');
   });
 
   it('runs onFalse when predicate is false', () => {
-    const fn = ifElse(
+    const result = ifElse(
       (n: number) => n > 0,
       () => 'yes',
-      () => 'no'
+      () => 'no',
+      -1
     );
-    expect(fn(-1)).toBe('no');
+    expect(result).toBe('no');
   });
 
   it('supports different return types for onTrue/onFalse', () => {
-    const fn = ifElse(
+    const trueResult = ifElse(
       (flag: boolean) => flag,
       () => ({ ok: true }),
-      () => 'nope'
+      () => 'nope',
+      true
     );
 
-    expect(fn(true)).toEqual({ ok: true });
-    expect(fn(false)).toBe('nope');
+    const falseResult = ifElse(
+      (flag: boolean) => flag,
+      () => ({ ok: true }),
+      () => 'nope',
+      false
+    );
+
+    expect(trueResult).toEqual({ ok: true });
+    expect(falseResult).toBe('nope');
   });
 
   it('passes the original value to handlers', () => {
     const spyTrue = vi.fn((n: number) => n * 2);
     const spyFalse = vi.fn((n: number) => n * -1);
-    const fn = ifElse(
+    const trueResult = ifElse(
       (n: number) => n % 2 === 0,
       spyTrue,
-      spyFalse
+      spyFalse,
+      4
     );
 
-    expect(fn(4)).toBe(8);
+    expect(trueResult).toBe(8);
     expect(spyTrue).toHaveBeenCalledWith(4);
     expect(spyFalse).not.toHaveBeenCalled();
 
-    expect(fn(3)).toBe(-3);
+    const falseResult = ifElse(
+      (n: number) => n % 2 === 0,
+      spyTrue,
+      spyFalse,
+      3
+    );
+
+    expect(falseResult).toBe(-3);
     expect(spyFalse).toHaveBeenCalledWith(3);
   });
 });

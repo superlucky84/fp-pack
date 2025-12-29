@@ -5,9 +5,10 @@ import curry from '../composition/curry';
  */
 function guard<T, U extends T>(
   predicate: (value: T) => boolean,
-  defaultValue: U
-): (value: T) => T {
-  return (value: T) => (predicate(value) ? value : defaultValue);
+  defaultValue: U,
+  value: T
+): T {
+  return predicate(value) ? value : defaultValue;
 }
 
 export default curry(guard);

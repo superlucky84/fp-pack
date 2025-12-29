@@ -6,9 +6,10 @@ import curry from '../composition/curry';
 function ifElse<T, RTrue, RFalse>(
   predicate: (value: T) => boolean,
   onTrue: (value: T) => RTrue,
-  onFalse: (value: T) => RFalse
-): (value: T) => RTrue | RFalse {
-  return (value: T) => (predicate(value) ? onTrue(value) : onFalse(value));
+  onFalse: (value: T) => RFalse,
+  value: T
+): RTrue | RFalse {
+  return predicate(value) ? onTrue(value) : onFalse(value);
 }
 
 export default curry(ifElse);

@@ -7,89 +7,127 @@ import throttle from './throttle';
 import timeout from './timeout';
 
 describe('async (curried)', () => {
-  it('supports debounce currying', () => {
+  it('supports debounce direct and currying', () => {
     vi.useFakeTimers();
-    const fn = vi.fn();
-    const debounced = debounce(fn)(50);
+    const fnCurried = vi.fn();
+    const fnDirect = vi.fn();
+    const debounced = debounce(fnCurried)(50);
+    const direct = debounce(fnDirect, 50);
 
     debounced('a');
     debounced('b');
+    direct('c');
+    direct('d');
 
-    expect(fn).not.toHaveBeenCalled();
+    expect(fnCurried).not.toHaveBeenCalled();
+    expect(fnDirect).not.toHaveBeenCalled();
     vi.advanceTimersByTime(50);
-    expect(fn).toHaveBeenCalledTimes(1);
-    expect(fn).toHaveBeenCalledWith('b');
+    expect(fnCurried).toHaveBeenCalledTimes(1);
+    expect(fnCurried).toHaveBeenCalledWith('b');
+    expect(fnDirect).toHaveBeenCalledTimes(1);
+    expect(fnDirect).toHaveBeenCalledWith('d');
 
     vi.useRealTimers();
   });
 
-  it('supports debounceLeading currying', () => {
+  it('supports debounceLeading direct and currying', () => {
     vi.useFakeTimers();
-    const fn = vi.fn();
-    const debounced = debounceLeading(fn)(50);
+    const fnCurried = vi.fn();
+    const fnDirect = vi.fn();
+    const debounced = debounceLeading(fnCurried)(50);
+    const direct = debounceLeading(fnDirect, 50);
 
     debounced('a');
     debounced('b');
+    direct('c');
+    direct('d');
 
-    expect(fn).toHaveBeenCalledTimes(1);
-    expect(fn).toHaveBeenCalledWith('a');
+    expect(fnCurried).toHaveBeenCalledTimes(1);
+    expect(fnCurried).toHaveBeenCalledWith('a');
+    expect(fnDirect).toHaveBeenCalledTimes(1);
+    expect(fnDirect).toHaveBeenCalledWith('c');
 
     vi.advanceTimersByTime(50);
-    debounced('c');
-    expect(fn).toHaveBeenCalledTimes(2);
-    expect(fn).toHaveBeenCalledWith('c');
+    debounced('e');
+    direct('f');
+    expect(fnCurried).toHaveBeenCalledTimes(2);
+    expect(fnCurried).toHaveBeenCalledWith('e');
+    expect(fnDirect).toHaveBeenCalledTimes(2);
+    expect(fnDirect).toHaveBeenCalledWith('f');
 
     vi.useRealTimers();
   });
 
-  it('supports debounceLeadingTrailing currying', () => {
+  it('supports debounceLeadingTrailing direct and currying', () => {
     vi.useFakeTimers();
-    const fn = vi.fn();
-    const debounced = debounceLeadingTrailing(fn)(50);
+    const fnCurried = vi.fn();
+    const fnDirect = vi.fn();
+    const debounced = debounceLeadingTrailing(fnCurried)(50);
+    const direct = debounceLeadingTrailing(fnDirect, 50);
 
     debounced('a');
     debounced('b');
+    direct('c');
+    direct('d');
 
-    expect(fn).toHaveBeenCalledTimes(1);
-    expect(fn).toHaveBeenCalledWith('a');
+    expect(fnCurried).toHaveBeenCalledTimes(1);
+    expect(fnCurried).toHaveBeenCalledWith('a');
+    expect(fnDirect).toHaveBeenCalledTimes(1);
+    expect(fnDirect).toHaveBeenCalledWith('c');
 
     vi.advanceTimersByTime(50);
-    expect(fn).toHaveBeenCalledTimes(2);
-    expect(fn).toHaveBeenLastCalledWith('b');
+    expect(fnCurried).toHaveBeenCalledTimes(2);
+    expect(fnCurried).toHaveBeenLastCalledWith('b');
+    expect(fnDirect).toHaveBeenCalledTimes(2);
+    expect(fnDirect).toHaveBeenLastCalledWith('d');
 
     vi.useRealTimers();
   });
 
-  it('supports throttle currying', () => {
+  it('supports throttle direct and currying', () => {
     vi.useFakeTimers();
     vi.setSystemTime(0);
 
-    const fn = vi.fn();
-    const throttled = throttle(fn)(50);
+    const fnCurried = vi.fn();
+    const fnDirect = vi.fn();
+    const throttled = throttle(fnCurried)(50);
+    const direct = throttle(fnDirect, 50);
 
     throttled('a');
     throttled('b');
+    direct('c');
+    direct('d');
 
-    expect(fn).not.toHaveBeenCalled();
+    expect(fnCurried).not.toHaveBeenCalled();
+    expect(fnDirect).not.toHaveBeenCalled();
 
     vi.advanceTimersByTime(50);
-    expect(fn).toHaveBeenCalledTimes(1);
-    expect(fn).toHaveBeenLastCalledWith('b');
+    expect(fnCurried).toHaveBeenCalledTimes(1);
+    expect(fnCurried).toHaveBeenCalledWith('b');
+    expect(fnDirect).toHaveBeenCalledTimes(1);
+    expect(fnDirect).toHaveBeenCalledWith('d');
 
     vi.useRealTimers();
   });
 
-  it('supports retry and timeout currying', async () => {
+  it('supports retry and timeout direct and currying', async () => {
     let attempts = 0;
     const task = () => {
       attempts += 1;
       return attempts > 1 ? Promise.resolve('ok') : Promise.reject(new Error('fail'));
     };
 
-    const result = await retry(1)(task);
-    expect(result).toBe('ok');
+    const directResult = await retry(1, task);
+    expect(directResult).toBe('ok');
 
-    const resolved = await timeout(10)(Promise.resolve('done'));
-    expect(resolved).toBe('done');
+    attempts = 0;
+    const curriedResult = await retry(1)(task);
+    expect(curriedResult).toBe('ok');
+
+    const directResolved = await timeout(10, Promise.resolve('done'));
+    expect(directResolved).toBe('done');
+
+    const curriedResolved = await timeout(10)(Promise.resolve('done'));
+    expect(curriedResolved).toBe('done');
   });
 });
