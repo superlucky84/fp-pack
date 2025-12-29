@@ -31,10 +31,14 @@ export function matchSideEffect<T, RValue, REffect = any>(
 }
 
 export function runPipeResult<T, R>(result: T | SideEffect<R>): T | R {
-  if (result instanceof SideEffect) {
+  if (isSideEffect(result)) {
     return result.effect();
   }
-  return result;
+  return result as T;
+}
+
+export function isSideEffect(value: unknown): value is SideEffect {
+  return value instanceof SideEffect;
 }
 
 export default SideEffect;
