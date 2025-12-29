@@ -27,7 +27,7 @@ export * from './implement/string';
 export * from './implement/async';
 
 // Maybe
-export * from './implement/maybe';
+export * from './implement/nullable';
 
 // Debug
 export * from './implement/debug';

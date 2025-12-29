@@ -507,10 +507,10 @@ processIfActive(null);                              // null`}
 
     <div class="grid gap-6 mt-6">
       <a
-        href="/maybe/getOrElse"
+        href="/nullable/getOrElse"
         onClick={(e: Event) => {
           e.preventDefault();
-          navigateTo('/maybe/getOrElse');
+          navigateTo('/nullable/getOrElse');
         }}
         class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer"
       >
@@ -523,10 +523,10 @@ processIfActive(null);                              // null`}
       </a>
 
       <a
-        href="/maybe/mapMaybe"
+        href="/nullable/mapMaybe"
         onClick={(e: Event) => {
           e.preventDefault();
-          navigateTo('/maybe/mapMaybe');
+          navigateTo('/nullable/mapMaybe');
         }}
         class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-500 transition-colors cursor-pointer"
       >

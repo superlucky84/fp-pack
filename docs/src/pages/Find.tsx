@@ -127,10 +127,10 @@ getUpperName(missing); // null`}
       </a>
 
       <a
-        href="/maybe/maybe"
+        href="/nullable/maybe"
         onClick={(e: Event) => {
           e.preventDefault();
-          navigateTo('/maybe/maybe');
+          navigateTo('/nullable/maybe');
         }}
         class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-500 transition-colors cursor-pointer"
       >

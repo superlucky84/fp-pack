@@ -172,13 +172,13 @@ export const Sidebar = mount(renew => {
         ],
       },
       {
-        title: 'Maybe',
+        title: isKorean ? '널러블' : 'Nullable',
         items: [
-          { title: 'maybe', path: '/maybe/maybe' },
-          { title: 'fold', path: '/maybe/fold' },
-          { title: 'getOrElse', path: '/maybe/getOrElse' },
-          { title: 'mapMaybe', path: '/maybe/mapMaybe' },
-          { title: 'result', path: '/maybe/result' },
+          { title: 'maybe', path: '/nullable/maybe' },
+          { title: 'fold', path: '/nullable/fold' },
+          { title: 'getOrElse', path: '/nullable/getOrElse' },
+          { title: 'mapMaybe', path: '/nullable/mapMaybe' },
+          { title: 'result', path: '/nullable/result' },
         ],
       },
     ];
