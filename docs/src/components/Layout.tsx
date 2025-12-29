@@ -160,6 +160,8 @@ import { Pick } from '@/pages/Pick';
 import { Pick_ko } from '@/pages/Pick_ko';
 import { Prop } from '@/pages/Prop';
 import { Prop_ko } from '@/pages/Prop_ko';
+import { Values } from '@/pages/Values';
+import { Values_ko } from '@/pages/Values_ko';
 // mapValues 문서가 없는 상태이므로 주석 처리/임포트 제거
 import { EndsWith } from '@/pages/EndsWith';
 import { EndsWith_ko } from '@/pages/EndsWith_ko';
@@ -409,6 +411,8 @@ const routes: Record<string, PageComponent> = {
   '/ko/object/pick': Pick_ko,
   '/object/prop': Prop,
   '/ko/object/prop': Prop_ko,
+  '/object/values': Values,
+  '/ko/object/values': Values_ko,
 };
 
 const resolveRoute = (path: string): PageComponent => {

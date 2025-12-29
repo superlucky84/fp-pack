@@ -119,6 +119,7 @@ export const Sidebar = mount(renew => {
           { title: 'path', path: '/object/path' },
           { title: 'pick', path: '/object/pick' },
           { title: 'prop', path: '/object/prop' },
+          { title: 'values', path: '/object/values' },
         ],
       },
       {
