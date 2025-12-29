@@ -76,6 +76,8 @@ import { StreamFlatMap } from '@/pages/StreamFlatMap';
 import { StreamFlatMap_ko } from '@/pages/StreamFlatMap_ko';
 import { StreamFlatten } from '@/pages/StreamFlatten';
 import { StreamFlatten_ko } from '@/pages/StreamFlatten_ko';
+import { StreamFlattenDeep } from '@/pages/StreamFlattenDeep';
+import { StreamFlattenDeep_ko } from '@/pages/StreamFlattenDeep_ko';
 import { StreamMap } from '@/pages/StreamMap';
 import { StreamMap_ko } from '@/pages/StreamMap_ko';
 import { StreamAppend } from '@/pages/StreamAppend';
@@ -90,6 +92,8 @@ import { StreamSome } from '@/pages/StreamSome';
 import { StreamSome_ko } from '@/pages/StreamSome_ko';
 import { StreamTake } from '@/pages/StreamTake';
 import { StreamTake_ko } from '@/pages/StreamTake_ko';
+import { StreamRange } from '@/pages/StreamRange';
+import { StreamRange_ko } from '@/pages/StreamRange_ko';
 import { StreamTakeWhile } from '@/pages/StreamTakeWhile';
 import { StreamTakeWhile_ko } from '@/pages/StreamTakeWhile_ko';
 import { StreamToArray } from '@/pages/StreamToArray';
@@ -152,6 +156,20 @@ import { SortBy } from '@/pages/SortBy';
 import { SortBy_ko } from '@/pages/SortBy_ko';
 import { Take } from '@/pages/Take';
 import { Take_ko } from '@/pages/Take_ko';
+import { Head } from '@/pages/Head';
+import { Head_ko } from '@/pages/Head_ko';
+import { Tail } from '@/pages/Tail';
+import { Tail_ko } from '@/pages/Tail_ko';
+import { Last } from '@/pages/Last';
+import { Last_ko } from '@/pages/Last_ko';
+import { Init } from '@/pages/Init';
+import { Init_ko } from '@/pages/Init_ko';
+import { Range } from '@/pages/Range';
+import { Range_ko } from '@/pages/Range_ko';
+import { Partition } from '@/pages/Partition';
+import { Partition_ko } from '@/pages/Partition_ko';
+import { FlattenDeep } from '@/pages/FlattenDeep';
+import { FlattenDeep_ko } from '@/pages/FlattenDeep_ko';
 import { Uniq } from '@/pages/Uniq';
 import { Uniq_ko } from '@/pages/Uniq_ko';
 import { UniqBy } from '@/pages/UniqBy';
@@ -353,6 +371,10 @@ const routes: Record<string, PageComponent> = {
   '/ko/stream/flatMap': StreamFlatMap_ko,
   '/stream/flatten': StreamFlatten,
   '/ko/stream/flatten': StreamFlatten_ko,
+  '/stream/flattenDeep': StreamFlattenDeep,
+  '/ko/stream/flattenDeep': StreamFlattenDeep_ko,
+  '/stream/range': StreamRange,
+  '/ko/stream/range': StreamRange_ko,
   '/stream/take': StreamTake,
   '/ko/stream/take': StreamTake_ko,
   '/stream/takeWhile': StreamTakeWhile,
@@ -429,6 +451,20 @@ const routes: Record<string, PageComponent> = {
   '/ko/array/sortBy': SortBy_ko,
   '/array/take': Take,
   '/ko/array/take': Take_ko,
+  '/array/head': Head,
+  '/ko/array/head': Head_ko,
+  '/array/tail': Tail,
+  '/ko/array/tail': Tail_ko,
+  '/array/last': Last,
+  '/ko/array/last': Last_ko,
+  '/array/init': Init,
+  '/ko/array/init': Init_ko,
+  '/array/range': Range,
+  '/ko/array/range': Range_ko,
+  '/array/partition': Partition,
+  '/ko/array/partition': Partition_ko,
+  '/array/flattenDeep': FlattenDeep,
+  '/ko/array/flattenDeep': FlattenDeep_ko,
   '/array/uniq': Uniq,
   '/ko/array/uniq': Uniq_ko,
   '/array/uniqBy': UniqBy,
