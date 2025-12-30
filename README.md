@@ -27,7 +27,7 @@ There's no framework, no monads, and no heavy abstractions—just well-chosen he
   Covers the patterns you write every day—data transformation, composition, control flow, and async operations.
 
 - 🪶 **Lightweight & Modular**
-  Zero dependencies, tree-shakeable modules, and a tiny footprint (~5KB).
+  Zero dependencies and tree-shakeable modules.
 
 ---
 
@@ -164,7 +164,7 @@ Functions for conditional logic and flow control.
 
 ### Array
 
-Functions for working with arrays. All operations are immutable and return new arrays.
+Functions for working with arrays. Inputs are never mutated, and results return new values or arrays.
 
 - **map** - Transform each element
 - **filter** - Select elements matching a predicate
@@ -278,7 +278,7 @@ Functions for asynchronous operations.
 - **pipeAsync** - Compose async/sync functions (supports SideEffect)
 - **delay** - Wait for specified milliseconds
 - **timeout** - Execute promise with timeout limit
-- **retry** - Retry failed operations with backoff
+- **retry** - Retry failed operations with optional delay
 - **debounce** - Debounce function calls (trailing)
 - **debounceLeading** - Debounce with leading edge
 - **debounceLeadingTrailing** - Debounce with both edges
