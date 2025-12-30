@@ -8,7 +8,7 @@ export const Home_ko = () => (
     </h1>
 
     <p class="text-xl text-gray-600 dark:text-gray-300 leading-relaxed mb-8">
-      실용적이고 현실적인 파이프 중심 TypeScript 함수형 툴킷
+      JavaScript와 TypeScript를 위한 실용적인 함수형 도구 키트. TypeScript로 작성되어 완전한 타입 안전성을 제공합니다.
     </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -29,7 +29,7 @@ export const Home_ko = () => (
         <span class="text-purple-500 font-bold mr-3 text-2xl">⚡</span>
         <div>
           <strong class="text-lg">SideEffect 패턴</strong>
-          <p class="mt-1">모나드도, 무거운 추상화도 없습니다. <code class="text-sm">SideEffect</code> 인터페이스로 파이프 체인 내에서 에러와 사이드 이펙트를 선언적으로 처리하며, 흐름을 끊지 않습니다.</p>
+          <p class="mt-1">파이프 내에서 에러와 사이드 이펙트를 선언적으로 처리합니다. <code class="text-sm">SideEffect</code> 인터페이스로 자연스럽게 합성되는 일반 함수를 작성하고—필요할 때 예외적인 경로를 표시하면, 파이프가 자동으로 조기 종료를 처리합니다. 에러 배관이 아닌, 비즈니스 로직에 집중하세요.</p>
         </div>
       </li>
       <li class="flex items-start">
@@ -62,15 +62,15 @@ export const Home_ko = () => (
         </div>
       </li>
       <li class="flex items-start">
-        <span class="text-blue-500 font-bold mr-3">🚫</span>
+        <span class="text-blue-500 font-bold mr-3">🧩</span>
         <div>
-          <strong>학술적 함수형 프로그래밍 배제</strong> - 모나드, 펑터, 범주론 없음. 실제 문제를 해결하는 유용한 패턴만 제공
+          <strong>실용적 추상화</strong> - 모나드 같은 함수형 패턴을 유익한 곳에 활용하되, 의례적인 형식은 배제. 모든 함수를 래핑할 필요 없이 <code class="text-sm">SideEffect</code> 패턴으로 우아하게 합성
         </div>
       </li>
       <li class="flex items-start">
-        <span class="text-blue-500 font-bold mr-3">👥</span>
+        <span class="text-blue-500 font-bold mr-3">📘</span>
         <div>
-          <strong>TypeScript 네이티브</strong> - TypeScript 개발자를 위해 작성되었으며 뛰어난 타입 추론과 최소한의 타입 어노테이션 제공
+          <strong>JavaScript & TypeScript</strong> - JavaScript에서 완벽하게 작동. TypeScript로 작성되어 필요할 때 강력한 타입 추론 제공
         </div>
       </li>
       <li class="flex items-start">
@@ -110,7 +110,7 @@ export const Home_ko = () => (
           에러 처리를 위한 SideEffect
         </h3>
         <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-3">
-          합성을 깨지 않고 파이프 내에서 에러를 처리합니다. try-catch도, 모나드도 필요 없습니다.
+          래퍼 오버헤드 없는 모나딕 합성. <code class="text-xs md:text-sm">SideEffect</code>로 파이프 내 깔끔한 에러 처리—비즈니스 로직만, 인프라 코드는 없이.
         </p>
         <CodeBlock
           language="typescript"
@@ -158,6 +158,112 @@ const first100 = pipe(
   (data) => data.user
 );`}
         />
+      </div>
+    </div>
+
+    <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
+
+    <h2 class="text-3xl font-semibold text-gray-900 dark:text-white mb-4">
+      SideEffect 이해하기
+    </h2>
+
+    <p class="text-gray-700 dark:text-gray-300 mb-6">
+      JavaScript 함수형 프로그래밍에서는 파이프라인을 깨뜨리지 않고 예외를 처리하는 것이 어렵습니다. <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">try-catch</code>를 사용하면 합성이 깨지고, 모든 함수를 <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">Either</code>/<code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">Result</code>로 래핑하면 매 단계마다 <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">map</code>/<code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">chain</code>을 명시해야 합니다—단순한 에러 처리에 너무 많은 의례적 코드가 필요합니다.
+      <br /><br />
+      <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">SideEffect</code> 패턴은 이를 해결합니다: 파이프에서 합성되는 일반 함수를 작성하고, 조기 종료나 사이드 이펙트가 필요한 예외적인 경로만 표시하면 됩니다. 파이프는 <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">SideEffect</code>를 만나면 자동으로 단락(short-circuit)됩니다—흐름을 깨지 않는 깔끔한 에러 처리.
+    </p>
+
+    <div class="space-y-6 mb-8">
+      <div class="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-800">
+        <h3 class="text-xl font-medium text-blue-900 dark:text-blue-100 mb-3">
+          에러 발생 시 즉시 종료
+        </h3>
+        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-4">
+          함수가 <code class="text-xs md:text-sm bg-blue-100 dark:bg-blue-800 px-1 rounded">SideEffect</code>를 반환하면 파이프가 즉시 중단됩니다. 더 이상 함수가 실행되지 않고, effect가 호출자에게 직접 반환됩니다.
+        </p>
+        <CodeBlock
+          language="typescript"
+          code={`const validateAge = (age: number) =>
+  age >= 18
+    ? age
+    : SideEffect.of(() => {
+        alert('만 18세 이상이어야 합니다');
+        return null;  // 조기 종료
+      });
+
+const result = pipe(
+  validateAge,
+  (age) => \`나이: \${age}\`,  // 검증 실패 시 실행되지 않음
+  (msg) => console.log(msg),
+  runPipeResult
+)(15);
+// 파이프가 SideEffect에서 중단, alert 실행, null 반환`}
+        />
+      </div>
+
+      <div class="bg-purple-50 dark:bg-purple-900/20 p-6 rounded-lg border border-purple-200 dark:border-purple-800">
+        <h3 class="text-xl font-medium text-purple-900 dark:text-purple-100 mb-3">
+          옵셔널 체이닝 패턴
+        </h3>
+        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-4">
+          effect에서 <code class="text-xs md:text-sm bg-purple-100 dark:bg-purple-800 px-1 rounded">null</code>을 반환하면 흐름을 우아하게 종료합니다—JavaScript의 옵셔널 체이닝과 유사하지만, 명시적이고 합성 가능합니다.
+        </p>
+        <CodeBlock
+          language="typescript"
+          code={`const findUser = (id: string) => {
+  const user = database.get(id);
+  return user
+    ? user
+    : SideEffect.of(() => null);  // 우아한 종료
+};
+
+const email = pipe(
+  findUser,
+  (user) => user.email,  // 사용자를 찾지 못하면 건너뜀
+  (email) => email.toLowerCase(),
+  runPipeResult
+)('unknown-id');
+// 에러 없이 null 반환 - 깔끔한 옵셔널 흐름`}
+        />
+      </div>
+
+      <div class="bg-green-50 dark:bg-green-900/20 p-6 rounded-lg border border-green-200 dark:border-green-800">
+        <h3 class="text-xl font-medium text-green-900 dark:text-green-100 mb-3">
+          실전: 사용자 알림 흐름
+        </h3>
+        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-4">
+          검증, 사이드 이펙트, 비즈니스 로직을 하나의 읽기 쉬운 파이프라인으로 결합합니다. 필요할 때 사용자에게 알리고 깔끔하게 종료합니다.
+        </p>
+        <CodeBlock
+          language="typescript"
+          code={`const result = pipe(
+  validateCard,
+  (card) => card.balance >= 100
+    ? card
+    : SideEffect.of(() => {
+        showToast('잔액이 부족합니다');
+        logEvent('payment_failed', { reason: 'insufficient_funds' });
+        return null;
+      }),
+  chargeCard,
+  sendReceipt,
+  (receipt) => ({ success: true, receipt }),
+  runPipeResult
+)(userCard);
+// 잔액 부족 시: 토스트 표시, 이벤트 로깅, null 반환
+// 그 외: 결제 완료 및 성공 객체 반환`}
+        />
+      </div>
+
+      <div class="bg-orange-50 dark:bg-orange-900/20 p-6 rounded-lg border border-orange-200 dark:border-orange-800">
+        <h3 class="text-xl font-medium text-orange-900 dark:text-orange-100 mb-3">
+          왜 이것이 중요한가
+        </h3>
+        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
+          <strong>JavaScript 예외 처리 문제:</strong> 함수형 파이프라인에서 예외를 던지면 합성이 깨집니다—제어가 파이프 밖으로 점프합니다. 이를 피하려면 <code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">try-catch</code>(흐름을 깸) 또는 모든 함수를 <code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">Either</code>/<code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">Result</code>로 래핑(<code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">map</code>/<code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">chain</code>을 어디서나 사용)해야 합니다. 두 방법 모두 비즈니스 로직 대신 <em>에러 배관</em>에 신경 쓰게 만듭니다.
+          <br /><br />
+          <strong>SideEffect 솔루션:</strong> 자연스럽게 합성되는 <strong>일반 함수</strong>를 작성합니다. 조기 종료가 필요할 때(검증 실패, 데이터 누락, 에러)는 <code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">SideEffect.of(() =&gt; ...)</code>를 반환하면 됩니다. 파이프가 자동으로 중단됩니다—의례적 코드도, 래퍼도, 배관도 없습니다. 예외적인 경로를 명시적으로 표시하고, 마지막에 <code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">runPipeResult</code>로 한 번만 처리하면 됩니다.
+        </p>
       </div>
     </div>
 

@@ -8,7 +8,7 @@ export const Home = () => (
     </h1>
 
     <p class="text-xl text-gray-600 dark:text-gray-300 leading-relaxed mb-8">
-      A practical, pipe-first functional toolkit for modern TypeScript.
+      A practical functional toolkit for JavaScript and TypeScript. Written in TypeScript with full type safety.
     </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -29,7 +29,7 @@ export const Home = () => (
         <span class="text-purple-500 font-bold mr-3 text-2xl">⚡</span>
         <div>
           <strong class="text-lg">SideEffect Pattern</strong>
-          <p class="mt-1">No monads, no heavy abstractions. Use the <code class="text-sm">SideEffect</code> interface to handle errors and side effects declaratively within your pipe chains, without breaking the flow.</p>
+          <p class="mt-1">Handle errors and side effects declaratively within pipes. The <code class="text-sm">SideEffect</code> interface lets you write normal functions that compose naturally—mark exceptional paths when needed, and the pipe automatically handles early termination. Focus on business logic, not error plumbing.</p>
         </div>
       </li>
       <li class="flex items-start">
@@ -62,15 +62,15 @@ export const Home = () => (
         </div>
       </li>
       <li class="flex items-start">
-        <span class="text-blue-500 font-bold mr-3">🚫</span>
+        <span class="text-blue-500 font-bold mr-3">🧩</span>
         <div>
-          <strong>No Academic FP</strong> - No monads, functors, or category theory. Just useful patterns that solve real problems
+          <strong>Pragmatic Abstraction</strong> - Leverages functional patterns like monads where beneficial, but without ceremony. No need to wrap every function - the <code class="text-sm">SideEffect</code> pattern handles composition elegantly
         </div>
       </li>
       <li class="flex items-start">
-        <span class="text-blue-500 font-bold mr-3">👥</span>
+        <span class="text-blue-500 font-bold mr-3">📘</span>
         <div>
-          <strong>TypeScript Native</strong> - Written for TypeScript developers with excellent type inference and minimal annotations
+          <strong>JavaScript & TypeScript</strong> - Works seamlessly in JavaScript. Written in TypeScript for robust type inference when you need it
         </div>
       </li>
       <li class="flex items-start">
@@ -110,7 +110,7 @@ export const Home = () => (
           SideEffect for Error Handling
         </h3>
         <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-3">
-          Handle errors within pipes without breaking composition. No try-catch, no monads.
+          Monadic composition without the wrapper overhead. <code class="text-xs md:text-sm">SideEffect</code> enables clean error handling in pipes—just business logic, no infrastructure code.
         </p>
         <CodeBlock
           language="typescript"
@@ -158,6 +158,112 @@ const first100 = pipe(
   (data) => data.user
 );`}
         />
+      </div>
+    </div>
+
+    <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
+
+    <h2 class="text-3xl font-semibold text-gray-900 dark:text-white mb-4">
+      Understanding SideEffect
+    </h2>
+
+    <p class="text-gray-700 dark:text-gray-300 mb-6">
+      In JavaScript functional programming, handling exceptions without breaking pipelines is challenging. Using <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">try-catch</code> breaks composition. Wrapping every function in <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">Either</code>/<code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">Result</code> requires explicit <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">map</code>/<code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">chain</code> at every step—a lot of ceremony for simple error handling.
+      <br /><br />
+      The <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">SideEffect</code> pattern solves this: write normal functions that compose in pipes, and only mark exceptional paths where you need early termination or side effects. The pipe automatically short-circuits when it encounters a <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">SideEffect</code>—clean error handling without breaking flow.
+    </p>
+
+    <div class="space-y-6 mb-8">
+      <div class="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-800">
+        <h3 class="text-xl font-medium text-blue-900 dark:text-blue-100 mb-3">
+          Short-Circuit on Error
+        </h3>
+        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-4">
+          When a function returns <code class="text-xs md:text-sm bg-blue-100 dark:bg-blue-800 px-1 rounded">SideEffect</code>, the pipe immediately stops. No more functions execute—the effect is returned directly to the caller.
+        </p>
+        <CodeBlock
+          language="typescript"
+          code={`const validateAge = (age: number) =>
+  age >= 18
+    ? age
+    : SideEffect.of(() => {
+        alert('Must be 18 or older');
+        return null;  // Early termination
+      });
+
+const result = pipe(
+  validateAge,
+  (age) => \`Age: \${age}\`,  // Never runs if validation fails
+  (msg) => console.log(msg),
+  runPipeResult
+)(15);
+// Pipe stops at SideEffect, alert executes, returns null`}
+        />
+      </div>
+
+      <div class="bg-purple-50 dark:bg-purple-900/20 p-6 rounded-lg border border-purple-200 dark:border-purple-800">
+        <h3 class="text-xl font-medium text-purple-900 dark:text-purple-100 mb-3">
+          Optional Chaining Pattern
+        </h3>
+        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-4">
+          Return <code class="text-xs md:text-sm bg-purple-100 dark:bg-purple-800 px-1 rounded">null</code> from an effect to gracefully terminate the flow—like JavaScript's optional chaining, but explicit and composable.
+        </p>
+        <CodeBlock
+          language="typescript"
+          code={`const findUser = (id: string) => {
+  const user = database.get(id);
+  return user
+    ? user
+    : SideEffect.of(() => null);  // Graceful termination
+};
+
+const email = pipe(
+  findUser,
+  (user) => user.email,  // Skipped if user not found
+  (email) => email.toLowerCase(),
+  runPipeResult
+)('unknown-id');
+// Returns null without errors - clean optional flow`}
+        />
+      </div>
+
+      <div class="bg-green-50 dark:bg-green-900/20 p-6 rounded-lg border border-green-200 dark:border-green-800">
+        <h3 class="text-xl font-medium text-green-900 dark:text-green-100 mb-3">
+          Practical: User Notification Flow
+        </h3>
+        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-4">
+          Combine validation, side effects, and business logic in a single readable pipeline. Alert the user and terminate cleanly when needed.
+        </p>
+        <CodeBlock
+          language="typescript"
+          code={`const result = pipe(
+  validateCard,
+  (card) => card.balance >= 100
+    ? card
+    : SideEffect.of(() => {
+        showToast('Insufficient balance');
+        logEvent('payment_failed', { reason: 'insufficient_funds' });
+        return null;
+      }),
+  chargeCard,
+  sendReceipt,
+  (receipt) => ({ success: true, receipt }),
+  runPipeResult
+)(userCard);
+// If balance insufficient: shows toast, logs event, returns null
+// Otherwise: completes payment and returns success object`}
+        />
+      </div>
+
+      <div class="bg-orange-50 dark:bg-orange-900/20 p-6 rounded-lg border border-orange-200 dark:border-orange-800">
+        <h3 class="text-xl font-medium text-orange-900 dark:text-orange-100 mb-3">
+          Why This Matters
+        </h3>
+        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
+          <strong>The JavaScript exception problem:</strong> In functional pipelines, throwing exceptions breaks composition—control jumps out of the pipe. To avoid this, you need <code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">try-catch</code> (which breaks flow) or wrap every function in <code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">Either</code>/<code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">Result</code> (which requires <code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">map</code>/<code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">chain</code> everywhere). Both solutions make you think about <em>error plumbing</em> instead of business logic.
+          <br /><br />
+          <strong>The SideEffect solution:</strong> Write <strong>normal functions</strong> that compose naturally. When you need to terminate early (validation failure, missing data, errors), return <code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">SideEffect.of(() =&gt; ...)</code>. The pipe automatically stops—no ceremony, no wrappers, no plumbing. You mark exceptional paths explicitly and handle them once at the end with <code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">runPipeResult</code>.
+        </p>
       </div>
     </div>
 
