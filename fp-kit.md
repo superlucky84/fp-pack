@@ -46,7 +46,7 @@ const processUsers = (users: User[]) => {
 **Use `pipeAsync` for any async operations** including API calls, database queries, or async transformations.
 
 ```typescript
-import { pipeAsync } from 'fp-kit/async';
+import { pipeAsync } from 'fp-kit';
 
 // GOOD: Async pipe composition
 const fetchUserData = pipeAsync(
@@ -111,7 +111,7 @@ const processData = (input: any) => {
 
 ```typescript
 import { pipe } from 'fp-kit';
-import { map, filter, take, toArray } from 'fp-kit/stream';
+import { map, filter, take, toArray, range } from 'fp-kit/stream';
 
 // GOOD: Lazy stream processing
 const processLargeDataset = pipe(
@@ -125,7 +125,7 @@ const processLargeDataset = pipe(
 const result = processLargeDataset(range(1, 1000000));
 
 // BAD: Eager array processing
-const result = range(1, 1000000)
+const result = Array.from({ length: 1000000 }, (_, i) => i + 1)
   .filter(n => n % 2 === 0)
   .map(n => n * n)
   .slice(0, 100); // Processed entire dataset!
@@ -150,6 +150,9 @@ const result = range(1, 1000000)
 - `once` - Execute function only once
 - `memoize` - Cache function results
 - `SideEffect` - Side effect container
+- `isSideEffect` - Type guard for SideEffect
+- `matchSideEffect` - Pattern match on value/SideEffect
+- `runPipeResult` - Execute SideEffect or return value
 
 ### Async
 - `pipeAsync` - Async function composition
@@ -188,10 +191,36 @@ const result = range(1, 1000000)
 - `guard` - Validation guard
 
 ### Stream (Lazy Iterables)
-- All array functions have lazy stream equivalents
+- `append`, `concat`, `prepend`
+- `map`, `filter`, `flatMap`, `flatten`, `flattenDeep`
+- `take`, `takeWhile`, `drop`, `dropWhile`, `chunk`
+- `zip`, `zipWith`, `find`, `some`, `every`
+- `reduce`, `scan`
+- `range`
 - `toArray` - Materialize stream to array
 - `toAsync` - Convert to async iterable
-- Additional: `range`, `scan`, `flatten`, `flattenDeep`
+
+### Math
+- `add`, `sub`, `mul`, `div`
+- `sum`, `mean`, `min`, `max`
+- `round`, `floor`, `ceil`, `randomInt`
+
+### String
+- `trim`, `split`, `join`, `replace`
+- `toUpper`, `toLower`
+- `startsWith`, `endsWith`, `match`
+
+### Equality
+- `equals`, `includes`
+- `isNil`, `isEmpty`, `isType`
+- `gt`, `gte`, `lt`, `lte`
+- `clamp`
+
+### Nullable
+- `maybe`, `mapMaybe`, `getOrElse`, `fold`, `result`
+
+### Debug
+- `assert`, `invariant`, `log`
 
 ## Coding Guidelines for AI Agents
 
@@ -213,9 +242,9 @@ const numbers = map(toNumber)(parts);
 const result = filter(isPositive)(numbers);
 ```
 
-### 2. Use Curried Functions
+### 2. Use Curried Functions (Where Available)
 
-All fp-kit functions are curried. Take advantage of partial application:
+Most multi-arg functions are curried. Many single-arg utilities are not (e.g. `uniq`, `flatten`, `flattenDeep`, `head`, `tail`, `last`, `init`, `range`, `partition`, `sum`, `mean`, `min`, `max`, `round`, `floor`, `ceil`, `trim`, `toLower`, `toUpper`, `isNil`, `isEmpty`, `isType`). Use those directly.
 
 ```typescript
 import { pipe, map, filter } from 'fp-kit';
@@ -416,7 +445,7 @@ const updateUser = assoc('lastLogin', new Date());
 
 ### Import Paths
 - Main functions: `import { pipe, map, filter } from 'fp-kit'`
-- Async: `import { pipeAsync } from 'fp-kit/async'`
+- Async: `import { pipeAsync, delay, retry } from 'fp-kit'`
 - Stream: `import { map, filter, toArray } from 'fp-kit/stream'`
 
 ### When to Use What
