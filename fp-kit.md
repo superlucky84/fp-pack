@@ -244,7 +244,7 @@ const result = filter(isPositive)(numbers);
 
 ### 2. Use Curried Functions (Where Available)
 
-Most multi-arg functions are curried. Many single-arg utilities are not (e.g. `uniq`, `flatten`, `flattenDeep`, `head`, `tail`, `last`, `init`, `range`, `partition`, `sum`, `mean`, `min`, `max`, `round`, `floor`, `ceil`, `trim`, `toLower`, `toUpper`, `isNil`, `isEmpty`, `isType`). Use those directly.
+Most multi-arg functions are curried. Many single-arg utilities are not (e.g. `uniq`, `flatten`, `flattenDeep`, `head`, `tail`, `last`, `init`, `range`, `sum`, `mean`, `min`, `max`, `round`, `floor`, `ceil`, `trim`, `toLower`, `toUpper`, `isNil`, `isEmpty`, `isType`). Use those directly.
 
 ```typescript
 import { pipe, map, filter } from 'fp-kit';
@@ -290,7 +290,7 @@ const processUsers = pipeAsync(
 
 ```typescript
 import { pipe } from 'fp-kit';
-import { filter, map, take, toArray } from 'fp-kit/stream';
+import { filter, map, take, toArray, range } from 'fp-kit/stream';
 
 // GOOD: Lazy processing
 const getFirst100Even = pipe(
@@ -299,8 +299,8 @@ const getFirst100Even = pipe(
   toArray
 );
 
-// Stops after finding 100 items
-const result = getFirst100Even(range(1, Infinity));
+// Stops after finding 100 items (only processes 100, not 1 million)
+const result = getFirst100Even(range(1, 1000000));
 ```
 
 ### 5. Handle Errors with SideEffect
