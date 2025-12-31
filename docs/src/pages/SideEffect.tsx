@@ -8,7 +8,7 @@ export const SideEffect = () => (
     </h1>
 
     <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
-      Deferred execution container for pipe error handling and early termination
+      Deferred execution container for SideEffect-aware pipelines
     </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -21,15 +21,15 @@ export const SideEffect = () => (
       <strong class="font-semibold text-purple-700 dark:text-purple-300 bg-purple-100 dark:bg-purple-900/20 px-2 py-1 rounded">
         SideEffect
       </strong>{' '}
-      is a container that wraps an effect (function) for deferred execution. When a function in a pipe returns a SideEffect,
-      the pipe immediately stops and returns the SideEffect without executing it. The effect only runs when you explicitly
+      is a container that wraps an effect (function) for deferred execution. When a function in a pipeSideEffect/pipeAsyncSideEffect returns a SideEffect,
+      the pipeline immediately stops and returns the SideEffect without executing it. The effect only runs when you explicitly
       call <code class="text-sm">runPipeResult()</code> or <code class="text-sm">sideEffect.effect()</code>.
       This pattern enables clean error handling and early termination in functional pipelines without wrapper types everywhere.
     </p>
 
     <CodeBlock
       language="typescript"
-      code={`import { SideEffect, pipe, runPipeResult } from 'fp-kit';
+      code={`import { SideEffect, pipeSideEffect, runPipeResult } from 'fp-kit';
 
 // Create a SideEffect that will execute later
 const validateAge = (age: number) =>
@@ -40,7 +40,7 @@ const validateAge = (age: number) =>
         return null;
       });
 
-const processAge = pipe(
+const processAge = pipeSideEffect(
   validateAge,
   (age) => age * 2,      // Skipped if SideEffect returned
   (age) => \`Age: \${age}\`,
@@ -80,7 +80,7 @@ function matchSideEffect<T, R>(
 ): R;
 
 // Execute SideEffect or return value
-function runPipeResult<T>(value: T | SideEffect): T;`}
+function runPipeResult<T, R>(value: T | SideEffect<R>): T | R;`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -95,7 +95,7 @@ function runPipeResult<T>(value: T | SideEffect): T;`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, SideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-kit';
 
 interface FormData {
   email: string;
@@ -116,7 +116,7 @@ const validateAge = (data: FormData) =>
         throw new Error('Must be 18 or older');
       });
 
-const processForm = pipe(
+const processForm = pipeSideEffect(
   validateEmail,
   validateAge,
   (data) => ({ success: true, data }),
@@ -140,7 +140,7 @@ try {
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, SideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-kit';
 
 interface User {
   id: string;
@@ -156,7 +156,7 @@ const findUser = (id: string): User | SideEffect => {
   return user ? user : SideEffect.of(() => null);
 };
 
-const getUserTheme = pipe(
+const getUserTheme = pipeSideEffect(
   findUser,
   (user) => user.profile ?? SideEffect.of(() => null),
   (profile) => profile.settings ?? SideEffect.of(() => null),
@@ -173,7 +173,7 @@ getUserTheme('user-123'); // 'dark' or null if any step fails`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, SideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-kit';
 
 interface PaymentData {
   amount: number;
@@ -200,7 +200,7 @@ const checkBalance = (payment: PaymentData) => {
       });
 };
 
-const processPayment = pipe(
+const processPayment = pipeSideEffect(
   validateAmount,
   checkBalance,
   (payment) => chargeCard(payment),
@@ -218,14 +218,14 @@ const result = processPayment({ amount: -10, userId: 'user-1' });
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, SideEffect, matchSideEffect } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, matchSideEffect } from 'fp-kit';
 
 const divide = (a: number, b: number) =>
   b !== 0
     ? a / b
     : SideEffect.of(() => 'Division by zero', 'DIV_ZERO');
 
-const calculate = pipe(
+const calculate = pipeSideEffect(
   (x: number) => divide(x, 0),
   (result) => result * 2
 );
@@ -250,7 +250,7 @@ console.log(output); // "Division by zero"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, SideEffect, isSideEffect } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, isSideEffect } from 'fp-kit';
 
 const processData = (data: number) =>
   data > 0
@@ -273,7 +273,7 @@ if (isSideEffect(result)) {
         <span class="font-medium">⚠️ Important:</span>
         <br />
         <br />
-        SideEffect is <strong>never auto-executed</strong>. When a pipe encounters a SideEffect, it stops and returns it.
+        SideEffect is <strong>never auto-executed</strong>. When a pipeSideEffect/pipeAsyncSideEffect encounters a SideEffect, it stops and returns it.
         You must explicitly call{' '}
         <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">runPipeResult()</code> or{' '}
         <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">sideEffect.effect()</code> to execute it.
@@ -292,34 +292,34 @@ if (isSideEffect(result)) {
 
     <div class="grid gap-6 mt-6">
       <a
-        href="/composition/pipe"
+        href="/composition/pipeSideEffect"
         onClick={(e: Event) => {
           e.preventDefault();
-          navigateTo('/composition/pipe');
+          navigateTo('/composition/pipeSideEffect');
         }}
         class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer"
       >
         <h3 class="text-lg md:text-xl font-medium text-blue-600 dark:text-blue-400 mb-2">
-          pipe →
+          pipeSideEffect →
         </h3>
         <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          Compose functions left-to-right with SideEffect support.
+          Compose functions left-to-right with SideEffect short-circuiting.
         </p>
       </a>
 
       <a
-        href="/composition/pipeAsync"
+        href="/async/pipeAsyncSideEffect"
         onClick={(e: Event) => {
           e.preventDefault();
-          navigateTo('/composition/pipeAsync');
+          navigateTo('/async/pipeAsyncSideEffect');
         }}
         class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-500 transition-colors cursor-pointer"
       >
         <h3 class="text-lg md:text-xl font-medium text-purple-600 dark:text-purple-400 mb-2">
-          pipeAsync →
+          pipeAsyncSideEffect →
         </h3>
         <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          Async composition with SideEffect support for error handling.
+          Async composition with SideEffect short-circuiting.
         </p>
       </a>
 

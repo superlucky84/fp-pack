@@ -8,7 +8,7 @@ export const SideEffect_ko = () => (
     </h1>
 
     <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
-      파이프 에러 처리와 조기 종료를 위한 지연 실행 컨테이너
+      SideEffect 파이프라인을 위한 지연 실행 컨테이너
     </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -21,15 +21,15 @@ export const SideEffect_ko = () => (
       <strong class="font-semibold text-purple-700 dark:text-purple-300 bg-purple-100 dark:bg-purple-900/20 px-2 py-1 rounded">
         SideEffect
       </strong>{' '}
-      는 지연 실행을 위해 effect(함수)를 감싸는 컨테이너입니다. 파이프 내 함수가 SideEffect를 반환하면,
-      파이프는 즉시 중단되고 실행하지 않은 채로 SideEffect를 반환합니다. effect는 명시적으로
+      는 지연 실행을 위해 effect(함수)를 감싸는 컨테이너입니다. pipeSideEffect/pipeAsyncSideEffect 내 함수가 SideEffect를 반환하면,
+      파이프라인은 즉시 중단되고 실행하지 않은 채로 SideEffect를 반환합니다. effect는 명시적으로
       <code class="text-sm">runPipeResult()</code> 또는 <code class="text-sm">sideEffect.effect()</code>를 호출할 때만 실행됩니다.
       이 패턴은 모든 곳에 래퍼 타입을 사용하지 않고도 함수형 파이프라인에서 깔끔한 에러 처리와 조기 종료를 가능하게 합니다.
     </p>
 
     <CodeBlock
       language="typescript"
-      code={`import { SideEffect, pipe, runPipeResult } from 'fp-kit';
+      code={`import { SideEffect, pipeSideEffect, runPipeResult } from 'fp-kit';
 
 // 나중에 실행될 SideEffect 생성
 const validateAge = (age: number) =>
@@ -40,7 +40,7 @@ const validateAge = (age: number) =>
         return null;
       });
 
-const processAge = pipe(
+const processAge = pipeSideEffect(
   validateAge,
   (age) => age * 2,      // SideEffect 반환 시 건너뜀
   (age) => \`나이: \${age}\`,
@@ -80,7 +80,7 @@ function matchSideEffect<T, R>(
 ): R;
 
 // SideEffect 실행 또는 값 반환
-function runPipeResult<T>(value: T | SideEffect): T;`}
+function runPipeResult<T, R>(value: T | SideEffect<R>): T | R;`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -95,7 +95,7 @@ function runPipeResult<T>(value: T | SideEffect): T;`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, SideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-kit';
 
 interface FormData {
   email: string;
@@ -116,7 +116,7 @@ const validateAge = (data: FormData) =>
         throw new Error('만 18세 이상이어야 합니다');
       });
 
-const processForm = pipe(
+const processForm = pipeSideEffect(
   validateEmail,
   validateAge,
   (data) => ({ success: true, data }),
@@ -140,7 +140,7 @@ try {
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, SideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-kit';
 
 interface User {
   id: string;
@@ -156,7 +156,7 @@ const findUser = (id: string): User | SideEffect => {
   return user ? user : SideEffect.of(() => null);
 };
 
-const getUserTheme = pipe(
+const getUserTheme = pipeSideEffect(
   findUser,
   (user) => user.profile ?? SideEffect.of(() => null),
   (profile) => profile.settings ?? SideEffect.of(() => null),
@@ -173,7 +173,7 @@ getUserTheme('user-123'); // 'dark' 또는 단계가 실패하면 null`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, SideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-kit';
 
 interface PaymentData {
   amount: number;
@@ -200,7 +200,7 @@ const checkBalance = (payment: PaymentData) => {
       });
 };
 
-const processPayment = pipe(
+const processPayment = pipeSideEffect(
   validateAmount,
   checkBalance,
   (payment) => chargeCard(payment),
@@ -218,14 +218,14 @@ const result = processPayment({ amount: -10, userId: 'user-1' });
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, SideEffect, matchSideEffect } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, matchSideEffect } from 'fp-kit';
 
 const divide = (a: number, b: number) =>
   b !== 0
     ? a / b
     : SideEffect.of(() => '0으로 나눔', 'DIV_ZERO');
 
-const calculate = pipe(
+const calculate = pipeSideEffect(
   (x: number) => divide(x, 0),
   (result) => result * 2
 );
@@ -250,7 +250,7 @@ console.log(output); // "0으로 나눔"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, SideEffect, isSideEffect } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, isSideEffect } from 'fp-kit';
 
 const processData = (data: number) =>
   data > 0
@@ -273,7 +273,7 @@ if (isSideEffect(result)) {
         <span class="font-medium">⚠️ 중요:</span>
         <br />
         <br />
-        SideEffect는 <strong>절대 자동 실행되지 않습니다</strong>. 파이프가 SideEffect를 만나면 중단되고 반환합니다.
+        SideEffect는 <strong>절대 자동 실행되지 않습니다</strong>. pipeSideEffect/pipeAsyncSideEffect가 SideEffect를 만나면 중단되고 반환합니다.
         실행하려면{' '}
         <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">runPipeResult()</code> 또는{' '}
         <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">sideEffect.effect()</code>를 명시적으로 호출해야 합니다.
@@ -292,34 +292,34 @@ if (isSideEffect(result)) {
 
     <div class="grid gap-6 mt-6">
       <a
-        href="/composition/pipe"
+        href="/composition/pipeSideEffect"
         onClick={(e: Event) => {
           e.preventDefault();
-          navigateTo('/composition/pipe');
+          navigateTo('/composition/pipeSideEffect');
         }}
         class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer"
       >
         <h3 class="text-lg md:text-xl font-medium text-blue-600 dark:text-blue-400 mb-2">
-          pipe →
+          pipeSideEffect →
         </h3>
         <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          SideEffect 지원과 함께 왼쪽에서 오른쪽으로 함수를 합성합니다.
+          SideEffect 조기 종료를 지원하는 왼쪽→오른쪽 합성입니다.
         </p>
       </a>
 
       <a
-        href="/composition/pipeAsync"
+        href="/async/pipeAsyncSideEffect"
         onClick={(e: Event) => {
           e.preventDefault();
-          navigateTo('/composition/pipeAsync');
+          navigateTo('/async/pipeAsyncSideEffect');
         }}
         class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-500 transition-colors cursor-pointer"
       >
         <h3 class="text-lg md:text-xl font-medium text-purple-600 dark:text-purple-400 mb-2">
-          pipeAsync →
+          pipeAsyncSideEffect →
         </h3>
         <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          에러 처리를 위한 SideEffect 지원과 함께 비동기 합성을 수행합니다.
+          SideEffect 조기 종료를 지원하는 비동기 합성입니다.
         </p>
       </a>
 

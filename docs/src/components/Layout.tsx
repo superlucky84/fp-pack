@@ -6,6 +6,8 @@ import { Home } from '@/pages/Home';
 import { Home_ko } from '@/pages/Home_ko';
 import { Pipe } from '@/pages/Pipe';
 import { Pipe_ko } from '@/pages/Pipe_ko';
+import { PipeSideEffect } from '@/pages/PipeSideEffect';
+import { PipeSideEffect_ko } from '@/pages/PipeSideEffect_ko';
 import { Compose } from '@/pages/Compose';
 import { Compose_ko } from '@/pages/Compose_ko';
 import { Curry } from '@/pages/Curry';
@@ -251,6 +253,8 @@ import { Trim } from '@/pages/Trim';
 import { Trim_ko } from '@/pages/Trim_ko';
 import { PipeAsync } from '@/pages/PipeAsync';
 import { PipeAsync_ko } from '@/pages/PipeAsync_ko';
+import { PipeAsyncSideEffect } from '@/pages/PipeAsyncSideEffect';
+import { PipeAsyncSideEffect_ko } from '@/pages/PipeAsyncSideEffect_ko';
 import { Retry } from '@/pages/Retry';
 import { Retry_ko } from '@/pages/Retry_ko';
 import { Throttle } from '@/pages/Throttle';
@@ -285,6 +289,8 @@ const routes: Record<string, PageComponent> = {
   '/ko': Home_ko,
   '/composition/pipe': Pipe,
   '/ko/composition/pipe': Pipe_ko,
+  '/composition/pipeSideEffect': PipeSideEffect,
+  '/ko/composition/pipeSideEffect': PipeSideEffect_ko,
   '/composition/compose': Compose,
   '/ko/composition/compose': Compose_ko,
   '/composition/curry': Curry,
@@ -309,6 +315,8 @@ const routes: Record<string, PageComponent> = {
   '/ko/composition/sideEffect': SideEffect_ko,
   '/async/pipeAsync': PipeAsync,
   '/ko/async/pipeAsync': PipeAsync_ko,
+  '/async/pipeAsyncSideEffect': PipeAsyncSideEffect,
+  '/ko/async/pipeAsyncSideEffect': PipeAsyncSideEffect_ko,
   '/async/delay': Delay,
   '/ko/async/delay': Delay_ko,
   '/async/timeout': Timeout,

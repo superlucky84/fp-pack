@@ -236,148 +236,13 @@ calculate(5);  // 5
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      SideEffect 활용하기
+      SideEffect 파이프라인
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      pipe는 지연 실행을 위한 <strong class="font-semibold">SideEffect</strong> 컨테이너를 지원합니다.
-      pipe가 SideEffect를 만나면 파이프라인을 즉시 중단하고 실행하지 않은 채로 SideEffect를 반환합니다.
-      <br />
-      <br />
-      이를 통해 조건부로 실행을 중단하고 부수 효과를 호출자에게 위임할 수 있는 파이프라인을 구축할 수 있습니다.
+      <strong>pipe</strong>는 순수 합성 도구입니다. <strong class="font-semibold">SideEffect</strong>로
+      조기 종료가 필요한 파이프라인은 <strong>pipeSideEffect</strong>를 사용하세요.
     </p>
-
-    <h3 class="text-xl md:text-2xl font-medium text-gray-900 dark:text-white mb-4">
-      기본 SideEffect 사용법
-    </h3>
-
-    <CodeBlock
-      language="typescript"
-      code={`import { pipe, SideEffect, runPipeResult } from 'fp-kit';
-
-const validateAge = (age: number) => {
-  if (age < 0) {
-    // 파이프라인을 중단하기 위해 SideEffect 반환
-    return SideEffect.of(() => {
-      throw new Error('나이는 음수일 수 없습니다');
-    });
-  }
-  return age;
-};
-
-const processAge = pipe(
-  validateAge,
-  (age: number) => age * 2,  // SideEffect가 반환되면 실행되지 않음
-  (age: number) => \`나이: \${age}\`,
-  runPipeResult  // SideEffect가 있으면 자동 실행
-);
-
-// SideEffect가 자동으로 실행됨
-try {
-  processAge(-5);  // Throws: Error: 나이는 음수일 수 없습니다
-} catch (error) {
-  console.error(error.message);
-}
-
-// 정상 실행 계속
-const result = processAge(10);
-console.log(result);  // "나이: 20"`}
-    />
-
-    <h3 class="text-xl md:text-2xl font-medium text-gray-900 dark:text-white mb-4 mt-6">
-      조건부 조기 종료
-    </h3>
-
-    <CodeBlock
-      language="typescript"
-      code={`import { pipe, SideEffect, runPipeResult } from 'fp-kit';
-
-interface User {
-  id: number;
-  name: string;
-  role: 'admin' | 'user';
-}
-
-const checkPermission = (user: User) => {
-  if (user.role !== 'admin') {
-    return SideEffect.of(() => ({
-      error: '권한 없음',
-      message: '관리자 권한이 필요합니다'
-    }));
-  }
-  return user;
-};
-
-const deleteUser = pipe(
-  checkPermission,
-  (user: User) => {
-    console.log(\`사용자 삭제 중: \${user.name}\`);
-    return { success: true, deletedId: user.id };
-  },
-  runPipeResult  // SideEffect가 있으면 자동 실행
-);
-
-const adminUser = { id: 1, name: 'Alice', role: 'admin' as const };
-const normalUser = { id: 2, name: 'Bob', role: 'user' as const };
-
-// 관리자는 진행 가능
-const result1 = deleteUser(adminUser);
-// 로그: "사용자 삭제 중: Alice"
-console.log(result1);  // { success: true, deletedId: 1 }
-
-// 일반 사용자는 즉시 에러 반환
-const result2 = deleteUser(normalUser);
-console.log(result2);  // { error: '권한 없음', message: '관리자 권한이 필요합니다' }`}
-    />
-
-    <h3 class="text-xl md:text-2xl font-medium text-gray-900 dark:text-white mb-4 mt-6">
-      지연된 로깅 및 부수 효과
-    </h3>
-
-    <CodeBlock
-      language="typescript"
-      code={`import { pipe, SideEffect, runPipeResult } from 'fp-kit';
-
-const divide = (a: number, b: number) => {
-  if (b === 0) {
-    return SideEffect.of(() => {
-      console.error('0으로 나눌 수 없습니다!');
-      return NaN;
-    }, 'division-by-zero');  // 디버깅을 위한 선택적 레이블
-  }
-  return a / b;
-};
-
-const calculate = pipe(
-  (input: { a: number; b: number }) => divide(input.a, input.b),
-  (result: number) => result * 100,
-  (result: number) => Math.round(result),
-  runPipeResult  // SideEffect가 있으면 자동 실행
-);
-
-// 정상 계산
-const result1 = calculate({ a: 10, b: 2 });
-console.log(result1);  // 500
-
-// 0으로 나누기는 SideEffect를 실행하고 로그를 출력
-const result2 = calculate({ a: 10, b: 0 });
-// 로그: "0으로 나눌 수 없습니다!"
-console.log(result2);  // NaN`}
-    />
-
-    <div class="border-l-4 border-orange-500 bg-orange-50 dark:bg-orange-900/20 p-4 mb-6 rounded-r">
-      <p class="text-sm md:text-base text-orange-800 dark:text-orange-200 leading-relaxed">
-        <span class="font-medium">⚠️ 중요:</span>
-        <br />
-        <br />
-        SideEffect 컨테이너는 <strong>절대 자동 실행되지 않습니다</strong>. 지연된 작업을 실행하려면{' '}
-        <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">runPipeResult()</code> 또는{' '}
-        <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">sideEffect.effect()</code>를 명시적으로 호출해야 합니다.
-        <br />
-        <br />
-        이를 통해 부수 효과가 실행되는 시점과 위치를 완전히 제어할 수 있습니다.
-      </p>
-    </div>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
@@ -386,6 +251,22 @@ console.log(result2);  // NaN`}
     </h2>
 
     <div class="grid gap-6 mt-6">
+      <a
+        href="/composition/pipeSideEffect"
+        onClick={(e: Event) => {
+          e.preventDefault();
+          navigateTo('/composition/pipeSideEffect');
+        }}
+        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer"
+      >
+        <h3 class="text-lg md:text-xl font-medium text-blue-600 dark:text-blue-400 mb-2">
+          pipeSideEffect →
+        </h3>
+        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
+          SideEffect 조기 종료를 지원하는 왼쪽→오른쪽 합성.
+        </p>
+      </a>
+
       <a
         href="/composition/compose"
         onClick={(e: Event) => {

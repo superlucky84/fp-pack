@@ -29,7 +29,7 @@ export const Home = () => (
         <span class="text-purple-500 font-bold mr-3 text-2xl">⚡</span>
         <div>
           <strong class="text-lg">SideEffect Pattern</strong>
-          <p class="mt-1">Handle errors and side effects declaratively within pipes. The <code class="text-sm">SideEffect</code> interface lets you write normal functions that compose naturally—mark exceptional paths when needed, and the pipe automatically handles early termination. Focus on business logic, not error plumbing.</p>
+          <p class="mt-1">Handle errors and side effects declaratively in SideEffect-aware pipelines. Use <code class="text-sm">pipeSideEffect</code> / <code class="text-sm">pipeAsyncSideEffect</code> to short-circuit on <code class="text-sm">SideEffect</code> without breaking composition. Focus on business logic, not error plumbing.</p>
         </div>
       </li>
       <li class="flex items-start">
@@ -117,11 +117,11 @@ export const Home = () => (
           SideEffect for Error Handling
         </h3>
         <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-3">
-          Monadic composition without the wrapper overhead. <code class="text-xs md:text-sm">SideEffect</code> enables clean error handling in pipes—just business logic, no infrastructure code.
+          Monadic composition without the wrapper overhead. <code class="text-xs md:text-sm">SideEffect</code> enables clean error handling in <code class="text-xs md:text-sm">pipeSideEffect</code>/<code class="text-xs md:text-sm">pipeAsyncSideEffect</code> pipelines—just business logic, no infrastructure code.
         </p>
         <CodeBlock
           language="typescript"
-          code={`const process = pipe(
+          code={`const process = pipeSideEffect(
   validate,
   (data) => data.ok
     ? data
@@ -177,7 +177,7 @@ const first100 = pipe(
     <p class="text-gray-700 dark:text-gray-300 mb-6">
       In JavaScript functional programming, handling exceptions without breaking pipelines is challenging. Using <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">try-catch</code> breaks composition. Wrapping every function in <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">Either</code>/<code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">Result</code> requires explicit <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">map</code>/<code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">chain</code> at every step—a lot of ceremony for simple error handling.
       <br /><br />
-      The <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">SideEffect</code> pattern solves this: write normal functions that compose in pipes, and only mark exceptional paths where you need early termination or side effects. The pipe automatically short-circuits when it encounters a <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">SideEffect</code>—clean error handling without breaking flow.
+      The <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">SideEffect</code> pattern solves this: write normal functions that compose in pipeSideEffect/pipeAsyncSideEffect pipelines, and only mark exceptional paths where you need early termination or side effects. These pipelines automatically short-circuit when they encounter a <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">SideEffect</code>—clean error handling without breaking flow.
     </p>
 
     <div class="space-y-6 mb-8">
@@ -186,7 +186,7 @@ const first100 = pipe(
           Short-Circuit on Error
         </h3>
         <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-4">
-          When a function returns <code class="text-xs md:text-sm bg-blue-100 dark:bg-blue-800 px-1 rounded">SideEffect</code>, the pipe immediately stops. No more functions execute—the effect is returned directly to the caller.
+          When a function returns <code class="text-xs md:text-sm bg-blue-100 dark:bg-blue-800 px-1 rounded">SideEffect</code>, the pipeline immediately stops. No more functions execute—the effect is returned directly to the caller.
         </p>
         <CodeBlock
           language="typescript"
@@ -198,13 +198,13 @@ const first100 = pipe(
         return null;  // Early termination
       });
 
-const result = pipe(
+const result = pipeSideEffect(
   validateAge,
   (age) => \`Age: \${age}\`,  // Never runs if validation fails
   (msg) => console.log(msg),
   runPipeResult
 )(15);
-// Pipe stops at SideEffect, alert executes, returns null`}
+// Pipeline stops at SideEffect, alert executes, returns null`}
         />
       </div>
 
@@ -224,7 +224,7 @@ const result = pipe(
     : SideEffect.of(() => null);  // Graceful termination
 };
 
-const email = pipe(
+const email = pipeSideEffect(
   findUser,
   (user) => user.email,  // Skipped if user not found
   (email) => email.toLowerCase(),
@@ -243,7 +243,7 @@ const email = pipe(
         </p>
         <CodeBlock
           language="typescript"
-          code={`const result = pipe(
+          code={`const result = pipeSideEffect(
   validateCard,
   (card) => card.balance >= 100
     ? card
@@ -269,7 +269,7 @@ const email = pipe(
         <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
           <strong>The JavaScript exception problem:</strong> In functional pipelines, throwing exceptions breaks composition—control jumps out of the pipe. To avoid this, you need <code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">try-catch</code> (which breaks flow) or wrap every function in <code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">Either</code>/<code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">Result</code> (which requires <code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">map</code>/<code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">chain</code> everywhere). Both solutions make you think about <em>error plumbing</em> instead of business logic.
           <br /><br />
-          <strong>The SideEffect solution:</strong> Write <strong>normal functions</strong> that compose naturally. When you need to terminate early (validation failure, missing data, errors), return <code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">SideEffect.of(() =&gt; ...)</code>. The pipe automatically stops—no ceremony, no wrappers, no plumbing. You mark exceptional paths explicitly and handle them once at the end with <code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">runPipeResult</code>.
+          <strong>The SideEffect solution:</strong> Write <strong>normal functions</strong> that compose naturally. When you need to terminate early (validation failure, missing data, errors), return <code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">SideEffect.of(() =&gt; ...)</code>. The pipeSideEffect/pipeAsyncSideEffect pipeline automatically stops—no ceremony, no wrappers, no plumbing. You mark exceptional paths explicitly and handle them once at the end with <code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">runPipeResult</code>.
         </p>
       </div>
     </div>
@@ -291,7 +291,7 @@ const email = pipe(
       <ul class="space-y-2 text-sm md:text-base text-green-800 dark:text-green-200">
         <li class="flex items-start">
           <span class="mr-2">•</span>
-          <span>Default to using <code class="text-xs md:text-sm bg-green-100 dark:bg-green-800 px-1 rounded">pipe</code> and <code class="text-xs md:text-sm bg-green-100 dark:bg-green-800 px-1 rounded">pipeAsync</code> for all transformations</span>
+          <span>Default to using <code class="text-xs md:text-sm bg-green-100 dark:bg-green-800 px-1 rounded">pipe</code>/<code class="text-xs md:text-sm bg-green-100 dark:bg-green-800 px-1 rounded">pipeAsync</code> for pure transformations, and switch to <code class="text-xs md:text-sm bg-green-100 dark:bg-green-800 px-1 rounded">pipeSideEffect</code>/<code class="text-xs md:text-sm bg-green-100 dark:bg-green-800 px-1 rounded">pipeAsyncSideEffect</code> when SideEffect is involved</span>
         </li>
         <li class="flex items-start">
           <span class="mr-2">•</span>

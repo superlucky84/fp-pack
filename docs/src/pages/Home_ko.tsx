@@ -29,7 +29,7 @@ export const Home_ko = () => (
         <span class="text-purple-500 font-bold mr-3 text-2xl">⚡</span>
         <div>
           <strong class="text-lg">SideEffect 패턴</strong>
-          <p class="mt-1">파이프 내에서 에러와 사이드 이펙트를 선언적으로 처리합니다. <code class="text-sm">SideEffect</code> 인터페이스로 자연스럽게 합성되는 일반 함수를 작성하고—필요할 때 예외적인 경로를 표시하면, 파이프가 자동으로 조기 종료를 처리합니다. 에러 배관이 아닌, 비즈니스 로직에 집중하세요.</p>
+          <p class="mt-1">SideEffect-aware 파이프라인에서 에러와 사이드 이펙트를 선언적으로 처리합니다. <code class="text-sm">SideEffect</code>로 예외 경로를 표시하면 <code class="text-sm">pipeSideEffect</code>/<code class="text-sm">pipeAsyncSideEffect</code>가 자동으로 조기 종료를 처리합니다. 에러 배관이 아닌, 비즈니스 로직에 집중하세요.</p>
         </div>
       </li>
       <li class="flex items-start">
@@ -117,11 +117,11 @@ export const Home_ko = () => (
           에러 처리를 위한 SideEffect
         </h3>
         <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-3">
-          래퍼 오버헤드 없는 모나딕 합성. <code class="text-xs md:text-sm">SideEffect</code>로 파이프 내 깔끔한 에러 처리—비즈니스 로직만, 인프라 코드는 없이.
+          래퍼 오버헤드 없는 모나딕 합성. <code class="text-xs md:text-sm">SideEffect</code>로 <code class="text-xs md:text-sm">pipeSideEffect</code>/<code class="text-xs md:text-sm">pipeAsyncSideEffect</code> 파이프라인에서 깔끔한 에러 처리—비즈니스 로직만, 인프라 코드는 없이.
         </p>
         <CodeBlock
           language="typescript"
-          code={`const process = pipe(
+          code={`const process = pipeSideEffect(
   validate,
   (data) => data.ok
     ? data
@@ -177,7 +177,7 @@ const first100 = pipe(
     <p class="text-gray-700 dark:text-gray-300 mb-6">
       JavaScript 함수형 프로그래밍에서는 파이프라인을 깨뜨리지 않고 예외를 처리하는 것이 어렵습니다. <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">try-catch</code>를 사용하면 합성이 깨지고, 모든 함수를 <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">Either</code>/<code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">Result</code>로 래핑하면 매 단계마다 <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">map</code>/<code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">chain</code>을 명시해야 합니다—단순한 에러 처리에 너무 많은 의례적 코드가 필요합니다.
       <br /><br />
-      <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">SideEffect</code> 패턴은 이를 해결합니다: 파이프에서 합성되는 일반 함수를 작성하고, 조기 종료나 사이드 이펙트가 필요한 예외적인 경로만 표시하면 됩니다. 파이프는 <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">SideEffect</code>를 만나면 자동으로 단락(short-circuit)됩니다—흐름을 깨지 않는 깔끔한 에러 처리.
+      <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">SideEffect</code> 패턴은 이를 해결합니다: <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">pipeSideEffect</code>/<code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">pipeAsyncSideEffect</code> 파이프라인에서 합성되는 일반 함수를 작성하고, 조기 종료나 사이드 이펙트가 필요한 예외적인 경로만 표시하면 됩니다. 이 파이프라인은 <code class="text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">SideEffect</code>를 만나면 자동으로 단락(short-circuit)됩니다—흐름을 깨지 않는 깔끔한 에러 처리.
     </p>
 
     <div class="space-y-6 mb-8">
@@ -186,7 +186,7 @@ const first100 = pipe(
           에러 발생 시 즉시 종료
         </h3>
         <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-4">
-          함수가 <code class="text-xs md:text-sm bg-blue-100 dark:bg-blue-800 px-1 rounded">SideEffect</code>를 반환하면 파이프가 즉시 중단됩니다. 더 이상 함수가 실행되지 않고, effect가 호출자에게 직접 반환됩니다.
+          함수가 <code class="text-xs md:text-sm bg-blue-100 dark:bg-blue-800 px-1 rounded">SideEffect</code>를 반환하면 파이프라인이 즉시 중단됩니다. 더 이상 함수가 실행되지 않고, effect가 호출자에게 직접 반환됩니다.
         </p>
         <CodeBlock
           language="typescript"
@@ -198,13 +198,13 @@ const first100 = pipe(
         return null;  // 조기 종료
       });
 
-const result = pipe(
+const result = pipeSideEffect(
   validateAge,
   (age) => \`나이: \${age}\`,  // 검증 실패 시 실행되지 않음
   (msg) => console.log(msg),
   runPipeResult
 )(15);
-// 파이프가 SideEffect에서 중단, alert 실행, null 반환`}
+// 파이프라인이 SideEffect에서 중단, alert 실행, null 반환`}
         />
       </div>
 
@@ -224,7 +224,7 @@ const result = pipe(
     : SideEffect.of(() => null);  // 우아한 종료
 };
 
-const email = pipe(
+const email = pipeSideEffect(
   findUser,
   (user) => user.email,  // 사용자를 찾지 못하면 건너뜀
   (email) => email.toLowerCase(),
@@ -243,7 +243,7 @@ const email = pipe(
         </p>
         <CodeBlock
           language="typescript"
-          code={`const result = pipe(
+          code={`const result = pipeSideEffect(
   validateCard,
   (card) => card.balance >= 100
     ? card
@@ -269,7 +269,7 @@ const email = pipe(
         <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
           <strong>JavaScript 예외 처리 문제:</strong> 함수형 파이프라인에서 예외를 던지면 합성이 깨집니다—제어가 파이프 밖으로 점프합니다. 이를 피하려면 <code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">try-catch</code>(흐름을 깸) 또는 모든 함수를 <code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">Either</code>/<code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">Result</code>로 래핑(<code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">map</code>/<code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">chain</code>을 어디서나 사용)해야 합니다. 두 방법 모두 비즈니스 로직 대신 <em>에러 배관</em>에 신경 쓰게 만듭니다.
           <br /><br />
-          <strong>SideEffect 솔루션:</strong> 자연스럽게 합성되는 <strong>일반 함수</strong>를 작성합니다. 조기 종료가 필요할 때(검증 실패, 데이터 누락, 에러)는 <code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">SideEffect.of(() =&gt; ...)</code>를 반환하면 됩니다. 파이프가 자동으로 중단됩니다—의례적 코드도, 래퍼도, 배관도 없습니다. 예외적인 경로를 명시적으로 표시하고, 마지막에 <code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">runPipeResult</code>로 한 번만 처리하면 됩니다.
+          <strong>SideEffect 솔루션:</strong> 자연스럽게 합성되는 <strong>일반 함수</strong>를 작성합니다. 조기 종료가 필요할 때(검증 실패, 데이터 누락, 에러)는 <code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">SideEffect.of(() =&gt; ...)</code>를 반환하면 됩니다. <code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">pipeSideEffect</code>/<code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">pipeAsyncSideEffect</code> 파이프라인이 자동으로 중단됩니다—의례적 코드도, 래퍼도, 배관도 없습니다. 예외적인 경로를 명시적으로 표시하고, 마지막에 <code class="text-xs md:text-sm bg-orange-100 dark:bg-orange-800 px-1 rounded">runPipeResult</code>로 한 번만 처리하면 됩니다.
         </p>
       </div>
     </div>
@@ -291,7 +291,7 @@ const email = pipe(
       <ul class="space-y-2 text-sm md:text-base text-green-800 dark:text-green-200">
         <li class="flex items-start">
           <span class="mr-2">•</span>
-          <span>모든 변환에 <code class="text-xs md:text-sm bg-green-100 dark:bg-green-800 px-1 rounded">pipe</code>와 <code class="text-xs md:text-sm bg-green-100 dark:bg-green-800 px-1 rounded">pipeAsync</code>를 기본으로 사용</span>
+          <span>순수 변환에는 <code class="text-xs md:text-sm bg-green-100 dark:bg-green-800 px-1 rounded">pipe</code>/<code class="text-xs md:text-sm bg-green-100 dark:bg-green-800 px-1 rounded">pipeAsync</code>, SideEffect가 포함되면 <code class="text-xs md:text-sm bg-green-100 dark:bg-green-800 px-1 rounded">pipeSideEffect</code>/<code class="text-xs md:text-sm bg-green-100 dark:bg-green-800 px-1 rounded">pipeAsyncSideEffect</code> 사용</span>
         </li>
         <li class="flex items-start">
           <span class="mr-2">•</span>

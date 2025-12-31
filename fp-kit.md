@@ -9,7 +9,7 @@ fp-kit is a TypeScript functional programming library focused on:
 1. **Function Composition**: Use `pipe` and `pipeAsync` as the primary tools for combining operations
 2. **Declarative Code**: Prefer function composition over imperative loops and mutations
 3. **No Monad Pattern**: Traditional FP monads (Option, Either, etc.) are NOT used - they don't compose well with `pipe`
-4. **SideEffect Pattern**: Handle errors and side effects using the `SideEffect` class within pipe chains
+4. **SideEffect Pattern**: Handle errors and side effects using `SideEffect` with `pipeSideEffect` / `pipeAsyncSideEffect` pipelines
 5. **Lazy Evaluation**: Use `stream/*` functions for efficient iterable processing
 
 ## Core Composition Functions
@@ -41,6 +41,8 @@ const processUsers = (users: User[]) => {
 };
 ```
 
+> For SideEffect-based early exits, use `pipeSideEffect`.
+
 ### pipeAsync - Asynchronous Function Composition
 
 **Use `pipeAsync` for any async operations** including API calls, database queries, or async transformations.
@@ -63,15 +65,17 @@ const fetchUserData = async (userId: string) => {
 };
 ```
 
+> For SideEffect-aware async pipelines, use `pipeAsyncSideEffect`.
+
 ## SideEffect Pattern - Error Handling in Pipes
 
-**DO NOT use try-catch blocks in pipe chains.** Use the `SideEffect` class to handle errors declaratively.
+**DO NOT use try-catch blocks in SideEffect-aware pipelines.** Use `pipeSideEffect` / `pipeAsyncSideEffect` with the `SideEffect` class to handle errors declaratively.
 
 ```typescript
-import { pipe, SideEffect, runPipeResult } from 'fp-kit';
+import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-kit';
 
 // GOOD: SideEffect for error handling
-const processData = pipe(
+const processData = pipeSideEffect(
   validateInput,
   (data) => {
     if (!data.isValid) {
@@ -139,6 +143,7 @@ const result = Array.from({ length: 1000000 }, (_, i) => i + 1)
 
 ### Composition
 - `pipe` - Left-to-right function composition (sync)
+- `pipeSideEffect` - Left-to-right composition with SideEffect short-circuiting
 - `compose` - Right-to-left function composition
 - `curry` - Curry a function
 - `partial` - Partial application
@@ -156,6 +161,7 @@ const result = Array.from({ length: 1000000 }, (_, i) => i + 1)
 
 ### Async
 - `pipeAsync` - Async function composition
+- `pipeAsyncSideEffect` - Async composition with SideEffect short-circuiting
 - `delay` - Delay execution
 - `timeout` - Add timeout to promise
 - `retry` - Retry failed operations
@@ -270,6 +276,7 @@ const processUsers = pipe(filterActive, getNames);
   - File I/O
   - AsyncIterable processing
   - Any Promise-returning function
+- **Use `pipeSideEffect` / `pipeAsyncSideEffect`** when SideEffect short-circuiting is required
 
 ```typescript
 // Sync: use pipe
@@ -306,9 +313,9 @@ const result = getFirst100Even(range(1, 1000000));
 ### 5. Handle Errors with SideEffect
 
 ```typescript
-import { pipe, SideEffect, runPipeResult } from 'fp-kit';
+import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-kit';
 
-const safeDivide = pipe(
+const safeDivide = pipeSideEffect(
   (input: { a: number; b: number }) => {
     if (input.b === 0) {
       return SideEffect.of(() => {
@@ -405,8 +412,8 @@ const maybeUser = Option.of(user)
   .map(u => u.profile)
   .flatMap(p => p.email);
 
-// GOOD - Use SideEffect with pipe
-const getUserEmail = pipe(
+// GOOD - Use SideEffect with pipeSideEffect
+const getUserEmail = pipeSideEffect(
   (user: User) => {
     if (!user.profile) {
       return SideEffect.of(() => null, 'NO_PROFILE');
@@ -447,13 +454,14 @@ const updateUser = assoc('lastLogin', new Date());
 ### Import Paths
 - Main functions: `import { pipe, map, filter } from 'fp-kit'`
 - Async: `import { pipeAsync, delay, retry } from 'fp-kit'`
+- SideEffect: `import { pipeSideEffect, pipeAsyncSideEffect, SideEffect } from 'fp-kit'`
 - Stream: `import { map, filter, toArray } from 'fp-kit/stream'`
 
 ### When to Use What
 - **Data transformation**: `pipe` + array/object functions
 - **Async operations**: `pipeAsync`
 - **Large datasets**: `stream/*` functions
-- **Error handling**: `SideEffect` pattern
+- **Error handling**: `pipeSideEffect`/`pipeAsyncSideEffect` + `SideEffect`
 - **Conditionals**: `ifElse`, `when`, `unless`, `cond`
 - **Object access**: `prop`, `path`, `pick`, `omit`
 - **Object updates**: `assoc`, `merge`, `evolve`
@@ -468,7 +476,7 @@ fp-kit works seamlessly with UI frameworks. Here are common patterns organized b
 **Where to use**: Event handlers (onChange, @input, on:click, etc.)
 
 ```typescript
-import { pipe, pipeAsync, trim, prop, assoc, tap, SideEffect, runPipeResult } from 'fp-kit';
+import { pipe, pipeAsyncSideEffect, trim, prop, assoc, tap, SideEffect, runPipeResult } from 'fp-kit';
 
 // GOOD: Process form input declaratively
 const handleNameChange = pipe(
@@ -496,7 +504,7 @@ const validateFieldsOrStop = (data: any) => {
   }, 'VALIDATION_ERROR');
 };
 
-const handleSubmit = pipeAsync(
+const handleSubmit = pipeAsyncSideEffect(
   tap((e: Event) => e.preventDefault()),
   prop('currentTarget'),
   (form) => getFormData(form as HTMLFormElement),
@@ -553,7 +561,7 @@ const searchUsers = (query: string, page: number) =>
 **Where to use**: Lifecycle hooks, effects, async event handlers
 
 ```typescript
-import { pipeAsync, tap, SideEffect, runPipeResult } from 'fp-kit';
+import { pipeAsync, pipeAsyncSideEffect, tap, SideEffect, runPipeResult } from 'fp-kit';
 import { filter, map } from 'fp-kit';
 
 // GOOD: Fetch + transform + update state
@@ -584,7 +592,7 @@ const validateResponseOrStop = (users: unknown) => {
   return users as User[];
 };
 
-const safeFetchUsers = pipeAsync(
+const safeFetchUsers = pipeAsyncSideEffect(
   fetchUsers,
   validateResponseOrStop,
   filter((u: User) => u.verified),
@@ -645,7 +653,7 @@ const groupProductsByCategory = pipe(
 **Where to use**: Form submission, field updates, validation
 
 ```typescript
-import { pipe, assoc, pick, mapValues, SideEffect, runPipeResult } from 'fp-kit';
+import { pipe, pipeSideEffect, assoc, pick, mapValues, SideEffect, runPipeResult } from 'fp-kit';
 
 // GOOD: Update nested form state immutably
 const updateField = (fieldName: string, value: any) =>
@@ -665,7 +673,7 @@ const validateFormOrStop = (data: any) => {
     : data;
 };
 
-const submitForm = pipe(
+const submitForm = pipeSideEffect(
   pick(['email', 'password', 'name']),  // Only include relevant fields
   mapValues((v) => typeof v === 'string' ? v.trim() : v),  // Sanitize
   validateFormOrStop,
@@ -683,7 +691,7 @@ const validateCurrentStepOrStop = (state: any) => {
   }, 'STEP_VALIDATION_ERROR');
 };
 
-const goToNextStep = pipe(
+const goToNextStep = pipeSideEffect(
   validateCurrentStepOrStop,
   (state) => assoc('currentStep', state.currentStep + 1, state),
   runPipeResult
@@ -893,7 +901,7 @@ const stateToQueryParams = pipe(
 **Where to use**: Scroll handlers, pagination, large dataset rendering
 
 ```typescript
-import { pipe, pipeAsync, when, tap, runPipeResult } from 'fp-kit';
+import { pipe, pipeAsyncSideEffect, when, tap, runPipeResult } from 'fp-kit';
 import { pipe as streamPipe, filter as streamFilter, take as streamTake, toArray } from 'fp-kit/stream';
 
 // GOOD: Infinite scroll with pipe - all logic inside
@@ -915,7 +923,7 @@ const handleScroll = pipe(
 );
 
 // GOOD: Load next page with stream processing
-const loadNextPage = pipeAsync(
+const loadNextPage = pipeAsyncSideEffect(
   async () => {
     setIsLoading(true);
     return fetchItemsFromAPI(currentPage);
@@ -1237,10 +1245,10 @@ const userSlice = createSlice({
 
 ```typescript
 import { useForm } from 'react-hook-form';
-import { pipe, pipeAsync, pick, mapValues, trim, when, tap, SideEffect, runPipeResult } from 'fp-kit';
+import { pipe, pipeSideEffect, pipeAsyncSideEffect, pick, mapValues, trim, when, tap, SideEffect, runPipeResult } from 'fp-kit';
 
-// GOOD: Validation with pipe
-const validateFormData = pipe(
+// GOOD: Validation with pipeSideEffect
+const validateFormData = pipeSideEffect(
   pick(['email', 'password', 'name']),
   mapValues((v) => typeof v === 'string' ? trim(v) : v),
   (data) => {
@@ -1258,8 +1266,8 @@ const { register, handleSubmit } = useForm({
   resolver: (values) => validateFormData(values)
 });
 
-// GOOD: Submit handler with pipe
-const onSubmit = pipeAsync(
+// GOOD: Submit handler with pipeAsyncSideEffect
+const onSubmit = pipeAsyncSideEffect(
   validateFormData,
   when(
     (result) => Object.keys(result.errors).length === 0,
@@ -1398,15 +1406,15 @@ All patterns use the same fp-kit functions - only the framework's state/reactive
 As an AI coding assistant working with fp-kit:
 
 1. **Default to `pipe`** for all data transformations
-2. **Switch to `pipeAsync`** when async operations are involved
+2. **Switch to `pipeAsync`** when async operations are involved (use `pipeAsyncSideEffect` if SideEffect is in the flow)
 3. **Use `stream/*`** for lazy, memory-efficient processing
-4. **Handle errors with `SideEffect`**, not try-catch
+4. **Handle errors with `SideEffect`** in `pipeSideEffect`/`pipeAsyncSideEffect`, not try-catch
 5. **Avoid imperative loops** - use fp-kit's declarative functions
 6. **Never suggest monads** - use SideEffect pattern instead
 7. **Keep code declarative** - describe what, not how
 8. **All logic inside pipe** - never break out of pipe chains for conditionals or loops
 9. **Use control flow functions** - `when`, `unless`, `ifElse`, `cond` instead of if/else/switch
-10. **End pipes with `runPipeResult`** - handle SideEffect at the end of the pipeline, not in the middle
+10. **End SideEffect pipelines with `runPipeResult`** - handle SideEffect at the end of the pipeline, not in the middle
 11. **Apply use-case patterns** - recognize scenarios (form handling, list processing, etc.) and apply appropriate fp-kit patterns
 12. **Framework-agnostic core** - write fp-kit logic independent of UI framework, only wrap at the boundaries
 13. **Library integration** - use pipe in select/resolver/action functions of popular libraries (React Query, Zustand, Pinia, etc.)
@@ -1416,7 +1424,7 @@ As an AI coding assistant working with fp-kit:
 **✅ DO: Keep everything in pipe**
 ```typescript
 // GOOD: All logic inside pipe
-const handleSubmit = pipeAsync(
+const handleSubmit = pipeAsyncSideEffect(
   getFormData,
   validateFields,
   when(isValid, submitToAPI),

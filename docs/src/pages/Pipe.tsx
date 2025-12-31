@@ -344,148 +344,14 @@ calculate(5);  // 5
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Working with SideEffect
+      SideEffect Pipelines
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      pipe supports the <strong class="font-semibold">SideEffect</strong> container for deferred execution.
-      When pipe encounters a SideEffect, it immediately stops the pipeline and returns the SideEffect without executing it.
-      <br />
-      <br />
-      This allows you to build pipelines that can conditionally halt execution and defer side effects to the caller.
+      <strong>pipe</strong> is a pure composition tool. If you need pipelines that can
+      short-circuit on <strong class="font-semibold">SideEffect</strong>, use{' '}
+      <strong>pipeSideEffect</strong> instead.
     </p>
-
-    <h3 class="text-xl md:text-2xl font-medium text-gray-900 dark:text-white mb-4">
-      Basic SideEffect Usage
-    </h3>
-
-    <CodeBlock
-      language="typescript"
-      code={`import { pipe, SideEffect, runPipeResult } from 'fp-kit';
-
-const validateAge = (age: number) => {
-  if (age < 0) {
-    // Return SideEffect to stop pipeline
-    return SideEffect.of(() => {
-      throw new Error('Age cannot be negative');
-    });
-  }
-  return age;
-};
-
-const processAge = pipe(
-  validateAge,
-  (age: number) => age * 2,  // This won't execute if SideEffect is returned
-  (age: number) => \`Age: \${age}\`,
-  runPipeResult  // Auto-execute SideEffect if present
-);
-
-// SideEffect is automatically executed
-try {
-  processAge(-5);  // Throws: Error: Age cannot be negative
-} catch (error) {
-  console.error(error.message);
-}
-
-// Normal execution continues
-const result = processAge(10);
-console.log(result);  // "Age: 20"`}
-    />
-
-    <h3 class="text-xl md:text-2xl font-medium text-gray-900 dark:text-white mb-4 mt-6">
-      Conditional Early Exit
-    </h3>
-
-    <CodeBlock
-      language="typescript"
-      code={`import { pipe, SideEffect, runPipeResult } from 'fp-kit';
-
-interface User {
-  id: number;
-  name: string;
-  role: 'admin' | 'user';
-}
-
-const checkPermission = (user: User) => {
-  if (user.role !== 'admin') {
-    return SideEffect.of(() => ({
-      error: 'Unauthorized',
-      message: 'Admin access required'
-    }));
-  }
-  return user;
-};
-
-const deleteUser = pipe(
-  checkPermission,
-  (user: User) => {
-    console.log(\`Deleting user: \${user.name}\`);
-    return { success: true, deletedId: user.id };
-  },
-  runPipeResult  // Auto-execute SideEffect if present
-);
-
-const adminUser = { id: 1, name: 'Alice', role: 'admin' as const };
-const normalUser = { id: 2, name: 'Bob', role: 'user' as const };
-
-// Admin can proceed
-const result1 = deleteUser(adminUser);
-// Logs: "Deleting user: Alice"
-console.log(result1);  // { success: true, deletedId: 1 }
-
-// Normal user gets error immediately
-const result2 = deleteUser(normalUser);
-console.log(result2);  // { error: 'Unauthorized', message: 'Admin access required' }`}
-    />
-
-    <h3 class="text-xl md:text-2xl font-medium text-gray-900 dark:text-white mb-4 mt-6">
-      Deferred Logging and Side Effects
-    </h3>
-
-    <CodeBlock
-      language="typescript"
-      code={`import { pipe, SideEffect, runPipeResult } from 'fp-kit';
-
-const divide = (a: number, b: number) => {
-  if (b === 0) {
-    return SideEffect.of(() => {
-      console.error('Division by zero!');
-      return NaN;
-    }, 'division-by-zero');  // Optional label for debugging
-  }
-  return a / b;
-};
-
-const calculate = pipe(
-  (input: { a: number; b: number }) => divide(input.a, input.b),
-  (result: number) => result * 100,
-  (result: number) => Math.round(result),
-  runPipeResult  // Auto-execute SideEffect if present
-);
-
-// Normal calculation
-const result1 = calculate({ a: 10, b: 2 });
-console.log(result1);  // 500
-
-// Division by zero executes SideEffect and logs
-const result2 = calculate({ a: 10, b: 0 });
-// Logs: "Division by zero!"
-console.log(result2);  // NaN`}
-    />
-
-    <div class="border-l-4 border-orange-500 bg-orange-50 dark:bg-orange-900/20 p-4 mb-6 rounded-r">
-      <p class="text-sm md:text-base text-orange-800 dark:text-orange-200 leading-relaxed">
-        <span class="font-medium">⚠️ Important:</span>
-        <br />
-        <br />
-        SideEffect containers are <strong>never auto-executed</strong>. You must explicitly call{' '}
-        <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">runPipeResult()</code> or{' '}
-        <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">sideEffect.effect()</code> to run the deferred operation.
-        <br />
-        <br />
-        This gives you complete control over when and where side effects are executed.
-      </p>
-    </div>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
@@ -494,6 +360,22 @@ console.log(result2);  // NaN`}
     </h2>
 
     <div class="grid gap-6 mt-6">
+      <a
+        href="/composition/pipeSideEffect"
+        onClick={(e: Event) => {
+          e.preventDefault();
+          navigateTo('/composition/pipeSideEffect');
+        }}
+        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer"
+      >
+        <h3 class="text-lg md:text-xl font-medium text-blue-600 dark:text-blue-400 mb-2">
+          pipeSideEffect →
+        </h3>
+        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
+          Compose functions left-to-right with SideEffect short-circuiting.
+        </p>
+      </a>
+
       <a
         href="/composition/compose"
         onClick={(e: Event) => {

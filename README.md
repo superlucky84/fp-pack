@@ -17,7 +17,7 @@ There's no framework and no heavy abstractions—just well-chosen helpers that m
   Built around `pipe` and `pipeAsync` for clean, left-to-right function composition.
 
 - ⚡ **SideEffect Pattern**
-  Handle errors and side effects declaratively within pipes. Write normal functions that compose naturally—mark exceptional paths when needed, and the pipe automatically handles early termination. Focus on business logic, not error plumbing.
+  Handle errors and side effects declaratively in SideEffect-aware pipelines. Use `pipeSideEffect` / `pipeAsyncSideEffect` to short-circuit on `SideEffect` without breaking composition. Focus on business logic, not error plumbing.
 
 - 💧 **Lazy Stream Processing**
   Efficient iterable processing with `stream/*` functions for memory-conscious operations on large datasets.
@@ -39,7 +39,7 @@ There's no framework and no heavy abstractions—just well-chosen helpers that m
   `pipe` (sync) and `pipeAsync` (async) are the primary composition tools. All utilities are designed to work seamlessly in pipe chains.
 
 - **Pragmatic error handling**
-  The `SideEffect` pattern handles errors and side effects declaratively within pipes. Write normal functions that compose naturally—the pipe automatically short-circuits when it encounters a `SideEffect`, eliminating the need for wrapper types everywhere.
+  The `SideEffect` pattern handles errors and side effects declaratively in `pipeSideEffect`/`pipeAsyncSideEffect` pipelines. Write normal functions that compose naturally—these pipelines automatically short-circuit when they encounter a `SideEffect`, eliminating the need for wrapper types everywhere.
 
 - **Immutable & Pure by default**
   Core utilities avoid mutations and side effects. Any exception is explicitly named (e.g. `tap`, `log`).
@@ -78,7 +78,7 @@ yarn add fp-kit
 fp-kit includes an AI agent skills file that helps AI coding assistants (Claude Code, GitHub Copilot, Cursor, etc.) automatically write fp-kit-style functional code.
 
 When you have this skills file in your project, AI assistants will:
-- Default to using `pipe` and `pipeAsync` for all transformations
+- Default to using `pipe`/`pipeAsync` for pure transformations, and `pipeSideEffect`/`pipeAsyncSideEffect` when SideEffect is involved
 - Use the `SideEffect` pattern instead of try-catch
 - Prefer `stream/*` functions for large datasets
 - Write declarative, functional code using fp-kit utilities
@@ -138,7 +138,7 @@ const profile = await fetchUserProfile('user-123');
 ### Error Handling with SideEffect
 
 ```typescript
-import { pipe, SideEffect, runPipeResult } from 'fp-kit';
+import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-kit';
 
 const validateAge = (age: number) =>
   age >= 18
@@ -148,13 +148,13 @@ const validateAge = (age: number) =>
         return null;
       });
 
-const result = pipe(
+const result = pipeSideEffect(
   validateAge,
   (age) => `Age: ${age}`,
   (msg) => console.log(msg),
   runPipeResult
 )(15);
-// Pipe stops at SideEffect, alert executes, returns null
+// Pipeline stops at SideEffect, alert executes, returns null
 ```
 
 ### Lazy Stream Processing
@@ -182,6 +182,7 @@ const result = processLargeDataset(range(1, 1000000));
 Functions for composing and transforming other functions.
 
 - **pipe** - Compose functions left to right (f → g → h)
+- **pipeSideEffect** - Compose functions left to right with SideEffect short-circuiting
 - **compose** - Compose functions right to left (h → g → f)
 - **curry** - Transform a function to support partial application
 - **partial** - Pre-fill function arguments
@@ -192,7 +193,7 @@ Functions for composing and transforming other functions.
 - **tap** - Execute side effects without changing the value
 - **once** - Create a function that only executes once
 - **memoize** - Cache function results for same inputs
-- **SideEffect** - Side effect container for pipe error handling
+- **SideEffect** - Side effect container for SideEffect-aware pipelines
 - **isSideEffect** - Type guard to check for SideEffect
 - **matchSideEffect** - Pattern match on value or SideEffect
 - **runPipeResult** - Execute SideEffect or return value
@@ -321,7 +322,8 @@ Functions for string manipulation. All operations return new strings.
 
 Functions for asynchronous operations.
 
-- **pipeAsync** - Compose async/sync functions (supports SideEffect)
+- **pipeAsync** - Compose async/sync functions (pure)
+- **pipeAsyncSideEffect** - Async composition with SideEffect short-circuiting
 - **delay** - Wait for specified milliseconds
 - **timeout** - Execute promise with timeout limit
 - **retry** - Retry failed operations with optional delay
@@ -382,10 +384,10 @@ Functions for debugging and development.
 
 **The JavaScript exception problem:** In functional pipelines, throwing exceptions breaks composition—control jumps out of the pipe. To avoid this, you need `try-catch` (which breaks flow) or wrap every function in `Either`/`Result` (which requires `map`/`chain` everywhere). Both solutions make you think about error plumbing instead of business logic.
 
-**The SideEffect solution:** Write normal functions that compose naturally. When you need to terminate early (validation failure, missing data, errors), return `SideEffect.of(() => ...)`. The pipe automatically stops—no ceremony, no wrappers, no plumbing.
+**The SideEffect solution:** Write normal functions that compose naturally. When you need to terminate early (validation failure, missing data, errors), return `SideEffect.of(() => ...)`. `pipeSideEffect`/`pipeAsyncSideEffect` pipelines automatically stop—no ceremony, no wrappers, no plumbing.
 
 ```typescript
-import { pipe, SideEffect, runPipeResult } from 'fp-kit';
+import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-kit';
 
 // Optional chaining pattern - return null to gracefully terminate
 const findUser = (id: string) => {
@@ -393,7 +395,7 @@ const findUser = (id: string) => {
   return user ? user : SideEffect.of(() => null);
 };
 
-const email = pipe(
+const email = pipeSideEffect(
   findUser,
   (user) => user.email,        // Skipped if user not found
   (email) => email.toLowerCase(),
@@ -402,7 +404,7 @@ const email = pipe(
 // Returns null without errors - clean optional flow
 
 // Practical: User notification flow
-const result = pipe(
+const result = pipeSideEffect(
   validateCard,
   (card) => card.balance >= 100
     ? card
@@ -423,7 +425,7 @@ const result = pipe(
 **Key benefits:**
 - Write normal functions—no wrapper types
 - Mark exceptional paths explicitly with `SideEffect.of()`
-- Pipe automatically short-circuits on `SideEffect`
+- `pipeSideEffect`/`pipeAsyncSideEffect` automatically short-circuit on `SideEffect`
 - Handle effects once at the end with `runPipeResult`
 - Focus on business logic, not error infrastructure
 
@@ -431,6 +433,7 @@ const result = pipe(
 
 - Use **`pipe`** for synchronous transformations
 - Use **`pipeAsync`** when ANY step involves Promises or AsyncIterables
+- Use **`pipeSideEffect`** / **`pipeAsyncSideEffect`** when SideEffect short-circuiting is required
 
 ```typescript
 // Sync pipe

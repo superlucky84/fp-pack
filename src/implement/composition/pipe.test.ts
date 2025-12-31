@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import pipe from './pipe';
-import SideEffect from './sideEffect';
 
 describe('pipe', () => {
   it('applies functions left-to-right', () => {
@@ -29,14 +28,4 @@ describe('pipe', () => {
     expect(fn(5)).toBe(25);
   });
 
-  it('short-circuits when SideEffect is returned', () => {
-    const effect = new SideEffect(() => 'effect');
-    const stop = (_value: number) => effect;
-    const after = (_value: number) => _value + 1;
-
-    const fn = pipe((n: number) => n + 1, stop, after);
-    const result = fn(1);
-
-    expect(result).toBe(effect);
-  });
 });

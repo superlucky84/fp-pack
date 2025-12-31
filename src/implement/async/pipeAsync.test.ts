@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import pipeAsync from './pipeAsync';
-import SideEffect from '../composition/sideEffect';
 
 describe('pipeAsync', () => {
   it('composes async functions left-to-right', async () => {
@@ -21,14 +20,4 @@ describe('pipeAsync', () => {
     await expect(fn(1)).resolves.toBe(6);
   });
 
-  it('short-circuits when SideEffect is returned', async () => {
-    const effect = new SideEffect(() => 'effect');
-    const stop = async (_value: number) => effect;
-    const after = async (_value: number) => _value + 1;
-
-    const fn = pipeAsync(async (n: number) => n + 1, stop, after);
-    const result = await fn(1);
-
-    expect(result).toBe(effect);
-  });
 });
