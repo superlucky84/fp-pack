@@ -81,11 +81,11 @@ const processData = pipe(
     }
     return data;
   },
-  transformData
+  transformData,
+  runPipeResult
 );
 
-const result = processData(input);
-const finalValue = runPipeResult(result); // Executes SideEffect if present
+const finalValue = processData(input); // Executes SideEffect if present
 
 // BAD: try-catch in imperative code
 const processData = (input: any) => {
@@ -317,10 +317,11 @@ const safeDivide = pipe(
     }
     return input;
   },
-  ({ a, b }) => a / b
+  ({ a, b }) => a / b,
+  runPipeResult
 );
 
-const result = runPipeResult(safeDivide({ a: 10, b: 2 })); // 5
+const result = safeDivide({ a: 10, b: 2 }); // 5
 ```
 
 ### 6. Use Control Flow Functions
@@ -467,14 +468,18 @@ fp-kit works seamlessly with UI frameworks. Here are common patterns organized b
 **Where to use**: Event handlers (onChange, @input, on:click, etc.)
 
 ```typescript
-import { pipe, trim, prop, assoc } from 'fp-kit';
+import { pipe, pipeAsync, trim, prop, assoc, tap, SideEffect, runPipeResult } from 'fp-kit';
 
 // GOOD: Process form input declaratively
 const handleNameChange = pipe(
-  prop('target'),           // Get event target
-  prop('value'),            // Extract value
-  trim,                     // Clean up
-  (value) => assoc('name', value, formState)  // Update state
+  prop('currentTarget'),           // Safer than target in most UI libs
+  (el) => (el as HTMLInputElement).value,
+  trim,
+  tap((value) => {
+    // Prefer updater form to avoid stale state in React-like frameworks
+    // setFormState(prev => assoc('name', value, prev));
+    setFormState(assoc('name', value));
+  })
 );
 
 // Use in any framework:
@@ -483,19 +488,23 @@ const handleNameChange = pipe(
 // Svelte: <input on:input={handleNameChange} />
 
 // GOOD: Complex form validation
-const handleSubmit = pipe(
-  (e: Event) => e.preventDefault() || e,
-  prop('target'),
-  getFormData,              // Extract all form values
-  validateFields,           // Returns data or SideEffect with errors
+const validateFieldsOrStop = (data: any) => {
+  const errors = validateFields(data);
+  if (!errors) return data;
+  return SideEffect.of(() => {
+    setErrors(errors);
+    return null;
+  }, 'VALIDATION_ERROR');
+};
+
+const handleSubmit = pipeAsync(
+  tap((e: Event) => e.preventDefault()),
+  prop('currentTarget'),
+  (form) => getFormData(form as HTMLFormElement),
+  validateFieldsOrStop,          // Returns data or SideEffect
   sanitizeInput,
-  (data) => {
-    if (isSideEffect(data)) {
-      setErrors(runPipeResult(data));
-      return;
-    }
-    submitToAPI(data);
-  }
+  submitToAPI,
+  runPipeResult
 );
 ```
 
@@ -545,7 +554,7 @@ const searchUsers = (query: string, page: number) =>
 **Where to use**: Lifecycle hooks, effects, async event handlers
 
 ```typescript
-import { pipeAsync } from 'fp-kit';
+import { pipeAsync, tap, SideEffect, runPipeResult } from 'fp-kit';
 import { filter, map } from 'fp-kit';
 
 // GOOD: Fetch + transform + update state
@@ -566,25 +575,23 @@ const fetchAndProcessUsers = pipeAsync(
 // Svelte: $: fetchAndProcessUsers($userId);
 
 // GOOD: Error handling with SideEffect
+const validateResponseOrStop = (users: unknown) => {
+  if (!Array.isArray(users)) {
+    return SideEffect.of(() => {
+      setError('Invalid response');
+      return [];
+    }, 'INVALID_RESPONSE');
+  }
+  return users as User[];
+};
+
 const safeFetchUsers = pipeAsync(
   fetchUsers,
-  (users) => {
-    if (!Array.isArray(users)) {
-      return SideEffect.of(() => {
-        throw new Error('Invalid response');
-      }, 'INVALID_RESPONSE');
-    }
-    return users;
-  },
-  filter((u: User) => u.verified)
+  validateResponseOrStop,
+  filter((u: User) => u.verified),
+  tap((users) => setUsers(users)),
+  runPipeResult
 );
-
-// Then use matchSideEffect to handle results:
-// const result = await safeFetchUsers();
-// matchSideEffect(result, {
-//   value: (users) => setUsers(users),
-//   effect: (err) => setError(err.label)
-// });
 ```
 
 ### Pattern 4: List/Table Data Processing
@@ -639,7 +646,7 @@ const groupProductsByCategory = pipe(
 **Where to use**: Form submission, field updates, validation
 
 ```typescript
-import { pipe, assoc, pick, mapValues, merge } from 'fp-kit';
+import { pipe, assoc, pick, mapValues, SideEffect, runPipeResult } from 'fp-kit';
 
 // GOOD: Update nested form state immutably
 const updateField = (fieldName: string, value: any) =>
@@ -649,38 +656,38 @@ const updateField = (fieldName: string, value: any) =>
   );
 
 // GOOD: Form submission with validation
+const validateFormOrStop = (data: any) => {
+  const errors = validateFormData(data);
+  return Object.keys(errors).length > 0
+    ? SideEffect.of(() => {
+        setFormErrors(errors);
+        return null;
+      }, 'VALIDATION_ERROR')
+    : data;
+};
+
 const submitForm = pipe(
   pick(['email', 'password', 'name']),  // Only include relevant fields
   mapValues((v) => typeof v === 'string' ? v.trim() : v),  // Sanitize
-  (data) => {
-    // Validate
-    const errors = validateFormData(data);
-    if (Object.keys(errors).length > 0) {
-      return SideEffect.of(() => errors, 'VALIDATION_ERROR');
-    }
-    return data;
-  },
-  (data) => {
-    if (isSideEffect(data)) {
-      const errors = runPipeResult(data);
-      setFormErrors(errors);
-      return;
-    }
-    return submitToAPI(data);
-  }
+  validateFormOrStop,
+  submitToAPI,
+  runPipeResult
 );
 
 // GOOD: Multi-step form state
+const validateCurrentStepOrStop = (state: any) => {
+  const errors = validateCurrentStep(state);
+  if (!errors) return state;
+  return SideEffect.of(() => {
+    setStepErrors(errors);
+    return state;
+  }, 'STEP_VALIDATION_ERROR');
+};
+
 const goToNextStep = pipe(
-  validateCurrentStep,
-  (result) => {
-    if (isSideEffect(result)) {
-      setStepErrors(runPipeResult(result));
-      return currentStep;
-    }
-    return currentStep + 1;
-  },
-  (nextStep) => assoc('currentStep', nextStep, formState)
+  validateCurrentStepOrStop,
+  (state) => assoc('currentStep', state.currentStep + 1, state),
+  runPipeResult
 );
 ```
 
