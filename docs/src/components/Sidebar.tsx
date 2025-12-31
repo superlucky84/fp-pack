@@ -235,7 +235,12 @@ export const Sidebar = mount(renew => {
                 </h3>
                 <ul class="space-y-2">
                   {section.items.map(item => {
-                    const isActive = store.route === item.path || store.route === `/ko${item.path}`;
+                    const normalizedRoute = store.route.replace(/\/+$/, '') || '/';
+                    const normalizedItem = item.path.replace(/\/+$/, '') || '/';
+                    const isActive =
+                      normalizedRoute === normalizedItem ||
+                      normalizedRoute === `/ko${normalizedItem}` ||
+                      (normalizedItem === '/' && normalizedRoute === '/ko');
                     return (
                       <li key={item.path}>
                         <a
