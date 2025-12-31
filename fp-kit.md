@@ -887,6 +887,486 @@ const stateToQueryParams = pipe(
 // navigate(`/products?${stateToQueryParams(currentState)}`);
 ```
 
+### Pattern 11: Infinite Scroll / Virtual Lists
+
+**When**: Large lists with lazy loading, infinite scroll, virtual rendering
+**Where to use**: Scroll handlers, pagination, large dataset rendering
+
+```typescript
+import { pipe, when, ifElse, tap } from 'fp-kit';
+import { pipe as streamPipe, filter as streamFilter, take as streamTake, toArray } from 'fp-kit/stream';
+
+// GOOD: Infinite scroll with pipe - all logic inside
+const handleScroll = pipe(
+  (e: Event) => e.target as HTMLElement,
+  (el) => ({
+    scrollTop: el.scrollTop,
+    scrollHeight: el.scrollHeight,
+    clientHeight: el.clientHeight,
+    hasMore,
+    isLoading
+  }),
+  // Only load if near bottom, has more data, and not currently loading
+  when(
+    ({ scrollTop, scrollHeight, clientHeight, hasMore, isLoading }) =>
+      scrollTop + clientHeight >= scrollHeight - 100 && hasMore && !isLoading,
+    tap(() => loadNextPage())
+  )
+);
+
+// GOOD: Load next page with stream processing
+const loadNextPage = pipeAsync(
+  async () => {
+    setIsLoading(true);
+    return fetchItemsFromAPI(currentPage);
+  },
+  // Use stream for lazy processing
+  (items) => streamPipe(
+    streamFilter((item: Item) => item.visible),
+    streamTake(pageSize),
+    toArray
+  )(items),
+  tap((newItems) => setItems(prev => [...prev, ...newItems])),
+  tap(() => setCurrentPage(prev => prev + 1)),
+  tap(() => setIsLoading(false)),
+  runPipeResult
+);
+
+// GOOD: Virtual scroll - calculate visible range in pipe
+const getVisibleItems = pipe(
+  (scrollTop: number) => ({
+    itemHeight: 50,
+    viewportHeight: 600,
+    bufferSize: 5,
+    scrollTop
+  }),
+  ({ itemHeight, viewportHeight, bufferSize, scrollTop }) => ({
+    startIndex: Math.floor(scrollTop / itemHeight),
+    endIndex: Math.ceil((scrollTop + viewportHeight) / itemHeight),
+    bufferSize
+  }),
+  ({ startIndex, endIndex, bufferSize }) => ({
+    start: Math.max(0, startIndex - bufferSize),
+    end: endIndex + bufferSize
+  }),
+  ({ start, end }) => allItems.slice(start, end)
+);
+
+// GOOD: Lazy load with intersection observer
+const handleIntersection = pipe(
+  (entries: IntersectionObserverEntry[]) => entries[0],
+  when(
+    (entry) => entry.isIntersecting && hasMoreItems && !isLoadingMore,
+    tap(() => loadMoreItems())
+  )
+);
+```
+
+### Pattern 12: Conditional State Updates
+
+**When**: State updates that depend on conditions
+**Where to use**: Any state update with business logic
+
+```typescript
+import { pipe, ifElse, when, unless, cond, tap } from 'fp-kit';
+
+// GOOD: Use ifElse instead of if/else
+const toggleUserStatus = pipe(
+  ifElse(
+    (user: User) => user.status === 'active',
+    assoc('status', 'inactive'),
+    assoc('status', 'active')
+  ),
+  tap((updatedUser) => setUser(updatedUser))
+);
+
+// GOOD: Use when for conditional side effects
+const saveIfValid = pipe(
+  validateForm,
+  when(
+    (result) => result.isValid,
+    tap((data) => saveToAPI(data)),
+    tap(() => showSuccessMessage())
+  ),
+  unless(
+    (result) => result.isValid,
+    tap((result) => setErrors(result.errors))
+  )
+);
+
+// GOOD: Use cond for multi-branch logic (instead of switch/if-else chain)
+const processUserAction = pipe(
+  prop('action'),
+  cond([
+    [
+      (action) => action.type === 'CREATE',
+      pipe(
+        prop('payload'),
+        (user) => append(user),
+        tap((users) => setUsers(users))
+      )
+    ],
+    [
+      (action) => action.type === 'UPDATE',
+      pipe(
+        prop('payload'),
+        ({ id, updates }) => map((u: User) => u.id === id ? merge(u, updates) : u),
+        tap((users) => setUsers(users))
+      )
+    ],
+    [
+      (action) => action.type === 'DELETE',
+      pipe(
+        prop('payload'),
+        (id) => filter((u: User) => u.id !== id),
+        tap((users) => setUsers(users))
+      )
+    ],
+    [
+      () => true, // default case
+      tap(() => console.warn('Unknown action'))
+    ]
+  ])
+);
+
+// GOOD: Complex state update with all logic in pipe
+const updateCartItem = (itemId: string, quantity: number) => pipe(
+  // Get current cart
+  (cart) => cart.items,
+  // Find and update item
+  map((item: CartItem) =>
+    ifElse(
+      () => item.id === itemId,
+      pipe(
+        assoc('quantity', quantity),
+        when(
+          (updated) => updated.quantity <= 0,
+          () => null  // Mark for removal
+        )
+      ),
+      () => item
+    )(item)
+  ),
+  // Remove null items (quantity <= 0)
+  filter((item) => item !== null),
+  // Update state
+  tap((items) => setCart({ items })),
+  // Show notification
+  tap((items) => {
+    const item = items.find(i => i.id === itemId);
+    if (item) showNotification(`Updated ${item.name}`);
+    else showNotification('Item removed from cart');
+  })
+);
+```
+
+## Library Integration Quick Reference
+
+This section shows how to integrate fp-kit with popular UI libraries. All examples keep logic **inside pipe chains** using fp-kit control flow functions.
+
+### React Ecosystem
+
+#### React Query / TanStack Query
+
+```typescript
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { pipe, filter, sortBy, map, tap, when } from 'fp-kit';
+
+// GOOD: Transform data in select using pipe
+const { data: activeUsers } = useQuery({
+  queryKey: ['users'],
+  queryFn: fetchUsers,
+  select: pipe(
+    filter((u: User) => u.status === 'active'),
+    sortBy((u) => u.name),
+    map((u) => ({ id: u.id, name: u.name, email: u.email }))
+  )
+});
+
+// GOOD: Handle mutations with pipe
+const mutation = useMutation({
+  mutationFn: createUser,
+  onSuccess: pipe(
+    tap((newUser) => queryClient.invalidateQueries(['users'])),
+    when(
+      (user) => user.isPremium,
+      tap(() => showPremiumWelcome())
+    ),
+    tap(() => navigate('/dashboard'))
+  )
+});
+
+// GOOD: Optimistic updates in pipe
+const updateMutation = useMutation({
+  mutationFn: updateUser,
+  onMutate: pipe(
+    tap(async (newUser) => {
+      await queryClient.cancelQueries(['users']);
+      const previous = queryClient.getQueryData(['users']);
+      queryClient.setQueryData(['users'], pipe(
+        map((u: User) => u.id === newUser.id ? merge(u, newUser) : u)
+      ));
+      return { previous };
+    })
+  ),
+  onError: pipe(
+    tap((err, variables, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['users'], context.previous);
+      }
+    })
+  )
+});
+```
+
+#### Zustand
+
+```typescript
+import create from 'zustand';
+import { pipe, append, filter, map, merge, ifElse, when, tap } from 'fp-kit';
+
+// GOOD: All actions use pipe
+const useStore = create((set, get) => ({
+  users: [],
+
+  addUser: pipe(
+    (user: User) => user,
+    when(
+      (user) => !get().users.some(u => u.id === user.id),
+      tap((user) => set(pipe(
+        prop('users'),
+        append(user),
+        sortBy((u: User) => u.name),
+        (users) => ({ users })
+      )(get())))
+    )
+  ),
+
+  updateUser: (id: string, updates: Partial<User>) => set(pipe(
+    prop('users'),
+    map((u: User) =>
+      ifElse(
+        () => u.id === id,
+        merge(u, updates),
+        () => u
+      )(u)
+    ),
+    (users) => ({ users })
+  )(get())),
+
+  deleteUser: (id: string) => set(pipe(
+    prop('users'),
+    filter((u: User) => u.id !== id),
+    (users) => ({ users })
+  )(get())),
+
+  toggleUserStatus: (id: string) => set(pipe(
+    prop('users'),
+    map((u: User) => u.id === id
+      ? pipe(
+          ifElse(
+            (user) => user.status === 'active',
+            assoc('status', 'inactive'),
+            assoc('status', 'active')
+          )
+        )(u)
+      : u
+    ),
+    (users) => ({ users })
+  )(get()))
+}));
+```
+
+#### Redux Toolkit
+
+```typescript
+import { createSlice } from '@reduxjs/toolkit';
+import { pipe, append, filter, map, merge, sortBy, cond } from 'fp-kit';
+
+// GOOD: Reducers with pipe - no manual mutations
+const userSlice = createSlice({
+  name: 'users',
+  initialState: { list: [], loading: false },
+  reducers: {
+    addUser: (state, action) => {
+      state.list = pipe(
+        append(action.payload),
+        sortBy((u: User) => u.createdAt)
+      )(state.list);
+    },
+
+    updateUser: (state, action) => {
+      state.list = pipe(
+        map((u: User) =>
+          u.id === action.payload.id
+            ? merge(u, action.payload.updates)
+            : u
+        )
+      )(state.list);
+    },
+
+    deleteUser: (state, action) => {
+      state.list = pipe(
+        filter((u: User) => u.id !== action.payload)
+      )(state.list);
+    },
+
+    // Complex update with cond
+    processAction: (state, action) => {
+      state.list = pipe(
+        cond([
+          [
+            () => action.type === 'BULK_ACTIVATE',
+            map((u: User) => assoc('status', 'active', u))
+          ],
+          [
+            () => action.type === 'BULK_DELETE',
+            filter((u: User) => !action.payload.ids.includes(u.id))
+          ],
+          [
+            () => true,
+            (users) => users  // no change
+          ]
+        ])
+      )(state.list);
+    }
+  }
+});
+```
+
+#### React Hook Form
+
+```typescript
+import { useForm } from 'react-hook-form';
+import { pipe, pick, mapValues, trim, when, tap, SideEffect, runPipeResult } from 'fp-kit';
+
+// GOOD: Validation with pipe
+const validateFormData = pipe(
+  pick(['email', 'password', 'name']),
+  mapValues((v) => typeof v === 'string' ? trim(v) : v),
+  (data) => {
+    const errors: any = {};
+    if (!data.email?.includes('@')) errors.email = 'Invalid email';
+    if ((data.password?.length || 0) < 8) errors.password = 'Too short';
+    return Object.keys(errors).length > 0
+      ? SideEffect.of(() => ({ values: {}, errors }), 'VALIDATION_ERROR')
+      : { values: data, errors: {} };
+  },
+  runPipeResult
+);
+
+const { register, handleSubmit } = useForm({
+  resolver: (values) => validateFormData(values)
+});
+
+// GOOD: Submit handler with pipe
+const onSubmit = pipeAsync(
+  validateFormData,
+  when(
+    (result) => Object.keys(result.errors).length === 0,
+    pipe(
+      prop('values'),
+      submitToAPI,
+      tap(() => navigate('/success'))
+    )
+  ),
+  runPipeResult
+);
+```
+
+### Vue Ecosystem
+
+#### Pinia
+
+```typescript
+import { defineStore } from 'pinia';
+import { pipe, append, filter, map, merge, sortBy, when, tap } from 'fp-kit';
+
+// GOOD: All actions use pipe
+export const useUserStore = defineStore('user', {
+  state: () => ({ users: [], loading: false }),
+
+  actions: {
+    addUser(user: User) {
+      this.users = pipe(
+        append(user),
+        sortBy((u: User) => u.name),
+        when(
+          (users) => users.length > 100,
+          tap(() => this.showWarning('Many users'))
+        )
+      )(this.users);
+    },
+
+    updateUser(id: string, updates: Partial<User>) {
+      this.users = pipe(
+        map((u: User) => u.id === id ? merge(u, updates) : u)
+      )(this.users);
+    },
+
+    deleteUser(id: string) {
+      this.users = pipe(
+        filter((u: User) => u.id !== id),
+        tap((users) => {
+          if (users.length === 0) this.showEmptyState = true;
+        })
+      )(this.users);
+    }
+  }
+});
+```
+
+#### VueUse
+
+```typescript
+import { useFetch } from '@vueuse/core';
+import { pipe, filter, map, sortBy, tap } from 'fp-kit';
+
+// GOOD: Transform response with pipe
+const { data } = useFetch('/api/users', {
+  afterFetch: pipe(
+    prop('data'),
+    filter((u: User) => u.verified),
+    sortBy((u) => u.name),
+    map((u) => ({ id: u.id, name: u.name })),
+    tap((users) => console.log(`Loaded ${users.length} users`))
+  )
+}).json();
+
+// GOOD: Refetch with condition in pipe
+const { execute } = useFetch('/api/users');
+
+const refreshIfNeeded = pipe(
+  (lastUpdate: Date) => Date.now() - lastUpdate.getTime(),
+  when(
+    (diff) => diff > 5 * 60 * 1000, // 5 minutes
+    tap(() => execute())
+  )
+);
+```
+
+### State Management Patterns
+
+All state management libraries benefit from fp-kit's immutable update patterns:
+
+```typescript
+// GOOD: Generic state update pattern (works with any library)
+const updateState = <T>(
+  state: T,
+  path: string[],
+  updater: (value: any) => any
+) => pipe(
+  pathOr(null, path),
+  updater,
+  (newValue) => assocPath(path, newValue, state)
+)(state);
+
+// Usage in any framework:
+// Redux: return updateState(state, ['users', 0, 'name'], toUpper);
+// Zustand: set(updateState(get(), ['users', 0, 'name'], toUpper));
+// Pinia: this.$state = updateState(this.$state, ['users', 0, 'name'], toUpper);
+```
+
 ## Framework-Specific Notes
 
 While the patterns above are framework-agnostic, here's where to apply them:
@@ -925,7 +1405,66 @@ As an AI coding assistant working with fp-kit:
 5. **Avoid imperative loops** - use fp-kit's declarative functions
 6. **Never suggest monads** - use SideEffect pattern instead
 7. **Keep code declarative** - describe what, not how
-8. **Apply use-case patterns** - recognize scenarios (form handling, list processing, etc.) and apply appropriate fp-kit patterns
-9. **Framework-agnostic core** - write fp-kit logic independent of UI framework, only wrap at the boundaries
+8. **All logic inside pipe** - never break out of pipe chains for conditionals or loops
+9. **Use control flow functions** - `when`, `unless`, `ifElse`, `cond` instead of if/else/switch
+10. **End pipes with `runPipeResult`** - handle SideEffect at the end of the pipeline, not in the middle
+11. **Apply use-case patterns** - recognize scenarios (form handling, list processing, etc.) and apply appropriate fp-kit patterns
+12. **Framework-agnostic core** - write fp-kit logic independent of UI framework, only wrap at the boundaries
+13. **Library integration** - use pipe in select/resolver/action functions of popular libraries (React Query, Zustand, Pinia, etc.)
+
+### Key Principles
+
+**✅ DO: Keep everything in pipe**
+```typescript
+// GOOD: All logic inside pipe
+const handleSubmit = pipeAsync(
+  getFormData,
+  validateFields,
+  when(isValid, submitToAPI),
+  unless(isValid, showErrors),
+  runPipeResult
+);
+```
+
+**❌ DON'T: Break out of pipe for conditionals**
+```typescript
+// BAD: Breaking pipe for if/else
+const handleSubmit = pipe(
+  getFormData,
+  validateFields
+);
+const result = handleSubmit(form);
+if (result.isValid) {  // ❌ Outside pipe
+  submitToAPI(result);
+} else {
+  showErrors(result.errors);
+}
+```
+
+**✅ DO: Use when/cond/ifElse for branching**
+```typescript
+// GOOD: Branching inside pipe
+const processAction = pipe(
+  cond([
+    [(action) => action.type === 'CREATE', handleCreate],
+    [(action) => action.type === 'UPDATE', handleUpdate],
+    [(action) => action.type === 'DELETE', handleDelete],
+    [() => true, handleDefault]
+  ])
+);
+```
+
+**❌ DON'T: Use switch/if-else chains**
+```typescript
+// BAD: Imperative branching
+const processAction = (action) => {
+  switch (action.type) {  // ❌ Imperative
+    case 'CREATE': return handleCreate(action);
+    case 'UPDATE': return handleUpdate(action);
+    case 'DELETE': return handleDelete(action);
+    default: return handleDefault(action);
+  }
+};
+```
 
 Your goal is to write clean, readable, functional code that leverages fp-kit's full potential in real-world UI applications.
