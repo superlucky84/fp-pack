@@ -457,6 +457,456 @@ const updateUser = assoc('lastLogin', new Date());
 - **Object access**: `prop`, `path`, `pick`, `omit`
 - **Object updates**: `assoc`, `merge`, `evolve`
 
+## UI Framework Integration Patterns
+
+fp-kit works seamlessly with UI frameworks. Here are common patterns organized by **use case**, not framework.
+
+### Pattern 1: Handling User Input
+
+**When**: Form inputs, button clicks, drag & drop, any user interaction
+**Where to use**: Event handlers (onChange, @input, on:click, etc.)
+
+```typescript
+import { pipe, trim, prop, assoc } from 'fp-kit';
+
+// GOOD: Process form input declaratively
+const handleNameChange = pipe(
+  prop('target'),           // Get event target
+  prop('value'),            // Extract value
+  trim,                     // Clean up
+  (value) => assoc('name', value, formState)  // Update state
+);
+
+// Use in any framework:
+// React: <input onChange={handleNameChange} />
+// Vue: <input @input="handleNameChange" />
+// Svelte: <input on:input={handleNameChange} />
+
+// GOOD: Complex form validation
+const handleSubmit = pipe(
+  (e: Event) => e.preventDefault() || e,
+  prop('target'),
+  getFormData,              // Extract all form values
+  validateFields,           // Returns data or SideEffect with errors
+  sanitizeInput,
+  (data) => {
+    if (isSideEffect(data)) {
+      setErrors(runPipeResult(data));
+      return;
+    }
+    submitToAPI(data);
+  }
+);
+```
+
+### Pattern 2: Computing Derived/Reactive Values
+
+**When**: Displaying filtered/sorted/transformed data from state
+**Where to use**: Computed properties, memoized values, derived state
+
+```typescript
+import { pipe, filter, sortBy, map, take } from 'fp-kit';
+
+// GOOD: Create reusable data transformation
+const processUsers = pipe(
+  filter((u: User) => u.status === 'active'),
+  sortBy(u => u.lastLogin),
+  map(u => ({ ...u, displayName: `${u.firstName} ${u.lastName}` })),
+  take(50)
+);
+
+// Use in any framework:
+// React: const processed = useMemo(() => processUsers(users), [users]);
+// Vue: const processed = computed(() => processUsers(users.value));
+// Svelte: $: processed = processUsers($users);
+// Solid: const processed = createMemo(() => processUsers(users()));
+
+// GOOD: Search + filter + pagination
+const searchUsers = (query: string, page: number) =>
+  pipe(
+    filter((u: User) =>
+      u.name.toLowerCase().includes(query.toLowerCase())
+    ),
+    sortBy(u => u.name),
+    chunk(20),              // Paginate
+    (pages) => pages[page] || []
+  );
+
+// React example:
+// const results = useMemo(
+//   () => searchUsers(searchQuery, currentPage)(allUsers),
+//   [searchQuery, currentPage, allUsers]
+// );
+```
+
+### Pattern 3: Async Data Fetching and Processing
+
+**When**: API calls, database queries, file operations
+**Where to use**: Lifecycle hooks, effects, async event handlers
+
+```typescript
+import { pipeAsync } from 'fp-kit';
+import { filter, map } from 'fp-kit';
+
+// GOOD: Fetch + transform + update state
+const fetchAndProcessUsers = pipeAsync(
+  async (userId: string) => fetch(`/api/users/${userId}/friends`),
+  async (res) => res.json(),
+  filter((u: User) => u.isActive),
+  map(u => ({ id: u.id, name: u.name, avatar: u.avatar })),
+  (processed) => {
+    setUsers(processed);    // Framework-specific state update
+    return processed;
+  }
+);
+
+// Use in any framework:
+// React: useEffect(() => { fetchAndProcessUsers(id); }, [id]);
+// Vue: watchEffect(() => fetchAndProcessUsers(userId.value));
+// Svelte: $: fetchAndProcessUsers($userId);
+
+// GOOD: Error handling with SideEffect
+const safeFetchUsers = pipeAsync(
+  fetchUsers,
+  (users) => {
+    if (!Array.isArray(users)) {
+      return SideEffect.of(() => {
+        throw new Error('Invalid response');
+      }, 'INVALID_RESPONSE');
+    }
+    return users;
+  },
+  filter((u: User) => u.verified)
+);
+
+// Then use matchSideEffect to handle results:
+// const result = await safeFetchUsers();
+// matchSideEffect(result, {
+//   value: (users) => setUsers(users),
+//   effect: (err) => setError(err.label)
+// });
+```
+
+### Pattern 4: List/Table Data Processing
+
+**When**: Displaying lists, tables, grids with search/filter/sort
+**Where to use**: Component render logic, computed values
+
+```typescript
+import { pipe, filter, sortBy, groupBy, map } from 'fp-kit';
+
+// GOOD: Complete table data pipeline
+const processTableData = (
+  data: Product[],
+  filters: Filters,
+  sortConfig: SortConfig
+) => pipe(
+  // Apply filters
+  filter((p: Product) => {
+    if (filters.category && p.category !== filters.category) return false;
+    if (filters.minPrice && p.price < filters.minPrice) return false;
+    if (filters.maxPrice && p.price > filters.maxPrice) return false;
+    return true;
+  }),
+  // Apply sorting
+  sortBy(sortConfig.direction === 'asc'
+    ? (p) => p[sortConfig.key]
+    : (p) => -p[sortConfig.key]
+  ),
+  // Add row metadata
+  map((product, index) => ({
+    ...product,
+    rowId: `row-${index}`,
+    isEven: index % 2 === 0
+  }))
+)(data);
+
+// GOOD: Group for categorized display
+const groupProductsByCategory = pipe(
+  groupBy((p: Product) => p.category),
+  (grouped) => Object.entries(grouped).map(([category, products]) => ({
+    category,
+    products,
+    count: products.length,
+    totalValue: products.reduce((sum, p) => sum + p.price, 0)
+  }))
+);
+```
+
+### Pattern 5: Form State Management
+
+**When**: Complex forms with validation and state
+**Where to use**: Form submission, field updates, validation
+
+```typescript
+import { pipe, assoc, pick, mapValues, merge } from 'fp-kit';
+
+// GOOD: Update nested form state immutably
+const updateField = (fieldName: string, value: any) =>
+  pipe(
+    assoc(fieldName, value),
+    (state) => assoc('touched', { ...state.touched, [fieldName]: true }, state)
+  );
+
+// GOOD: Form submission with validation
+const submitForm = pipe(
+  pick(['email', 'password', 'name']),  // Only include relevant fields
+  mapValues((v) => typeof v === 'string' ? v.trim() : v),  // Sanitize
+  (data) => {
+    // Validate
+    const errors = validateFormData(data);
+    if (Object.keys(errors).length > 0) {
+      return SideEffect.of(() => errors, 'VALIDATION_ERROR');
+    }
+    return data;
+  },
+  (data) => {
+    if (isSideEffect(data)) {
+      const errors = runPipeResult(data);
+      setFormErrors(errors);
+      return;
+    }
+    return submitToAPI(data);
+  }
+);
+
+// GOOD: Multi-step form state
+const goToNextStep = pipe(
+  validateCurrentStep,
+  (result) => {
+    if (isSideEffect(result)) {
+      setStepErrors(runPipeResult(result));
+      return currentStep;
+    }
+    return currentStep + 1;
+  },
+  (nextStep) => assoc('currentStep', nextStep, formState)
+);
+```
+
+### Pattern 6: Real-time Data Streams
+
+**When**: WebSocket updates, SSE, real-time data
+**Where to use**: WebSocket handlers, event listeners
+
+```typescript
+import { pipe, filter, map, take } from 'fp-kit';
+
+// GOOD: Process incoming WebSocket messages
+const handleWebSocketMessage = pipe(
+  (event: MessageEvent) => JSON.parse(event.data),
+  filter((msg: Message) => msg.type === 'USER_UPDATE'),
+  map(msg => msg.payload),
+  (update) => {
+    // Update state with new data
+    setUsers(prevUsers =>
+      prevUsers.map(u => u.id === update.id ? { ...u, ...update } : u)
+    );
+  }
+);
+
+// websocket.onmessage = handleWebSocketMessage;
+
+// GOOD: Batch updates with stream
+import { pipe as streamPipe, filter as streamFilter, take as streamTake, toArray } from 'fp-kit/stream';
+
+const processBatchUpdates = async (updates: AsyncIterable<Update>) => {
+  const processed = await streamPipe(
+    streamFilter((u: Update) => u.priority === 'high'),
+    streamTake(100),
+    toArray
+  )(updates);
+
+  batchUpdateUI(processed);
+};
+```
+
+### Pattern 7: Component Props Transformation
+
+**When**: Passing data to child components
+**Where to use**: Component composition, prop drilling
+
+```typescript
+import { pipe, pick, map, merge } from 'fp-kit';
+
+// GOOD: Transform data for child component
+const prepareUserCardProps = pipe(
+  pick(['id', 'name', 'avatar', 'status']),
+  merge({
+    onClick: handleUserClick,
+    className: 'user-card'
+  })
+);
+
+// Usage:
+// const userProps = prepareUserCardProps(user);
+// <UserCard {...userProps} />
+
+// GOOD: Prepare list of component props
+const prepareListItems = pipe(
+  filter((item: Item) => item.visible),
+  map(item => ({
+    key: item.id,
+    ...pick(['title', 'description', 'icon'], item),
+    onClick: () => handleClick(item.id),
+    isActive: item.id === activeId
+  }))
+);
+
+// Usage:
+// {prepareListItems(items).map(props => <ListItem {...props} />)}
+```
+
+### Pattern 8: State Update Reducers
+
+**When**: Complex state updates, global state management
+**Where to use**: Redux/Zustand/Pinia reducers, state update functions
+
+```typescript
+import { pipe, assoc, dissoc, merge, evolve } from 'fp-kit';
+
+// GOOD: Redux-style reducer with fp-kit
+const userReducer = (state: State, action: Action) => {
+  switch (action.type) {
+    case 'ADD_USER':
+      return pipe(
+        prop('users'),
+        append(action.payload),
+        (users) => assoc('users', users, state)
+      )(state);
+
+    case 'UPDATE_USER':
+      return pipe(
+        prop('users'),
+        map((u: User) => u.id === action.payload.id
+          ? merge(u, action.payload.updates)
+          : u
+        ),
+        (users) => assoc('users', users, state)
+      )(state);
+
+    case 'DELETE_USER':
+      return pipe(
+        prop('users'),
+        filter((u: User) => u.id !== action.payload),
+        (users) => assoc('users', users, state)
+      )(state);
+
+    default:
+      return state;
+  }
+};
+
+// GOOD: Using evolve for nested updates
+const updateNestedState = evolve({
+  user: evolve({
+    profile: merge({ verified: true }),
+    settings: assoc('notifications', false)
+  }),
+  lastUpdated: () => new Date()
+});
+```
+
+### Pattern 9: Optimistic Updates
+
+**When**: UI updates before server confirmation
+**Where to use**: Create/update/delete operations
+
+```typescript
+import { pipeAsync, append, filter } from 'fp-kit';
+
+// GOOD: Optimistic create with rollback
+const createItemOptimistically = (newItem: Item) => {
+  const tempId = `temp-${Date.now()}`;
+  const optimisticItem = { ...newItem, id: tempId, pending: true };
+
+  // Immediately update UI
+  setItems(pipe(append(optimisticItem)));
+
+  // Then persist
+  return pipeAsync(
+    async () => api.createItem(newItem),
+    (savedItem) => {
+      // Replace temp with real item
+      setItems(
+        pipe(
+          filter((item: Item) => item.id !== tempId),
+          append(savedItem)
+        )
+      );
+      return savedItem;
+    }
+  )().catch((error) => {
+    // Rollback on error
+    setItems(pipe(filter((item: Item) => item.id !== tempId)));
+    throw error;
+  });
+};
+```
+
+### Pattern 10: URL/Query Parameter Handling
+
+**When**: Syncing UI state with URL
+**Where to use**: Routing, search parameters, filters
+
+```typescript
+import { pipe, pick, mapValues, merge } from 'fp-kit';
+
+// GOOD: Parse query params to state
+const parseQueryParams = pipe(
+  (search: string) => new URLSearchParams(search),
+  (params) => ({
+    page: Number(params.get('page')) || 1,
+    query: params.get('q') || '',
+    category: params.get('category') || 'all',
+    sort: params.get('sort') || 'date'
+  })
+);
+
+// GOOD: Convert state to query params
+const stateToQueryParams = pipe(
+  pick(['page', 'query', 'category', 'sort']),
+  (state) => {
+    const params = new URLSearchParams();
+    Object.entries(state).forEach(([key, value]) => {
+      if (value) params.set(key, String(value));
+    });
+    return params.toString();
+  }
+);
+
+// Usage in framework router:
+// const filters = parseQueryParams(location.search);
+// navigate(`/products?${stateToQueryParams(currentState)}`);
+```
+
+## Framework-Specific Notes
+
+While the patterns above are framework-agnostic, here's where to apply them:
+
+### Reactive/Computed Values
+- **React**: `useMemo(() => pipe(...)(data), [data])`
+- **Vue**: `computed(() => pipe(...)(data.value))`
+- **Svelte**: `$: result = pipe(...)(data)`
+- **Solid**: `createMemo(() => pipe(...)(data()))`
+
+### Event Handlers
+- **React**: `<button onClick={pipe(...)}>` or `const handler = pipe(...)`
+- **Vue**: `<button @click="pipe(...)">` or `const handler = pipe(...)`
+- **Svelte**: `<button on:click={pipe(...)}>` or `const handler = pipe(...)`
+
+### Side Effects (API calls, subscriptions)
+- **React**: `useEffect(() => { pipeAsync(...)() }, [deps])`
+- **Vue**: `watchEffect(() => pipeAsync(...)())`
+- **Svelte**: `onMount(() => pipeAsync(...)())`
+
+### State Updates
+- **React**: `setState(pipe(...)(currentState))`
+- **Vue**: `state.value = pipe(...)(state.value)`
+- **Svelte**: `$state = pipe(...)($state)`
+
+All patterns use the same fp-kit functions - only the framework's state/reactive wrapper changes.
+
 ## Summary
 
 As an AI coding assistant working with fp-kit:
@@ -468,5 +918,7 @@ As an AI coding assistant working with fp-kit:
 5. **Avoid imperative loops** - use fp-kit's declarative functions
 6. **Never suggest monads** - use SideEffect pattern instead
 7. **Keep code declarative** - describe what, not how
+8. **Apply use-case patterns** - recognize scenarios (form handling, list processing, etc.) and apply appropriate fp-kit patterns
+9. **Framework-agnostic core** - write fp-kit logic independent of UI framework, only wrap at the boundaries
 
-Your goal is to write clean, readable, functional code that leverages fp-kit's full potential.
+Your goal is to write clean, readable, functional code that leverages fp-kit's full potential in real-world UI applications.
