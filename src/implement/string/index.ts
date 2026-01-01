@@ -1,9 +1,0 @@
-export { default as trim } from './trim';
-export { default as split } from './split';
-export { default as join } from './join';
-export { default as replace } from './replace';
-export { default as toUpper } from './toUpper';
-export { default as toLower } from './toLower';
-export { default as startsWith } from './startsWith';
-export { default as endsWith } from './endsWith';
-export { default as match } from './match';
