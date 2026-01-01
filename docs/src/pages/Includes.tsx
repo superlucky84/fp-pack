@@ -21,13 +21,13 @@ export const Includes = () => (
       <strong class="font-semibold text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/20 px-2 py-1 rounded">
         includes
       </strong>{' '}
-      checks containment for both strings and arrays. For arrays, it uses fp-kit&apos;s <code>equals</code> for deep
+      checks containment for both strings and arrays. For arrays, it uses fp-pack&apos;s <code>equals</code> for deep
       structural comparison, so objects/arrays are matched by value, not by reference.
     </p>
 
     <CodeBlock
       language="typescript"
-      code={`import { includes } from 'fp-kit';
+      code={`import { includes } from 'fp-pack';
 
 includes(3, [1, 2, 3]); // true
 includes(4, [1, 2, 3]); // false
@@ -50,7 +50,7 @@ includes('ac', 'banana'); // false`}
 
     <CodeBlock
       language="typescript"
-      code={`import { includes } from 'fp-kit';
+      code={`import { includes } from 'fp-pack';
 
 const users = [{ id: 1, name: 'Amy' }, { id: 2, name: 'Bob' }];
 
@@ -64,7 +64,7 @@ includes({ id: 3, name: 'Cara' }, users); // false`}
 
     <CodeBlock
       language="typescript"
-      code={`import { includes } from 'fp-kit';
+      code={`import { includes } from 'fp-pack';
 
 includes('/api', '/v1/api/users'); // true
 includes('auth', '/v1/api/users'); // false`}

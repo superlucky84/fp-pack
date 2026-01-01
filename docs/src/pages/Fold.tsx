@@ -13,7 +13,7 @@ export const Fold = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { fold } from 'fp-kit';
+      code={`import { fold } from 'fp-pack';
 
 const format = fold(
   () => 'N/A',

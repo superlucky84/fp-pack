@@ -27,7 +27,7 @@ export const FlattenDeep = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { flattenDeep } from 'fp-kit';
+      code={`import { flattenDeep } from 'fp-pack';
 
 flattenDeep([1, [2, [3, 4], 5], [[6]]]);
 // [1, 2, 3, 4, 5, 6]`}
@@ -56,7 +56,7 @@ flattenDeep([1, [2, [3, 4], 5], [[6]]]);
 
     <CodeBlock
       language="typescript"
-      code={`import { flattenDeep } from 'fp-kit';
+      code={`import { flattenDeep } from 'fp-pack';
 
 const tags = [['frontend', ['ui']], ['design'], [['docs']]];
 const flatTags = flattenDeep(tags);
@@ -69,7 +69,7 @@ const flatTags = flattenDeep(tags);
 
     <CodeBlock
       language="typescript"
-      code={`import { flattenDeep } from 'fp-kit';
+      code={`import { flattenDeep } from 'fp-pack';
 
 const inputs = [1, [2, 3], [[4]], [[[5]]]];
 const normalized = flattenDeep(inputs);

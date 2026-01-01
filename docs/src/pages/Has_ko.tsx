@@ -13,7 +13,7 @@ export const Has_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { has } from 'fp-kit';
+      code={`import { has } from 'fp-pack';
 
 has('id', { id: 1 });     // true
 has('name', { id: 1 });   // false`}

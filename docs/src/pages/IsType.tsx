@@ -29,7 +29,7 @@ export const IsType = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { isType } from 'fp-kit';
+      code={`import { isType } from 'fp-pack';
 
 const isArray = isType('array');
 const isDate = isType('Date');
@@ -54,7 +54,7 @@ isMap(new Set());      // false`}
 
     <CodeBlock
       language="typescript"
-      code={`import { isType } from 'fp-kit';
+      code={`import { isType } from 'fp-pack';
 
 const mixed = [1, 'hi', null, new Date(), [], new Map()];
 
@@ -71,7 +71,7 @@ const onlyDates = mixed.filter(isType('date'));
 
     <CodeBlock
       language="typescript"
-      code={`import { isType } from 'fp-kit';
+      code={`import { isType } from 'fp-pack';
 
 const data: Array<string | null | undefined> = ['a', null, 'b', undefined];
 

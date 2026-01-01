@@ -34,7 +34,7 @@ export const Log_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { log, pipe } from 'fp-kit';
+      code={`import { log, pipe } from 'fp-pack';
 
 const process = pipe(
   (x: number) => x * 2,
@@ -73,7 +73,7 @@ process(5);  // 반환: 5, 중간에 로그 출력`}
 
     <CodeBlock
       language="typescript"
-      code={`import { log } from 'fp-kit';
+      code={`import { log } from 'fp-pack';
 
 // 라벨 없이 로깅
 const logValue = log<number>();
@@ -90,7 +90,7 @@ logWithLabel('john');  // 로그: "사용자명 john", 반환: "john"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { log, pipe } from 'fp-kit';
+      code={`import { log, pipe } from 'fp-pack';
 
 const processNumber = pipe(
   (x: number) => x + 10,
@@ -118,7 +118,7 @@ processNumber(5);
 
     <CodeBlock
       language="typescript"
-      code={`import { log, pipe, map, filter } from 'fp-kit';
+      code={`import { log, pipe, map, filter } from 'fp-pack';
 
 interface User {
   id: number;
@@ -153,7 +153,7 @@ processUsers(users);
 
     <CodeBlock
       language="typescript"
-      code={`import { log, pipe } from 'fp-kit';
+      code={`import { log, pipe } from 'fp-pack';
 
 interface ApiResponse {
   status: number;
@@ -185,7 +185,7 @@ processApiResponse(response);
 
     <CodeBlock
       language="typescript"
-      code={`import { log, pipe } from 'fp-kit';
+      code={`import { log, pipe } from 'fp-pack';
 
 interface FormData {
   email: string;
@@ -223,7 +223,7 @@ validateForm({ email: '  JOHN@EXAMPLE.COM  ', password: 'secret123' });
 
     <CodeBlock
       language="typescript"
-      code={`import { log, pipe, groupBy, map } from 'fp-kit';
+      code={`import { log, pipe, groupBy, map } from 'fp-pack';
 
 interface Sale {
   product: string;
@@ -264,7 +264,7 @@ getSalesByCategory(sales);
 
     <CodeBlock
       language="typescript"
-      code={`import { log, pipe, when } from 'fp-kit';
+      code={`import { log, pipe, when } from 'fp-pack';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 

@@ -34,7 +34,7 @@ export const Some = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { some } from 'fp-kit';
+      code={`import { some } from 'fp-pack';
 
 const numbers = [1, 3, 5, 7, 8];
 
@@ -59,7 +59,7 @@ const hasEven2 = some((n: number) => n % 2 === 0, allOdd);
 
     <CodeBlock
       language="typescript"
-      code={`import { some } from 'fp-kit';
+      code={`import { some } from 'fp-pack';
 
 const ages = [12, 15, 17, 19, 22];
 
@@ -76,7 +76,7 @@ some((age: number) => age < 10, ages);   // false`}
 
     <CodeBlock
       language="typescript"
-      code={`import { some } from 'fp-kit';
+      code={`import { some } from 'fp-pack';
 
 const largeArray = Array.from({ length: 1000000 }, (_, i) => i);
 
@@ -102,7 +102,7 @@ const hasTarget = some((n: number) => {
 
     <CodeBlock
       language="typescript"
-      code={`import { some } from 'fp-kit';
+      code={`import { some } from 'fp-pack';
 
 interface User {
   id: number;
@@ -141,7 +141,7 @@ function canPerformAction(users: User[]): boolean {
 
     <CodeBlock
       language="typescript"
-      code={`import { some } from 'fp-kit';
+      code={`import { some } from 'fp-pack';
 
 interface FormField {
   name: string;
@@ -173,7 +173,7 @@ if (hasEmptyRequired) {
 
     <CodeBlock
       language="typescript"
-      code={`import { some } from 'fp-kit';
+      code={`import { some } from 'fp-pack';
 
 interface Product {
   id: number;
@@ -219,7 +219,7 @@ const hasAffordableInStock = some(
 
     <CodeBlock
       language="typescript"
-      code={`import { some, curry } from 'fp-kit';
+      code={`import { some, curry } from 'fp-pack';
 
 // Create curried version
 const someCurried = curry(some);
@@ -252,7 +252,7 @@ hasLargeNumber(numbers3);   // false`}
         </h4>
         <CodeBlock
           language="typescript"
-          code={`import { some } from 'fp-kit';
+          code={`import { some } from 'fp-pack';
 
 // Check if value exists in array
 function includes<T>(value: T, arr: T[]): boolean {
@@ -270,7 +270,7 @@ includes('x', ['a', 'b', 'c']);  // false`}
         </h4>
         <CodeBlock
           language="typescript"
-          code={`import { some } from 'fp-kit';
+          code={`import { some } from 'fp-pack';
 
 // Check if NO element matches
 function none<T>(predicate: (x: T) => boolean, arr: T[]): boolean {
@@ -288,7 +288,7 @@ none((n: number) => n % 2 === 0, numbers);  // true (no even numbers)`}
         </h4>
         <CodeBlock
           language="typescript"
-          code={`import { some } from 'fp-kit';
+          code={`import { some } from 'fp-pack';
 
 interface Task {
   id: number;
@@ -320,7 +320,7 @@ const hasUrgent = some(
 
     <CodeBlock
       language="typescript"
-      code={`import { some } from 'fp-kit';
+      code={`import { some } from 'fp-pack';
 
 const numbers = [1, 2, 3, 4, 5];
 const isEven = (n: number) => n % 2 === 0;
@@ -328,10 +328,10 @@ const isEven = (n: number) => n % 2 === 0;
 // Native JavaScript
 numbers.some(isEven);  // true
 
-// fp-kit (data-last for composition)
+// fp-pack (data-last for composition)
 some(isEven, numbers);  // true
 
-// Benefits of fp-kit version:
+// Benefits of fp-pack version:
 // 1. Data-last enables currying and composition
 // 2. Predicate comes first (easier to read in pipelines)
 // 3. Works well with pipe/compose`}

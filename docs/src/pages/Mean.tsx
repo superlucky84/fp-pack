@@ -13,7 +13,7 @@ export const Mean = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { mean } from 'fp-kit';
+      code={`import { mean } from 'fp-pack';
 
 mean([1, 2, 3, 4]); // 2.5
 mean([]);          // NaN`}

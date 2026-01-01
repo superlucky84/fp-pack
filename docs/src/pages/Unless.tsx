@@ -36,7 +36,7 @@ export const Unless = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { unless } from 'fp-kit';
+      code={`import { unless } from 'fp-pack';
 
 const abs = unless(
   (n: number) => n > 0,
@@ -77,7 +77,7 @@ abs(0);    // 0  (zero, so unchanged)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { unless } from 'fp-kit';
+      code={`import { unless } from 'fp-pack';
 
 // Provide default value unless value exists
 const withDefault = unless(
@@ -104,7 +104,7 @@ ensurePositive(-3);   // 3`}
 
     <CodeBlock
       language="typescript"
-      code={`import { unless } from 'fp-kit';
+      code={`import { unless } from 'fp-pack';
 
 interface Config {
   timeout?: number;
@@ -136,8 +136,8 @@ withDefaultTimeout({ timeout: 10000, retries: 3 });
 
     <CodeBlock
       language="typescript"
-      code={`import { unless } from 'fp-kit';
-import { pipe } from 'fp-kit';
+      code={`import { unless } from 'fp-pack';
+import { pipe } from 'fp-pack';
 
 // Ensure minimum value unless already meets it
 const ensureMinimum = (min: number) =>
@@ -172,7 +172,7 @@ clamp0to100(50);    // 50`}
 
     <CodeBlock
       language="typescript"
-      code={`import { unless } from 'fp-kit';
+      code={`import { unless } from 'fp-pack';
 
 interface Result {
   success: boolean;
@@ -203,7 +203,7 @@ retryUnlessSuccess({ success: false, error: 'failed' });
 
     <CodeBlock
       language="typescript"
-      code={`import { unless } from 'fp-kit';
+      code={`import { unless } from 'fp-pack';
 
 // Ensure array unless already is one
 const ensureArray = unless(
@@ -231,8 +231,8 @@ removeEmptyArrays([[1], [], [3]]);         // [[1], [3]]`}
 
     <CodeBlock
       language="typescript"
-      code={`import { unless } from 'fp-kit';
-import { pipe } from 'fp-kit';
+      code={`import { unless } from 'fp-pack';
+import { pipe } from 'fp-pack';
 
 interface User {
   id: number;

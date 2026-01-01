@@ -29,7 +29,7 @@ export const PipeAsyncSideEffect_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeAsyncSideEffect, SideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeAsyncSideEffect, SideEffect, runPipeResult } from 'fp-pack';
 
 const fetchUser = async (id: string) => ({ id, verified: false });
 
@@ -63,7 +63,7 @@ const result = await runPipeResult(userPipeline('123'));
     <CodeBlock
       language="typescript"
       code={`// ✅ 좋음: 99%의 경우 - pipeAsync 사용 (순수 비동기 변환)
-import { pipeAsync } from 'fp-kit';
+import { pipeAsync } from 'fp-pack';
 
 const fetchAndProcess = pipeAsync(
   async (id: string) => fetchUser(id),
@@ -71,7 +71,7 @@ const fetchAndProcess = pipeAsync(
 );
 
 // ✅ 좋음: SideEffect가 필요할 때만 - pipeAsyncSideEffect 사용
-import { pipeAsyncSideEffect, SideEffect } from 'fp-kit';
+import { pipeAsyncSideEffect, SideEffect } from 'fp-pack';
 
 const fetchAndValidate = pipeAsyncSideEffect(
   async (id: string) => fetchUser(id),
@@ -140,7 +140,7 @@ function pipeAsyncSideEffect(...funcs: Array<(input: any) => any>): (input: any)
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeAsyncSideEffect, SideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeAsyncSideEffect, SideEffect, runPipeResult } from 'fp-pack';
 
 interface User {
   id: string;
@@ -189,7 +189,7 @@ console.log(result);  // { error: '이메일 미인증', userId: '123' }`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeAsyncSideEffect, SideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeAsyncSideEffect, SideEffect, runPipeResult } from 'fp-pack';
 
 const fetchData = async (url: string) => {
   const response = await fetch(url);
@@ -238,7 +238,7 @@ try {
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeAsyncSideEffect, SideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeAsyncSideEffect, SideEffect, runPipeResult } from 'fp-pack';
 
 interface PaymentRequest {
   amount: number;
@@ -329,7 +329,7 @@ console.log(result);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeAsync, pipeAsyncSideEffect, SideEffect } from 'fp-kit';
+      code={`import { pipeAsync, pipeAsyncSideEffect, SideEffect } from 'fp-pack';
 
 const validateUserPipeline = pipeAsyncSideEffect(
   fetchUser,

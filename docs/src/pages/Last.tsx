@@ -28,7 +28,7 @@ export const Last = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { last } from 'fp-kit';
+      code={`import { last } from 'fp-pack';
 
 last([1, 2, 3]);
 // 3
@@ -60,7 +60,7 @@ last([]);
 
     <CodeBlock
       language="typescript"
-      code={`import { last } from 'fp-kit';
+      code={`import { last } from 'fp-pack';
 
 const events = ['login', 'view', 'logout'];
 const latest = last(events);
@@ -73,7 +73,7 @@ const latest = last(events);
 
     <CodeBlock
       language="typescript"
-      code={`import { last } from 'fp-kit';
+      code={`import { last } from 'fp-pack';
 
 const history: number[] = [];
 const value = last(history) ?? 0;

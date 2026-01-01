@@ -13,7 +13,7 @@ export const Prop = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { prop } from 'fp-kit';
+      code={`import { prop } from 'fp-pack';
 
 const user = { id: 1, name: 'Ada' };
 

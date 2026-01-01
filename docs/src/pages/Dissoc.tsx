@@ -13,7 +13,7 @@ export const Dissoc = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { dissoc } from 'fp-kit';
+      code={`import { dissoc } from 'fp-pack';
 
 dissoc('name', { id: 1, name: 'A' });
 // { id: 1 }

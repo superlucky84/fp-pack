@@ -34,7 +34,7 @@ export const Identity_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { identity } from 'fp-kit';
+      code={`import { identity } from 'fp-pack';
 
 identity(5);        // 5
 identity('hello');  // 'hello'
@@ -60,7 +60,7 @@ identity(obj) === obj;  // true (동일한 참조)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { identity } from 'fp-kit';
+      code={`import { identity } from 'fp-pack';
 
 // 조건부 변환
 function processData<T>(
@@ -89,7 +89,7 @@ processData(numbers);  // [1, 2, 3]`}
 
     <CodeBlock
       language="typescript"
-      code={`import { compose, pipe, identity } from 'fp-kit';
+      code={`import { compose, pipe, identity } from 'fp-pack';
 
 const double = (n: number) => n * 2;
 const addTen = (n: number) => n + 10;
@@ -113,7 +113,7 @@ pipe(...transforms)(5);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { identity } from 'fp-kit';
+      code={`import { identity } from 'fp-pack';
 
 // 중첩된 구조에서 값 추출
 interface User {
@@ -150,7 +150,7 @@ users.map(identity);  // [...users]와 동일
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, identity } from 'fp-kit';
+      code={`import { pipe, identity } from 'fp-pack';
 
 interface Options {
   uppercase?: boolean;
@@ -179,7 +179,7 @@ processString('  hello  ', {});
 
     <CodeBlock
       language="typescript"
-      code={`import { identity } from 'fp-kit';
+      code={`import { identity } from 'fp-pack';
 
 interface Config<T> {
   data: T[];
@@ -215,7 +215,7 @@ processItems({ data: numbers });  // [1, 2, 3, 4, 5]`}
 
     <CodeBlock
       language="typescript"
-      code={`import { identity } from 'fp-kit';
+      code={`import { identity } from 'fp-pack';
 
 // flatMap과 identity를 사용하여 한 단계 평탄화
 const nested = [[1, 2], [3, 4], [5]];

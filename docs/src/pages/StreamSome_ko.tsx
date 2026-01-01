@@ -26,7 +26,7 @@ export const StreamSome_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { some } from 'fp-kit/stream';
+      code={`import { some } from 'fp-pack/stream';
 
 const result = some((n: number) => n > 2, [1, 2, 3]);
 // true`}
@@ -54,7 +54,7 @@ function some<T>(predicate: (value: T) => boolean | Promise<boolean>): (iterable
 
     <CodeBlock
       language="typescript"
-      code={`import { some } from 'fp-kit/stream';
+      code={`import { some } from 'fp-pack/stream';
 
 const result = await some(async (n: number) => n === 2, Promise.resolve([1, 2, 3]));
 // true`}

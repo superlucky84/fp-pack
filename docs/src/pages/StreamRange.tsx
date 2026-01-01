@@ -39,8 +39,8 @@ export const StreamRange = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, toArray } from 'fp-pack/stream';
 
 // Ascending range
 const ascending = pipe(
@@ -88,8 +88,8 @@ const descending = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, map, toArray } from 'fp-pack/stream';
 
 // Create numbered labels
 const labels = pipe(
@@ -118,8 +118,8 @@ const placeholders = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, take, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, take, map, toArray } from 'fp-pack/stream';
 
 // Generate page numbers lazily
 // Only computes the first 3 pages, not all 1000
@@ -152,8 +152,8 @@ const apiUrls = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, flatMap, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, flatMap, map, toArray } from 'fp-pack/stream';
 
 // Generate 2D grid coordinates
 const grid = pipe(
@@ -179,8 +179,8 @@ const grid = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, map, toArray } from 'fp-pack/stream';
 
 // Create descending countdown
 const countdown = pipe(
@@ -202,8 +202,8 @@ const countdown = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, filter, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, filter, map, toArray } from 'fp-pack/stream';
 
 // Get only even numbers and square them
 const evenSquares = pipe(
@@ -242,8 +242,8 @@ const multiplesOf3 = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, take, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, take, toArray } from 'fp-pack/stream';
 
 // Efficient: Only generates 5 numbers, not 1 million
 const first5 = pipe(

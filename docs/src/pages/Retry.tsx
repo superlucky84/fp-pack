@@ -55,7 +55,7 @@ export const Retry = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { retry } from 'fp-kit';
+      code={`import { retry } from 'fp-pack';
 
 // Retry up to 3 times
 const data = await retry(3, async () => {
@@ -75,7 +75,7 @@ const data = await retry(3, async () => {
 
     <CodeBlock
       language="typescript"
-      code={`import { retry } from 'fp-kit';
+      code={`import { retry } from 'fp-pack';
 
 // Retry up to 5 times with 1 second delay between attempts
 const result = await retry(
@@ -110,7 +110,7 @@ const result = await retry(
 
     <CodeBlock
       language="typescript"
-      code={`import { retry } from 'fp-kit';
+      code={`import { retry } from 'fp-pack';
 
 async function fetchUserData(userId: string) {
   return retry(
@@ -145,7 +145,7 @@ try {
 
     <CodeBlock
       language="typescript"
-      code={`import { retry } from 'fp-kit';
+      code={`import { retry } from 'fp-pack';
 
 async function connectToDatabase(config: DbConfig) {
   return retry(
@@ -179,7 +179,7 @@ const db = await connectToDatabase({
 
     <CodeBlock
       language="typescript"
-      code={`import { retry } from 'fp-kit';
+      code={`import { retry } from 'fp-pack';
 
 async function uploadFile(file: File): Promise<string> {
   return retry(
@@ -222,7 +222,7 @@ try {
 
     <CodeBlock
       language="typescript"
-      code={`import { retry } from 'fp-kit';
+      code={`import { retry } from 'fp-pack';
 
 async function sendToSlack(message: string): Promise<void> {
   return retry(
@@ -254,7 +254,7 @@ await sendToSlack('Deployment completed successfully! 🎉');
 
     <CodeBlock
       language="typescript"
-      code={`import { retry } from 'fp-kit';
+      code={`import { retry } from 'fp-pack';
 
 class RetryableError extends Error {
   constructor(message: string) {
@@ -324,7 +324,7 @@ try {
 
     <CodeBlock
       language="typescript"
-      code={`import { retry } from 'fp-kit';
+      code={`import { retry } from 'fp-pack';
 
 async function waitForJobToComplete(jobId: string): Promise<Job> {
   return retry(
@@ -363,7 +363,7 @@ console.log('Job result:', job.result);
 
     <CodeBlock
       language="typescript"
-      code={`import { retry } from 'fp-kit';
+      code={`import { retry } from 'fp-pack';
 
 // Create a timeout wrapper
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {

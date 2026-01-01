@@ -38,7 +38,7 @@ export const UniqBy_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { uniqBy } from 'fp-kit';
+      code={`import { uniqBy } from 'fp-pack';
 
 interface User {
   id: number;
@@ -71,7 +71,7 @@ uniqBy(user => user.id, users);
 
     <CodeBlock
       language="typescript"
-      code={`import { uniqBy } from 'fp-kit';
+      code={`import { uniqBy } from 'fp-pack';
 
 interface Product {
   id: number;
@@ -113,7 +113,7 @@ uniqBy(product => product.id, duplicateProducts);
 
     <CodeBlock
       language="typescript"
-      code={`import { uniqBy } from 'fp-kit';
+      code={`import { uniqBy } from 'fp-pack';
 
 const names = ['Alice', 'BOB', 'alice', 'Charlie', 'bob'];
 
@@ -137,7 +137,7 @@ uniqBy(email => email.toLowerCase(), emails);
 
     <CodeBlock
       language="typescript"
-      code={`import { uniqBy } from 'fp-kit';
+      code={`import { uniqBy } from 'fp-pack';
 
 const words = ['hello', 'world', 'hi', 'earth'];
 
@@ -162,7 +162,7 @@ uniqBy(n => Math.abs(n), numbers);
 
     <CodeBlock
       language="typescript"
-      code={`import { uniqBy } from 'fp-kit';
+      code={`import { uniqBy } from 'fp-pack';
 
 interface Point {
   x: number;
@@ -199,7 +199,7 @@ uniqBy(point => JSON.stringify({ x: point.x, y: point.y }), points);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { uniqBy } from 'fp-kit';
+      code={`import { uniqBy } from 'fp-pack';
 
 interface ApiUser {
   userId: string;
@@ -236,7 +236,7 @@ const uniqueUsers = uniqBy(user => user.userId, allUsers);
 
     <CodeBlock
       language="typescript"
-      code={`import { uniqBy } from 'fp-kit';
+      code={`import { uniqBy } from 'fp-pack';
 
 interface CartItem {
   productId: string;
@@ -266,7 +266,7 @@ console.log(\`장바구니에 \${uniqueItems.length}개의 고유 상품이 있�
 
     <CodeBlock
       language="typescript"
-      code={`import { uniqBy } from 'fp-kit';
+      code={`import { uniqBy } from 'fp-pack';
 
 interface SearchResult {
   url: string;
@@ -303,7 +303,7 @@ const uniqueResults = uniqBy(result => result.url, allResults);
 
     <CodeBlock
       language="typescript"
-      code={`import { uniqBy } from 'fp-kit';
+      code={`import { uniqBy } from 'fp-pack';
 
 interface Event {
   eventId: string;
@@ -337,7 +337,7 @@ console.log(\`\${uniqueEvents.length}개의 고유 이벤트 처리됨\`);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { uniqBy } from 'fp-kit';
+      code={`import { uniqBy } from 'fp-pack';
 
 // 사용자가 제출한 태그는 대소문자가 일관되지 않을 수 있음
 const tags = [
@@ -356,7 +356,7 @@ const uniqueTags = uniqBy(tag => tag.toLowerCase(), tags);
 // 주의: 원래 대소문자를 유지한 첫 번째 발생을 유지함
 
 // 실제 소문자 출력을 위해서는 map과 결합
-import { pipe, map } from 'fp-kit';
+import { pipe, map } from 'fp-pack';
 
 const normalizedTags = pipe(
   uniqBy((tag: string) => tag.toLowerCase()),
@@ -373,7 +373,7 @@ normalizedTags(tags);
 
     <CodeBlock
       language="typescript"
-      code={`import { uniqBy, curry } from 'fp-kit';
+      code={`import { uniqBy, curry } from 'fp-pack';
 
 // 커링 버전 생성
 const uniqByCurried = curry(uniqBy);
@@ -394,7 +394,7 @@ uniqByName(users);   // 이름으로 중복 제거
 uniqByEmail(users);  // 이메일로 중복 제거
 
 // pipe에서 사용
-import { pipe, filter } from 'fp-kit';
+import { pipe, filter } from 'fp-pack';
 
 const processUsers = pipe(
   filter((user: { id: number; name: string; email: string }) => user.email.includes('@')),
@@ -436,7 +436,7 @@ const processUsers = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { uniq, uniqBy } from 'fp-kit';
+      code={`import { uniq, uniqBy } from 'fp-pack';
 
 const users = [
   { id: 1, name: 'Alice' },

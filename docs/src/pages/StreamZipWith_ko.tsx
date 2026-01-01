@@ -26,7 +26,7 @@ export const StreamZipWith_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { zipWith } from 'fp-kit/stream';
+      code={`import { zipWith } from 'fp-pack/stream';
 
 const iter = zipWith((a: number, b: number) => a + b, [10, 20], [1, 2, 3]);
 Array.from(iter); // [11, 22]`}

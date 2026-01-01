@@ -32,7 +32,7 @@ export const Filter = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { filter } from 'fp-kit';
+      code={`import { filter } from 'fp-pack';
 
 const numbers = [1, 2, 3, 4, 5, 6];
 
@@ -70,7 +70,7 @@ filter((n: number) => n > 3, numbers);
 
     <CodeBlock
       language="typescript"
-      code={`import { filter } from 'fp-kit';
+      code={`import { filter } from 'fp-pack';
 
 const values: Array<number | null | undefined> = [1, null, 2, undefined, 3];
 
@@ -86,7 +86,7 @@ filter(isNumber, values);
 
     <CodeBlock
       language="typescript"
-      code={`import { filter } from 'fp-kit';
+      code={`import { filter } from 'fp-pack';
 
 interface User {
   id: number;

@@ -39,8 +39,8 @@ export const StreamFlattenDeep_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { flattenDeep, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { flattenDeep, toArray } from 'fp-pack/stream';
 
 const deeplyNested = [1, [2, [3, [4, [5]]]]];
 
@@ -85,7 +85,7 @@ function flattenDeep<T>(
 
     <CodeBlock
       language="typescript"
-      code={`import { flatten, flattenDeep, toArray } from 'fp-kit/stream';
+      code={`import { flatten, flattenDeep, toArray } from 'fp-pack/stream';
 
 const nested = [1, [2, [3, 4]], 5];
 
@@ -122,8 +122,8 @@ const allLevels = toArray(flattenDeep(nested));
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { flattenDeep, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { flattenDeep, toArray } from 'fp-pack/stream';
 
 interface TreeNode {
   value: number;
@@ -158,8 +158,8 @@ const allValues = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { flattenDeep, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { flattenDeep, toArray } from 'fp-pack/stream';
 
 const categories = [
   { name: 'Frontend', tags: [['React', 'Vue'], ['CSS']] },
@@ -181,8 +181,8 @@ const allTags = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { flattenDeep, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { flattenDeep, toArray } from 'fp-pack/stream';
 
 // API가 중첩 구조를 반환
 const fetchNestedData = async () =>
@@ -206,8 +206,8 @@ const result = await pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { flattenDeep, filter, map, take, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { flattenDeep, filter, map, take, toArray } from 'fp-pack/stream';
 
 const nestedNumbers = [
   [1, 2],
@@ -244,8 +244,8 @@ const result = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { flattenDeep, take, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { flattenDeep, take, toArray } from 'fp-pack/stream';
 
 // 깊이 중첩된 구조 생성
 const deepNesting = (depth: number): any =>

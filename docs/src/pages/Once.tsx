@@ -34,7 +34,7 @@ export const Once = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { once } from 'fp-kit';
+      code={`import { once } from 'fp-pack';
 
 const initialize = once(() => {
   console.log('Initializing...');
@@ -76,7 +76,7 @@ initialize();  // Returns { initialized: true } (no log)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { once } from 'fp-kit';
+      code={`import { once } from 'fp-pack';
 
 const greet = once((name: string) => {
   console.log(\`Hello, \${name}!\`);
@@ -99,7 +99,7 @@ greet('Carol');  // Returns "Greeted Alice" (no log, Carol is ignored)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { once } from 'fp-kit';
+      code={`import { once } from 'fp-pack';
 
 const calculatePi = once(() => {
   console.log('Calculating pi...');
@@ -131,7 +131,7 @@ console.log(pi2 === pi3);   // true`}
 
     <CodeBlock
       language="typescript"
-      code={`import { once } from 'fp-kit';
+      code={`import { once } from 'fp-pack';
 
 class DatabaseConnection {
   constructor() {
@@ -160,7 +160,7 @@ console.log(conn2 === conn3);   // true`}
 
     <CodeBlock
       language="typescript"
-      code={`import { once } from 'fp-kit';
+      code={`import { once } from 'fp-pack';
 
 interface Config {
   apiUrl: string;
@@ -203,7 +203,7 @@ const config3 = getConfig();`}
 
     <CodeBlock
       language="typescript"
-      code={`import { once } from 'fp-kit';
+      code={`import { once } from 'fp-pack';
 
 const setupGlobalHandlers = once(() => {
   console.log('Setting up global event handlers...');
@@ -238,7 +238,7 @@ setupGlobalHandlers();  // Does nothing`}
 
     <CodeBlock
       language="typescript"
-      code={`import { once } from 'fp-kit';
+      code={`import { once } from 'fp-pack';
 
 class ExpensiveService {
   private data: string[];
@@ -279,7 +279,7 @@ const results2 = getService().search('200');  // No log`}
 
     <CodeBlock
       language="typescript"
-      code={`import { once } from 'fp-kit';
+      code={`import { once } from 'fp-pack';
 
 const getNothing = once(() => {
   console.log('Called');
@@ -299,7 +299,7 @@ getNothing();  // Returns undefined (no log)
 
     <CodeBlock
       language="typescript"
-      code={`import { once } from 'fp-kit';
+      code={`import { once } from 'fp-pack';
 
 const add = once((a: number, b: number) => {
   console.log(\`Adding \${a} + \${b}\`);

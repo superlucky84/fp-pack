@@ -34,7 +34,7 @@ export const Debounce = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { debounce } from 'fp-kit';
+      code={`import { debounce } from 'fp-pack';
 
 const searchApi = debounce((query: string) => {
   console.log('Searching for:', query);
@@ -79,7 +79,7 @@ searchApi('hello'); // Executed after 300ms of no more calls
 
     <CodeBlock
       language="typescript"
-      code={`import { debounce } from 'fp-kit';
+      code={`import { debounce } from 'fp-pack';
 
 // Debounce a save function
 const saveData = debounce((data: string) => {
@@ -108,7 +108,7 @@ logValues(3, 'three');
 
     <CodeBlock
       language="typescript"
-      code={`import { debounce } from 'fp-kit';
+      code={`import { debounce } from 'fp-pack';
 
 // Debounce input event
 const handleInput = debounce((event: Event) => {
@@ -140,7 +140,7 @@ window.addEventListener('resize', handleResize);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { debounce } from 'fp-kit';
+      code={`import { debounce } from 'fp-pack';
 
 interface SearchResult {
   id: number;
@@ -181,7 +181,7 @@ function displayResults(results: SearchResult[]) {
 
     <CodeBlock
       language="typescript"
-      code={`import { debounce } from 'fp-kit';
+      code={`import { debounce } from 'fp-pack';
 
 interface FormData {
   title: string;
@@ -237,7 +237,7 @@ function showSaveStatus(status: string) {
 
     <CodeBlock
       language="typescript"
-      code={`import { debounce } from 'fp-kit';
+      code={`import { debounce } from 'fp-pack';
 
 interface ViewportDimensions {
   width: number;
@@ -282,7 +282,7 @@ function recalculateGridColumns(dims: ViewportDimensions) {
 
     <CodeBlock
       language="typescript"
-      code={`import { debounce } from 'fp-kit';
+      code={`import { debounce } from 'fp-pack';
 
 // Debounced scroll handler for expensive operations
 const handleScroll = debounce(() => {
@@ -323,7 +323,7 @@ function loadMoreContent() {
 
     <CodeBlock
       language="typescript"
-      code={`import { debounce } from 'fp-kit';
+      code={`import { debounce } from 'fp-pack';
 
 interface ValidationResult {
   valid: boolean;
@@ -383,7 +383,7 @@ function displayValidationResult(result: ValidationResult) {
 
     <CodeBlock
       language="typescript"
-      code={`import { debounce } from 'fp-kit';
+      code={`import { debounce } from 'fp-pack';
 
 interface MarkdownPreview {
   html: string;

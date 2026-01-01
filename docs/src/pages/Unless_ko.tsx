@@ -36,7 +36,7 @@ export const Unless_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { unless } from 'fp-kit';
+      code={`import { unless } from 'fp-pack';
 
 const abs = unless(
   (n: number) => n > 0,
@@ -77,7 +77,7 @@ abs(0);    // 0  (0이므로 변경 없음)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { unless } from 'fp-kit';
+      code={`import { unless } from 'fp-pack';
 
 // 값이 없을 때만 기본값 제공
 const withDefault = unless(
@@ -104,7 +104,7 @@ ensurePositive(-3);   // 3`}
 
     <CodeBlock
       language="typescript"
-      code={`import { unless } from 'fp-kit';
+      code={`import { unless } from 'fp-pack';
 
 interface Config {
   timeout?: number;
@@ -136,8 +136,8 @@ withDefaultTimeout({ timeout: 10000, retries: 3 });
 
     <CodeBlock
       language="typescript"
-      code={`import { unless } from 'fp-kit';
-import { pipe } from 'fp-kit';
+      code={`import { unless } from 'fp-pack';
+import { pipe } from 'fp-pack';
 
 // 최소값 미만일 때만 최소값으로 설정
 const ensureMinimum = (min: number) =>
@@ -172,7 +172,7 @@ clamp0to100(50);    // 50`}
 
     <CodeBlock
       language="typescript"
-      code={`import { unless } from 'fp-kit';
+      code={`import { unless } from 'fp-pack';
 
 interface Result {
   success: boolean;
@@ -203,7 +203,7 @@ retryUnlessSuccess({ success: false, error: 'failed' });
 
     <CodeBlock
       language="typescript"
-      code={`import { unless } from 'fp-kit';
+      code={`import { unless } from 'fp-pack';
 
 // 배열이 아닐 때만 배열로 변환
 const ensureArray = unless(
@@ -231,8 +231,8 @@ removeEmptyArrays([[1], [], [3]]);         // [[1], [3]]`}
 
     <CodeBlock
       language="typescript"
-      code={`import { unless } from 'fp-kit';
-import { pipe } from 'fp-kit';
+      code={`import { unless } from 'fp-pack';
+import { pipe } from 'fp-pack';
 
 interface User {
   id: number;

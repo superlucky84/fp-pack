@@ -13,7 +13,7 @@ export const Max = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { max } from 'fp-kit';
+      code={`import { max } from 'fp-pack';
 
 max([1, 5, 3]);      // 5
 max([-10, -5, -7]);  // -5

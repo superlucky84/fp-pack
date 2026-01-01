@@ -13,7 +13,7 @@ export const Ceil_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { ceil } from 'fp-kit';
+      code={`import { ceil } from 'fp-pack';
 
 ceil(1.1);  // 2
 ceil(-1.1); // -1

@@ -34,7 +34,7 @@ export const Sort_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { sort } from 'fp-kit';
+      code={`import { sort } from 'fp-pack';
 
 const numbers = [3, 1, 4, 1, 5, 9, 2, 6];
 
@@ -80,7 +80,7 @@ console.log(numbers);
 
     <CodeBlock
       language="typescript"
-      code={`import { sort } from 'fp-kit';
+      code={`import { sort } from 'fp-pack';
 
 // 숫자: 뺄셈으로 비교
 const ascending = (a: number, b: number) => a - b;
@@ -109,7 +109,7 @@ sort(alphabetical, ['Charlie', 'Alice', 'Bob']);
 
     <CodeBlock
       language="typescript"
-      code={`import { sort } from 'fp-kit';
+      code={`import { sort } from 'fp-pack';
 
 interface User {
   name: string;
@@ -142,7 +142,7 @@ const byName = sort((a, b) => a.name.localeCompare(b.name), users);
 
     <CodeBlock
       language="typescript"
-      code={`import { sort } from 'fp-kit';
+      code={`import { sort } from 'fp-pack';
 
 interface Product {
   category: string;
@@ -181,7 +181,7 @@ const multiSort = sort((a, b) => {
 
     <CodeBlock
       language="typescript"
-      code={`import { sort } from 'fp-kit';
+      code={`import { sort } from 'fp-pack';
 
 interface Event {
   title: string;
@@ -215,7 +215,7 @@ const reverseChron = sort(
 
     <CodeBlock
       language="typescript"
-      code={`import { sort } from 'fp-kit';
+      code={`import { sort } from 'fp-pack';
 
 const names = ['charlie', 'Alice', 'BOB', 'david'];
 
@@ -244,7 +244,7 @@ sort(
 
     <CodeBlock
       language="typescript"
-      code={`import { sort, curry } from 'fp-kit';
+      code={`import { sort, curry } from 'fp-pack';
 
 // 커링된 버전 생성
 const sortCurried = curry(sort);
@@ -296,7 +296,7 @@ sortAlphabetically(words);    // ['apple', 'mango', 'zebra']`}
 
     <CodeBlock
       language="typescript"
-      code={`import { sort, sortBy } from 'fp-kit';
+      code={`import { sort, sortBy } from 'fp-pack';
 
 const users = [
   { name: 'Alice', age: 30 },

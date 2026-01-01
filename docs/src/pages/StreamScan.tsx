@@ -26,7 +26,7 @@ export const StreamScan = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { scan } from 'fp-kit/stream';
+      code={`import { scan } from 'fp-pack/stream';
 
 const iter = scan((acc: number, n: number) => acc + n, 0, [1, 2, 3]);
 Array.from(iter); // [1, 3, 6]`}

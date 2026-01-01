@@ -35,7 +35,7 @@ export const Clamp_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { clamp } from 'fp-kit';
+      code={`import { clamp } from 'fp-pack';
 
 clamp(0, 100, 50);   // 50 (범위 내)
 clamp(0, 100, -10);  // 0 (최소값 미만)
@@ -54,7 +54,7 @@ clamp(0, 100, 150);  // 100 (최대값 초과)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { clamp } from 'fp-kit';
+      code={`import { clamp } from 'fp-pack';
 
 // 퍼센트 범위 (0-100)
 clamp(0, 100, 75);    // 75
@@ -78,7 +78,7 @@ clamp(-40, 50, 60);    // 50`}
 
     <CodeBlock
       language="typescript"
-      code={`import { clamp } from 'fp-kit';
+      code={`import { clamp } from 'fp-pack';
 
 // 여러 값에 clamp 적용
 const values = [5, -3, 15, 8].map(v => clamp(0, 10, v));
@@ -102,7 +102,7 @@ const percentages = [75, -10, 150].map(clampTo100);
 
     <CodeBlock
       language="typescript"
-      code={`import { clamp } from 'fp-kit';
+      code={`import { clamp } from 'fp-pack';
 
 interface RGB {
   r: number;
@@ -148,7 +148,7 @@ function hexToRGB(hex: string): RGB {
 
     <CodeBlock
       language="typescript"
-      code={`import { clamp } from 'fp-kit';
+      code={`import { clamp } from 'fp-pack';
 
 interface Player {
   health: number;
@@ -192,7 +192,7 @@ player = restoreMana(player, 100);
 
     <CodeBlock
       language="typescript"
-      code={`import { clamp } from 'fp-kit';
+      code={`import { clamp } from 'fp-pack';
 
 interface SliderConfig {
   min: number;
@@ -244,7 +244,7 @@ console.log(volumeSlider.getValue());  // 100 (클램핑됨)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { clamp } from 'fp-kit';
+      code={`import { clamp } from 'fp-pack';
 
 interface Progress {
   current: number;
@@ -280,7 +280,7 @@ console.log(getProgressBar({ current: -2, total: 10 }));
 
     <CodeBlock
       language="typescript"
-      code={`import { clamp } from 'fp-kit';
+      code={`import { clamp } from 'fp-pack';
 
 interface Review {
   rating: number;
@@ -320,7 +320,7 @@ const average = calculateAverageRating(reviews);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, clamp } from 'fp-kit';
+      code={`import { pipe, clamp } from 'fp-pack';
 
 // 여러 변환을 통해 사용자 입력 처리
 const processInput = pipe(

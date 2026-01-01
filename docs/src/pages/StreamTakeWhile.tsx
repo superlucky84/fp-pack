@@ -39,8 +39,8 @@ export const StreamTakeWhile = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { takeWhile, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { takeWhile, toArray } from 'fp-pack/stream';
 
 // Take numbers while they're less than 5
 const result = pipe(
@@ -102,7 +102,7 @@ function takeWhile<T>(
 
     <CodeBlock
       language="typescript"
-      code={`import { take, takeWhile, filter, toArray } from 'fp-kit/stream';
+      code={`import { take, takeWhile, filter, toArray } from 'fp-pack/stream';
 
 const data = [1, 2, 3, 4, 1, 2];
 
@@ -143,8 +143,8 @@ toArray(filter((n: number) => n < 4, data));
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { takeWhile, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { takeWhile, toArray } from 'fp-pack/stream';
 
 // Read log lines until error appears
 const logs = [
@@ -190,8 +190,8 @@ const beforeCutoff = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { takeWhile, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { takeWhile, map, toArray } from 'fp-pack/stream';
 
 // Get all items below a price threshold (assuming sorted)
 interface Product {
@@ -230,8 +230,8 @@ const beforeFailure = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { takeWhile, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { takeWhile, toArray } from 'fp-pack/stream';
 
 // Collect items until batch size limit
 interface Item {
@@ -273,8 +273,8 @@ const batch = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { takeWhile, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { takeWhile, toArray } from 'fp-pack/stream';
 
 // Read lines until delimiter
 const lines = [
@@ -321,8 +321,8 @@ const settings = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { takeWhile, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { takeWhile, toArray } from 'fp-pack/stream';
 
 // Process async stream until condition
 async function* fetchPages() {
@@ -370,8 +370,8 @@ const beforeSpam = await pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { takeWhile, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { takeWhile, toArray } from 'fp-pack/stream';
 
 // Keep running total until threshold
 const numbers = [5, 10, 15, 20, 25, 30];
@@ -417,8 +417,8 @@ const firstGroup = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { takeWhile, filter, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { takeWhile, filter, toArray } from 'fp-pack/stream';
 
 const largeSortedArray = Array.from({ length: 1000000 }, (_, i) => i);
 

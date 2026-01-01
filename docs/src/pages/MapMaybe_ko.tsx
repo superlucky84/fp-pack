@@ -13,7 +13,7 @@ export const MapMaybe_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { mapMaybe } from 'fp-kit';
+      code={`import { mapMaybe } from 'fp-pack';
 
 const users = [
   { id: 1, name: 'A' },

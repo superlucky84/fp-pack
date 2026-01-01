@@ -34,7 +34,7 @@ export const When_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { when } from 'fp-kit';
+      code={`import { when } from 'fp-pack';
 
 const doubleIfPositive = when(
   (n: number) => n > 0,
@@ -75,7 +75,7 @@ doubleIfPositive(0);   // 0  (0이므로 변경 없음)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { when } from 'fp-kit';
+      code={`import { when } from 'fp-pack';
 
 // 비어있지 않을 때만 대문자로 변환
 const capitalizeIfNotEmpty = when(
@@ -102,7 +102,7 @@ doubleIfEven(3);   // 3`}
 
     <CodeBlock
       language="typescript"
-      code={`import { when } from 'fp-kit';
+      code={`import { when } from 'fp-pack';
 
 interface User {
   name: string;
@@ -135,8 +135,8 @@ normalizeEmail({ name: 'Jane', email: 'jane@example.com' });
 
     <CodeBlock
       language="typescript"
-      code={`import { when } from 'fp-kit';
-import { pipe } from 'fp-kit';
+      code={`import { when } from 'fp-pack';
+import { pipe } from 'fp-pack';
 
 // 공백이 있을 때만 trim
 const trimIfNeeded = when(
@@ -166,7 +166,7 @@ cleanInput('helloworld');         // 'helloworld' (변경 없음)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { when } from 'fp-kit';
+      code={`import { when } from 'fp-pack';
 
 interface CartItem {
   name: string;
@@ -193,7 +193,7 @@ applyBulkDiscount({ name: 'Gadget', price: 50, quantity: 5 });
 
     <CodeBlock
       language="typescript"
-      code={`import { when } from 'fp-kit';
+      code={`import { when } from 'fp-pack';
 
 // 계산이 비용이 많이 드는 경우(배열 길이 > 1000)에만 캐시
 const cacheIfLarge = when(
@@ -221,7 +221,7 @@ sortIfNeeded([4, 2, 3, 1]);     // [1, 2, 3, 4] (정렬됨)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, when } from 'fp-kit';
+      code={`import { pipe, when } from 'fp-pack';
 
 interface Product {
   id: number;

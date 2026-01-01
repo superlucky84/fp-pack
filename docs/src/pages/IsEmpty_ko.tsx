@@ -27,7 +27,7 @@ export const IsEmpty_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { isEmpty } from 'fp-kit';
+      code={`import { isEmpty } from 'fp-pack';
 
 isEmpty(null);                 // true
 isEmpty('');                   // true
@@ -53,7 +53,7 @@ isEmpty('text');               // false`}
 
     <CodeBlock
       language="typescript"
-      code={`import { isEmpty } from 'fp-kit';
+      code={`import { isEmpty } from 'fp-pack';
 
 function printFirst(items: string[]) {
   if (isEmpty(items)) return;
@@ -70,7 +70,7 @@ printFirst(['hello']);   // 'hello'`}
 
     <CodeBlock
       language="typescript"
-      code={`import { isEmpty } from 'fp-kit';
+      code={`import { isEmpty } from 'fp-pack';
 
 const inputs = ['hi', '', ' ', null, [], ['x']];
 

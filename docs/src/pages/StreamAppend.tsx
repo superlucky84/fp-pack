@@ -66,7 +66,7 @@ function append<T>(
 
     <CodeBlock
       language="typescript"
-      code={`import { append } from 'fp-kit/stream';
+      code={`import { append } from 'fp-pack/stream';
 
 // Append a single value to an array
 const numbers = append(4, [1, 2, 3]);
@@ -91,9 +91,9 @@ console.log(Array.from(withFour));
 
     <CodeBlock
       language="typescript"
-      code={`import { append } from 'fp-kit/stream';
-import { pipe } from 'fp-kit/composition';
-import { map } from 'fp-kit/stream';
+      code={`import { append } from 'fp-pack/stream';
+import { pipe } from 'fp-pack/composition';
+import { map } from 'fp-pack/stream';
 
 // Create reusable append functions
 const addFooter = append('--- End of List ---');
@@ -126,7 +126,7 @@ console.log(Array.from(processItems(items)));
 
     <CodeBlock
       language="typescript"
-      code={`import { append } from 'fp-kit/stream';
+      code={`import { append } from 'fp-pack/stream';
 
 // Add EOF marker to file chunks
 async function* readFileChunks(filename: string) {
@@ -158,9 +158,9 @@ for await (const chunk of withEOF) {
 
     <CodeBlock
       language="typescript"
-      code={`import { append } from 'fp-kit/stream';
-import { pipe } from 'fp-kit/composition';
-import { map } from 'fp-kit/stream';
+      code={`import { append } from 'fp-pack/stream';
+import { pipe } from 'fp-pack/composition';
+import { map } from 'fp-pack/stream';
 
 interface Transaction {
   id: string;
@@ -203,7 +203,7 @@ for (const line of generateReport(transactions)) {
 
     <CodeBlock
       language="typescript"
-      code={`import { append } from 'fp-kit/stream';
+      code={`import { append } from 'fp-pack/stream';
 
 interface UserEvent {
   type: 'click' | 'scroll' | 'keypress' | 'complete';
@@ -247,7 +247,7 @@ for await (const event of sessionWithCompletion) {
 
     <CodeBlock
       language="typescript"
-      code={`import { append } from 'fp-kit/stream';
+      code={`import { append } from 'fp-pack/stream';
 
 interface User {
   id: number;
@@ -299,9 +299,9 @@ for await (const item of usersWithCount) {
 
     <CodeBlock
       language="typescript"
-      code={`import { append } from 'fp-kit/stream';
-import { map } from 'fp-kit/stream';
-import { pipe } from 'fp-kit/composition';
+      code={`import { append } from 'fp-pack/stream';
+import { map } from 'fp-pack/stream';
+import { pipe } from 'fp-pack/composition';
 
 interface LogEntry {
   level: 'INFO' | 'WARN' | 'ERROR';
@@ -344,9 +344,9 @@ for (const line of formatLogs(logs)) {
 
     <CodeBlock
       language="typescript"
-      code={`import { append } from 'fp-kit/stream';
-import { take } from 'fp-kit/stream';
-import { pipe } from 'fp-kit/composition';
+      code={`import { append } from 'fp-pack/stream';
+import { take } from 'fp-pack/stream';
+import { pipe } from 'fp-pack/composition';
 
 function* fibonacci() {
   let a = 0, b = 1;

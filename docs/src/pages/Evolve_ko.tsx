@@ -13,7 +13,7 @@ export const Evolve_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { evolve } from 'fp-kit';
+      code={`import { evolve } from 'fp-pack';
 
 const user = { id: 1, name: 'A' };
 const updated = evolve({

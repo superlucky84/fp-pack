@@ -35,7 +35,7 @@ export const DebounceLeading_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeading } from 'fp-kit';
+      code={`import { debounceLeading } from 'fp-pack';
 
 const handleSubmit = debounceLeading(() => {
   console.log('폼 제출됨');
@@ -78,7 +78,7 @@ handleSubmit(); // 무시 (1000ms 이내)
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeading } from 'fp-kit';
+      code={`import { debounceLeading } from 'fp-pack';
 
 // 즉시 실행되는 간단한 액션
 const logAction = debounceLeading((action: string) => {
@@ -106,7 +106,7 @@ button.addEventListener('click', handleClick);
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeading } from 'fp-kit';
+      code={`import { debounceLeading } from 'fp-pack';
 
 // 폼이 여러 번 제출되는 것을 방지
 const submitForm = debounceLeading((formData: FormData) => {
@@ -133,7 +133,7 @@ submitForm(data); // 무시
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeading } from 'fp-kit';
+      code={`import { debounceLeading } from 'fp-pack';
 
 interface FormData {
   email: string;
@@ -200,7 +200,7 @@ function redirectToHome() {
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeading } from 'fp-kit';
+      code={`import { debounceLeading } from 'fp-pack';
 
 // 액션 버튼의 빠른 클릭 방지
 const handleLike = debounceLeading(async (postId: number) => {
@@ -256,7 +256,7 @@ function showShareDialog(postId: number) {
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeading } from 'fp-kit';
+      code={`import { debounceLeading } from 'fp-pack';
 
 interface RefreshOptions {
   force?: boolean;
@@ -329,7 +329,7 @@ function showErrorMessage(message: string) {
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeading } from 'fp-kit';
+      code={`import { debounceLeading } from 'fp-pack';
 
 interface NavigationOptions {
   route: string;
@@ -384,7 +384,7 @@ function dispatchNavigationEvent(route: string) {
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeading } from 'fp-kit';
+      code={`import { debounceLeading } from 'fp-pack';
 
 interface PlayerAction {
   type: 'jump' | 'shoot' | 'reload';
@@ -464,7 +464,7 @@ function playEmptySound() { /* 사운드 */ }`}
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeading } from 'fp-kit';
+      code={`import { debounceLeading } from 'fp-pack';
 
 interface ExportOptions {
   format: 'csv' | 'json' | 'pdf';

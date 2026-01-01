@@ -35,7 +35,7 @@ export const Memoize = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { memoize } from 'fp-kit';
+      code={`import { memoize } from 'fp-pack';
 
 // Expensive computation
 const fibonacci = (n: number): number => {
@@ -65,7 +65,7 @@ memoFib(40);  // Instant!`}
 
     <CodeBlock
       language="typescript"
-      code={`import { memoize } from 'fp-kit';
+      code={`import { memoize } from 'fp-pack';
 
 let callCount = 0;
 
@@ -87,7 +87,7 @@ memoAdd(3, 2);  // 5 (callCount: 2, different args)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { memoize } from 'fp-kit';
+      code={`import { memoize } from 'fp-pack';
 
 const processUser = memoize((user: { name: string; age: number }) => {
   console.log('Processing...');
@@ -115,7 +115,7 @@ processUser({ name: 'Alice', age: 30 });  // "Processing..." logged again`}
 
     <CodeBlock
       language="typescript"
-      code={`import { memoize } from 'fp-kit';
+      code={`import { memoize } from 'fp-pack';
 
 // Expensive data processing
 const processDataset = memoize((data: any[]) => {
@@ -147,7 +147,7 @@ console.log(result1 === result2);  // true (same cached result)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { memoize } from 'fp-kit';
+      code={`import { memoize } from 'fp-pack';
 
 interface RawUser {
   id: number;
@@ -189,7 +189,7 @@ const users2 = parseUsers(apiResponse);
 
     <CodeBlock
       language="typescript"
-      code={`import { memoize } from 'fp-kit';
+      code={`import { memoize } from 'fp-pack';
 
 // Computationally expensive function
 const isPrime = memoize((n: number): boolean => {
@@ -221,7 +221,7 @@ console.timeEnd('second');  // <0.1ms`}
 
     <CodeBlock
       language="typescript"
-      code={`import { memoize } from 'fp-kit';
+      code={`import { memoize } from 'fp-pack';
 
 // Classic example: Fibonacci
 const fibonacci = memoize((n: number): number => {

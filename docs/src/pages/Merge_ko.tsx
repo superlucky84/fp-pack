@@ -13,7 +13,7 @@ export const Merge_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { merge } from 'fp-kit';
+      code={`import { merge } from 'fp-pack';
 
 const a = { id: 1, name: 'Ada' };
 const b = { name: 'Lovelace', active: true };

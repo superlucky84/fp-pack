@@ -29,7 +29,7 @@ export const SideEffect_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { SideEffect, pipeSideEffect, runPipeResult } from 'fp-kit';
+      code={`import { SideEffect, pipeSideEffect, runPipeResult } from 'fp-pack';
 
 // 나중에 실행될 SideEffect 생성
 const validateAge = (age: number) =>
@@ -75,7 +75,7 @@ runPipeResult(processAgePipeline(15)); // "나이 검증 실패" 로그, null �
     <CodeBlock
       language="typescript"
       code={`// ✅ 좋음: 99%의 경우 - pipe 사용 (순수 변환)
-import { pipe, map, filter, sort } from 'fp-kit';
+import { pipe, map, filter, sort } from 'fp-pack';
 
 const processData = pipe(
   filter(isValid),
@@ -84,7 +84,7 @@ const processData = pipe(
 );
 
 // ✅ 좋음: SideEffect가 필요할 때만 - pipeSideEffect 사용
-import { pipeSideEffect, SideEffect } from 'fp-kit';
+import { pipeSideEffect, SideEffect } from 'fp-pack';
 
 const processWithValidation = pipeSideEffect(
   validateOrStop,  // 조기 종료를 위해 SideEffect를 반환할 수 있음
@@ -162,7 +162,7 @@ function runPipeResult<T, R>(value: T | SideEffect<R>): T | R;`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-pack';
 
 interface FormData {
   email: string;
@@ -207,7 +207,7 @@ try {
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-pack';
 
 interface User {
   id: string;
@@ -240,7 +240,7 @@ runPipeResult(getUserThemePipeline('user-123')); // 'dark' 또는 단계가 실�
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-pack';
 
 interface PaymentData {
   amount: number;
@@ -285,7 +285,7 @@ const result = runPipeResult(processPaymentPipeline({ amount: -10, userId: 'user
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, matchSideEffect } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, matchSideEffect } from 'fp-pack';
 
 const divide = (a: number, b: number) =>
   b !== 0
@@ -323,7 +323,7 @@ console.log(output); // "0으로 나눔"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
 
 const processNumbers = pipeSideEffect(
   (nums: number[]) => nums.filter(n => n % 2 === 1),
@@ -391,7 +391,7 @@ const result = runPipeResult(oddsDoubled);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, pipeSideEffect, SideEffect } from 'fp-kit';
+      code={`import { pipe, pipeSideEffect, SideEffect } from 'fp-pack';
 
 const validateUserPipeline = pipeSideEffect(
   findUser,           // User | SideEffect

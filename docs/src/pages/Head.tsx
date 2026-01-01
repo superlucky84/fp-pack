@@ -28,7 +28,7 @@ export const Head = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { head } from 'fp-kit';
+      code={`import { head } from 'fp-pack';
 
 head([1, 2, 3]);
 // 1
@@ -60,7 +60,7 @@ head([]);
 
     <CodeBlock
       language="typescript"
-      code={`import { head } from 'fp-kit';
+      code={`import { head } from 'fp-pack';
 
 const users = [
   { id: 1, name: 'Ada' },
@@ -77,7 +77,7 @@ const firstUser = head(users);
 
     <CodeBlock
       language="typescript"
-      code={`import { head } from 'fp-kit';
+      code={`import { head } from 'fp-pack';
 
 const tokens: string[] = [];
 const token = head(tokens) ?? 'anonymous';

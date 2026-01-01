@@ -36,7 +36,7 @@ export const Tap_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { tap, pipe } from 'fp-kit';
+      code={`import { tap, pipe } from 'fp-pack';
 
 const double = (n: number) => n * 2;
 const addTen = (n: number) => n + 10;
@@ -84,7 +84,7 @@ calculate(5);
 
     <CodeBlock
       language="typescript"
-      code={`import { tap } from 'fp-kit';
+      code={`import { tap } from 'fp-pack';
 
 const logValue = tap((x: number) => {
   console.log('현재 값:', x);
@@ -103,7 +103,7 @@ console.log(result);  // 42`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, tap } from 'fp-kit';
+      code={`import { pipe, tap } from 'fp-pack';
 
 const processNumber = pipe(
   (n: number) => n * 2,
@@ -131,7 +131,7 @@ const result = processNumber(10);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, tap } from 'fp-kit';
+      code={`import { pipe, tap } from 'fp-pack';
 
 interface User {
   id: number;
@@ -167,7 +167,7 @@ const result = processUsers(users);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, tap } from 'fp-kit';
+      code={`import { pipe, tap } from 'fp-pack';
 
 const validatePositive = tap((n: number) => {
   if (n <= 0) {
@@ -198,7 +198,7 @@ safeDivide(2)(NaN); // 에러: 값이 NaN입니다`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, tap } from 'fp-kit';
+      code={`import { pipe, tap } from 'fp-pack';
 
 // 모의 분석 함수
 const trackEvent = (event: string, data: any) => {
@@ -246,7 +246,7 @@ processOrder(order);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, tap } from 'fp-kit';
+      code={`import { pipe, tap } from 'fp-pack';
 
 const cache = new Map<string, any>();
 
@@ -277,7 +277,7 @@ const data = await fetchAndCache('/api/users');`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, tap } from 'fp-kit';
+      code={`import { pipe, tap } from 'fp-pack';
 
 // 개발 환경에서 변이를 감지하는 헬퍼
 const detectMutation = <T extends object>(label: string) => {
@@ -321,7 +321,7 @@ const processData = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { tap } from 'fp-kit';
+      code={`import { tap } from 'fp-pack';
 
 const debugLog = <T>(label: string) =>
   tap((value: T) => {
@@ -344,7 +344,7 @@ const verboseLog = <T>(label: string) =>
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, tap } from 'fp-kit';
+      code={`import { pipe, tap } from 'fp-pack';
 
 const measureTime = (label: string) => {
   let startTime: number;
@@ -380,7 +380,7 @@ processData([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, tap } from 'fp-kit';
+      code={`import { pipe, tap } from 'fp-pack';
 
 let state = {
   count: 0,

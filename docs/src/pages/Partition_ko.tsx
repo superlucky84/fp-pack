@@ -27,7 +27,7 @@ export const Partition_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { partition } from 'fp-kit';
+      code={`import { partition } from 'fp-pack';
 
 const [even, odd] = partition((n: number) => n % 2 === 0, [1, 2, 3, 4]);
 // even: [2, 4]
@@ -57,7 +57,7 @@ const [even, odd] = partition((n: number) => n % 2 === 0, [1, 2, 3, 4]);
 
     <CodeBlock
       language="typescript"
-      code={`import { partition } from 'fp-kit';
+      code={`import { partition } from 'fp-pack';
 
 const tasks = [
   { title: 'Ship docs', done: true },
@@ -76,7 +76,7 @@ const [done, pending] = partition(task => task.done, tasks);
 
     <CodeBlock
       language="typescript"
-      code={`import { partition } from 'fp-kit';
+      code={`import { partition } from 'fp-pack';
 
 const inputs = ['42', '3.14', 'oops'];
 const [valid, invalid] = partition(value => !Number.isNaN(Number(value)), inputs);

@@ -33,7 +33,7 @@ export const Every = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { every } from 'fp-kit';
+      code={`import { every } from 'fp-pack';
 
 const numbers = [2, 4, 6, 8, 10];
 
@@ -82,7 +82,7 @@ allPositive([1, -2, 3]);   // false`}
 
     <CodeBlock
       language="typescript"
-      code={`import { every } from 'fp-kit';
+      code={`import { every } from 'fp-pack';
 
 // Check if all numbers are positive
 const allPositive = every((n: number) => n > 0, [1, 2, 3, 4]);
@@ -113,7 +113,7 @@ const empty = every((n: number) => n > 100, []);
 
     <CodeBlock
       language="typescript"
-      code={`import { every } from 'fp-kit';
+      code={`import { every } from 'fp-pack';
 
 interface FormField {
   name: string;
@@ -151,7 +151,7 @@ console.log(allValidEmails);
 
     <CodeBlock
       language="typescript"
-      code={`import { every } from 'fp-kit';
+      code={`import { every } from 'fp-pack';
 
 interface Product {
   id: number;
@@ -194,7 +194,7 @@ console.log(hasUniqueIds(products));
 
     <CodeBlock
       language="typescript"
-      code={`import { every } from 'fp-kit';
+      code={`import { every } from 'fp-pack';
 
 interface User {
   id: number;
@@ -237,7 +237,7 @@ console.log(allAdminsHaveFullAccess);
 
     <CodeBlock
       language="typescript"
-      code={`import { every } from 'fp-kit';
+      code={`import { every } from 'fp-pack';
 
 // Check if all values are strings
 const allStrings = (arr: unknown[]): arr is string[] =>
@@ -272,7 +272,7 @@ if (allNumbers(data)) {
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, every } from 'fp-kit';
+      code={`import { pipe, every } from 'fp-pack';
 
 interface Task {
   id: number;
@@ -302,7 +302,7 @@ console.log(allHighPriorityDone(tasks));
 
     <CodeBlock
       language="typescript"
-      code={`import { every } from 'fp-kit';
+      code={`import { every } from 'fp-pack';
 
 interface Order {
   items: { price: number; quantity: number }[];
@@ -342,7 +342,7 @@ console.log(allHaveValidItems);
 
     <CodeBlock
       language="typescript"
-      code={`import { every } from 'fp-kit';
+      code={`import { every } from 'fp-pack';
 
 // Check if all promises are settled
 const allSettled = async (promises: Promise<any>[]) => {

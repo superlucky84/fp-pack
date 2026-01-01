@@ -35,7 +35,7 @@ export const DebounceLeading = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeading } from 'fp-kit';
+      code={`import { debounceLeading } from 'fp-pack';
 
 const handleSubmit = debounceLeading(() => {
   console.log('Form submitted');
@@ -78,7 +78,7 @@ handleSubmit(); // Ignored (within 1000ms)
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeading } from 'fp-kit';
+      code={`import { debounceLeading } from 'fp-pack';
 
 // Simple action with immediate execution
 const logAction = debounceLeading((action: string) => {
@@ -106,7 +106,7 @@ button.addEventListener('click', handleClick);
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeading } from 'fp-kit';
+      code={`import { debounceLeading } from 'fp-pack';
 
 // Prevent form from being submitted multiple times
 const submitForm = debounceLeading((formData: FormData) => {
@@ -133,7 +133,7 @@ submitForm(data); // Ignored
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeading } from 'fp-kit';
+      code={`import { debounceLeading } from 'fp-pack';
 
 interface FormData {
   email: string;
@@ -200,7 +200,7 @@ function redirectToHome() {
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeading } from 'fp-kit';
+      code={`import { debounceLeading } from 'fp-pack';
 
 // Prevent rapid clicking on action buttons
 const handleLike = debounceLeading(async (postId: number) => {
@@ -256,7 +256,7 @@ function showShareDialog(postId: number) {
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeading } from 'fp-kit';
+      code={`import { debounceLeading } from 'fp-pack';
 
 interface RefreshOptions {
   force?: boolean;
@@ -329,7 +329,7 @@ function showErrorMessage(message: string) {
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeading } from 'fp-kit';
+      code={`import { debounceLeading } from 'fp-pack';
 
 interface NavigationOptions {
   route: string;
@@ -384,7 +384,7 @@ function dispatchNavigationEvent(route: string) {
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeading } from 'fp-kit';
+      code={`import { debounceLeading } from 'fp-pack';
 
 interface PlayerAction {
   type: 'jump' | 'shoot' | 'reload';
@@ -464,7 +464,7 @@ function playEmptySound() { /* sound */ }`}
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeading } from 'fp-kit';
+      code={`import { debounceLeading } from 'fp-pack';
 
 interface ExportOptions {
   format: 'csv' | 'json' | 'pdf';

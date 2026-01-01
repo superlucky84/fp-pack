@@ -13,7 +13,7 @@ export const Min_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { min } from 'fp-kit';
+      code={`import { min } from 'fp-pack';
 
 min([3, 1, 5]); // 1
 min([]);       // Infinity`}

@@ -38,8 +38,8 @@ export const StreamDrop_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { drop, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { drop, toArray } from 'fp-pack/stream';
 
 // 처음 2개 아이템 건너뛰기
 const result = pipe(
@@ -100,7 +100,7 @@ function drop<T>(
 
     <CodeBlock
       language="typescript"
-      code={`import { drop, take, dropWhile, toArray } from 'fp-kit/stream';
+      code={`import { drop, take, dropWhile, toArray } from 'fp-pack/stream';
 
 const data = [1, 2, 3, 4, 5];
 
@@ -145,8 +145,8 @@ toArray(dropWhile((n: number) => n < 3, data));
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { drop, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { drop, map, toArray } from 'fp-pack/stream';
 
 // 헤더가 있는 CSV 데이터
 const csvLines = [
@@ -195,8 +195,8 @@ const skipMetadata = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { drop, take, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { drop, take, toArray } from 'fp-pack/stream';
 
 // 특정 페이지의 데이터 가져오기
 function getPage<T>(
@@ -239,8 +239,8 @@ const page5 = getPage(infiniteItems(), 5, 10);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { drop, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { drop, map, toArray } from 'fp-pack/stream';
 
 // 센서 읽기 (처음 몇 개는 보정값)
 interface Reading {
@@ -281,8 +281,8 @@ const stableResults = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { drop, filter, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { drop, filter, map, toArray } from 'fp-pack/stream';
 
 // 특정 지점 이후의 로그 항목 처리
 const logEntries = [
@@ -317,8 +317,8 @@ const recentErrors = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { drop, take, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { drop, take, toArray } from 'fp-pack/stream';
 
 // 데이터를 head와 tail로 분할
 const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -369,8 +369,8 @@ slidingWindows([1, 2, 3, 4, 5, 6], 3, 2);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { drop, take, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { drop, take, toArray } from 'fp-pack/stream';
 
 // 초기 비동기 값 건너뛰기
 async function* asyncNumbers() {
@@ -432,8 +432,8 @@ const page2Users = await fetchUsersPage(20, 10);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, drop, take, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, drop, take, map, toArray } from 'fp-pack/stream';
 
 // 효율적: 건너뛴 후의 아이템만 처리
 const efficientExample = pipe(

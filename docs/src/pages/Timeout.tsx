@@ -26,7 +26,7 @@ export const Timeout = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { timeout } from 'fp-kit';
+      code={`import { timeout } from 'fp-pack';
 
 await timeout(100, fetch('/api/data')); // resolves or rejects within 100ms
 // rejects with Error("Timed out after 100ms") if exceeded`}
@@ -44,7 +44,7 @@ await timeout(100, fetch('/api/data')); // resolves or rejects within 100ms
 
     <CodeBlock
       language="typescript"
-      code={`import { timeout } from 'fp-kit';
+      code={`import { timeout } from 'fp-pack';
 
 const fetchWithTimeout = (url: string) => timeout(5000, fetch(url));
 
@@ -57,7 +57,7 @@ await fetchWithTimeout('https://example.com');`}
 
     <CodeBlock
       language="typescript"
-      code={`import { timeout, retry } from 'fp-kit';
+      code={`import { timeout, retry } from 'fp-pack';
 
 const run = retry(3, () => timeout(200, doWork()));
 await run();`}

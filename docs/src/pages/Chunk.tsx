@@ -31,7 +31,7 @@ export const Chunk = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { chunk } from 'fp-kit';
+      code={`import { chunk } from 'fp-pack';
 
 const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -76,7 +76,7 @@ chunk(2, numbers);
 
     <CodeBlock
       language="typescript"
-      code={`import { chunk } from 'fp-kit';
+      code={`import { chunk } from 'fp-pack';
 
 // Split into pairs
 const pairs = chunk(2, [1, 2, 3, 4, 5, 6]);
@@ -103,7 +103,7 @@ const groups = chunk(5, [1, 2, 3, 4, 5, 6, 7]);
 
     <CodeBlock
       language="typescript"
-      code={`import { chunk } from 'fp-kit';
+      code={`import { chunk } from 'fp-pack';
 
 interface Product {
   id: number;
@@ -143,7 +143,7 @@ getPage(3); // Last product`}
 
     <CodeBlock
       language="typescript"
-      code={`import { chunk } from 'fp-kit';
+      code={`import { chunk } from 'fp-pack';
 
 const images = [
   'img1.jpg', 'img2.jpg', 'img3.jpg',
@@ -188,7 +188,7 @@ function ImageGrid({ images }: { images: string[] }) {
 
     <CodeBlock
       language="typescript"
-      code={`import { chunk } from 'fp-kit';
+      code={`import { chunk } from 'fp-pack';
 
 async function processInBatches<T>(
   items: T[],
@@ -221,7 +221,7 @@ await processInBatches(items, 50, async (batch) => {
 
     <CodeBlock
       language="typescript"
-      code={`import { chunk } from 'fp-kit';
+      code={`import { chunk } from 'fp-pack';
 
 async function fetchWithRateLimit(
   urls: string[],
@@ -260,7 +260,7 @@ const responses = await fetchWithRateLimit(urls, 10);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { chunk } from 'fp-kit';
+      code={`import { chunk } from 'fp-pack';
 
 // Group data points for averaging/smoothing
 const temperatures = [
@@ -296,7 +296,7 @@ function createHistogram(data: number[], binSize: number) {
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, chunk } from 'fp-kit';
+      code={`import { pipe, chunk } from 'fp-pack';
 
 const processData = pipe(
   (data: number[]) => data.filter(n => n > 0),
@@ -325,7 +325,7 @@ const result = processData(data);
 
     <CodeBlock
       language="typescript"
-      code={`import { chunk } from 'fp-kit';
+      code={`import { chunk } from 'fp-pack';
 
 // Empty array
 chunk(3, []);

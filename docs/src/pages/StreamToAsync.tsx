@@ -28,7 +28,7 @@ export const StreamToAsync = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { toAsync, toArray } from 'fp-kit/stream';
+      code={`import { toAsync, toArray } from 'fp-pack/stream';
 
 const asyncIter = toAsync([Promise.resolve(1), 2, 3]);
 await toArray(asyncIter);
@@ -54,8 +54,8 @@ await toArray(asyncIter);
 
     <CodeBlock
       language="typescript"
-      code={`import { chunk, toArray, toAsync } from 'fp-kit/stream';
-import { pipeAsync } from 'fp-kit';
+      code={`import { chunk, toArray, toAsync } from 'fp-pack/stream';
+import { pipeAsync } from 'fp-pack';
 
 await pipeAsync(toAsync, chunk(2), toArray)([
   Promise.resolve(1),

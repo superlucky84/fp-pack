@@ -66,7 +66,7 @@ function prepend<T>(
 
     <CodeBlock
       language="typescript"
-      code={`import { prepend } from 'fp-kit/stream';
+      code={`import { prepend } from 'fp-pack/stream';
 
 // Prepend a single value to an array
 const numbers = prepend(0, [1, 2, 3]);
@@ -91,9 +91,9 @@ console.log(Array.from(withOne));
 
     <CodeBlock
       language="typescript"
-      code={`import { prepend } from 'fp-kit/stream';
-import { pipe } from 'fp-kit/composition';
-import { map } from 'fp-kit/stream';
+      code={`import { prepend } from 'fp-pack/stream';
+import { pipe } from 'fp-pack/composition';
+import { map } from 'fp-pack/stream';
 
 // Create reusable prepend functions
 const addHeader = prepend('=== Report Header ===');
@@ -126,7 +126,7 @@ console.log(Array.from(processItems(items)));
 
     <CodeBlock
       language="typescript"
-      code={`import { prepend } from 'fp-kit/stream';
+      code={`import { prepend } from 'fp-pack/stream';
 
 // Add CSV header to data rows
 async function* fetchDataRows() {
@@ -156,8 +156,8 @@ for await (const row of csvWithHeader) {
 
     <CodeBlock
       language="typescript"
-      code={`import { prepend } from 'fp-kit/stream';
-import { pipe } from 'fp-kit/composition';
+      code={`import { prepend } from 'fp-pack/stream';
+import { pipe } from 'fp-pack/composition';
 
 interface FileChunk {
   type: 'metadata' | 'content';
@@ -199,7 +199,7 @@ for await (const chunk of withMetadata) {
 
     <CodeBlock
       language="typescript"
-      code={`import { prepend } from 'fp-kit/stream';
+      code={`import { prepend } from 'fp-pack/stream';
 
 interface StreamEvent {
   type: 'init' | 'data' | 'update';
@@ -248,7 +248,7 @@ for await (const event of eventsWithInit) {
 
     <CodeBlock
       language="typescript"
-      code={`import { prepend } from 'fp-kit/stream';
+      code={`import { prepend } from 'fp-pack/stream';
 
 interface Product {
   id: number;
@@ -304,8 +304,8 @@ for await (const item of productsWithCacheInfo) {
 
     <CodeBlock
       language="typescript"
-      code={`import { prepend } from 'fp-kit/stream';
-import { pipe } from 'fp-kit/composition';
+      code={`import { prepend } from 'fp-pack/stream';
+import { pipe } from 'fp-pack/composition';
 
 function* generateLogs() {
   yield '[INFO] Service started';
@@ -341,9 +341,9 @@ for (const line of logsWithBanner) {
 
     <CodeBlock
       language="typescript"
-      code={`import { prepend } from 'fp-kit/stream';
-import { filter } from 'fp-kit/stream';
-import { pipe } from 'fp-kit/composition';
+      code={`import { prepend } from 'fp-pack/stream';
+import { filter } from 'fp-pack/stream';
+import { pipe } from 'fp-pack/composition';
 
 function* getNumbers() {
   yield 1;

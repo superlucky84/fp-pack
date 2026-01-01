@@ -34,7 +34,7 @@ export const Identity = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { identity } from 'fp-kit';
+      code={`import { identity } from 'fp-pack';
 
 identity(5);        // 5
 identity('hello');  // 'hello'
@@ -60,7 +60,7 @@ identity(obj) === obj;  // true (same reference)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { identity } from 'fp-kit';
+      code={`import { identity } from 'fp-pack';
 
 // Conditional transformation
 function processData<T>(
@@ -89,7 +89,7 @@ processData(numbers);  // [1, 2, 3]`}
 
     <CodeBlock
       language="typescript"
-      code={`import { compose, pipe, identity } from 'fp-kit';
+      code={`import { compose, pipe, identity } from 'fp-pack';
 
 const double = (n: number) => n * 2;
 const addTen = (n: number) => n + 10;
@@ -113,7 +113,7 @@ pipe(...transforms)(5);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { identity } from 'fp-kit';
+      code={`import { identity } from 'fp-pack';
 
 // Extract values from nested structures
 interface User {
@@ -150,7 +150,7 @@ users.map(identity);  // Same as [...users]
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, identity } from 'fp-kit';
+      code={`import { pipe, identity } from 'fp-pack';
 
 interface Options {
   uppercase?: boolean;
@@ -179,7 +179,7 @@ processString('  hello  ', {});
 
     <CodeBlock
       language="typescript"
-      code={`import { identity } from 'fp-kit';
+      code={`import { identity } from 'fp-pack';
 
 interface Config<T> {
   data: T[];
@@ -215,7 +215,7 @@ processItems({ data: numbers });  // [1, 2, 3, 4, 5]`}
 
     <CodeBlock
       language="typescript"
-      code={`import { identity } from 'fp-kit';
+      code={`import { identity } from 'fp-pack';
 
 // flatMap with identity flattens one level
 const nested = [[1, 2], [3, 4], [5]];

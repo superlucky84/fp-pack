@@ -13,7 +13,7 @@ export const Entries = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { entries } from 'fp-kit';
+      code={`import { entries } from 'fp-pack';
 
 entries({ id: 1, name: 'A' });
 // [['id', 1], ['name', 'A']]`}

@@ -33,7 +33,7 @@ export const Flip = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { flip } from 'fp-kit';
+      code={`import { flip } from 'fp-pack';
 
 // Original function
 const divide = (a: number, b: number) => a / b;
@@ -56,7 +56,7 @@ flippedDivide(2, 10);  // 5 (now divides 10 by 2)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { flip } from 'fp-kit';
+      code={`import { flip } from 'fp-pack';
 
 const subtract = (a: number, b: number) => a - b;
 const flippedSubtract = flip(subtract);
@@ -71,7 +71,7 @@ flippedSubtract(3, 10);   // 7 (same as subtract(10, 3))`}
 
     <CodeBlock
       language="typescript"
-      code={`import { flip } from 'fp-kit';
+      code={`import { flip } from 'fp-pack';
 
 const concat = (...parts: Array<string | number>) => parts.join('-');
 const flippedConcat = flip(concat);
@@ -92,7 +92,7 @@ flippedConcat('a', 'b', 1, 2);  // "2-1-b-a"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { flip, curry, pipe } from 'fp-kit';
+      code={`import { flip, curry, pipe } from 'fp-pack';
 
 // Sometimes APIs have arguments in an inconvenient order
 const appendTo = (suffix: string, text: string) => text + suffix;
@@ -114,7 +114,7 @@ shout('hello');  // "HELLO!"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { flip, curry } from 'fp-kit';
+      code={`import { flip, curry } from 'fp-pack';
 
 // Array.prototype.map expects (callback, thisArg)
 // But we often want data last for composition
@@ -140,7 +140,7 @@ doubleAll(double);  // [2, 4, 6, 8]`}
 
     <CodeBlock
       language="typescript"
-      code={`import { flip, curry } from 'fp-kit';
+      code={`import { flip, curry } from 'fp-pack';
 
 const replace = curry(
   (search: string, replacement: string, text: string) =>
@@ -171,7 +171,7 @@ sanitize("<script>alert('xss')</script>");  // "scriptalert('xss')/script"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { flip, curry, pipe } from 'fp-kit';
+      code={`import { flip, curry, pipe } from 'fp-pack';
 
 const divide = (a: number, b: number) => a / b;
 

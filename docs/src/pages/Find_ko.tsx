@@ -30,7 +30,7 @@ export const Find_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { find } from 'fp-kit';
+      code={`import { find } from 'fp-pack';
 
 const users = [
   { id: 1, name: 'Alice' },
@@ -68,7 +68,7 @@ find(u => u.name === 'Zoe', users);
 
     <CodeBlock
       language="typescript"
-      code={`import { find } from 'fp-kit';
+      code={`import { find } from 'fp-pack';
 
 interface Product {
   id: string;
@@ -91,7 +91,7 @@ const product = find((p: Product) => p.id === 'p2', products);
 
     <CodeBlock
       language="typescript"
-      code={`import { find, maybe } from 'fp-kit';
+      code={`import { find, maybe } from 'fp-pack';
 
 const getUpperName = maybe((u: { name: string }) => u.name.toUpperCase());
 

@@ -34,7 +34,7 @@ export const Assert_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { assert } from 'fp-kit';
+      code={`import { assert } from 'fp-pack';
 
 function divide(a: number, b: number): number {
   assert(b !== 0, '0으로 나눌 수 없습니다');
@@ -75,7 +75,7 @@ divide(10, 0);  // Error: 0으로 나눌 수 없습니다`}
 
     <CodeBlock
       language="typescript"
-      code={`import { assert } from 'fp-kit';
+      code={`import { assert } from 'fp-pack';
 
 // 메시지 없는 기본 검증
 assert(true);   // 에러 없음, 실행 계속
@@ -92,7 +92,7 @@ assert(5 < 3, '5는 3보다 커야 합니다');  // Error: 5는 3보다 커야 �
 
     <CodeBlock
       language="typescript"
-      code={`import { assert } from 'fp-kit';
+      code={`import { assert } from 'fp-pack';
 
 function withdraw(amount: number, balance: number): number {
   assert(amount > 0, '금액은 양수여야 합니다');
@@ -117,7 +117,7 @@ withdraw(150, 100);  // Error: 잔액이 부족합니다`}
 
     <CodeBlock
       language="typescript"
-      code={`import { assert } from 'fp-kit';
+      code={`import { assert } from 'fp-pack';
 
 interface User {
   id: number;
@@ -154,7 +154,7 @@ createUser({ name: 'John', email: 'invalid' });
 
     <CodeBlock
       language="typescript"
-      code={`import { assert } from 'fp-kit';
+      code={`import { assert } from 'fp-pack';
 
 function getFirst<T>(arr: T[]): T {
   assert(arr.length > 0, '배열은 비어있을 수 없습니다');
@@ -181,7 +181,7 @@ getAt(['a', 'b', 'c'], 10);  // Error: 인덱스가 범위를 벗어났습니다
 
     <CodeBlock
       language="typescript"
-      code={`import { assert } from 'fp-kit';
+      code={`import { assert } from 'fp-pack';
 
 class BankAccount {
   private balance: number = 0;
@@ -221,7 +221,7 @@ console.log(account.getBalance());  // 50`}
 
     <CodeBlock
       language="typescript"
-      code={`import { assert, pipe } from 'fp-kit';
+      code={`import { assert, pipe } from 'fp-pack';
 
 const ensurePositive = (n: number) => {
   assert(n > 0, '값은 양수여야 합니다');
@@ -244,7 +244,7 @@ parsePositive(' -3 '); // Error: 값은 양수여야 합니다`}
 
     <CodeBlock
       language="typescript"
-      code={`import { assert } from 'fp-kit';
+      code={`import { assert } from 'fp-pack';
 
 function assertIsString(value: unknown): asserts value is string {
   assert(typeof value === 'string', '값은 문자열이어야 합니다');
@@ -270,7 +270,7 @@ processValue(123);      // Error: 값은 문자열이어야 합니다`}
 
     <CodeBlock
       language="typescript"
-      code={`import { assert } from 'fp-kit';
+      code={`import { assert } from 'fp-pack';
 
 interface ApiResponse {
   success: boolean;
@@ -300,7 +300,7 @@ handleApiResponse({ success: true });
 
     <CodeBlock
       language="typescript"
-      code={`import { assert } from 'fp-kit';
+      code={`import { assert } from 'fp-pack';
 
 interface Config {
   apiUrl: string;

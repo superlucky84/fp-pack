@@ -26,7 +26,7 @@ export const PipeAsync = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeAsync } from 'fp-kit';
+      code={`import { pipeAsync } from 'fp-pack';
 
 const fn = pipeAsync(
   async (n: number) => n + 1,
@@ -48,7 +48,7 @@ const result = await fn(2); // 6`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeAsync } from 'fp-kit';
+      code={`import { pipeAsync } from 'fp-pack';
 
 const fetchUser = async (id: string) => ({ id, name: 'Ada' });
 const getName = (u: { name: string }) => u.name;

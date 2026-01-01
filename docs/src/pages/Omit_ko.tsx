@@ -13,7 +13,7 @@ export const Omit_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { omit } from 'fp-kit';
+      code={`import { omit } from 'fp-pack';
 
 const user = { id: 1, name: 'Ada', active: true };
 

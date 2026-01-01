@@ -13,7 +13,7 @@ export const HasPath_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { hasPath } from 'fp-kit';
+      code={`import { hasPath } from 'fp-pack';
 
 const user = { profile: { address: { city: 'Seoul' } } };
 

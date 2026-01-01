@@ -37,7 +37,7 @@ export const StreamZip = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { zip, toArray } from 'fp-kit/stream';
+      code={`import { zip, toArray } from 'fp-pack/stream';
 
 // Basic usage
 const names = ['Alice', 'Bob', 'Charlie'];
@@ -113,7 +113,7 @@ function zip<A, B>(
     <div class="mb-6 p-6 bg-purple-50 dark:bg-purple-900/20 border-l-4 border-purple-500 rounded">
       <CodeBlock
         language="typescript"
-        code={`import { zip, zipWith } from 'fp-kit/stream';
+        code={`import { zip, zipWith } from 'fp-pack/stream';
 
 const names = ['Alice', 'Bob', 'Charlie'];
 const scores = [95, 87, 92];
@@ -154,8 +154,8 @@ toArray(zip(set2, set1));
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, zip, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, zip, map, toArray } from 'fp-pack/stream';
 
 const items = ['Apple', 'Banana', 'Cherry'];
 
@@ -187,8 +187,8 @@ const startFrom5 = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { zip, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { zip, map, toArray } from 'fp-pack/stream';
 
 const headers = ['Name', 'Age', 'City'];
 const row1 = ['Alice', 25, 'NYC'];
@@ -236,8 +236,8 @@ const records = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeAsync } from 'fp-kit';
-import { zip, map, toArray } from 'fp-kit/stream';
+      code={`import { pipeAsync } from 'fp-pack';
+import { zip, map, toArray } from 'fp-pack/stream';
 
 // Fetch user profiles and their statistics in parallel
 async function fetchUserData(userIds: number[]) {
@@ -278,8 +278,8 @@ const userData = await fetchUserData([1, 2, 3]);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { zip, map, filter, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { zip, map, filter, toArray } from 'fp-pack/stream';
 
 // Generate events with timestamps
 function* eventStream() {
@@ -333,8 +333,8 @@ console.log(clicks);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, zip, map, flatMap, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, zip, map, flatMap, toArray } from 'fp-pack/stream';
 
 // Create coordinate pairs for a grid
 const createGrid = (rows: number, cols: number) =>
@@ -394,8 +394,8 @@ const processed = processMatrix(matrix);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeAsync } from 'fp-kit';
-import { zip, map, filter, toArray } from 'fp-kit/stream';
+      code={`import { pipeAsync } from 'fp-pack';
+import { zip, map, filter, toArray } from 'fp-pack/stream';
 
 // Async generators for real-time data
 async function* sensorA() {
@@ -449,8 +449,8 @@ const result = await pipeAsync(
       </p>
       <CodeBlock
         language="typescript"
-        code={`import { pipe } from 'fp-kit';
-import { range, zip, take, toArray } from 'fp-kit/stream';
+        code={`import { pipe } from 'fp-pack';
+import { range, zip, take, toArray } from 'fp-pack/stream';
 
 // Efficient: Only creates 3 pairs even with infinite ranges
 const first3 = pipe(

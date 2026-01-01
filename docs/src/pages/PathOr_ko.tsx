@@ -13,7 +13,7 @@ export const PathOr_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { pathOr } from 'fp-kit';
+      code={`import { pathOr } from 'fp-pack';
 
 const user = { profile: { name: 'Ada' } };
 

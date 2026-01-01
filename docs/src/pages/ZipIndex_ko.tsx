@@ -27,7 +27,7 @@ export const ZipIndex_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { zipIndex } from 'fp-kit';
+      code={`import { zipIndex } from 'fp-pack';
 
 zipIndex(['a', 'b', 'c']);
 // [[0, 'a'], [1, 'b'], [2, 'c']]`}
@@ -56,7 +56,7 @@ zipIndex(['a', 'b', 'c']);
 
     <CodeBlock
       language="typescript"
-      code={`import { zipIndex, map } from 'fp-kit';
+      code={`import { zipIndex, map } from 'fp-pack';
 
 const pairs = zipIndex([10, 20]);
 const labels = map(([i, v]) => \`\${i}:\${v}\`, pairs);
@@ -69,7 +69,7 @@ const labels = map(([i, v]) => \`\${i}:\${v}\`, pairs);
 
     <CodeBlock
       language="typescript"
-      code={`import { zipIndex, filter, map } from 'fp-kit';
+      code={`import { zipIndex, filter, map } from 'fp-pack';
 
 const pairs = zipIndex(['a', 'b', 'c', 'd']);
 const evenIndexed = filter(([i]) => i % 2 === 0, pairs);

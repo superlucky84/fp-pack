@@ -34,7 +34,7 @@ export const Unzip_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { unzip } from 'fp-kit';
+      code={`import { unzip } from 'fp-pack';
 
 const pairs: Array<[number, string]> = [
   [1, 'a'],
@@ -60,7 +60,7 @@ console.log(letters);  // ['a', 'b', 'c']`}
 
     <CodeBlock
       language="typescript"
-      code={`import { unzip } from 'fp-kit';
+      code={`import { unzip } from 'fp-pack';
 
 // 숫자와 문자열 쌍
 const data: Array<[number, string]> = [
@@ -91,7 +91,7 @@ const [statuses, flags] = unzip(mixed);
 
     <CodeBlock
       language="typescript"
-      code={`import { unzip } from 'fp-kit';
+      code={`import { unzip } from 'fp-pack';
 
 // 빈 입력은 두 개의 빈 배열을 반환
 const [left, right] = unzip([]);
@@ -105,7 +105,7 @@ const [left, right] = unzip([]);
 
     <CodeBlock
       language="typescript"
-      code={`import { zip, unzip } from 'fp-kit';
+      code={`import { zip, unzip } from 'fp-pack';
 
 const array1 = [1, 2, 3];
 const array2 = ['a', 'b', 'c'];
@@ -136,7 +136,7 @@ console.log(second);  // 원래 array2와 동일`}
 
     <CodeBlock
       language="typescript"
-      code={`import { unzip } from 'fp-kit';
+      code={`import { unzip } from 'fp-pack';
 
 // Object.entries 결과에서 키와 값 추출
 const config = {
@@ -162,7 +162,7 @@ console.log('설정 값:', values);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { unzip } from 'fp-kit';
+      code={`import { unzip } from 'fp-pack';
 
 interface Point {
   x: number;
@@ -198,7 +198,7 @@ console.log(\`경계 상자: (\${minX}, \${minY})에서 (\${maxX}, \${maxY})까�
 
     <CodeBlock
       language="typescript"
-      code={`import { unzip } from 'fp-kit';
+      code={`import { unzip } from 'fp-pack';
 
 // 타임스탬프-값 쌍으로 된 시계열 데이터
 const timeSeries: Array<[number, number]> = [
@@ -230,7 +230,7 @@ const chartData = {
 
     <CodeBlock
       language="typescript"
-      code={`import { unzip } from 'fp-kit';
+      code={`import { unzip } from 'fp-pack';
 
 interface UserScore {
   userId: string;
@@ -266,7 +266,7 @@ console.log(\`최고 성적: \${topUser}님 \${highest}점\`);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { unzip } from 'fp-kit';
+      code={`import { unzip } from 'fp-pack';
 
 // 머신러닝 훈련 데이터
 const trainingData: Array<[string, number[]]> = [
@@ -291,7 +291,7 @@ const model = trainModel(features, labels);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, filter, unzip } from 'fp-kit';
+      code={`import { pipe, filter, unzip } from 'fp-pack';
 
 interface Transaction {
   id: string;
@@ -357,7 +357,7 @@ console.log(\`양수 거래 합계: $\${amounts.reduce((a, b) => a + b, 0)}\`);`
 
     <CodeBlock
       language="typescript"
-      code={`import { zip, unzip } from 'fp-kit';
+      code={`import { zip, unzip } from 'fp-pack';
 
 // 역연산 관계
 const arr1 = [1, 2, 3];

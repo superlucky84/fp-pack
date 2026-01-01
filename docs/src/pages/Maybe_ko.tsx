@@ -46,7 +46,7 @@ export const Maybe_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { maybe } from 'fp-kit';
+      code={`import { maybe } from 'fp-pack';
 
 const toUpper = maybe((s: string) => s.toUpperCase());
 
@@ -98,7 +98,7 @@ processName(undefined);   // null`}
 
     <CodeBlock
       language="typescript"
-      code={`import { maybe } from 'fp-kit';
+      code={`import { maybe } from 'fp-pack';
 
 // 문자열 연산
 const toUpper = maybe((s: string) => s.toUpperCase());
@@ -131,7 +131,7 @@ increment(null);  // null`}
 
     <CodeBlock
       language="typescript"
-      code={`import { maybe } from 'fp-kit';
+      code={`import { maybe } from 'fp-pack';
 
 // maybe 없이 - 장황한 null 검사
 function processUser(user: User | null) {
@@ -160,7 +160,7 @@ processUser(null);               // null`}
 
     <CodeBlock
       language="typescript"
-      code={`import { maybe } from 'fp-kit';
+      code={`import { maybe } from 'fp-pack';
 
 interface User {
   id: number;
@@ -190,7 +190,7 @@ getBio(user);     // "Software engineer" 또는 null 또는 undefined`}
 
     <CodeBlock
       language="typescript"
-      code={`import { maybe } from 'fp-kit';
+      code={`import { maybe } from 'fp-pack';
 
 interface ApiResponse {
   data: {
@@ -223,7 +223,7 @@ const firstItem = getFirstItem(response);
 
     <CodeBlock
       language="typescript"
-      code={`import { maybe } from 'fp-kit';
+      code={`import { maybe } from 'fp-pack';
 
 // nullable 배열 처리
 const getFirstElement = maybe((arr: any[]) => arr[0]);
@@ -247,7 +247,7 @@ mapDouble(null);               // null`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, maybe } from 'fp-kit';
+      code={`import { pipe, maybe } from 'fp-pack';
 
 interface User {
   name: string;
@@ -282,7 +282,7 @@ pipe(getName, greet)(user);
 
     <CodeBlock
       language="typescript"
-      code={`import { maybe } from 'fp-kit';
+      code={`import { maybe } from 'fp-pack';
 
 interface FormData {
   email: string;
@@ -324,7 +324,7 @@ if (email && password) {
 
     <CodeBlock
       language="typescript"
-      code={`import { maybe } from 'fp-kit';
+      code={`import { maybe } from 'fp-pack';
 
 interface Config {
   api: {
@@ -361,7 +361,7 @@ const darkMode = isDarkMode(config) ?? false;`}
 
     <CodeBlock
       language="typescript"
-      code={`import { maybe } from 'fp-kit';
+      code={`import { maybe } from 'fp-pack';
 
 const getUsername = maybe((user: User) => user.name);
 
@@ -370,7 +370,7 @@ const username = getUsername(user) ?? 'Guest';
 const displayName = getUsername(user) ?? 'Unknown User';
 
 // 또는 getOrElse 사용
-import { getOrElse } from 'fp-kit';
+import { getOrElse } from 'fp-pack';
 
 const username2 = getOrElse('Guest')(getUsername(user));`}
     />
@@ -381,7 +381,7 @@ const username2 = getOrElse('Guest')(getUsername(user));`}
 
     <CodeBlock
       language="typescript"
-      code={`import { maybe } from 'fp-kit';
+      code={`import { maybe } from 'fp-pack';
 
 const users: (User | null)[] = [
   { name: 'Alice', age: 30 },
@@ -407,7 +407,7 @@ const validNames = names.filter(name => name !== null);
 
     <CodeBlock
       language="typescript"
-      code={`import { maybe } from 'fp-kit';
+      code={`import { maybe } from 'fp-pack';
 
 // 조건에 따라 변환
 const processIfActive = maybe((user: User) => {

@@ -27,7 +27,7 @@ export const EndsWith = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { endsWith } from 'fp-kit';
+      code={`import { endsWith } from 'fp-pack';
 
 endsWith('c', 'abc');  // true
 endsWith('b', 'abc');  // false
@@ -48,7 +48,7 @@ endsWith(['b'], ['a', 'b', 'c']);  // false`}
 
     <CodeBlock
       language="typescript"
-      code={`import { endsWith } from 'fp-kit';
+      code={`import { endsWith } from 'fp-pack';
 
 const files = ['main.js', 'styles.css', 'utils.ts', 'index.js'];
 
@@ -62,7 +62,7 @@ const jsFiles = files.filter(name => endsWith('.js', name));
 
     <CodeBlock
       language="typescript"
-      code={`import { endsWith } from 'fp-kit';
+      code={`import { endsWith } from 'fp-pack';
 
 ['/users', '/v1/api', '/about'].filter(path => endsWith('/api', path));
 // ['/v1/api']`}

@@ -36,7 +36,7 @@ export const TryCatch = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { tryCatch } from 'fp-kit';
+      code={`import { tryCatch } from 'fp-pack';
 
 // Safely parse JSON
 const safeJsonParse = tryCatch(
@@ -81,7 +81,7 @@ safeJsonParse('invalid json');
 
     <CodeBlock
       language="typescript"
-      code={`import { tryCatch } from 'fp-kit';
+      code={`import { tryCatch } from 'fp-pack';
 
 // Safe JSON parsing with default
 const parseJsonSafe = tryCatch(
@@ -111,7 +111,7 @@ parseWithError('not json');
 
     <CodeBlock
       language="typescript"
-      code={`import { tryCatch } from 'fp-kit';
+      code={`import { tryCatch } from 'fp-pack';
 
 // Convert string to number with default
 const toNumber = tryCatch(
@@ -152,7 +152,7 @@ safeDivide([10, 0]);  // { error: 'Division by zero', result: Infinity }`}
 
     <CodeBlock
       language="typescript"
-      code={`import { tryCatch } from 'fp-kit';
+      code={`import { tryCatch } from 'fp-pack';
 
 interface User {
   id: number;
@@ -203,7 +203,7 @@ parseUserResponse('invalid json');
 
     <CodeBlock
       language="typescript"
-      code={`import { tryCatch } from 'fp-kit';
+      code={`import { tryCatch } from 'fp-pack';
 
 // Safe file reading (Node.js example)
 const readFileSafe = tryCatch(
@@ -238,7 +238,7 @@ const getLocalStorage = tryCatch(
 
     <CodeBlock
       language="typescript"
-      code={`import { tryCatch } from 'fp-kit';
+      code={`import { tryCatch } from 'fp-pack';
 
 interface ValidatedData {
   email: string;
@@ -286,7 +286,7 @@ validateUserData('not an object');
 
     <CodeBlock
       language="typescript"
-      code={`import { tryCatch } from 'fp-kit';
+      code={`import { tryCatch } from 'fp-pack';
 
 interface ParsedUrl {
   valid: true;
@@ -331,7 +331,7 @@ parseUrl('not a url');
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, tryCatch } from 'fp-kit';
+      code={`import { pipe, tryCatch } from 'fp-pack';
 
 interface ProcessedData {
   parsed: unknown;
@@ -378,7 +378,7 @@ processData('invalid');
 
     <CodeBlock
       language="typescript"
-      code={`import { tryCatch } from 'fp-kit';
+      code={`import { tryCatch } from 'fp-pack';
 
 // Process each item safely
 const processItem = tryCatch(

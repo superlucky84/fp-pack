@@ -26,7 +26,7 @@ export const StreamReduce = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { reduce } from 'fp-kit/stream';
+      code={`import { reduce } from 'fp-pack/stream';
 
 const sum = reduce((acc: number, n: number) => acc + n, 0, [1, 2, 3]);
 // 6`}
@@ -54,7 +54,7 @@ function reduce<T, R>(fn: (acc: R, value: T) => R | Promise<R>, initial: R): (it
 
     <CodeBlock
       language="typescript"
-      code={`import { reduce } from 'fp-kit/stream';
+      code={`import { reduce } from 'fp-pack/stream';
 
 const result = await reduce(
   async (acc: number, n: number) => acc + n,

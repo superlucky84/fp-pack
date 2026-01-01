@@ -29,7 +29,7 @@ export const PipeSideEffect_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-pack';
 
 const validateAge = (age: number) =>
   age >= 18
@@ -66,7 +66,7 @@ runPipeResult(processAgePipeline(15)); // Throws: Error: 18세 이상만 가능�
     <CodeBlock
       language="typescript"
       code={`// ✅ 좋음: 99%의 경우 - pipe 사용 (순수 변환)
-import { pipe, map, filter } from 'fp-kit';
+import { pipe, map, filter } from 'fp-pack';
 
 const processData = pipe(
   filter(isValid),
@@ -74,7 +74,7 @@ const processData = pipe(
 );
 
 // ✅ 좋음: SideEffect가 필요할 때만 - pipeSideEffect 사용
-import { pipeSideEffect, SideEffect } from 'fp-kit';
+import { pipeSideEffect, SideEffect } from 'fp-pack';
 
 const processWithValidation = pipeSideEffect(
   validateOrStop,  // SideEffect를 반환할 수 있음
@@ -144,7 +144,7 @@ function pipeSideEffect(...funcs: Array<(input: any) => any>): (input: any) => a
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-pack';
 
 const validateAge = (age: number) => {
   if (age < 0) {
@@ -180,7 +180,7 @@ console.log(result);  // "나이: 20"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-pack';
 
 interface User {
   id: number;
@@ -225,7 +225,7 @@ console.log(result2);  // { error: '권한 없음', message: '관리자 권한�
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-pack';
 
 const divide = (a: number, b: number) => {
   if (b === 0) {
@@ -291,7 +291,7 @@ console.log(result2);  // NaN`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, pipeSideEffect, SideEffect } from 'fp-kit';
+      code={`import { pipe, pipeSideEffect, SideEffect } from 'fp-pack';
 
 const validateUserPipeline = pipeSideEffect(
   findUser,

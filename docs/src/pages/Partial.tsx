@@ -35,7 +35,7 @@ export const Partial = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { partial } from 'fp-kit';
+      code={`import { partial } from 'fp-pack';
 
 // Original function
 const greet = (greeting: string, name: string, punctuation: string) =>
@@ -88,7 +88,7 @@ sayHelloAlice('.');        // "Hello, Alice."`}
 
     <CodeBlock
       language="typescript"
-      code={`import { partial } from 'fp-kit';
+      code={`import { partial } from 'fp-pack';
 
 // Math operations
 const add3 = (a: number, b: number, c: number) => a + b + c;
@@ -112,7 +112,7 @@ userFormat('Bob', 'Editor');     // "User: Bob, Role: Editor"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { partial } from 'fp-kit';
+      code={`import { partial } from 'fp-pack';
 
 const slice = <T>(arr: T[], start: number, end: number) =>
   arr.slice(start, end);
@@ -149,7 +149,7 @@ skipFirst2Better(numbers);    // [3, 4, 5]`}
 
     <CodeBlock
       language="typescript"
-      code={`import { partial } from 'fp-kit';
+      code={`import { partial } from 'fp-pack';
 
 // Generic fetch function
 const apiFetch = async (
@@ -187,7 +187,7 @@ productionApi('/posts', { method: 'POST', body: '...' });`}
 
     <CodeBlock
       language="typescript"
-      code={`import { partial } from 'fp-kit';
+      code={`import { partial } from 'fp-pack';
 
 // Generic handler
 const handleAction = (
@@ -216,7 +216,7 @@ form.addEventListener('submit', handleSubmit);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { partial } from 'fp-kit';
+      code={`import { partial } from 'fp-pack';
 
 const validate = (
   ruleName: string,
@@ -275,7 +275,7 @@ validate8Chars('short');             // Error!`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, partial } from 'fp-kit';
+      code={`import { pipe, partial } from 'fp-pack';
 
 // Data transformation functions (note: data comes last!)
 const filterBy = <T>(predicate: (item: T) => boolean, arr: T[]) =>

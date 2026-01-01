@@ -35,7 +35,7 @@ export const Assoc_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { assoc } from 'fp-kit';
+      code={`import { assoc } from 'fp-pack';
 
 const user = { id: 1, name: 'Alice', age: 25 };
 
@@ -79,7 +79,7 @@ console.log(user);
 
     <CodeBlock
       language="typescript"
-      code={`import { assoc } from 'fp-kit';
+      code={`import { assoc } from 'fp-pack';
 
 interface User {
   id: number;
@@ -116,7 +116,7 @@ console.log(user);
 
     <CodeBlock
       language="typescript"
-      code={`import { assoc } from 'fp-kit';
+      code={`import { assoc } from 'fp-pack';
 
 interface User {
   id: number;
@@ -149,7 +149,7 @@ const withExplicit = assoc<User, 'age', number>('age', 30, user);
 
     <CodeBlock
       language="typescript"
-      code={`import { assoc } from 'fp-kit';
+      code={`import { assoc } from 'fp-pack';
 
 interface BaseUser {
   id: number;
@@ -207,7 +207,7 @@ const adminUser: UserWithRole = assoc('role', 'admin',
 
     <CodeBlock
       language="typescript"
-      code={`import { assoc } from 'fp-kit';
+      code={`import { assoc } from 'fp-pack';
 
 // TypeScript가 배열 요소 타입을 유지합니다
 const items: string[] = ['a', 'b', 'c', 'd'];
@@ -248,7 +248,7 @@ const updatedMixed = assoc(0, 'x', mixed);
 
     <CodeBlock
       language="typescript"
-      code={`import { assoc } from 'fp-kit';
+      code={`import { assoc } from 'fp-pack';
 import { useState } from 'react';
 
 interface FormState {
@@ -295,7 +295,7 @@ function LoginForm() {
 
     <CodeBlock
       language="typescript"
-      code={`import { assoc } from 'fp-kit';
+      code={`import { assoc } from 'fp-pack';
 
 interface User {
   id: number;
@@ -350,7 +350,7 @@ function reducer(state: State, action: Action): State {
 
     <CodeBlock
       language="typescript"
-      code={`import { assoc, pipe } from 'fp-kit';
+      code={`import { assoc, pipe } from 'fp-pack';
 
 interface Address {
   street: string;
@@ -405,7 +405,7 @@ const updated = updateUserInfo(user);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { assoc } from 'fp-kit';
+      code={`import { assoc } from 'fp-pack';
 
 interface Todo {
   id: number;
@@ -443,7 +443,7 @@ console.log(todos[1].completed); // false`}
 
     <CodeBlock
       language="typescript"
-      code={`import { assoc } from 'fp-kit';
+      code={`import { assoc } from 'fp-pack';
 
 interface ApiConfig {
   baseUrl: string;
@@ -491,7 +491,7 @@ const authenticatedConfig = withAuth('abc123', defaultConfig);
 
     <CodeBlock
       language="typescript"
-      code={`import { assoc } from 'fp-kit';
+      code={`import { assoc } from 'fp-pack';
 
 interface Product {
   id: number;

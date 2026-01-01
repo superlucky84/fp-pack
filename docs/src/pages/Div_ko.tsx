@@ -13,7 +13,7 @@ export const Div_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { div } from 'fp-kit';
+      code={`import { div } from 'fp-pack';
 
 div(6, 3);   // 2
 div(1, 2);   // 0.5`}

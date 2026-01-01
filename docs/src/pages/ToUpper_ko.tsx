@@ -26,10 +26,10 @@ export const ToUpper_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { toUpper } from 'fp-kit';
+      code={`import { toUpper } from 'fp-pack';
 
 toUpper('Hello');   // 'HELLO'
-toUpper('fp-kit');  // 'FP-KIT'`}
+toUpper('fp-pack');  // 'FP-KIT'`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -44,7 +44,7 @@ toUpper('fp-kit');  // 'FP-KIT'`}
 
     <CodeBlock
       language="typescript"
-      code={`import { toUpper } from 'fp-kit';
+      code={`import { toUpper } from 'fp-pack';
 
 const labels = ['draft', 'published', 'archived'];
 const display = labels.map(toUpper);

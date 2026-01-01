@@ -33,7 +33,7 @@ export const Compose = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { compose } from 'fp-kit';
+      code={`import { compose } from 'fp-pack';
 
 const double = (n: number) => n * 2;
 const addTen = (n: number) => n + 10;
@@ -89,7 +89,7 @@ function compose(...funcs: Array<(input: any) => any>): (input: any) => any;`}
 
     <CodeBlock
       language="typescript"
-      code={`import { compose } from 'fp-kit';
+      code={`import { compose } from 'fp-pack';
 
 // Mathematical notation: f(g(h(x)))
 const h = (x: number) => x + 1;
@@ -111,7 +111,7 @@ fgh(5);  // 9
 
     <CodeBlock
       language="typescript"
-      code={`import { compose } from 'fp-kit';
+      code={`import { compose } from 'fp-pack';
 
 const addExclamation = (s: string) => s + '!';
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -138,7 +138,7 @@ formatGreeting('  hello world  ');  // "Hello world!"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { compose } from 'fp-kit';
+      code={`import { compose } from 'fp-pack';
 
 interface User {
   profile: {
@@ -174,7 +174,7 @@ checkAdultStatus(user);  // "Yes"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { compose } from 'fp-kit';
+      code={`import { compose } from 'fp-pack';
 
 const parseNum = (str: string) => parseInt(str, 10);
 const isPositive = (n: number) => n > 0;
@@ -197,7 +197,7 @@ isValidEvenPositive('-42');  // false`}
 
     <CodeBlock
       language="typescript"
-      code={`import { compose } from 'fp-kit';
+      code={`import { compose } from 'fp-pack';
 
 // Higher-order functions
 const map = <T, U>(fn: (x: T) => U) => (arr: T[]) => arr.map(fn);

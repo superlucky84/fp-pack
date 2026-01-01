@@ -35,7 +35,7 @@ export const Guard = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { guard } from 'fp-kit';
+      code={`import { guard } from 'fp-pack';
 
 // Ensure number is positive, default to 0
 const ensurePositive = guard(
@@ -78,7 +78,7 @@ ensurePositive(0);   // 0 (invalid, returns default)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { guard } from 'fp-kit';
+      code={`import { guard } from 'fp-pack';
 
 // Ensure string is not empty
 const ensureNonEmpty = guard(
@@ -106,7 +106,7 @@ ensureInRange(-10);  // 50 (out of range)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { guard } from 'fp-kit';
+      code={`import { guard } from 'fp-pack';
 
 interface Config {
   timeout: number;
@@ -143,7 +143,7 @@ ensureValidConfig({ timeout: -1, retries: 5 });
 
     <CodeBlock
       language="typescript"
-      code={`import { guard } from 'fp-kit';
+      code={`import { guard } from 'fp-pack';
 
 // Ensure age is reasonable
 const sanitizeAge = guard(
@@ -172,7 +172,7 @@ sanitizeUsername('a'.repeat(25)); // 'anonymous' (too long)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { guard } from 'fp-kit';
+      code={`import { guard } from 'fp-pack';
 
 interface ApiResponse {
   status: number;
@@ -203,7 +203,7 @@ ensureValidResponse({ status: 404, data: null });
 
     <CodeBlock
       language="typescript"
-      code={`import { guard, pipe } from 'fp-kit';
+      code={`import { guard, pipe } from 'fp-pack';
 
 interface AppSettings {
   theme: 'light' | 'dark';
@@ -239,7 +239,7 @@ ensureValidSettings({ theme: 'dark', fontSize: 30, language: 'ko' });
 
     <CodeBlock
       language="typescript"
-      code={`import { guard } from 'fp-kit';
+      code={`import { guard } from 'fp-pack';
 
 // Ensure array index is valid
 const createSafeIndexGetter = <T>(arr: T[], defaultValue: T) =>
@@ -272,7 +272,7 @@ ensureMinLength([1, 2]);         // [0, 0, 0]`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, guard } from 'fp-kit';
+      code={`import { pipe, guard } from 'fp-pack';
 
 interface Price {
   amount: number;
@@ -311,7 +311,7 @@ processPrice({ amount: -50, currency: 'USD' });
 
     <CodeBlock
       language="typescript"
-      code={`import { guard } from 'fp-kit';
+      code={`import { guard } from 'fp-pack';
 
 interface FormData {
   email: string;

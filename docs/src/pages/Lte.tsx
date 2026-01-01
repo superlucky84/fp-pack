@@ -35,7 +35,7 @@ export const Lte = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { lte } from 'fp-kit';
+      code={`import { lte } from 'fp-pack';
 
 const isAtMost10 = lte(10);
 
@@ -56,7 +56,7 @@ isAtMost10(15);  // false (15 > 10)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { lte } from 'fp-kit';
+      code={`import { lte } from 'fp-pack';
 
 // Create comparison functions
 const isAtMost100 = lte(100);
@@ -78,7 +78,7 @@ isNonPositive(5);  // false`}
 
     <CodeBlock
       language="typescript"
-      code={`import { lte } from 'fp-kit';
+      code={`import { lte } from 'fp-pack';
 
 const scores = [45, 60, 75, 80, 90, 100];
 
@@ -101,7 +101,7 @@ scores.every(lte(100));
 
     <CodeBlock
       language="typescript"
-      code={`import { lte } from 'fp-kit';
+      code={`import { lte } from 'fp-pack';
 
 // The difference between lt and lte
 const isAtMost10 = lte(10);
@@ -126,7 +126,7 @@ numbers.filter(isAtMost10);
 
     <CodeBlock
       language="typescript"
-      code={`import { lte } from 'fp-kit';
+      code={`import { lte } from 'fp-pack';
 
 interface Room {
   name: string;
@@ -166,7 +166,7 @@ const smallRooms = rooms.filter(r => isSmallRoom(r.capacity));
 
     <CodeBlock
       language="typescript"
-      code={`import { lte } from 'fp-kit';
+      code={`import { lte } from 'fp-pack';
 
 interface File {
   name: string;
@@ -205,7 +205,7 @@ const freeUploadable = files.filter(f => withinFreeTier(f.sizeInMB));
 
     <CodeBlock
       language="typescript"
-      code={`import { lte } from 'fp-kit';
+      code={`import { lte } from 'fp-pack';
 
 interface Product {
   name: string;
@@ -241,7 +241,7 @@ const basicProducts = products.filter(p => isEntryLevel(p.price));
 
     <CodeBlock
       language="typescript"
-      code={`import { lte } from 'fp-kit';
+      code={`import { lte } from 'fp-pack';
 
 interface ApiRequest {
   userId: string;
@@ -273,7 +273,7 @@ const allowedRequests = requests.filter(r => isWithinRateLimit(r.requestsInWindo
 
     <CodeBlock
       language="typescript"
-      code={`import { lte } from 'fp-kit';
+      code={`import { lte } from 'fp-pack';
 
 interface Task {
   title: string;
@@ -309,7 +309,7 @@ const urgentTasks = tasks.filter(t => isUrgent(t.daysUntilDue));
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, lte } from 'fp-kit';
+      code={`import { pipe, lte } from 'fp-pack';
 
 interface Employee {
   name: string;

@@ -35,7 +35,7 @@ export const Constant_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { constant } from 'fp-kit';
+      code={`import { constant } from 'fp-pack';
 
 const alwaysTrue = constant(true);
 const alwaysFive = constant(5);
@@ -79,7 +79,7 @@ alwaysHello();      // "hello"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { constant } from 'fp-kit';
+      code={`import { constant } from 'fp-pack';
 
 // 원시 값
 const alwaysZero = constant(0);
@@ -109,7 +109,7 @@ console.log(arr1 === arr2);  // true`}
 
     <CodeBlock
       language="typescript"
-      code={`import { constant } from 'fp-kit';
+      code={`import { constant } from 'fp-pack';
 
 const alwaysSuccess = constant({ status: 'success' });
 
@@ -131,7 +131,7 @@ alwaysSuccess(1, 2, 3, 'ignored');  // { status: 'success' }`}
 
     <CodeBlock
       language="typescript"
-      code={`import { constant } from 'fp-kit';
+      code={`import { constant } from 'fp-pack';
 
 interface Config {
   apiUrl: string;
@@ -163,7 +163,7 @@ function getConfig(userConfig?: Config): Config {
 
     <CodeBlock
       language="typescript"
-      code={`import { constant } from 'fp-kit';
+      code={`import { constant } from 'fp-pack';
 
 // 모든 값을 상수로 교체
 const numbers = [1, 2, 3, 4, 5];
@@ -189,7 +189,7 @@ const guestUsers = users.map(constant({ role: 'guest', active: false }));
 
     <CodeBlock
       language="typescript"
-      code={`import { constant } from 'fp-kit';
+      code={`import { constant } from 'fp-pack';
 
 // 이렇게 하는 대신:
 const getValue = (condition: boolean) => {
@@ -218,7 +218,7 @@ handler({ important: 'data' });  // null (데이터 무시됨)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { constant } from 'fp-kit';
+      code={`import { constant } from 'fp-pack';
 
 // 항상 같은 액션을 반환하는 간단한 이벤트 핸들러
 const createClickHandler = (action: string) => {
@@ -249,7 +249,7 @@ Promise.resolve()
 
     <CodeBlock
       language="typescript"
-      code={`import { constant } from 'fp-kit';
+      code={`import { constant } from 'fp-pack';
 
 // 기본 변환 함수 제공
 function processItems<T, U>(
@@ -288,7 +288,7 @@ fetchData('/api/data', err => console.error(err));`}
 
     <CodeBlock
       language="typescript"
-      code={`import { constant } from 'fp-kit';
+      code={`import { constant } from 'fp-pack';
 
 // 테스트에서 모의 함수
 const mockGetUser = constant({
@@ -323,7 +323,7 @@ const stub = {
 
     <CodeBlock
       language="typescript"
-      code={`import { constant, pipe } from 'fp-kit';
+      code={`import { constant, pipe } from 'fp-pack';
 
 // 조건부 로직을 위해 pipe에서 사용
 const processValue = (shouldDouble: boolean) => pipe(

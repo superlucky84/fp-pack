@@ -30,7 +30,7 @@ export const IsNil_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { isNil } from 'fp-kit';
+      code={`import { isNil } from 'fp-pack';
 
 isNil(null);        // true
 isNil(undefined);   // true
@@ -51,7 +51,7 @@ isNil(false);       // false`}
 
     <CodeBlock
       language="typescript"
-      code={`import { isNil } from 'fp-kit';
+      code={`import { isNil } from 'fp-pack';
 
 const maybeName: string | undefined = getUser()?.name;
 
@@ -68,7 +68,7 @@ if (isNil(maybeName)) {
 
     <CodeBlock
       language="typescript"
-      code={`import { isNil } from 'fp-kit';
+      code={`import { isNil } from 'fp-pack';
 
 const values = ['ok', null, 'hi', undefined];
 

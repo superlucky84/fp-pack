@@ -31,7 +31,7 @@ export const Drop_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { drop } from 'fp-kit';
+      code={`import { drop } from 'fp-pack';
 
 const numbers = [1, 2, 3, 4, 5, 6];
 
@@ -79,7 +79,7 @@ drop(0, numbers);
 
     <CodeBlock
       language="typescript"
-      code={`import { drop } from 'fp-kit';
+      code={`import { drop } from 'fp-pack';
 
 // 첫 3개 요소 제거
 const skipThree = drop(3, [1, 2, 3, 4, 5, 6, 7]);
@@ -110,8 +110,8 @@ const none = drop(0, [1, 2, 3]);
 
     <CodeBlock
       language="typescript"
-      code={`import { drop } from 'fp-kit';
-import { chunk } from 'fp-kit';
+      code={`import { drop } from 'fp-pack';
+import { chunk } from 'fp-pack';
 
 interface Product {
   id: number;
@@ -148,7 +148,7 @@ console.log(currentPageItems);
 
     <CodeBlock
       language="typescript"
-      code={`import { drop } from 'fp-kit';
+      code={`import { drop } from 'fp-pack';
 
 const csvLines = [
   '이름,나이,도시',        // 헤더 행
@@ -181,8 +181,8 @@ console.log(users);
 
     <CodeBlock
       language="typescript"
-      code={`import { drop } from 'fp-kit';
-import { pipe } from 'fp-kit';
+      code={`import { drop } from 'fp-pack';
+import { pipe } from 'fp-pack';
 
 // 워밍업 샘플을 제거하여 배열 처리
 const sensorReadings = [12, 15, 18, 100, 102, 98, 101, 99, 103];
@@ -204,7 +204,7 @@ const averageReading = processReadings(sensorReadings);
 
     <CodeBlock
       language="typescript"
-      code={`import { drop } from 'fp-kit';
+      code={`import { drop } from 'fp-pack';
 
 const fullPath = ['홈', '제품', '전자기기', '노트북', '게이밍'];
 
@@ -239,7 +239,7 @@ console.log(buildBreadcrumb(fullPath, 2));
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, drop } from 'fp-kit';
+      code={`import { pipe, drop } from 'fp-pack';
 
 const data = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -258,7 +258,7 @@ const result = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { drop } from 'fp-kit';
+      code={`import { drop } from 'fp-pack';
 
 const numbers = [1, 2, 3, 4, 5, 6, 7, 8];
 

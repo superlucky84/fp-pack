@@ -13,7 +13,7 @@ export const MergeAll = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { mergeAll } from 'fp-kit';
+      code={`import { mergeAll } from 'fp-pack';
 
 mergeAll([{ id: 1 }, { name: 'Ada' }, { id: 2 }]);
 // { id: 2, name: 'Ada' }`}

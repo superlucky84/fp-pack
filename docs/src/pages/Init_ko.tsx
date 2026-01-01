@@ -28,7 +28,7 @@ export const Init_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { init } from 'fp-kit';
+      code={`import { init } from 'fp-pack';
 
 init([1, 2, 3]);
 // [1, 2]
@@ -60,7 +60,7 @@ init([1]);
 
     <CodeBlock
       language="typescript"
-      code={`import { init } from 'fp-kit';
+      code={`import { init } from 'fp-pack';
 
 const rows = ['A', 'B', 'Total'];
 const dataRows = init(rows);
@@ -73,7 +73,7 @@ const dataRows = init(rows);
 
     <CodeBlock
       language="typescript"
-      code={`import { init, last } from 'fp-kit';
+      code={`import { init, last } from 'fp-pack';
 
 const queue = ['job-1', 'job-2', 'job-3'];
 const pending = init(queue);

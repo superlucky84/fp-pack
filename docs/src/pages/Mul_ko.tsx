@@ -13,7 +13,7 @@ export const Mul_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { mul } from 'fp-kit';
+      code={`import { mul } from 'fp-pack';
 
 mul(2, 3);   // 6
 mul(-1, 5);  // -5`}

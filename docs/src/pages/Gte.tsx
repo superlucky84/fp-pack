@@ -35,7 +35,7 @@ export const Gte = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { gte } from 'fp-kit';
+      code={`import { gte } from 'fp-pack';
 
 const isAtLeast18 = gte(18);
 
@@ -56,7 +56,7 @@ isAtLeast18(15);  // false (15 < 18)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { gte } from 'fp-kit';
+      code={`import { gte } from 'fp-pack';
 
 // Create comparison functions
 const isAtLeast10 = gte(10);
@@ -78,7 +78,7 @@ isNonNegative(-3); // false`}
 
     <CodeBlock
       language="typescript"
-      code={`import { gte } from 'fp-kit';
+      code={`import { gte } from 'fp-pack';
 
 const scores = [45, 60, 75, 80, 90, 100];
 
@@ -101,7 +101,7 @@ scores.every(gte(60));
 
     <CodeBlock
       language="typescript"
-      code={`import { gte } from 'fp-kit';
+      code={`import { gte } from 'fp-pack';
 
 // The difference between gt and gte
 const isGreaterThan5 = gte(5);
@@ -126,7 +126,7 @@ numbers.filter(isGreaterThan5);
 
     <CodeBlock
       language="typescript"
-      code={`import { gte } from 'fp-kit';
+      code={`import { gte } from 'fp-pack';
 
 interface User {
   name: string;
@@ -161,7 +161,7 @@ const drinkers = users.filter(u => canDrink(u.age));
 
     <CodeBlock
       language="typescript"
-      code={`import { gte } from 'fp-kit';
+      code={`import { gte } from 'fp-pack';
 
 interface Job {
   title: string;
@@ -200,7 +200,7 @@ const seniorRoles = jobs.filter(j => hasExperience(j.experience));
 
     <CodeBlock
       language="typescript"
-      code={`import { gte } from 'fp-kit';
+      code={`import { gte } from 'fp-pack';
 
 interface Student {
   name: string;
@@ -239,7 +239,7 @@ const passingStudents = students.filter(s => isPassing(s.score));
 
     <CodeBlock
       language="typescript"
-      code={`import { gte } from 'fp-kit';
+      code={`import { gte } from 'fp-pack';
 
 interface Inventory {
   sku: string;
@@ -284,7 +284,7 @@ const stockStatus = checkStockLevels(inventory);
 
     <CodeBlock
       language="typescript"
-      code={`import { gte } from 'fp-kit';
+      code={`import { gte } from 'fp-pack';
 
 interface AccessToken {
   userId: string;
@@ -319,7 +319,7 @@ const validTokens = tokens.filter(t => isTokenValid(t, currentTime));
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, gte } from 'fp-kit';
+      code={`import { pipe, gte } from 'fp-pack';
 
 interface Order {
   id: string;

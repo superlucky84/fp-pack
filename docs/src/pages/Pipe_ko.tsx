@@ -32,7 +32,7 @@ export const Pipe_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
+      code={`import { pipe } from 'fp-pack';
 
 const double = (n: number) => n * 2;
 const addTen = (n: number) => n + 10;
@@ -60,7 +60,7 @@ transform(5);  // "20"
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
+      code={`import { pipe } from 'fp-pack';
 
 const processName = pipe(
   (name: string) => name.trim(),
@@ -78,7 +78,7 @@ processName('  John Doe  ');  // "john-doe"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
+      code={`import { pipe } from 'fp-pack';
 
 const numbers = [1, 2, 3, 4, 5];
 
@@ -104,7 +104,7 @@ processNumbers(numbers);  // 24
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
+      code={`import { pipe } from 'fp-pack';
 
 interface User {
   id: number;
@@ -136,7 +136,7 @@ getActiveAdultNames(users);  // ["Alice", "Diana"]`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
+      code={`import { pipe } from 'fp-pack';
 
 const calculateFinalPrice = pipe(
   (price: number) => price * 0.9,        // 10% 할인
@@ -155,12 +155,12 @@ calculateFinalPrice(100);  // "₩99.00"`}
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      pipe는 curry 같은 다른 fp-kit 유틸리티와 함께 사용하면 최대한의 조합 가능성을 제공합니다:
+      pipe는 curry 같은 다른 fp-pack 유틸리티와 함께 사용하면 최대한의 조합 가능성을 제공합니다:
     </p>
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, curry } from 'fp-kit';
+      code={`import { pipe, curry } from 'fp-pack';
 
 // 커리된 헬퍼 함수 생성
 const multiply = curry((a: number, b: number) => a * b);

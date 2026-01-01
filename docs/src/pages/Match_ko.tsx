@@ -27,7 +27,7 @@ export const Match_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { match } from 'fp-kit';
+      code={`import { match } from 'fp-pack';
 
 match(/ba./g, 'banana'); // ['ban']
 match(/xyz/, 'banana');  // null`}
@@ -45,7 +45,7 @@ match(/xyz/, 'banana');  // null`}
 
     <CodeBlock
       language="typescript"
-      code={`import { match } from 'fp-kit';
+      code={`import { match } from 'fp-pack';
 
 match(/\\d+/g, 'a1b22c333'); // ['1', '22', '333']`}
     />
@@ -56,7 +56,7 @@ match(/\\d+/g, 'a1b22c333'); // ['1', '22', '333']`}
 
     <CodeBlock
       language="typescript"
-      code={`import { match } from 'fp-kit';
+      code={`import { match } from 'fp-pack';
 
 const res = match(/foo/, 'bar');
 if (res) {

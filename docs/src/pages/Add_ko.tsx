@@ -13,7 +13,7 @@ export const Add_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { add } from 'fp-kit';
+      code={`import { add } from 'fp-pack';
 
 add(1, 2);   // 3
 add(-1, 1);  // 0`}

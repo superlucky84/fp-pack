@@ -35,7 +35,7 @@ export const Memoize_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { memoize } from 'fp-kit';
+      code={`import { memoize } from 'fp-pack';
 
 // 비용이 많이 드는 계산
 const fibonacci = (n: number): number => {
@@ -65,7 +65,7 @@ memoFib(40);  // 즉시!`}
 
     <CodeBlock
       language="typescript"
-      code={`import { memoize } from 'fp-kit';
+      code={`import { memoize } from 'fp-pack';
 
 let callCount = 0;
 
@@ -87,7 +87,7 @@ memoAdd(3, 2);  // 5 (callCount: 2, 다른 인자)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { memoize } from 'fp-kit';
+      code={`import { memoize } from 'fp-pack';
 
 const processUser = memoize((user: { name: string; age: number }) => {
   console.log('처리 중...');
@@ -115,7 +115,7 @@ processUser({ name: 'Alice', age: 30 });  // "처리 중..." 다시 로그`}
 
     <CodeBlock
       language="typescript"
-      code={`import { memoize } from 'fp-kit';
+      code={`import { memoize } from 'fp-pack';
 
 // 비용이 많이 드는 데이터 처리
 const processDataset = memoize((data: any[]) => {
@@ -147,7 +147,7 @@ console.log(result1 === result2);  // true (같은 캐시된 결과)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { memoize } from 'fp-kit';
+      code={`import { memoize } from 'fp-pack';
 
 interface RawUser {
   id: number;
@@ -189,7 +189,7 @@ const users2 = parseUsers(apiResponse);
 
     <CodeBlock
       language="typescript"
-      code={`import { memoize } from 'fp-kit';
+      code={`import { memoize } from 'fp-pack';
 
 // 계산 비용이 높은 함수
 const isPrime = memoize((n: number): boolean => {
@@ -221,7 +221,7 @@ console.timeEnd('두 번째');  // <0.1ms`}
 
     <CodeBlock
       language="typescript"
-      code={`import { memoize } from 'fp-kit';
+      code={`import { memoize } from 'fp-pack';
 
 // 전형적인 예제: 피보나치
 const fibonacci = memoize((n: number): number => {

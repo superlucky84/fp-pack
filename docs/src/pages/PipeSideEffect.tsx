@@ -29,7 +29,7 @@ export const PipeSideEffect = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-pack';
 
 const validateAge = (age: number) =>
   age >= 18
@@ -66,7 +66,7 @@ runPipeResult(processAgePipeline(15)); // Throws: Error: Must be 18 or older`}
     <CodeBlock
       language="typescript"
       code={`// ✅ GOOD: 99% of cases - use pipe (pure transformations)
-import { pipe, map, filter } from 'fp-kit';
+import { pipe, map, filter } from 'fp-pack';
 
 const processData = pipe(
   filter(isValid),
@@ -74,7 +74,7 @@ const processData = pipe(
 );
 
 // ✅ GOOD: Only when SideEffect needed - use pipeSideEffect
-import { pipeSideEffect, SideEffect } from 'fp-kit';
+import { pipeSideEffect, SideEffect } from 'fp-pack';
 
 const processWithValidation = pipeSideEffect(
   validateOrStop,  // Might return SideEffect
@@ -145,7 +145,7 @@ function pipeSideEffect(...funcs: Array<(input: any) => any>): (input: any) => a
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-pack';
 
 const validateAge = (age: number) => {
   if (age < 0) {
@@ -181,7 +181,7 @@ console.log(result);  // "Age: 20"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-pack';
 
 interface User {
   id: number;
@@ -226,7 +226,7 @@ console.log(result2);  // { error: 'Unauthorized', message: 'Admin access requir
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-pack';
 
 const divide = (a: number, b: number) => {
   if (b === 0) {
@@ -291,7 +291,7 @@ console.log(result2);  // NaN`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, pipeSideEffect, SideEffect } from 'fp-kit';
+      code={`import { pipe, pipeSideEffect, SideEffect } from 'fp-pack';
 
 const validateUserPipeline = pipeSideEffect(
   findUser,

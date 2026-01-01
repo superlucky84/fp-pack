@@ -54,14 +54,14 @@ export const StreamChunk = () => {
       </ul>
 
       <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-        Like all stream operations in fp-kit, chunk uses lazy evaluation,
+        Like all stream operations in fp-pack, chunk uses lazy evaluation,
         meaning chunks are created on-demand as you iterate, not all at once.
         This makes it memory-efficient even for very large or infinite inputs.
       </p>
 
       <CodeBlock
         language="typescript"
-        code={`import { chunk, toArray } from 'fp-kit/stream';
+        code={`import { chunk, toArray } from 'fp-pack/stream';
 
 // Basic example: split array into chunks of 2
 const data = [1, 2, 3, 4, 5];
@@ -166,7 +166,7 @@ function chunk<T>(
 
       <CodeBlock
         language="typescript"
-        code={`import { chunk, toArray } from 'fp-kit/stream';
+        code={`import { chunk, toArray } from 'fp-pack/stream';
 
 const data = [1, 2, 3, 4, 5, 6];
 
@@ -218,7 +218,7 @@ toArray(chunk(2, data)); // [[1, 2], [3, 4], [5, 6]]
 
       <CodeBlock
         language="typescript"
-        code={`import { chunk, map, toArray, pipe } from 'fp-kit/stream';
+        code={`import { chunk, map, toArray, pipe } from 'fp-pack/stream';
 
 interface User {
   id: string;
@@ -275,7 +275,7 @@ await batchCreateUsers(users);
 
       <CodeBlock
         language="typescript"
-        code={`import { chunk, toArray, pipe } from 'fp-kit/stream';
+        code={`import { chunk, toArray, pipe } from 'fp-pack/stream';
 
 interface Product {
   id: string;
@@ -330,7 +330,7 @@ console.log(catalog.getPage(4)?.length); // 15 (last page)`}
 
       <CodeBlock
         language="typescript"
-        code={`import { chunk, map, flatMap, toArray, pipe } from 'fp-kit/stream';
+        code={`import { chunk, map, flatMap, toArray, pipe } from 'fp-pack/stream';
 
 interface Task {
   id: string;
@@ -382,7 +382,7 @@ console.log(\`Processed \${results.length} tasks\`);`}
 
       <CodeBlock
         language="typescript"
-        code={`import { chunk, map, toArray, pipe } from 'fp-kit/stream';
+        code={`import { chunk, map, toArray, pipe } from 'fp-pack/stream';
 
 // Upload a file in chunks for better progress tracking and resumability
 async function uploadFileInChunks(
@@ -437,7 +437,7 @@ await uploadFileInChunks(fileData, 1024 * 1024);
 
       <CodeBlock
         language="typescript"
-        code={`import { chunk, map, toArray, pipe } from 'fp-kit/stream';
+        code={`import { chunk, map, toArray, pipe } from 'fp-pack/stream';
 
 interface DataPoint {
   timestamp: number;
@@ -490,7 +490,7 @@ console.log(aggregated);
 
       <CodeBlock
         language="typescript"
-        code={`import { chunk, map, toArray, pipe } from 'fp-kit/stream';
+        code={`import { chunk, map, toArray, pipe } from 'fp-pack/stream';
 
 // Simulate an async event stream
 async function* eventStream(): AsyncGenerator<string> {
@@ -560,7 +560,7 @@ await processEventBatches();`}
 
       <CodeBlock
         language="typescript"
-        code={`import { chunk, take, toArray, pipe, range } from 'fp-kit/stream';
+        code={`import { chunk, take, toArray, pipe, range } from 'fp-pack/stream';
 
 // Efficient: Only creates chunks as needed
 const first3Chunks = pipe(

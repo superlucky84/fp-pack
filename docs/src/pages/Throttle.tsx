@@ -26,7 +26,7 @@ export const Throttle = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { throttle } from 'fp-kit';
+      code={`import { throttle } from 'fp-pack';
 
 const onScroll = throttle(() => {
   console.log('scroll event');
@@ -47,7 +47,7 @@ window.addEventListener('scroll', onScroll);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { throttle } from 'fp-kit';
+      code={`import { throttle } from 'fp-pack';
 
 const log = throttle((value: number) => console.log(value), 100);
 

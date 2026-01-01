@@ -66,7 +66,7 @@ function map<T, R>(
 
     <CodeBlock
       language="typescript"
-      code={`import { map } from 'fp-kit/stream';
+      code={`import { map } from 'fp-pack/stream';
 
 // 각 숫자를 두 배로
 const doubled = map((n: number) => n * 2, [1, 2, 3, 4]);
@@ -90,9 +90,9 @@ console.log(Array.from(names));
 
     <CodeBlock
       language="typescript"
-      code={`import { map } from 'fp-kit/stream';
-import { pipe } from 'fp-kit/composition';
-import { filter } from 'fp-kit/stream';
+      code={`import { map } from 'fp-pack/stream';
+import { pipe } from 'fp-pack/composition';
+import { filter } from 'fp-pack/stream';
 
 // 재사용 가능한 변환 함수 생성
 const double = map((n: number) => n * 2);
@@ -122,8 +122,8 @@ console.log(Array.from(processNumbers(numbers)));
 
     <CodeBlock
       language="typescript"
-      code={`import { map } from 'fp-kit/stream';
-import { pipe } from 'fp-kit/composition';
+      code={`import { map } from 'fp-pack/stream';
+import { pipe } from 'fp-pack/composition';
 
 interface RawUser {
   first_name: string;
@@ -162,7 +162,7 @@ console.log(users[0]);
 
     <CodeBlock
       language="typescript"
-      code={`import { map } from 'fp-kit/stream';
+      code={`import { map } from 'fp-pack/stream';
 
 interface UserId {
   id: number;
@@ -203,9 +203,9 @@ for await (const profile of userProfiles) {
 
     <CodeBlock
       language="typescript"
-      code={`import { map } from 'fp-kit/stream';
-import { pipe } from 'fp-kit/composition';
-import { filter } from 'fp-kit/stream';
+      code={`import { map } from 'fp-pack/stream';
+import { pipe } from 'fp-pack/composition';
+import { filter } from 'fp-pack/stream';
 
 interface LogEntry {
   timestamp: string;
@@ -262,8 +262,8 @@ for await (const entry of logEntries) {
 
     <CodeBlock
       language="typescript"
-      code={`import { map } from 'fp-kit/stream';
-import { pipe } from 'fp-kit/composition';
+      code={`import { map } from 'fp-pack/stream';
+import { pipe } from 'fp-pack/composition';
 
 interface Product {
   id: string;
@@ -308,7 +308,7 @@ console.log(pricedProducts[0]);
 
     <CodeBlock
       language="typescript"
-      code={`import { map } from 'fp-kit/stream';
+      code={`import { map } from 'fp-pack/stream';
 
 interface ImageMetadata {
   id: string;
@@ -357,9 +357,9 @@ console.log(imagesWithUrls[0]);
 
     <CodeBlock
       language="typescript"
-      code={`import { map } from 'fp-kit/stream';
-import { pipe } from 'fp-kit/composition';
-import { take } from 'fp-kit/stream';
+      code={`import { map } from 'fp-pack/stream';
+import { pipe } from 'fp-pack/composition';
+import { take } from 'fp-pack/stream';
 
 // 자연수의 무한 시퀀스
 function* naturalNumbers() {

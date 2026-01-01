@@ -35,7 +35,7 @@ export const Lt_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { lt } from 'fp-kit';
+      code={`import { lt } from 'fp-pack';
 
 const isLessThan10 = lt(10);
 
@@ -56,7 +56,7 @@ isLessThan10(15);  // false (15 > 10)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { lt } from 'fp-kit';
+      code={`import { lt } from 'fp-pack';
 
 // 비교 함수 생성
 const isLessThan100 = lt(100);
@@ -78,7 +78,7 @@ isNegative(5);       // false`}
 
     <CodeBlock
       language="typescript"
-      code={`import { lt } from 'fp-kit';
+      code={`import { lt } from 'fp-pack';
 
 const numbers = [5, 10, 15, 20, 25, 30];
 
@@ -101,7 +101,7 @@ numbers.every(lt(100));
 
     <CodeBlock
       language="typescript"
-      code={`import { lt } from 'fp-kit';
+      code={`import { lt } from 'fp-pack';
 
 const isLessThanNegative5 = lt(-5);
 
@@ -127,7 +127,7 @@ temperatures.filter(lt(-10));
 
     <CodeBlock
       language="typescript"
-      code={`import { lt } from 'fp-kit';
+      code={`import { lt } from 'fp-pack';
 
 interface Product {
   name: string;
@@ -164,7 +164,7 @@ const cheapItems = products.filter(p => isCheap(p.price));
 
     <CodeBlock
       language="typescript"
-      code={`import { lt } from 'fp-kit';
+      code={`import { lt } from 'fp-pack';
 
 interface Inventory {
   sku: string;
@@ -207,7 +207,7 @@ const criticalItems = inventory.filter(i => isCritical(i.quantity));
 
     <CodeBlock
       language="typescript"
-      code={`import { lt } from 'fp-kit';
+      code={`import { lt } from 'fp-pack';
 
 interface ServerMetric {
   server: string;
@@ -247,7 +247,7 @@ const idleServers = metrics.filter(m => isUnderutilized(m.cpuUsage));
 
     <CodeBlock
       language="typescript"
-      code={`import { lt } from 'fp-kit';
+      code={`import { lt } from 'fp-pack';
 
 interface User {
   name: string;
@@ -282,7 +282,7 @@ const hasChildren = users.some(u => isChild(u.age));
 
     <CodeBlock
       language="typescript"
-      code={`import { lt } from 'fp-kit';
+      code={`import { lt } from 'fp-pack';
 
 interface Task {
   id: string;
@@ -321,7 +321,7 @@ const urgentTasks = tasks.filter(t => isHighPriority(t.priority));
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, lt } from 'fp-kit';
+      code={`import { pipe, lt } from 'fp-pack';
 
 interface Student {
   name: string;

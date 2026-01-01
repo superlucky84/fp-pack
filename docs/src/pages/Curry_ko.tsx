@@ -33,7 +33,7 @@ export const Curry_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { curry } from 'fp-kit';
+      code={`import { curry } from 'fp-pack';
 
 // 일반 함수
 const add = (a: number, b: number) => a + b;
@@ -62,7 +62,7 @@ add2(10); // 12`}
 
     <CodeBlock
       language="typescript"
-      code={`import { curry } from 'fp-kit';
+      code={`import { curry } from 'fp-pack';
 
 const multiply = curry((a: number, b: number) => a * b);
 const subtract = curry((a: number, b: number) => a - b);
@@ -95,7 +95,7 @@ half(10);    // 5`}
 
     <CodeBlock
       language="typescript"
-      code={`import { curry } from 'fp-kit';
+      code={`import { curry } from 'fp-pack';
 
 const map = curry(<T, U>(fn: (x: T) => U, arr: T[]) => arr.map(fn));
 const filter = curry(<T>(pred: (x: T) => boolean, arr: T[]) => arr.filter(pred));
@@ -119,7 +119,7 @@ filterEvens(numbers);    // [2, 4]`}
 
     <CodeBlock
       language="typescript"
-      code={`import { curry } from 'fp-kit';
+      code={`import { curry } from 'fp-pack';
 
 const prop = curry(<T, K extends keyof T>(key: K, obj: T) => obj[key]);
 
@@ -155,7 +155,7 @@ users.map(getEmail);  // ["alice@example.com", "bob@example.com"]`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, curry } from 'fp-kit';
+      code={`import { pipe, curry } from 'fp-pack';
 
 const add = curry((a: number, b: number) => a + b);
 const multiply = curry((a: number, b: number) => a * b);

@@ -32,7 +32,7 @@ export const Compose_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { compose } from 'fp-kit';
+      code={`import { compose } from 'fp-pack';
 
 const double = (n: number) => n * 2;
 const addTen = (n: number) => n + 10;
@@ -65,7 +65,7 @@ transform(5);  // "20"
 
     <CodeBlock
       language="typescript"
-      code={`import { compose } from 'fp-kit';
+      code={`import { compose } from 'fp-pack';
 
 // 수학적 표기: f(g(h(x)))
 const h = (x: number) => x + 1;
@@ -93,7 +93,7 @@ fgh(5);  // 9
 
     <CodeBlock
       language="typescript"
-      code={`import { compose } from 'fp-kit';
+      code={`import { compose } from 'fp-pack';
 
 interface User {
   profile: {

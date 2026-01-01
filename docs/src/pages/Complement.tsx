@@ -28,7 +28,7 @@ export const Complement = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { complement } from 'fp-kit';
+      code={`import { complement } from 'fp-pack';
 
 const isEven = (n: number) => n % 2 === 0;
 const isOdd = complement(isEven);
@@ -62,7 +62,7 @@ isOdd(4); // false`}
 
     <CodeBlock
       language="typescript"
-      code={`import { complement, filter } from 'fp-kit';
+      code={`import { complement, filter } from 'fp-pack';
 
 const isNil = (value: unknown) => value == null;
 const isNotNil = complement(isNil);
@@ -78,7 +78,7 @@ const cleaned = filter(isNotNil, data);
 
     <CodeBlock
       language="typescript"
-      code={`import { complement, filter } from 'fp-kit';
+      code={`import { complement, filter } from 'fp-pack';
 
 interface User {
   name: string;
@@ -105,7 +105,7 @@ const regularUsers = filter(isNotAdmin, users);
 
     <CodeBlock
       language="typescript"
-      code={`import { complement } from 'fp-kit';
+      code={`import { complement } from 'fp-pack';
 
 const inRange = (min: number, max: number, value: number) =>
   value >= min && value <= max;
@@ -123,7 +123,7 @@ outOfRange(10, 20, 25); // true (25 is not in [10, 20])`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, complement, filter, map } from 'fp-kit';
+      code={`import { pipe, complement, filter, map } from 'fp-pack';
 
 const isEmpty = (str: string) => str.trim().length === 0;
 const isNotEmpty = complement(isEmpty);

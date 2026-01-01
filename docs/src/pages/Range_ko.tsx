@@ -28,7 +28,7 @@ export const Range_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { range } from 'fp-kit';
+      code={`import { range } from 'fp-pack';
 
 range(0, 5);
 // [0, 1, 2, 3, 4]
@@ -60,7 +60,7 @@ range(5, 0);
 
     <CodeBlock
       language="typescript"
-      code={`import { range } from 'fp-kit';
+      code={`import { range } from 'fp-pack';
 
 const totalPages = 4;
 const pages = range(1, totalPages + 1);
@@ -73,7 +73,7 @@ const pages = range(1, totalPages + 1);
 
     <CodeBlock
       language="typescript"
-      code={`import { range, map } from 'fp-kit';
+      code={`import { range, map } from 'fp-pack';
 
 const values = ['a', 'b', 'c'];
 const indices = range(0, values.length);

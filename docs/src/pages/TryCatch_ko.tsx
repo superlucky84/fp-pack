@@ -36,7 +36,7 @@ export const TryCatch_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { tryCatch } from 'fp-kit';
+      code={`import { tryCatch } from 'fp-pack';
 
 // JSON을 안전하게 파싱
 const safeJsonParse = tryCatch(
@@ -81,7 +81,7 @@ safeJsonParse('invalid json');
 
     <CodeBlock
       language="typescript"
-      code={`import { tryCatch } from 'fp-kit';
+      code={`import { tryCatch } from 'fp-pack';
 
 // 기본값을 사용한 안전한 JSON 파싱
 const parseJsonSafe = tryCatch(
@@ -111,7 +111,7 @@ parseWithError('not json');
 
     <CodeBlock
       language="typescript"
-      code={`import { tryCatch } from 'fp-kit';
+      code={`import { tryCatch } from 'fp-pack';
 
 // 기본값을 사용한 문자열을 숫자로 변환
 const toNumber = tryCatch(
@@ -152,7 +152,7 @@ safeDivide([10, 0]);  // { error: '0으로 나눔', result: Infinity }`}
 
     <CodeBlock
       language="typescript"
-      code={`import { tryCatch } from 'fp-kit';
+      code={`import { tryCatch } from 'fp-pack';
 
 interface User {
   id: number;
@@ -203,7 +203,7 @@ parseUserResponse('invalid json');
 
     <CodeBlock
       language="typescript"
-      code={`import { tryCatch } from 'fp-kit';
+      code={`import { tryCatch } from 'fp-pack';
 
 // 안전한 파일 읽기 (Node.js 예시)
 const readFileSafe = tryCatch(
@@ -238,7 +238,7 @@ const getLocalStorage = tryCatch(
 
     <CodeBlock
       language="typescript"
-      code={`import { tryCatch } from 'fp-kit';
+      code={`import { tryCatch } from 'fp-pack';
 
 interface ValidatedData {
   email: string;
@@ -286,7 +286,7 @@ validateUserData('객체가 아님');
 
     <CodeBlock
       language="typescript"
-      code={`import { tryCatch } from 'fp-kit';
+      code={`import { tryCatch } from 'fp-pack';
 
 interface ParsedUrl {
   valid: true;
@@ -331,7 +331,7 @@ parseUrl('url이 아님');
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, tryCatch } from 'fp-kit';
+      code={`import { pipe, tryCatch } from 'fp-pack';
 
 interface ProcessedData {
   parsed: unknown;
@@ -378,7 +378,7 @@ processData('invalid');
 
     <CodeBlock
       language="typescript"
-      code={`import { tryCatch } from 'fp-kit';
+      code={`import { tryCatch } from 'fp-pack';
 
 // 각 항목을 안전하게 처리
 const processItem = tryCatch(

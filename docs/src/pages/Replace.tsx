@@ -27,7 +27,7 @@ export const Replace = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { replace } from 'fp-kit';
+      code={`import { replace } from 'fp-pack';
 
 replace('foo', 'bar', 'foo foo');       // 'bar foo' (first only)
 replace(/foo/g, 'bar', 'foo foo');      // 'bar bar' (global)
@@ -46,7 +46,7 @@ replace(/a./g, 'x', 'abcdab');          // 'xcdx'`}
 
     <CodeBlock
       language="typescript"
-      code={`import { replace } from 'fp-kit';
+      code={`import { replace } from 'fp-pack';
 
 replace('http:', 'https:', 'http://example.com'); // 'https://example.com'`}
     />
@@ -57,7 +57,7 @@ replace('http:', 'https:', 'http://example.com'); // 'https://example.com'`}
 
     <CodeBlock
       language="typescript"
-      code={`import { replace } from 'fp-kit';
+      code={`import { replace } from 'fp-pack';
 
 const snakeToDash = (input: string) => replace(/_/g, '-', input);
 

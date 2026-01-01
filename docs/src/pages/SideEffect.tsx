@@ -29,7 +29,7 @@ export const SideEffect = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { SideEffect, pipeSideEffect, runPipeResult } from 'fp-kit';
+      code={`import { SideEffect, pipeSideEffect, runPipeResult } from 'fp-pack';
 
 // Create a SideEffect that will execute later
 const validateAge = (age: number) =>
@@ -75,7 +75,7 @@ runPipeResult(processAgePipeline(15)); // Logs "Age validation failed", returns 
     <CodeBlock
       language="typescript"
       code={`// ✅ GOOD: 99% of cases - use pipe (pure transformations)
-import { pipe, map, filter, sort } from 'fp-kit';
+import { pipe, map, filter, sort } from 'fp-pack';
 
 const processData = pipe(
   filter(isValid),
@@ -84,7 +84,7 @@ const processData = pipe(
 );
 
 // ✅ GOOD: Only when you need SideEffect - use pipeSideEffect
-import { pipeSideEffect, SideEffect } from 'fp-kit';
+import { pipeSideEffect, SideEffect } from 'fp-pack';
 
 const processWithValidation = pipeSideEffect(
   validateOrStop,  // Might return SideEffect for early termination
@@ -162,7 +162,7 @@ function runPipeResult<T, R>(value: T | SideEffect<R>): T | R;`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-pack';
 
 interface FormData {
   email: string;
@@ -207,7 +207,7 @@ try {
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-pack';
 
 interface User {
   id: string;
@@ -240,7 +240,7 @@ runPipeResult(getUserThemePipeline('user-123')); // 'dark' or null if any step f
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-pack';
 
 interface PaymentData {
   amount: number;
@@ -285,7 +285,7 @@ const result = runPipeResult(processPaymentPipeline({ amount: -10, userId: 'user
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, matchSideEffect } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, matchSideEffect } from 'fp-pack';
 
 const divide = (a: number, b: number) =>
   b !== 0
@@ -323,7 +323,7 @@ console.log(output); // "Division by zero"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-kit';
+      code={`import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
 
 const processNumbers = pipeSideEffect(
   (nums: number[]) => nums.filter(n => n % 2 === 1),
@@ -390,7 +390,7 @@ const result = runPipeResult(oddsDoubled);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, pipeSideEffect, SideEffect } from 'fp-kit';
+      code={`import { pipe, pipeSideEffect, SideEffect } from 'fp-pack';
 
 const validateUserPipeline = pipeSideEffect(
   findUser,           // User | SideEffect

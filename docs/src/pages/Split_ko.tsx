@@ -26,7 +26,7 @@ export const Split_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { split } from 'fp-kit';
+      code={`import { split } from 'fp-pack';
 
 split(',', 'a,b,c'); // ['a', 'b', 'c']
 split('/', 'foo/bar'); // ['foo', 'bar']
@@ -45,7 +45,7 @@ split(',', 'abc'); // ['abc']`}
 
     <CodeBlock
       language="typescript"
-      code={`import { split } from 'fp-kit';
+      code={`import { split } from 'fp-pack';
 
 const segments = split('/', '/api/v1/users');
 // ['', 'api', 'v1', 'users']`}

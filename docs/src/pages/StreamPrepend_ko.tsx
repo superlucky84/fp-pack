@@ -66,7 +66,7 @@ function prepend<T>(
 
     <CodeBlock
       language="typescript"
-      code={`import { prepend } from 'fp-kit/stream';
+      code={`import { prepend } from 'fp-pack/stream';
 
 // 배열에 단일 값 추가
 const numbers = prepend(0, [1, 2, 3]);
@@ -91,9 +91,9 @@ console.log(Array.from(withOne));
 
     <CodeBlock
       language="typescript"
-      code={`import { prepend } from 'fp-kit/stream';
-import { pipe } from 'fp-kit/composition';
-import { map } from 'fp-kit/stream';
+      code={`import { prepend } from 'fp-pack/stream';
+import { pipe } from 'fp-pack/composition';
+import { map } from 'fp-pack/stream';
 
 // 재사용 가능한 prepend 함수 생성
 const addHeader = prepend('=== 보고서 헤더 ===');
@@ -126,7 +126,7 @@ console.log(Array.from(processItems(items)));
 
     <CodeBlock
       language="typescript"
-      code={`import { prepend } from 'fp-kit/stream';
+      code={`import { prepend } from 'fp-pack/stream';
 
 // 데이터 행에 CSV 헤더 추가
 async function* fetchDataRows() {
@@ -156,8 +156,8 @@ for await (const row of csvWithHeader) {
 
     <CodeBlock
       language="typescript"
-      code={`import { prepend } from 'fp-kit/stream';
-import { pipe } from 'fp-kit/composition';
+      code={`import { prepend } from 'fp-pack/stream';
+import { pipe } from 'fp-pack/composition';
 
 interface FileChunk {
   type: 'metadata' | 'content';
@@ -199,7 +199,7 @@ for await (const chunk of withMetadata) {
 
     <CodeBlock
       language="typescript"
-      code={`import { prepend } from 'fp-kit/stream';
+      code={`import { prepend } from 'fp-pack/stream';
 
 interface StreamEvent {
   type: 'init' | 'data' | 'update';
@@ -248,7 +248,7 @@ for await (const event of eventsWithInit) {
 
     <CodeBlock
       language="typescript"
-      code={`import { prepend } from 'fp-kit/stream';
+      code={`import { prepend } from 'fp-pack/stream';
 
 interface Product {
   id: number;
@@ -304,8 +304,8 @@ for await (const item of productsWithCacheInfo) {
 
     <CodeBlock
       language="typescript"
-      code={`import { prepend } from 'fp-kit/stream';
-import { pipe } from 'fp-kit/composition';
+      code={`import { prepend } from 'fp-pack/stream';
+import { pipe } from 'fp-pack/composition';
 
 function* generateLogs() {
   yield '[INFO] 서비스 시작됨';
@@ -341,9 +341,9 @@ for (const line of logsWithBanner) {
 
     <CodeBlock
       language="typescript"
-      code={`import { prepend } from 'fp-kit/stream';
-import { filter } from 'fp-kit/stream';
-import { pipe } from 'fp-kit/composition';
+      code={`import { prepend } from 'fp-pack/stream';
+import { filter } from 'fp-pack/stream';
+import { pipe } from 'fp-pack/composition';
 
 function* getNumbers() {
   yield 1;

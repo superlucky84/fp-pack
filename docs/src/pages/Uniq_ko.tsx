@@ -34,7 +34,7 @@ export const Uniq_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { uniq } from 'fp-kit';
+      code={`import { uniq } from 'fp-pack';
 
 const numbers = [1, 2, 2, 3, 1, 4];
 
@@ -58,7 +58,7 @@ console.log(numbers);
 
     <CodeBlock
       language="typescript"
-      code={`import { uniq } from 'fp-kit';
+      code={`import { uniq } from 'fp-pack';
 
 // 숫자
 uniq([1, 2, 2, 3, 1]);
@@ -83,7 +83,7 @@ uniq([true, false, true, false]);
 
     <CodeBlock
       language="typescript"
-      code={`import { uniq } from 'fp-kit';
+      code={`import { uniq } from 'fp-pack';
 
 const data = ['c', 'a', 'b', 'a', 'c'];
 
@@ -93,7 +93,7 @@ uniq(data);
 // 주의: 'c'가 먼저 나타났기 때문에 첫 번째로 옴
 
 // 정렬된 고유 값과 비교
-import { pipe, sort } from 'fp-kit';
+import { pipe, sort } from 'fp-pack';
 
 const sortedUnique = pipe(
   uniq,
@@ -110,7 +110,7 @@ sortedUnique(data);
 
     <CodeBlock
       language="typescript"
-      code={`import { uniq } from 'fp-kit';
+      code={`import { uniq } from 'fp-pack';
 
 // 동일한 참조 - 중복으로 처리됨
 const obj1 = { id: 1, name: 'Alice' };
@@ -128,7 +128,7 @@ uniq([a, b, a]);
 // 다른 참조이므로 두 객체 모두 유지됨
 
 // 값 기반 고유성이 필요하면 uniqBy 사용
-import { uniqBy } from 'fp-kit';
+import { uniqBy } from 'fp-pack';
 
 uniqBy((obj: { id: number }) => obj.id, [a, b, a]);
 // [{ id: 1 }]`}
@@ -146,7 +146,7 @@ uniqBy((obj: { id: number }) => obj.id, [a, b, a]);
 
     <CodeBlock
       language="typescript"
-      code={`import { uniq } from 'fp-kit';
+      code={`import { uniq } from 'fp-pack';
 
 interface Article {
   title: string;
@@ -177,7 +177,7 @@ uniqueTags.forEach(tag => {
 
     <CodeBlock
       language="typescript"
-      code={`import { uniq } from 'fp-kit';
+      code={`import { uniq } from 'fp-pack';
 
 interface Product {
   name: string;
@@ -214,7 +214,7 @@ categories.forEach(category => {
 
     <CodeBlock
       language="typescript"
-      code={`import { uniq } from 'fp-kit';
+      code={`import { uniq } from 'fp-pack';
 
 interface User {
   name: string;
@@ -249,7 +249,7 @@ uniqueRoles.forEach(role => {
 
     <CodeBlock
       language="typescript"
-      code={`import { uniq } from 'fp-kit';
+      code={`import { uniq } from 'fp-pack';
 
 // 중복 폼 제출 제거
 const formSubmissions = [
@@ -285,7 +285,7 @@ console.log('최근 검색:', cleanHistory.slice(0, 5).join(', '));`}
 
     <CodeBlock
       language="typescript"
-      code={`import { uniq } from 'fp-kit';
+      code={`import { uniq } from 'fp-pack';
 
 interface EventListener {
   event: string;
@@ -318,7 +318,7 @@ uniqueEvents.forEach(eventType => {
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, uniq, map, filter } from 'fp-kit';
+      code={`import { pipe, uniq, map, filter } from 'fp-pack';
 
 interface Order {
   customerId: number;
@@ -381,7 +381,7 @@ console.log('완료 주문 고객 수:', uniqueCompletedCustomers(orders).length
 
     <CodeBlock
       language="typescript"
-      code={`import { uniq, uniqBy } from 'fp-kit';
+      code={`import { uniq, uniqBy } from 'fp-pack';
 
 const users = [
   { id: 1, name: 'Alice' },

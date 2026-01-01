@@ -13,7 +13,7 @@ export const GetOrElse_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { getOrElse } from 'fp-kit';
+      code={`import { getOrElse } from 'fp-pack';
 
 const withDefault = getOrElse('Guest');
 

@@ -36,7 +36,7 @@ export const Equals = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { equals } from 'fp-kit';
+      code={`import { equals } from 'fp-pack';
 
 equals(1, 1);                    // true
 equals([1, 2], [1, 2]);          // true
@@ -56,7 +56,7 @@ equals([1, 2], [1, 3]);          // false`}
 
     <CodeBlock
       language="typescript"
-      code={`import { equals } from 'fp-kit';
+      code={`import { equals } from 'fp-pack';
 
 // Numbers
 equals(42, 42);        // true
@@ -81,7 +81,7 @@ NaN === NaN;           // false (standard JavaScript behavior)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { equals } from 'fp-kit';
+      code={`import { equals } from 'fp-pack';
 
 // Shallow arrays
 equals([1, 2, 3], [1, 2, 3]);           // true
@@ -102,7 +102,7 @@ equals([], []);                          // true`}
 
     <CodeBlock
       language="typescript"
-      code={`import { equals } from 'fp-kit';
+      code={`import { equals } from 'fp-pack';
 
 // Simple objects
 equals({ a: 1, b: 2 }, { a: 1, b: 2 });     // true
@@ -130,7 +130,7 @@ equals({}, {});                              // true`}
 
     <CodeBlock
       language="typescript"
-      code={`import { equals } from 'fp-kit';
+      code={`import { equals } from 'fp-pack';
 
 const date1 = new Date('2024-01-01');
 const date2 = new Date('2024-01-01');
@@ -152,7 +152,7 @@ equals(date1, date3);  // false (different timestamp)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { equals } from 'fp-kit';
+      code={`import { equals } from 'fp-pack';
 
 interface UserState {
   id: number;
@@ -199,7 +199,7 @@ shouldUpdateUser(state1, state3);  // true (update needed)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { equals } from 'fp-kit';
+      code={`import { equals } from 'fp-pack';
 
 interface ApiResponse {
   status: number;
@@ -244,7 +244,7 @@ validateResponse(received, expected);  // true`}
 
     <CodeBlock
       language="typescript"
-      code={`import { equals } from 'fp-kit';
+      code={`import { equals } from 'fp-pack';
 
 interface Product {
   id: number;
@@ -279,7 +279,7 @@ deduplicateProducts(products);
 
     <CodeBlock
       language="typescript"
-      code={`import { equals } from 'fp-kit';
+      code={`import { equals } from 'fp-pack';
 
 interface FormData {
   username: string;
@@ -331,7 +331,7 @@ form.canSave();     // true`}
 
     <CodeBlock
       language="typescript"
-      code={`import { equals } from 'fp-kit';
+      code={`import { equals } from 'fp-pack';
 
 interface CacheEntry<T> {
   args: any[];
@@ -377,7 +377,7 @@ expensiveOperation({ filters: ['active', 'premium'], sort: 'date' });
 
     <CodeBlock
       language="typescript"
-      code={`import { equals } from 'fp-kit';
+      code={`import { equals } from 'fp-pack';
 
 function assertDeepEqual<T>(actual: T, expected: T, message?: string) {
   if (!equals(actual, expected)) {
@@ -413,7 +413,7 @@ assertDeepEqual(
 
     <CodeBlock
       language="typescript"
-      code={`import { equals } from 'fp-kit';
+      code={`import { equals } from 'fp-pack';
 
 // Handle circular references safely
 const obj1: any = { name: 'Alice', age: 30 };

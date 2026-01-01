@@ -26,7 +26,7 @@ export const StreamFind = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { find } from 'fp-kit/stream';
+      code={`import { find } from 'fp-pack/stream';
 
 const value = find((n: number) => n > 2, [1, 2, 3]);
 // 3`}
@@ -54,7 +54,7 @@ function find<T>(predicate: (value: T) => boolean | Promise<boolean>): (iterable
 
     <CodeBlock
       language="typescript"
-      code={`import { find } from 'fp-kit/stream';
+      code={`import { find } from 'fp-pack/stream';
 
 const result = await find(async (n: number) => n === 2, Promise.resolve([1, 2, 3]));
 // 2`}

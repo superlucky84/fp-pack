@@ -48,14 +48,14 @@ export const StreamDropWhile_ko = () => {
       </ul>
 
       <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-        fp-kit의 모든 스트림 연산과 마찬가지로, dropWhile은 지연 평가를
+        fp-pack의 모든 스트림 연산과 마찬가지로, dropWhile은 지연 평가를
         사용합니다. 즉, 조건이 거짓을 반환할 때까지만 조건을 테스트하며, 그 이후
         불필요한 반복이 발생하지 않습니다.
       </p>
 
       <CodeBlock
         language="typescript"
-        code={`import { dropWhile, toArray } from 'fp-kit/stream';
+        code={`import { dropWhile, toArray } from 'fp-pack/stream';
 
 // 기본 예제: 3보다 작은 값들을 건너뛰기
 const data = [1, 2, 3, 4, 2, 1];
@@ -144,7 +144,7 @@ function dropWhile<T>(
 
       <CodeBlock
         language="typescript"
-        code={`import { dropWhile, drop, takeWhile, toArray } from 'fp-kit/stream';
+        code={`import { dropWhile, drop, takeWhile, toArray } from 'fp-pack/stream';
 
 const data = [1, 2, 3, 4, 5, 2, 1];
 
@@ -195,7 +195,7 @@ toArray(takeWhile((n) => n < 4, data)); // [1, 2, 3]`}
 
       <CodeBlock
         language="typescript"
-        code={`import { dropWhile, toArray } from 'fp-kit/stream';
+        code={`import { dropWhile, toArray } from 'fp-pack/stream';
 
 interface SensorReading {
   timestamp: number;
@@ -235,7 +235,7 @@ console.log(validReadings);
 
       <CodeBlock
         language="typescript"
-        code={`import { dropWhile, map, toArray, pipe } from 'fp-kit/stream';
+        code={`import { dropWhile, map, toArray, pipe } from 'fp-pack/stream';
 
 interface Metric {
   timestamp: number;
@@ -283,7 +283,7 @@ console.log(stableMetrics);
 
       <CodeBlock
         language="typescript"
-        code={`import { dropWhile, filter, toArray, pipe } from 'fp-kit/stream';
+        code={`import { dropWhile, filter, toArray, pipe } from 'fp-pack/stream';
 
 interface LogEntry {
   timestamp: Date;
@@ -327,7 +327,7 @@ console.log(errorsAfterIncident);
 
       <CodeBlock
         language="typescript"
-        code={`import { dropWhile, map, toArray, pipe } from 'fp-kit/stream';
+        code={`import { dropWhile, map, toArray, pipe } from 'fp-pack/stream';
 
 const dataFile = [
   '# Data export from system',
@@ -368,7 +368,7 @@ console.log(measurements);
 
       <CodeBlock
         language="typescript"
-        code={`import { dropWhile, map, toArray, pipe } from 'fp-kit/stream';
+        code={`import { dropWhile, map, toArray, pipe } from 'fp-pack/stream';
 
 interface JobStatus {
   id: string;
@@ -419,7 +419,7 @@ console.log(result);
 
       <CodeBlock
         language="typescript"
-        code={`import { dropWhile, toArray } from 'fp-kit/stream';
+        code={`import { dropWhile, toArray } from 'fp-pack/stream';
 
 interface Trade {
   timestamp: number;
@@ -491,7 +491,7 @@ console.log('포함된 거래량:', 100 + 50 + 80); // 230`}
 
       <CodeBlock
         language="typescript"
-        code={`import { dropWhile, toArray, range } from 'fp-kit/stream';
+        code={`import { dropWhile, toArray, range } from 'fp-pack/stream';
 
 // 효율적: 조건이 실패할 때까지만 검사
 const largeDataset = range(0, 1_000_000);

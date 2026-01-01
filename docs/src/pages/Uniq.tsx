@@ -34,7 +34,7 @@ export const Uniq = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { uniq } from 'fp-kit';
+      code={`import { uniq } from 'fp-pack';
 
 const numbers = [1, 2, 2, 3, 1, 4];
 
@@ -58,7 +58,7 @@ console.log(numbers);
 
     <CodeBlock
       language="typescript"
-      code={`import { uniq } from 'fp-kit';
+      code={`import { uniq } from 'fp-pack';
 
 // Numbers
 uniq([1, 2, 2, 3, 1]);
@@ -83,7 +83,7 @@ uniq([true, false, true, false]);
 
     <CodeBlock
       language="typescript"
-      code={`import { uniq } from 'fp-kit';
+      code={`import { uniq } from 'fp-pack';
 
 const data = ['c', 'a', 'b', 'a', 'c'];
 
@@ -93,7 +93,7 @@ uniq(data);
 // Notice: 'c' comes first because it appeared first
 
 // Compare with sorted unique
-import { pipe, sort } from 'fp-kit';
+import { pipe, sort } from 'fp-pack';
 
 const sortedUnique = pipe(
   uniq,
@@ -110,7 +110,7 @@ sortedUnique(data);
 
     <CodeBlock
       language="typescript"
-      code={`import { uniq } from 'fp-kit';
+      code={`import { uniq } from 'fp-pack';
 
 // Same reference - treated as duplicate
 const obj1 = { id: 1, name: 'Alice' };
@@ -128,7 +128,7 @@ uniq([a, b, a]);
 // Both objects remain because they are different references
 
 // For value-based uniqueness, use uniqBy
-import { uniqBy } from 'fp-kit';
+import { uniqBy } from 'fp-pack';
 
 uniqBy((obj: { id: number }) => obj.id, [a, b, a]);
 // [{ id: 1 }]`}
@@ -146,7 +146,7 @@ uniqBy((obj: { id: number }) => obj.id, [a, b, a]);
 
     <CodeBlock
       language="typescript"
-      code={`import { uniq } from 'fp-kit';
+      code={`import { uniq } from 'fp-pack';
 
 interface Article {
   title: string;
@@ -177,7 +177,7 @@ uniqueTags.forEach(tag => {
 
     <CodeBlock
       language="typescript"
-      code={`import { uniq } from 'fp-kit';
+      code={`import { uniq } from 'fp-pack';
 
 interface Product {
   name: string;
@@ -214,7 +214,7 @@ categories.forEach(category => {
 
     <CodeBlock
       language="typescript"
-      code={`import { uniq } from 'fp-kit';
+      code={`import { uniq } from 'fp-pack';
 
 interface User {
   name: string;
@@ -249,7 +249,7 @@ uniqueRoles.forEach(role => {
 
     <CodeBlock
       language="typescript"
-      code={`import { uniq } from 'fp-kit';
+      code={`import { uniq } from 'fp-pack';
 
 // Remove duplicate form submissions
 const formSubmissions = [
@@ -285,7 +285,7 @@ console.log('Recent searches:', cleanHistory.slice(0, 5).join(', '));`}
 
     <CodeBlock
       language="typescript"
-      code={`import { uniq } from 'fp-kit';
+      code={`import { uniq } from 'fp-pack';
 
 interface EventListener {
   event: string;
@@ -318,7 +318,7 @@ uniqueEvents.forEach(eventType => {
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, uniq, map, filter } from 'fp-kit';
+      code={`import { pipe, uniq, map, filter } from 'fp-pack';
 
 interface Order {
   customerId: number;
@@ -381,7 +381,7 @@ console.log('Customers with completed orders:', uniqueCompletedCustomers(orders)
 
     <CodeBlock
       language="typescript"
-      code={`import { uniq, uniqBy } from 'fp-kit';
+      code={`import { uniq, uniqBy } from 'fp-pack';
 
 const users = [
   { id: 1, name: 'Alice' },

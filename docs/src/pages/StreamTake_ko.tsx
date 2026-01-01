@@ -38,8 +38,8 @@ export const StreamTake_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { take, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { take, toArray } from 'fp-pack/stream';
 
 // 처음 3개 아이템 가져오기
 const result = pipe(
@@ -100,8 +100,8 @@ function take<T>(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, take, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, take, map, toArray } from 'fp-pack/stream';
 
 // 무한 시퀀스를 생성하지만 5개만 가져오기
 const first5Squares = pipe(
@@ -130,8 +130,8 @@ generateIds();
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { take, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { take, toArray } from 'fp-pack/stream';
 
 // 대용량 데이터셋에서 처음 몇 개 레코드 미리보기
 const previewData = (data: any[]) => pipe(
@@ -166,8 +166,8 @@ const firstThreeComments = pipe(take(3), toArray)(comments);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, take, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, take, map, toArray } from 'fp-pack/stream';
 
 // 한 페이지의 결과만 가져오기
 const fetchPage = async (pageNumber: number, pageSize: number) => {
@@ -207,8 +207,8 @@ generatePageNumbers(3);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { take, filter, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { take, filter, map, toArray } from 'fp-pack/stream';
 
 // 처음 3명의 유효한 사용자 찾기 (3명을 찾은 후 중단)
 const findValidUsers = (users: User[]) => pipe(
@@ -245,8 +245,8 @@ const efficient = findValidUsers(millionUsers);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { take, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { take, toArray } from 'fp-pack/stream';
 
 // 아이템을 배치로 처리
 function* getBatch<T>(items: T[], batchSize: number) {
@@ -277,8 +277,8 @@ const batches = Array.from(getBatch(items, 3));
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { take, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { take, toArray } from 'fp-pack/stream';
 
 // 비동기 스트림에서 처음 N개 아이템 가져오기
 async function* asyncNumbers() {
@@ -322,8 +322,8 @@ const result = await pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, take, map, filter, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, take, map, filter, toArray } from 'fp-pack/stream';
 
 // 100만 개가 아닌 100개만 처리
 const efficientExample = pipe(

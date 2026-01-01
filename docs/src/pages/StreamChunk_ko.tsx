@@ -47,14 +47,14 @@ export const StreamChunk_ko = () => {
       </ul>
 
       <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-        fp-kit의 모든 스트림 연산과 마찬가지로, chunk는 지연 평가를 사용합니다.
+        fp-pack의 모든 스트림 연산과 마찬가지로, chunk는 지연 평가를 사용합니다.
         즉, 청크는 한 번에 모두가 아니라 반복할 때 필요에 따라 생성됩니다.
         이로 인해 매우 크거나 무한한 입력에서도 메모리 효율적입니다.
       </p>
 
       <CodeBlock
         language="typescript"
-        code={`import { chunk, toArray } from 'fp-kit/stream';
+        code={`import { chunk, toArray } from 'fp-pack/stream';
 
 // 기본 예제: 배열을 크기 2의 청크로 분할
 const data = [1, 2, 3, 4, 5];
@@ -158,7 +158,7 @@ function chunk<T>(
 
       <CodeBlock
         language="typescript"
-        code={`import { chunk, toArray } from 'fp-kit/stream';
+        code={`import { chunk, toArray } from 'fp-pack/stream';
 
 const data = [1, 2, 3, 4, 5, 6];
 
@@ -207,7 +207,7 @@ toArray(chunk(2, data)); // [[1, 2], [3, 4], [5, 6]]
 
       <CodeBlock
         language="typescript"
-        code={`import { chunk, map, toArray, pipe } from 'fp-kit/stream';
+        code={`import { chunk, map, toArray, pipe } from 'fp-pack/stream';
 
 interface User {
   id: string;
@@ -264,7 +264,7 @@ await batchCreateUsers(users);
 
       <CodeBlock
         language="typescript"
-        code={`import { chunk, toArray, pipe } from 'fp-kit/stream';
+        code={`import { chunk, toArray, pipe } from 'fp-pack/stream';
 
 interface Product {
   id: string;
@@ -319,7 +319,7 @@ console.log(catalog.getPage(4)?.length); // 15 (마지막 페이지)`}
 
       <CodeBlock
         language="typescript"
-        code={`import { chunk, map, flatMap, toArray, pipe } from 'fp-kit/stream';
+        code={`import { chunk, map, flatMap, toArray, pipe } from 'fp-pack/stream';
 
 interface Task {
   id: string;
@@ -371,7 +371,7 @@ console.log(\`Processed \${results.length} tasks\`);`}
 
       <CodeBlock
         language="typescript"
-        code={`import { chunk, map, toArray, pipe } from 'fp-kit/stream';
+        code={`import { chunk, map, toArray, pipe } from 'fp-pack/stream';
 
 // 진행률 추적 및 재개 가능성을 위해 청크 단위로 파일 업로드
 async function uploadFileInChunks(
@@ -426,7 +426,7 @@ await uploadFileInChunks(fileData, 1024 * 1024);
 
       <CodeBlock
         language="typescript"
-        code={`import { chunk, map, toArray, pipe } from 'fp-kit/stream';
+        code={`import { chunk, map, toArray, pipe } from 'fp-pack/stream';
 
 interface DataPoint {
   timestamp: number;
@@ -480,7 +480,7 @@ console.log(aggregated);
 
       <CodeBlock
         language="typescript"
-        code={`import { chunk, map, toArray, pipe } from 'fp-kit/stream';
+        code={`import { chunk, map, toArray, pipe } from 'fp-pack/stream';
 
 // 비동기 이벤트 스트림 시뮬레이션
 async function* eventStream(): AsyncGenerator<string> {
@@ -550,7 +550,7 @@ await processEventBatches();`}
 
       <CodeBlock
         language="typescript"
-        code={`import { chunk, take, toArray, pipe, range } from 'fp-kit/stream';
+        code={`import { chunk, take, toArray, pipe, range } from 'fp-pack/stream';
 
 // 효율적: 필요에 따라서만 청크 생성
 const first3Chunks = pipe(

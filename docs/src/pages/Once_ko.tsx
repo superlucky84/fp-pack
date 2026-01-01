@@ -34,7 +34,7 @@ export const Once_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { once } from 'fp-kit';
+      code={`import { once } from 'fp-pack';
 
 const initialize = once(() => {
   console.log('초기화 중...');
@@ -76,7 +76,7 @@ initialize();  // { initialized: true } 반환 (로그 없음)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { once } from 'fp-kit';
+      code={`import { once } from 'fp-pack';
 
 const greet = once((name: string) => {
   console.log(\`안녕하세요, \${name}님!\`);
@@ -98,7 +98,7 @@ greet('Carol');  // "Alice님께 인사했습니다" 반환 (로그 없음, Caro
 
     <CodeBlock
       language="typescript"
-      code={`import { once } from 'fp-kit';
+      code={`import { once } from 'fp-pack';
 
 const calculatePi = once(() => {
   console.log('파이 계산 중...');
@@ -130,7 +130,7 @@ console.log(pi2 === pi3);   // true`}
 
     <CodeBlock
       language="typescript"
-      code={`import { once } from 'fp-kit';
+      code={`import { once } from 'fp-pack';
 
 class DatabaseConnection {
   constructor() {
@@ -159,7 +159,7 @@ console.log(conn2 === conn3);   // true`}
 
     <CodeBlock
       language="typescript"
-      code={`import { once } from 'fp-kit';
+      code={`import { once } from 'fp-pack';
 
 interface Config {
   apiUrl: string;
@@ -202,7 +202,7 @@ const config3 = getConfig();`}
 
     <CodeBlock
       language="typescript"
-      code={`import { once } from 'fp-kit';
+      code={`import { once } from 'fp-pack';
 
 const setupGlobalHandlers = once(() => {
   console.log('전역 이벤트 핸들러 설정 중...');
@@ -237,7 +237,7 @@ setupGlobalHandlers();  // 아무것도 안 함`}
 
     <CodeBlock
       language="typescript"
-      code={`import { once } from 'fp-kit';
+      code={`import { once } from 'fp-pack';
 
 class ExpensiveService {
   private data: string[];
@@ -278,7 +278,7 @@ const results2 = getService().search('200');  // 로그 없음`}
 
     <CodeBlock
       language="typescript"
-      code={`import { once } from 'fp-kit';
+      code={`import { once } from 'fp-pack';
 
 const getNothing = once(() => {
   console.log('호출됨');
@@ -298,7 +298,7 @@ getNothing();  // undefined 반환 (로그 없음)
 
     <CodeBlock
       language="typescript"
-      code={`import { once } from 'fp-kit';
+      code={`import { once } from 'fp-pack';
 
 const add = once((a: number, b: number) => {
   console.log(\`\${a} + \${b} 더하기\`);

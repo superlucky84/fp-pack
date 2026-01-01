@@ -26,7 +26,7 @@ export const StreamEvery_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { every } from 'fp-kit/stream';
+      code={`import { every } from 'fp-pack/stream';
 
 const result = every((n: number) => n > 0, [1, 2, 3]);
 // true`}
@@ -54,7 +54,7 @@ function every<T>(predicate: (value: T) => boolean | Promise<boolean>): (iterabl
 
     <CodeBlock
       language="typescript"
-      code={`import { every } from 'fp-kit/stream';
+      code={`import { every } from 'fp-pack/stream';
 
 const result = await every(async (n: number) => n < 5, Promise.resolve([1, 2, 3]));
 // true`}

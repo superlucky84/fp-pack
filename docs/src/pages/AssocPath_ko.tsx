@@ -13,7 +13,7 @@ export const AssocPath_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { assocPath } from 'fp-kit';
+      code={`import { assocPath } from 'fp-pack';
 
 assocPath(['a', 'b', 'c'], 42, { a: { b: { c: 0 } } });
 // { a: { b: { c: 42 } } }

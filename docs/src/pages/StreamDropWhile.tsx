@@ -56,14 +56,14 @@ export const StreamDropWhile = () => {
       </ul>
 
       <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-        Like all stream operations in fp-kit, dropWhile uses lazy evaluation,
+        Like all stream operations in fp-pack, dropWhile uses lazy evaluation,
         meaning the predicate is only tested until it returns false, and no
         unnecessary iterations occur beyond that point.
       </p>
 
       <CodeBlock
         language="typescript"
-        code={`import { dropWhile, toArray } from 'fp-kit/stream';
+        code={`import { dropWhile, toArray } from 'fp-pack/stream';
 
 // Basic example: skip values less than 3
 const data = [1, 2, 3, 4, 2, 1];
@@ -152,7 +152,7 @@ function dropWhile<T>(
 
       <CodeBlock
         language="typescript"
-        code={`import { dropWhile, drop, takeWhile, toArray } from 'fp-kit/stream';
+        code={`import { dropWhile, drop, takeWhile, toArray } from 'fp-pack/stream';
 
 const data = [1, 2, 3, 4, 5, 2, 1];
 
@@ -203,7 +203,7 @@ toArray(takeWhile((n) => n < 4, data)); // [1, 2, 3]`}
 
       <CodeBlock
         language="typescript"
-        code={`import { dropWhile, toArray } from 'fp-kit/stream';
+        code={`import { dropWhile, toArray } from 'fp-pack/stream';
 
 interface SensorReading {
   timestamp: number;
@@ -243,7 +243,7 @@ console.log(validReadings);
 
       <CodeBlock
         language="typescript"
-        code={`import { dropWhile, map, toArray, pipe } from 'fp-kit/stream';
+        code={`import { dropWhile, map, toArray, pipe } from 'fp-pack/stream';
 
 interface Metric {
   timestamp: number;
@@ -291,7 +291,7 @@ console.log(stableMetrics);
 
       <CodeBlock
         language="typescript"
-        code={`import { dropWhile, filter, toArray, pipe } from 'fp-kit/stream';
+        code={`import { dropWhile, filter, toArray, pipe } from 'fp-pack/stream';
 
 interface LogEntry {
   timestamp: Date;
@@ -335,7 +335,7 @@ console.log(errorsAfterIncident);
 
       <CodeBlock
         language="typescript"
-        code={`import { dropWhile, map, toArray, pipe } from 'fp-kit/stream';
+        code={`import { dropWhile, map, toArray, pipe } from 'fp-pack/stream';
 
 const dataFile = [
   '# Data export from system',
@@ -376,7 +376,7 @@ console.log(measurements);
 
       <CodeBlock
         language="typescript"
-        code={`import { dropWhile, map, toArray, pipe } from 'fp-kit/stream';
+        code={`import { dropWhile, map, toArray, pipe } from 'fp-pack/stream';
 
 interface JobStatus {
   id: string;
@@ -427,7 +427,7 @@ console.log(result);
 
       <CodeBlock
         language="typescript"
-        code={`import { dropWhile, toArray } from 'fp-kit/stream';
+        code={`import { dropWhile, toArray } from 'fp-pack/stream';
 
 interface Trade {
   timestamp: number;
@@ -501,7 +501,7 @@ console.log('Included volume:', 100 + 50 + 80); // 230`}
 
       <CodeBlock
         language="typescript"
-        code={`import { dropWhile, toArray, range } from 'fp-kit/stream';
+        code={`import { dropWhile, toArray, range } from 'fp-pack/stream';
 
 // Efficient: Only checks until condition fails
 const largeDataset = range(0, 1_000_000);

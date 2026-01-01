@@ -34,7 +34,7 @@ export const Take = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { take } from 'fp-kit';
+      code={`import { take } from 'fp-pack';
 
 const numbers = [1, 2, 3, 4, 5];
 
@@ -59,7 +59,7 @@ console.log(numbers);
 
     <CodeBlock
       language="typescript"
-      code={`import { take } from 'fp-kit';
+      code={`import { take } from 'fp-pack';
 
 const data = [10, 20, 30, 40, 50];
 
@@ -82,7 +82,7 @@ take(5, data);
 
     <CodeBlock
       language="typescript"
-      code={`import { take } from 'fp-kit';
+      code={`import { take } from 'fp-pack';
 
 const items = [1, 2, 3];
 
@@ -115,7 +115,7 @@ take(3, []);
 
     <CodeBlock
       language="typescript"
-      code={`import { take } from 'fp-kit';
+      code={`import { take } from 'fp-pack';
 
 interface Post {
   id: number;
@@ -135,7 +135,7 @@ const pageSize = 5;
 const firstPage = take(pageSize, allPosts);
 
 // For subsequent pages, combine with drop
-import { drop } from 'fp-kit';
+import { drop } from 'fp-pack';
 
 const getPage = (pageNumber: number, pageSize: number) => {
   const startIndex = pageNumber * pageSize;
@@ -152,7 +152,7 @@ const page2 = getPage(1, 5); // Next 5 posts`}
 
     <CodeBlock
       language="typescript"
-      code={`import { take } from 'fp-kit';
+      code={`import { take } from 'fp-pack';
 
 interface Product {
   name: string;
@@ -184,7 +184,7 @@ console.log(\`Showing \${previewResults.length} of \${searchResults.length} resu
 
     <CodeBlock
       language="typescript"
-      code={`import { take, sortBy } from 'fp-kit';
+      code={`import { take, sortBy } from 'fp-pack';
 
 interface Player {
   name: string;
@@ -216,7 +216,7 @@ topThree.forEach((player, index) => {
 
     <CodeBlock
       language="typescript"
-      code={`import { take } from 'fp-kit';
+      code={`import { take } from 'fp-pack';
 
 interface Activity {
   id: number;
@@ -249,7 +249,7 @@ recentActivities.forEach(activity => {
 
     <CodeBlock
       language="typescript"
-      code={`import { take, curry } from 'fp-kit';
+      code={`import { take, curry } from 'fp-pack';
 
 // Create curried version
 const takeCurried = curry(take);
@@ -266,7 +266,7 @@ takeFive(numbers);   // [1, 2, 3, 4, 5]
 takeTen(numbers);    // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 // Use in pipe
-import { pipe } from 'fp-kit';
+import { pipe } from 'fp-pack';
 
 const processData = pipe(
   sortBy((x: number) => x),

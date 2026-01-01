@@ -13,7 +13,7 @@ export const RandomInt = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { randomInt } from 'fp-kit';
+      code={`import { randomInt } from 'fp-pack';
 
 randomInt(1, 5);    // 1..5
 randomInt(1.2, 3);  // 2..3 (bounds are rounded)`}

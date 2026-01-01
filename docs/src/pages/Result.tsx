@@ -13,7 +13,7 @@ export const Result = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { result } from 'fp-kit';
+      code={`import { result } from 'fp-pack';
 
 const parseJson = (input: string) => result(() => JSON.parse(input));
 

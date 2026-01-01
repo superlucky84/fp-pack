@@ -37,7 +37,7 @@ export const StreamZip_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { zip, toArray } from 'fp-kit/stream';
+      code={`import { zip, toArray } from 'fp-pack/stream';
 
 // 기본 사용법
 const names = ['Alice', 'Bob', 'Charlie'];
@@ -113,7 +113,7 @@ function zip<A, B>(
     <div class="mb-6 p-6 bg-purple-50 dark:bg-purple-900/20 border-l-4 border-purple-500 rounded">
       <CodeBlock
         language="typescript"
-        code={`import { zip, zipWith } from 'fp-kit/stream';
+        code={`import { zip, zipWith } from 'fp-pack/stream';
 
 const names = ['Alice', 'Bob', 'Charlie'];
 const scores = [95, 87, 92];
@@ -154,8 +154,8 @@ toArray(zip(set2, set1));
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, zip, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, zip, map, toArray } from 'fp-pack/stream';
 
 const items = ['Apple', 'Banana', 'Cherry'];
 
@@ -187,8 +187,8 @@ const startFrom5 = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { zip, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { zip, map, toArray } from 'fp-pack/stream';
 
 const headers = ['Name', 'Age', 'City'];
 const row1 = ['Alice', 25, 'NYC'];
@@ -236,8 +236,8 @@ const records = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeAsync } from 'fp-kit';
-import { zip, map, toArray } from 'fp-kit/stream';
+      code={`import { pipeAsync } from 'fp-pack';
+import { zip, map, toArray } from 'fp-pack/stream';
 
 // 사용자 프로필과 통계를 병렬로 가져오기
 async function fetchUserData(userIds: number[]) {
@@ -278,8 +278,8 @@ const userData = await fetchUserData([1, 2, 3]);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { zip, map, filter, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { zip, map, filter, toArray } from 'fp-pack/stream';
 
 // 타임스탬프와 함께 이벤트 생성
 function* eventStream() {
@@ -333,8 +333,8 @@ console.log(clicks);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, zip, map, flatMap, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, zip, map, flatMap, toArray } from 'fp-pack/stream';
 
 // 그리드의 좌표 쌍 생성
 const createGrid = (rows: number, cols: number) =>
@@ -394,8 +394,8 @@ const processed = processMatrix(matrix);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeAsync } from 'fp-kit';
-import { zip, map, filter, toArray } from 'fp-kit/stream';
+      code={`import { pipeAsync } from 'fp-pack';
+import { zip, map, filter, toArray } from 'fp-pack/stream';
 
 // 실시간 데이터를 위한 비동기 제너레이터
 async function* sensorA() {
@@ -449,8 +449,8 @@ const result = await pipeAsync(
       </p>
       <CodeBlock
         language="typescript"
-        code={`import { pipe } from 'fp-kit';
-import { range, zip, take, toArray } from 'fp-kit/stream';
+        code={`import { pipe } from 'fp-pack';
+import { range, zip, take, toArray } from 'fp-pack/stream';
 
 // 효율적: 무한 범위에서도 3개의 쌍만 생성
 const first3 = pipe(

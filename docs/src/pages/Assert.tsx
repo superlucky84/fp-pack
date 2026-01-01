@@ -34,7 +34,7 @@ export const Assert = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { assert } from 'fp-kit';
+      code={`import { assert } from 'fp-pack';
 
 function divide(a: number, b: number): number {
   assert(b !== 0, 'Division by zero');
@@ -75,7 +75,7 @@ divide(10, 0);  // Error: Division by zero`}
 
     <CodeBlock
       language="typescript"
-      code={`import { assert } from 'fp-kit';
+      code={`import { assert } from 'fp-pack';
 
 // Basic assertion without message
 assert(true);   // No error, execution continues
@@ -92,7 +92,7 @@ assert(5 < 3, 'Five should be greater than three');  // Error: Five should be gr
 
     <CodeBlock
       language="typescript"
-      code={`import { assert } from 'fp-kit';
+      code={`import { assert } from 'fp-pack';
 
 function withdraw(amount: number, balance: number): number {
   assert(amount > 0, 'Amount must be positive');
@@ -117,7 +117,7 @@ withdraw(150, 100);  // Error: Insufficient funds`}
 
     <CodeBlock
       language="typescript"
-      code={`import { assert } from 'fp-kit';
+      code={`import { assert } from 'fp-pack';
 
 interface User {
   id: number;
@@ -154,7 +154,7 @@ createUser({ name: 'John', email: 'invalid' });
 
     <CodeBlock
       language="typescript"
-      code={`import { assert } from 'fp-kit';
+      code={`import { assert } from 'fp-pack';
 
 function getFirst<T>(arr: T[]): T {
   assert(arr.length > 0, 'Array cannot be empty');
@@ -181,7 +181,7 @@ getAt(['a', 'b', 'c'], 10);  // Error: Index out of bounds`}
 
     <CodeBlock
       language="typescript"
-      code={`import { assert } from 'fp-kit';
+      code={`import { assert } from 'fp-pack';
 
 class BankAccount {
   private balance: number = 0;
@@ -221,7 +221,7 @@ console.log(account.getBalance());  // 50`}
 
     <CodeBlock
       language="typescript"
-      code={`import { assert, pipe } from 'fp-kit';
+      code={`import { assert, pipe } from 'fp-pack';
 
 const ensurePositive = (n: number) => {
   assert(n > 0, 'Value must be positive');
@@ -244,7 +244,7 @@ parsePositive(' -3 '); // Error: Value must be positive`}
 
     <CodeBlock
       language="typescript"
-      code={`import { assert } from 'fp-kit';
+      code={`import { assert } from 'fp-pack';
 
 function assertIsString(value: unknown): asserts value is string {
   assert(typeof value === 'string', 'Value must be a string');
@@ -270,7 +270,7 @@ processValue(123);      // Error: Value must be a string`}
 
     <CodeBlock
       language="typescript"
-      code={`import { assert } from 'fp-kit';
+      code={`import { assert } from 'fp-pack';
 
 interface ApiResponse {
   success: boolean;
@@ -300,7 +300,7 @@ handleApiResponse({ success: true });
 
     <CodeBlock
       language="typescript"
-      code={`import { assert } from 'fp-kit';
+      code={`import { assert } from 'fp-pack';
 
 interface Config {
   apiUrl: string;

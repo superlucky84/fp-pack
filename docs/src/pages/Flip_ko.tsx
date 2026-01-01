@@ -33,7 +33,7 @@ export const Flip_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { flip } from 'fp-kit';
+      code={`import { flip } from 'fp-pack';
 
 // 원래 함수
 const divide = (a: number, b: number) => a / b;
@@ -56,7 +56,7 @@ flippedDivide(2, 10);  // 5 (이제 10을 2로 나눔)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { flip } from 'fp-kit';
+      code={`import { flip } from 'fp-pack';
 
 const subtract = (a: number, b: number) => a - b;
 const flippedSubtract = flip(subtract);
@@ -71,7 +71,7 @@ flippedSubtract(3, 10);   // 7 (subtract(10, 3)과 동일)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { flip } from 'fp-kit';
+      code={`import { flip } from 'fp-pack';
 
 const concat = (...parts: Array<string | number>) => parts.join('-');
 const flippedConcat = flip(concat);
@@ -92,7 +92,7 @@ flippedConcat('a', 'b', 1, 2);  // "2-1-b-a"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { flip, curry, pipe } from 'fp-kit';
+      code={`import { flip, curry, pipe } from 'fp-pack';
 
 // 때때로 API는 불편한 순서로 인자를 받습니다
 const appendTo = (suffix: string, text: string) => text + suffix;
@@ -114,7 +114,7 @@ shout('hello');  // "HELLO!"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { flip, curry } from 'fp-kit';
+      code={`import { flip, curry } from 'fp-pack';
 
 // Array.prototype.map은 (callback, thisArg)를 기대합니다
 // 하지만 조합을 위해 데이터를 마지막에 두고 싶을 때가 많습니다
@@ -140,7 +140,7 @@ doubleAll(double);  // [2, 4, 6, 8]`}
 
     <CodeBlock
       language="typescript"
-      code={`import { flip, curry } from 'fp-kit';
+      code={`import { flip, curry } from 'fp-pack';
 
 const replace = curry(
   (search: string, replacement: string, text: string) =>
@@ -171,7 +171,7 @@ sanitize("<script>alert('xss')</script>");  // "scriptalert('xss')/script"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { flip, curry, pipe } from 'fp-kit';
+      code={`import { flip, curry, pipe } from 'fp-pack';
 
 const divide = (a: number, b: number) => a / b;
 

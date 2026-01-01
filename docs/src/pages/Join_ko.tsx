@@ -27,7 +27,7 @@ export const Join_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { join } from 'fp-kit';
+      code={`import { join } from 'fp-pack';
 
 join(',', ['a', 'b', 'c']);       // 'a,b,c'
 join(' / ', ['one', 'two']);      // 'one / two'
@@ -46,7 +46,7 @@ join('-', []);                    // ''`}
 
     <CodeBlock
       language="typescript"
-      code={`import { join } from 'fp-kit';
+      code={`import { join } from 'fp-pack';
 
 const tags = ['fp', 'typescript', 'utilities'];
 const tagString = join(', ', tags);
@@ -59,7 +59,7 @@ const tagString = join(', ', tags);
 
     <CodeBlock
       language="typescript"
-      code={`import { join } from 'fp-kit';
+      code={`import { join } from 'fp-pack';
 
 function renderBreadcrumb(parts: string[]) {
   const path = join(' / ', parts);

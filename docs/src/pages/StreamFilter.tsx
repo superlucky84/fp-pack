@@ -71,7 +71,7 @@ function filter<T>(
 
     <CodeBlock
       language="typescript"
-      code={`import { filter } from 'fp-kit/stream';
+      code={`import { filter } from 'fp-pack/stream';
 
 // Filter even numbers
 const evens = filter((n: number) => n % 2 === 0, [1, 2, 3, 4, 5, 6]);
@@ -96,9 +96,9 @@ console.log(Array.from(activeUsers));
 
     <CodeBlock
       language="typescript"
-      code={`import { filter } from 'fp-kit/stream';
-import { pipe } from 'fp-kit/composition';
-import { map } from 'fp-kit/stream';
+      code={`import { filter } from 'fp-pack/stream';
+import { pipe } from 'fp-pack/composition';
+import { map } from 'fp-pack/stream';
 
 // Create reusable filter functions
 const isPositive = filter((n: number) => n > 0);
@@ -129,8 +129,8 @@ console.log(Array.from(processNumbers(numbers)));
 
     <CodeBlock
       language="typescript"
-      code={`import { filter } from 'fp-kit/stream';
-import { pipe } from 'fp-kit/composition';
+      code={`import { filter } from 'fp-pack/stream';
+import { pipe } from 'fp-pack/composition';
 
 interface FormData {
   email: string;
@@ -169,7 +169,7 @@ console.log(valid);
 
     <CodeBlock
       language="typescript"
-      code={`import { filter } from 'fp-kit/stream';
+      code={`import { filter } from 'fp-pack/stream';
 
 interface Product {
   id: string;
@@ -211,9 +211,9 @@ console.log(results);
 
     <CodeBlock
       language="typescript"
-      code={`import { filter } from 'fp-kit/stream';
-import { pipe } from 'fp-kit/composition';
-import { map } from 'fp-kit/stream';
+      code={`import { filter } from 'fp-pack/stream';
+import { pipe } from 'fp-pack/composition';
+import { map } from 'fp-pack/stream';
 
 interface LogEntry {
   timestamp: Date;
@@ -259,7 +259,7 @@ for await (const error of criticalApiErrors(readLogs())) {
 
     <CodeBlock
       language="typescript"
-      code={`import { filter } from 'fp-kit/stream';
+      code={`import { filter } from 'fp-pack/stream';
 
 interface User {
   id: string;
@@ -305,9 +305,9 @@ console.log(authorizedUsers.map(u => u.name));
 
     <CodeBlock
       language="typescript"
-      code={`import { filter } from 'fp-kit/stream';
-import { pipe } from 'fp-kit/composition';
-import { map } from 'fp-kit/stream';
+      code={`import { filter } from 'fp-pack/stream';
+import { pipe } from 'fp-pack/composition';
+import { map } from 'fp-pack/stream';
 
 interface RawData {
   id: string | null;
@@ -349,9 +349,9 @@ console.log(cleaned);
 
     <CodeBlock
       language="typescript"
-      code={`import { filter } from 'fp-kit/stream';
-import { pipe } from 'fp-kit/composition';
-import { take, map } from 'fp-kit/stream';
+      code={`import { filter } from 'fp-pack/stream';
+import { pipe } from 'fp-pack/composition';
+import { take, map } from 'fp-pack/stream';
 
 // Infinite sequence of natural numbers
 function* naturalNumbers() {

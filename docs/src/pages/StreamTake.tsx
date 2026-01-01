@@ -39,8 +39,8 @@ export const StreamTake = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { take, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { take, toArray } from 'fp-pack/stream';
 
 // Take first 3 items
 const result = pipe(
@@ -102,8 +102,8 @@ function take<T>(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, take, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, take, map, toArray } from 'fp-pack/stream';
 
 // Create infinite sequence, but only take 5
 const first5Squares = pipe(
@@ -132,8 +132,8 @@ generateIds();
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { take, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { take, toArray } from 'fp-pack/stream';
 
 // Preview first few records from a large dataset
 const previewData = (data: any[]) => pipe(
@@ -168,8 +168,8 @@ const firstThreeComments = pipe(take(3), toArray)(comments);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, take, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, take, map, toArray } from 'fp-pack/stream';
 
 // Fetch only one page of results
 const fetchPage = async (pageNumber: number, pageSize: number) => {
@@ -209,8 +209,8 @@ generatePageNumbers(3);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { take, filter, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { take, filter, map, toArray } from 'fp-pack/stream';
 
 // Find first 3 valid users (stops after finding 3)
 const findValidUsers = (users: User[]) => pipe(
@@ -247,8 +247,8 @@ const efficient = findValidUsers(millionUsers);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { take, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { take, toArray } from 'fp-pack/stream';
 
 // Process items in batches
 function* getBatch<T>(items: T[], batchSize: number) {
@@ -279,8 +279,8 @@ const batches = Array.from(getBatch(items, 3));
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { take, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { take, toArray } from 'fp-pack/stream';
 
 // Take first N items from async stream
 async function* asyncNumbers() {
@@ -324,8 +324,8 @@ const result = await pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, take, map, filter, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, take, map, filter, toArray } from 'fp-pack/stream';
 
 // Only processes 100 items, not 1 million
 const efficientExample = pipe(

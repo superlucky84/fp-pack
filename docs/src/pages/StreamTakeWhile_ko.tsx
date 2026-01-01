@@ -38,8 +38,8 @@ export const StreamTakeWhile_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { takeWhile, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { takeWhile, toArray } from 'fp-pack/stream';
 
 // 5보다 작은 동안 숫자 가져오기
 const result = pipe(
@@ -100,7 +100,7 @@ function takeWhile<T>(
 
     <CodeBlock
       language="typescript"
-      code={`import { take, takeWhile, filter, toArray } from 'fp-kit/stream';
+      code={`import { take, takeWhile, filter, toArray } from 'fp-pack/stream';
 
 const data = [1, 2, 3, 4, 1, 2];
 
@@ -141,8 +141,8 @@ toArray(filter((n: number) => n < 4, data));
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { takeWhile, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { takeWhile, toArray } from 'fp-pack/stream';
 
 // 에러가 나타날 때까지 로그 라인 읽기
 const logs = [
@@ -188,8 +188,8 @@ const beforeCutoff = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { takeWhile, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { takeWhile, map, toArray } from 'fp-pack/stream';
 
 // 가격 임계값 이하의 모든 아이템 가져오기 (정렬되었다고 가정)
 interface Product {
@@ -228,8 +228,8 @@ const beforeFailure = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { takeWhile, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { takeWhile, toArray } from 'fp-pack/stream';
 
 // 배치 크기 제한까지 아이템 수집
 interface Item {
@@ -271,8 +271,8 @@ const batch = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { takeWhile, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { takeWhile, toArray } from 'fp-pack/stream';
 
 // 구분자까지 라인 읽기
 const lines = [
@@ -319,8 +319,8 @@ const settings = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { takeWhile, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { takeWhile, toArray } from 'fp-pack/stream';
 
 // 조건까지 비동기 스트림 처리
 async function* fetchPages() {
@@ -368,8 +368,8 @@ const beforeSpam = await pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { takeWhile, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { takeWhile, toArray } from 'fp-pack/stream';
 
 // 임계값까지 누적 합계 유지
 const numbers = [5, 10, 15, 20, 25, 30];
@@ -415,8 +415,8 @@ const firstGroup = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { takeWhile, filter, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { takeWhile, filter, toArray } from 'fp-pack/stream';
 
 const largeSortedArray = Array.from({ length: 1000000 }, (_, i) => i);
 

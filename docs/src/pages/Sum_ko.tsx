@@ -13,7 +13,7 @@ export const Sum_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { sum } from 'fp-kit';
+      code={`import { sum } from 'fp-pack';
 
 sum([1, 2, 3]);   // 6
 sum([]);          // 0`}

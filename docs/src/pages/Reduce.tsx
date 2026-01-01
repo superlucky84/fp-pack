@@ -31,7 +31,7 @@ export const Reduce = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { reduce } from 'fp-kit';
+      code={`import { reduce } from 'fp-pack';
 
 reduce((acc: number, n: number) => acc + n, 0, [1, 2, 3, 4]);
 // 10
@@ -74,7 +74,7 @@ reduce(
 
     <CodeBlock
       language="typescript"
-      code={`import { reduce } from 'fp-kit';
+      code={`import { reduce } from 'fp-pack';
 
 const words = ['a', 'b', 'a', 'c', 'b', 'a'];
 
@@ -95,7 +95,7 @@ const counts = reduce(
 
     <CodeBlock
       language="typescript"
-      code={`import { reduce } from 'fp-kit';
+      code={`import { reduce } from 'fp-pack';
 
 type Item = { price: number; inStock: boolean };
 const items: Item[] = [

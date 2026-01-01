@@ -35,7 +35,7 @@ export const IfElse_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { ifElse } from 'fp-kit';
+      code={`import { ifElse } from 'fp-pack';
 
 const describeNumber = ifElse(
   (n: number) => n > 0,
@@ -79,7 +79,7 @@ describeNumber(0);   // '비양수: 0'`}
 
     <CodeBlock
       language="typescript"
-      code={`import { ifElse } from 'fp-kit';
+      code={`import { ifElse } from 'fp-pack';
 
 // 숫자를 다른 문자열 표현으로 변환
 const formatNumber = ifElse(
@@ -108,7 +108,7 @@ processString('Hi');             // 'HI'`}
 
     <CodeBlock
       language="typescript"
-      code={`import { ifElse } from 'fp-kit';
+      code={`import { ifElse } from 'fp-pack';
 
 interface Success<T> {
   status: 'success';
@@ -143,7 +143,7 @@ validateAge(15);  // { status: 'error', message: '나이 15세는 18세 미만�
 
     <CodeBlock
       language="typescript"
-      code={`import { ifElse } from 'fp-kit';
+      code={`import { ifElse } from 'fp-pack';
 
 interface User {
   id: number;
@@ -190,7 +190,7 @@ getDashboard({ id: 2, name: 'Bob', role: 'user' });
 
     <CodeBlock
       language="typescript"
-      code={`import { ifElse } from 'fp-kit';
+      code={`import { ifElse } from 'fp-pack';
 
 interface Product {
   name: string;
@@ -239,7 +239,7 @@ calculatePrice({ name: 'Gadget', basePrice: 100, isPremium: false });
 
     <CodeBlock
       language="typescript"
-      code={`import { ifElse } from 'fp-kit';
+      code={`import { ifElse } from 'fp-pack';
 
 const validateEmail = ifElse(
   (email: string) => /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email),
@@ -270,7 +270,7 @@ formatPhone('12345');        // '12345'`}
 
     <CodeBlock
       language="typescript"
-      code={`import { ifElse } from 'fp-kit';
+      code={`import { ifElse } from 'fp-pack';
 
 interface Item {
   id: number;
@@ -312,7 +312,7 @@ inventory.map(processInventoryItem);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, ifElse } from 'fp-kit';
+      code={`import { pipe, ifElse } from 'fp-pack';
 
 interface Order {
   total: number;

@@ -56,7 +56,7 @@ export const DebounceLeadingTrailing = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeadingTrailing } from 'fp-kit';
+      code={`import { debounceLeadingTrailing } from 'fp-pack';
 
 const log = debounceLeadingTrailing((value: string) => {
   console.log('Value:', value);
@@ -80,7 +80,7 @@ log('c'); // Ignored (within 300ms)
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeadingTrailing } from 'fp-kit';
+      code={`import { debounceLeadingTrailing } from 'fp-pack';
 
 const search = debounceLeadingTrailing((query: string) => {
   if (!isSearching) {
@@ -120,7 +120,7 @@ search('react h'); // Ignored
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeadingTrailing } from 'fp-kit';
+      code={`import { debounceLeadingTrailing } from 'fp-pack';
 
 let isFirstCall = true;
 
@@ -159,7 +159,7 @@ sliderInput.addEventListener('input', (e) => {
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeadingTrailing } from 'fp-kit';
+      code={`import { debounceLeadingTrailing } from 'fp-pack';
 
 let isEditing = false;
 
@@ -193,7 +193,7 @@ editorTextarea.addEventListener('input', (e) => {
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeadingTrailing } from 'fp-kit';
+      code={`import { debounceLeadingTrailing } from 'fp-pack';
 
 let isDrawing = false;
 
@@ -228,7 +228,7 @@ canvas.addEventListener('mousemove', (e) => {
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeadingTrailing } from 'fp-kit';
+      code={`import { debounceLeadingTrailing } from 'fp-pack';
 
 let searchState = 'idle';
 
@@ -267,7 +267,7 @@ searchInput.addEventListener('input', (e) => {
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeadingTrailing } from 'fp-kit';
+      code={`import { debounceLeadingTrailing } from 'fp-pack';
 
 let filterState = 'ready';
 
@@ -302,7 +302,7 @@ filterForm.addEventListener('change', () => {
 
     <CodeBlock
       language="typescript"
-      code={`import { debounceLeadingTrailing } from 'fp-kit';
+      code={`import { debounceLeadingTrailing } from 'fp-pack';
 
 let resizePhase = 'start';
 

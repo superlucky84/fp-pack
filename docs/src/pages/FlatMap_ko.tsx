@@ -30,7 +30,7 @@ export const FlatMap_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { flatMap } from 'fp-kit';
+      code={`import { flatMap } from 'fp-pack';
 
 flatMap((n: number) => [n, n * 2], [1, 2, 3]);
 // [1, 2, 2, 4, 3, 6]
@@ -62,7 +62,7 @@ flatMap((s: string) => s.split(''), ['ab', 'cd']);
 
     <CodeBlock
       language="typescript"
-      code={`import { flatMap } from 'fp-kit';
+      code={`import { flatMap } from 'fp-pack';
 
 interface Order {
   id: string;
@@ -84,7 +84,7 @@ const allItems = flatMap((o: Order) => o.items, orders);
 
     <CodeBlock
       language="typescript"
-      code={`import { flatMap } from 'fp-kit';
+      code={`import { flatMap } from 'fp-pack';
 
 const letters = ['a', 'b'];
 const numbers = [1, 2, 3];

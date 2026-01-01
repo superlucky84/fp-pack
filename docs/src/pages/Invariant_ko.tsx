@@ -35,7 +35,7 @@ export const Invariant_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { invariant } from 'fp-kit';
+      code={`import { invariant } from 'fp-pack';
 
 function processUser(user: User | null) {
   invariant(user !== null, '이 시점에서 사용자는 반드시 존재해야 합니다');
@@ -77,7 +77,7 @@ processUser(null);               // Error: 이 시점에서 사용자는 반드�
 
     <CodeBlock
       language="typescript"
-      code={`import { invariant } from 'fp-kit';
+      code={`import { invariant } from 'fp-pack';
 
 // 메시지 없는 기본 불변식
 invariant(true);   // 에러 없음
@@ -94,7 +94,7 @@ invariant(value !== null, '이 시점에서 값은 절대 null이 될 수 없습
 
     <CodeBlock
       language="typescript"
-      code={`import { invariant } from 'fp-kit';
+      code={`import { invariant } from 'fp-pack';
 
 class Counter {
   private count: number = 0;
@@ -129,7 +129,7 @@ class Counter {
 
     <CodeBlock
       language="typescript"
-      code={`import { invariant } from 'fp-kit';
+      code={`import { invariant } from 'fp-pack';
 
 class Stack<T> {
   private items: T[] = [];
@@ -166,7 +166,7 @@ stack.pop();  // Error: 빈 스택에서 pop할 수 없습니다`}
 
     <CodeBlock
       language="typescript"
-      code={`import { invariant } from 'fp-kit';
+      code={`import { invariant } from 'fp-pack';
 
 interface ApiConfig {
   apiKey: string;
@@ -205,7 +205,7 @@ client.makeRequest('/users');  // OK`}
 
     <CodeBlock
       language="typescript"
-      code={`import { invariant, pipe } from 'fp-kit';
+      code={`import { invariant, pipe } from 'fp-pack';
 
 const ensureNonEmpty = (s: string) => {
   invariant(s.length > 0, '입력은 비어 있을 수 없습니다');
@@ -228,7 +228,7 @@ normalizeUserId('   ');     // Error: 입력은 비어 있을 수 없습니다`}
 
     <CodeBlock
       language="typescript"
-      code={`import { invariant } from 'fp-kit';
+      code={`import { invariant } from 'fp-pack';
 
 type State = 'idle' | 'loading' | 'success' | 'error';
 
@@ -281,7 +281,7 @@ class StateMachine {
 
     <CodeBlock
       language="typescript"
-      code={`import { invariant } from 'fp-kit';
+      code={`import { invariant } from 'fp-pack';
 
 function partition<T>(arr: T[], size: number): T[][] {
   invariant(size > 0, '파티션 크기는 양수여야 합니다');
@@ -310,7 +310,7 @@ partition([1, 2, 3], 1.5);        // Error: 파티션 크기는 정수여야 합
 
     <CodeBlock
       language="typescript"
-      code={`import { invariant } from 'fp-kit';
+      code={`import { invariant } from 'fp-pack';
 
 interface Order {
   id: string;

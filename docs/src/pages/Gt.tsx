@@ -36,7 +36,7 @@ export const Gt = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { gt } from 'fp-kit';
+      code={`import { gt } from 'fp-pack';
 
 const isGreaterThan5 = gt(5);
 
@@ -57,7 +57,7 @@ isGreaterThan5(3);   // false (3 < 5)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { gt } from 'fp-kit';
+      code={`import { gt } from 'fp-pack';
 
 // Create comparison functions
 const isGreaterThan10 = gt(10);
@@ -79,7 +79,7 @@ isPositive(-3);       // false`}
 
     <CodeBlock
       language="typescript"
-      code={`import { gt } from 'fp-kit';
+      code={`import { gt } from 'fp-pack';
 
 const numbers = [1, 5, 10, 15, 20, 25];
 
@@ -102,7 +102,7 @@ numbers.every(gt(0));
 
     <CodeBlock
       language="typescript"
-      code={`import { gt } from 'fp-kit';
+      code={`import { gt } from 'fp-pack';
 
 const isGreaterThanNegative5 = gt(-5);
 
@@ -128,7 +128,7 @@ temperatures.filter(gt(0));
 
     <CodeBlock
       language="typescript"
-      code={`import { gt } from 'fp-kit';
+      code={`import { gt } from 'fp-pack';
 
 interface Product {
   name: string;
@@ -165,7 +165,7 @@ const wellStocked = products.filter(p => gt(10)(p.stock));
 
     <CodeBlock
       language="typescript"
-      code={`import { gt } from 'fp-kit';
+      code={`import { gt } from 'fp-pack';
 
 interface User {
   name: string;
@@ -200,7 +200,7 @@ const hasAnySeniors = users.some(u => isSenior(u.age));
 
     <CodeBlock
       language="typescript"
-      code={`import { gt } from 'fp-kit';
+      code={`import { gt } from 'fp-pack';
 
 interface Metric {
   timestamp: number;
@@ -234,7 +234,7 @@ const hasSlowRequest = metrics.some(m => gt(1000)(m.responseTime));
 
     <CodeBlock
       language="typescript"
-      code={`import { gt } from 'fp-kit';
+      code={`import { gt } from 'fp-pack';
 
 interface Student {
   name: string;
@@ -273,7 +273,7 @@ const regularAttendees = students.filter(s => hasGoodAttendance(s.attendance));
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, gt } from 'fp-kit';
+      code={`import { pipe, gt } from 'fp-pack';
 
 interface Transaction {
   amount: number;
@@ -309,7 +309,7 @@ processLargeTransactions(transactions);
 
     <CodeBlock
       language="typescript"
-      code={`import { gt } from 'fp-kit';
+      code={`import { gt } from 'fp-pack';
 
 interface Config {
   minTemperature: number;

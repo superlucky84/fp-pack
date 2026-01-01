@@ -8,6 +8,6 @@ describe('toLower', () => {
   });
 
   it('returns the same string when already lowercase', () => {
-    expect(toLower('fp-kit')).toBe('fp-kit');
+    expect(toLower('fp-pack')).toBe('fp-pack');
   });
 });

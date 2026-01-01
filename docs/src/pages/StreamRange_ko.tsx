@@ -38,8 +38,8 @@ export const StreamRange_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, toArray } from 'fp-pack/stream';
 
 // 오름차순 범위
 const ascending = pipe(
@@ -87,8 +87,8 @@ const descending = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, map, toArray } from 'fp-pack/stream';
 
 // 번호가 매겨진 레이블 생성
 const labels = pipe(
@@ -117,8 +117,8 @@ const placeholders = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, take, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, take, map, toArray } from 'fp-pack/stream';
 
 // 페이지 번호를 지연 생성
 // 1000개가 아닌 처음 3개만 계산
@@ -151,8 +151,8 @@ const apiUrls = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, flatMap, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, flatMap, map, toArray } from 'fp-pack/stream';
 
 // 2D 그리드 좌표 생성
 const grid = pipe(
@@ -178,8 +178,8 @@ const grid = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, map, toArray } from 'fp-pack/stream';
 
 // 내림차순 카운트다운 생성
 const countdown = pipe(
@@ -201,8 +201,8 @@ const countdown = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, filter, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, filter, map, toArray } from 'fp-pack/stream';
 
 // 짝수만 가져와서 제곱
 const evenSquares = pipe(
@@ -241,8 +241,8 @@ const multiplesOf3 = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, take, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, take, toArray } from 'fp-pack/stream';
 
 // 효율적: 100만 개가 아닌 5개만 생성
 const first5 = pipe(

@@ -55,7 +55,7 @@ export const Retry_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { retry } from 'fp-kit';
+      code={`import { retry } from 'fp-pack';
 
 // 최대 3번까지 재시도
 const data = await retry(3, async () => {
@@ -75,7 +75,7 @@ const data = await retry(3, async () => {
 
     <CodeBlock
       language="typescript"
-      code={`import { retry } from 'fp-kit';
+      code={`import { retry } from 'fp-pack';
 
 // 시도 사이 1초 지연으로 최대 5번까지 재시도
 const result = await retry(
@@ -110,7 +110,7 @@ const result = await retry(
 
     <CodeBlock
       language="typescript"
-      code={`import { retry } from 'fp-kit';
+      code={`import { retry } from 'fp-pack';
 
 async function fetchUserData(userId: string) {
   return retry(
@@ -145,7 +145,7 @@ try {
 
     <CodeBlock
       language="typescript"
-      code={`import { retry } from 'fp-kit';
+      code={`import { retry } from 'fp-pack';
 
 async function connectToDatabase(config: DbConfig) {
   return retry(
@@ -179,7 +179,7 @@ const db = await connectToDatabase({
 
     <CodeBlock
       language="typescript"
-      code={`import { retry } from 'fp-kit';
+      code={`import { retry } from 'fp-pack';
 
 async function uploadFile(file: File): Promise<string> {
   return retry(
@@ -222,7 +222,7 @@ try {
 
     <CodeBlock
       language="typescript"
-      code={`import { retry } from 'fp-kit';
+      code={`import { retry } from 'fp-pack';
 
 async function sendToSlack(message: string): Promise<void> {
   return retry(
@@ -254,7 +254,7 @@ await sendToSlack('배포가 성공적으로 완료되었습니다! 🎉');
 
     <CodeBlock
       language="typescript"
-      code={`import { retry } from 'fp-kit';
+      code={`import { retry } from 'fp-pack';
 
 class RetryableError extends Error {
   constructor(message: string) {
@@ -324,7 +324,7 @@ try {
 
     <CodeBlock
       language="typescript"
-      code={`import { retry } from 'fp-kit';
+      code={`import { retry } from 'fp-pack';
 
 async function waitForJobToComplete(jobId: string): Promise<Job> {
   return retry(
@@ -363,7 +363,7 @@ console.log('작업 결과:', job.result);
 
     <CodeBlock
       language="typescript"
-      code={`import { retry } from 'fp-kit';
+      code={`import { retry } from 'fp-pack';
 
 // 타임아웃 래퍼 생성
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {

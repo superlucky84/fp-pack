@@ -34,7 +34,7 @@ export const When = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { when } from 'fp-kit';
+      code={`import { when } from 'fp-pack';
 
 const doubleIfPositive = when(
   (n: number) => n > 0,
@@ -75,7 +75,7 @@ doubleIfPositive(0);   // 0  (zero, so unchanged)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { when } from 'fp-kit';
+      code={`import { when } from 'fp-pack';
 
 // Capitalize only if non-empty
 const capitalizeIfNotEmpty = when(
@@ -102,7 +102,7 @@ doubleIfEven(3);   // 3`}
 
     <CodeBlock
       language="typescript"
-      code={`import { when } from 'fp-kit';
+      code={`import { when } from 'fp-pack';
 
 interface User {
   name: string;
@@ -135,8 +135,8 @@ normalizeEmail({ name: 'Jane', email: 'jane@example.com' });
 
     <CodeBlock
       language="typescript"
-      code={`import { when } from 'fp-kit';
-import { pipe } from 'fp-kit';
+      code={`import { when } from 'fp-pack';
+import { pipe } from 'fp-pack';
 
 // Trim only if string has whitespace
 const trimIfNeeded = when(
@@ -166,7 +166,7 @@ cleanInput('helloworld');         // 'helloworld' (unchanged)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { when } from 'fp-kit';
+      code={`import { when } from 'fp-pack';
 
 interface CartItem {
   name: string;
@@ -193,7 +193,7 @@ applyBulkDiscount({ name: 'Gadget', price: 50, quantity: 5 });
 
     <CodeBlock
       language="typescript"
-      code={`import { when } from 'fp-kit';
+      code={`import { when } from 'fp-pack';
 
 // Cache result only if computation is expensive (array length > 1000)
 const cacheIfLarge = when(
@@ -221,7 +221,7 @@ sortIfNeeded([4, 2, 3, 1]);     // [1, 2, 3, 4] (sorted)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, when } from 'fp-kit';
+      code={`import { pipe, when } from 'fp-pack';
 
 interface Product {
   id: number;

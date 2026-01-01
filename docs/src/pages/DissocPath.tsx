@@ -13,7 +13,7 @@ export const DissocPath = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { dissocPath } from 'fp-kit';
+      code={`import { dissocPath } from 'fp-pack';
 
 dissocPath(['a', 'b', 'c'], { a: { b: { c: 42 } } });
 // { a: { b: {} } }

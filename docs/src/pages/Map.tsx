@@ -27,7 +27,7 @@ export const Map = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { map } from 'fp-kit';
+      code={`import { map } from 'fp-pack';
 
 map((n: number) => n * 2, [1, 2, 3]);
 // [2, 4, 6]
@@ -59,7 +59,7 @@ map((s: string) => s.toUpperCase(), ['fp', 'kit']);
 
     <CodeBlock
       language="typescript"
-      code={`import { map } from 'fp-kit';
+      code={`import { map } from 'fp-pack';
 
 const users = [
   { id: 1, name: 'Alice' },
@@ -76,7 +76,7 @@ const names = map((u: { name: string }) => u.name, users);
 
     <CodeBlock
       language="typescript"
-      code={`import { map } from 'fp-kit';
+      code={`import { map } from 'fp-pack';
 
 const prices = [10, 25, 100];
 const formatted = map((p: number) => \`$\${p.toFixed(2)}\`, prices);

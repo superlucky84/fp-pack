@@ -51,7 +51,7 @@ export const Delay_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { delay } from 'fp-kit';
+      code={`import { delay } from 'fp-pack';
 
 async function example() {
   console.log('시작');
@@ -71,7 +71,7 @@ async function example() {
 
     <CodeBlock
       language="typescript"
-      code={`import { delay } from 'fp-kit';
+      code={`import { delay } from 'fp-pack';
 
 async function fetchMultiplePages(pageIds: number[]) {
   const results = [];
@@ -106,7 +106,7 @@ async function fetchMultiplePages(pageIds: number[]) {
 
     <CodeBlock
       language="typescript"
-      code={`import { delay } from 'fp-kit';
+      code={`import { delay } from 'fp-pack';
 
 async function waitForJobCompletion(jobId: string): Promise<Job> {
   const maxAttempts = 30;
@@ -141,7 +141,7 @@ console.log('작업 완료:', job.result);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { delay } from 'fp-kit';
+      code={`import { delay } from 'fp-pack';
 
 async function animateSequence(element: HTMLElement) {
   // 페이드 인
@@ -172,7 +172,7 @@ async function animateSequence(element: HTMLElement) {
 
     <CodeBlock
       language="typescript"
-      code={`import { delay } from 'fp-kit';
+      code={`import { delay } from 'fp-pack';
 
 async function fetchWithBackoff<T>(
   fetchFn: () => Promise<T>,
@@ -210,7 +210,7 @@ const data = await fetchWithBackoff(() => fetch('/api/data').then(r => r.json())
 
     <CodeBlock
       language="typescript"
-      code={`import { delay } from 'fp-kit';
+      code={`import { delay } from 'fp-pack';
 
 async function loadDataWithMinimumLoadingTime<T>(
   fetchFn: () => Promise<T>,
@@ -244,7 +244,7 @@ const user = await loadDataWithMinimumLoadingTime(() => fetchUser(userId));`}
 
     <CodeBlock
       language="typescript"
-      code={`import { delay } from 'fp-kit';
+      code={`import { delay } from 'fp-pack';
 
 async function typewriterEffect(
   element: HTMLElement,
@@ -271,7 +271,7 @@ await typewriterEffect(messageEl, '안녕하세요!', 100);
 
     <CodeBlock
       language="typescript"
-      code={`import { delay } from 'fp-kit';
+      code={`import { delay } from 'fp-pack';
 
 async function processBatch<T, R>(
   items: T[],
@@ -316,7 +316,7 @@ const users = await processBatch(
 
     <CodeBlock
       language="typescript"
-      code={`import { delay } from 'fp-kit';
+      code={`import { delay } from 'fp-pack';
 
 class AutoSaver {
   private saveTimeout: ReturnType<typeof setTimeout> | null = null;

@@ -26,7 +26,7 @@ export const Zip_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { zip } from 'fp-kit';
+      code={`import { zip } from 'fp-pack';
 
 zip(['a', 'b'], [1, 2, 3]);
 // [[1, 'a'], [2, 'b']]`}
@@ -55,7 +55,7 @@ zip(['a', 'b'], [1, 2, 3]);
 
     <CodeBlock
       language="typescript"
-      code={`import { zip } from 'fp-kit';
+      code={`import { zip } from 'fp-pack';
 
 const keys = ['id', 'name', 'price'];
 const values = [1, 'Keyboard', 75];
@@ -70,7 +70,7 @@ const entries = zip(values, keys);
 
     <CodeBlock
       language="typescript"
-      code={`import { zip, zipIndex } from 'fp-kit';
+      code={`import { zip, zipIndex } from 'fp-pack';
 
 const values = ['a', 'b', 'c'];
 const indices = zipIndex(values).map(([i]) => i);

@@ -13,7 +13,7 @@ export const MapValues = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { mapValues } from 'fp-kit';
+      code={`import { mapValues } from 'fp-pack';
 
 const input = { a: 1, b: 2 };
 const doubled = mapValues((v: number) => v * 2, input);

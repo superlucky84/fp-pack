@@ -13,7 +13,7 @@ export const MergeDeep = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { mergeDeep } from 'fp-kit';
+      code={`import { mergeDeep } from 'fp-pack';
 
 const base = { user: { name: 'Ada', info: { age: 20 } }, meta: { id: 1 } };
 const patch = { user: { info: { age: 21 } }, meta: { active: true } };

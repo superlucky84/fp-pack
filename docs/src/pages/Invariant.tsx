@@ -35,7 +35,7 @@ export const Invariant = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { invariant } from 'fp-kit';
+      code={`import { invariant } from 'fp-pack';
 
 function processUser(user: User | null) {
   invariant(user !== null, 'User must exist at this point');
@@ -77,7 +77,7 @@ processUser(null);               // Error: User must exist at this point`}
 
     <CodeBlock
       language="typescript"
-      code={`import { invariant } from 'fp-kit';
+      code={`import { invariant } from 'fp-pack';
 
 // Basic invariant without message
 invariant(true);   // No error
@@ -94,7 +94,7 @@ invariant(value !== null, 'Value should never be null here');`}
 
     <CodeBlock
       language="typescript"
-      code={`import { invariant } from 'fp-kit';
+      code={`import { invariant } from 'fp-pack';
 
 class Counter {
   private count: number = 0;
@@ -129,7 +129,7 @@ class Counter {
 
     <CodeBlock
       language="typescript"
-      code={`import { invariant } from 'fp-kit';
+      code={`import { invariant } from 'fp-pack';
 
 class Stack<T> {
   private items: T[] = [];
@@ -166,7 +166,7 @@ stack.pop();  // Error: Cannot pop from empty stack`}
 
     <CodeBlock
       language="typescript"
-      code={`import { invariant } from 'fp-kit';
+      code={`import { invariant } from 'fp-pack';
 
 interface ApiConfig {
   apiKey: string;
@@ -205,7 +205,7 @@ client.makeRequest('/users');  // OK`}
 
     <CodeBlock
       language="typescript"
-      code={`import { invariant, pipe } from 'fp-kit';
+      code={`import { invariant, pipe } from 'fp-pack';
 
 const ensureNonEmpty = (s: string) => {
   invariant(s.length > 0, 'Input must not be empty');
@@ -228,7 +228,7 @@ normalizeUserId('   ');     // Error: Input must not be empty`}
 
     <CodeBlock
       language="typescript"
-      code={`import { invariant } from 'fp-kit';
+      code={`import { invariant } from 'fp-pack';
 
 type State = 'idle' | 'loading' | 'success' | 'error';
 
@@ -281,7 +281,7 @@ class StateMachine {
 
     <CodeBlock
       language="typescript"
-      code={`import { invariant } from 'fp-kit';
+      code={`import { invariant } from 'fp-pack';
 
 function partition<T>(arr: T[], size: number): T[][] {
   invariant(size > 0, 'Partition size must be positive');
@@ -310,7 +310,7 @@ partition([1, 2, 3], 1.5);        // Error: Partition size must be an integer`}
 
     <CodeBlock
       language="typescript"
-      code={`import { invariant } from 'fp-kit';
+      code={`import { invariant } from 'fp-pack';
 
 interface Order {
   id: string;

@@ -34,7 +34,7 @@ export const Partial_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { partial } from 'fp-kit';
+      code={`import { partial } from 'fp-pack';
 
 // 원본 함수
 const greet = (greeting: string, name: string, punctuation: string) =>
@@ -86,7 +86,7 @@ sayHelloAlice('.');        // "Hello, Alice."`}
 
     <CodeBlock
       language="typescript"
-      code={`import { partial } from 'fp-kit';
+      code={`import { partial } from 'fp-pack';
 
 // 수학 연산
 const add3 = (a: number, b: number, c: number) => a + b + c;
@@ -110,7 +110,7 @@ userFormat('Bob', 'Editor');     // "User: Bob, Role: Editor"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { partial } from 'fp-kit';
+      code={`import { partial } from 'fp-pack';
 
 // 파이프라인과 함께 사용하기 위해 데이터를 마지막에
 const sliceFrom = (start: number, end: number, arr: any[]) =>
@@ -137,7 +137,7 @@ skipFirst2(numbers);    // [3, 4, 5]`}
 
     <CodeBlock
       language="typescript"
-      code={`import { partial } from 'fp-kit';
+      code={`import { partial } from 'fp-pack';
 
 // 범용 fetch 함수
 const apiFetch = async (
@@ -175,7 +175,7 @@ productionApi('/posts', { method: 'POST', body: '...' });`}
 
     <CodeBlock
       language="typescript"
-      code={`import { partial } from 'fp-kit';
+      code={`import { partial } from 'fp-pack';
 
 // 범용 핸들러
 const handleAction = (
@@ -204,7 +204,7 @@ form.addEventListener('submit', handleSubmit);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { partial } from 'fp-kit';
+      code={`import { partial } from 'fp-pack';
 
 const validate = (
   ruleName: string,
@@ -263,7 +263,7 @@ validate8Chars('short');             // 에러!`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, partial } from 'fp-kit';
+      code={`import { pipe, partial } from 'fp-pack';
 
 // 데이터 변환 함수 (참고: 데이터가 마지막에!)
 const filterBy = <T>(predicate: (item: T) => boolean, arr: T[]) =>

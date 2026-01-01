@@ -27,7 +27,7 @@ export const StartsWith = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { startsWith } from 'fp-kit';
+      code={`import { startsWith } from 'fp-pack';
 
 startsWith('a', 'abc');  // true
 startsWith('b', 'abc');  // false
@@ -48,7 +48,7 @@ startsWith([2], [1, 2, 3]);     // false`}
 
     <CodeBlock
       language="typescript"
-      code={`import { startsWith } from 'fp-kit';
+      code={`import { startsWith } from 'fp-pack';
 
 const paths = ['/admin/users', '/public', '/admin/settings'];
 
@@ -62,7 +62,7 @@ const adminRoutes = paths.filter(path => startsWith('/admin', path));
 
     <CodeBlock
       language="typescript"
-      code={`import { startsWith } from 'fp-kit';
+      code={`import { startsWith } from 'fp-pack';
 
 const args = ['--help', '--verbose', 'input.txt'];
 

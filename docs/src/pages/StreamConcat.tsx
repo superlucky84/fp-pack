@@ -71,7 +71,7 @@ function concat<T>(
 
     <CodeBlock
       language="typescript"
-      code={`import { concat } from 'fp-kit/stream';
+      code={`import { concat } from 'fp-pack/stream';
 
 // Direct form: concat(first, second)
 const result1 = concat([3, 4], [1, 2]);
@@ -91,7 +91,7 @@ Array.from(result2); // [1, 2, 5, 6]
 
     <CodeBlock
       language="typescript"
-      code={`import { concat } from 'fp-kit/stream';
+      code={`import { concat } from 'fp-pack/stream';
 
 function* numbers() {
   console.log('Generating numbers...');
@@ -131,7 +131,7 @@ iterator.next(); // returns { value: 'b', done: false }`}
 
     <CodeBlock
       language="typescript"
-      code={`import { concat } from 'fp-kit/stream';
+      code={`import { concat } from 'fp-pack/stream';
 
 // Combine cached and fresh data
 const cachedUsers = [
@@ -163,8 +163,8 @@ for await (const user of allUsers) {
 
     <CodeBlock
       language="typescript"
-      code={`import { concat, pipe } from 'fp-kit';
-import { concat as streamConcat } from 'fp-kit/stream';
+      code={`import { concat, pipe } from 'fp-pack';
+import { concat as streamConcat } from 'fp-pack/stream';
 
 const header = ['<!DOCTYPE html>', '<html>', '<head>'];
 const footer = ['</body>', '</html>'];
@@ -203,7 +203,7 @@ for (const line of htmlDocument) {
 
     <CodeBlock
       language="typescript"
-      code={`import { concat } from 'fp-kit/stream';
+      code={`import { concat } from 'fp-pack/stream';
 import { createReadStream } from 'fs';
 
 async function* readLines(filePath: string) {
@@ -241,7 +241,7 @@ for await (const line of allLogs) {
 
     <CodeBlock
       language="typescript"
-      code={`import { concat, take } from 'fp-kit/stream';
+      code={`import { concat, take } from 'fp-pack/stream';
 
 function* fibonacci() {
   let [a, b] = [0, 1];
@@ -278,7 +278,7 @@ Array.from(first10);
 
     <CodeBlock
       language="typescript"
-      code={`import { concat } from 'fp-kit/stream';
+      code={`import { concat } from 'fp-pack/stream';
 
 async function* listenToEvents(eventName: string) {
   const queue: Event[] = [];
@@ -322,8 +322,8 @@ for await (const event of allEvents) {
 
     <CodeBlock
       language="typescript"
-      code={`import { concat, map } from 'fp-kit/stream';
-import { pipe } from 'fp-kit';
+      code={`import { concat, map } from 'fp-pack/stream';
+import { pipe } from 'fp-pack';
 
 type Record = { id: number; data: string };
 

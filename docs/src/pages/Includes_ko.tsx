@@ -21,13 +21,13 @@ export const Includes_ko = () => (
       <strong class="font-semibold text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/20 px-2 py-1 rounded">
         includes
       </strong>{' '}
-      는 문자열과 배열 모두에 대해 포함 여부를 확인합니다. 배열 비교 시 fp-kit의 <code>equals</code>를 사용해 참조가 아니라
+      는 문자열과 배열 모두에 대해 포함 여부를 확인합니다. 배열 비교 시 fp-pack의 <code>equals</code>를 사용해 참조가 아니라
       값(구조)으로 비교하므로, 객체나 배열도 내용이 같으면 포함된 것으로 간주합니다.
     </p>
 
     <CodeBlock
       language="typescript"
-      code={`import { includes } from 'fp-kit';
+      code={`import { includes } from 'fp-pack';
 
 includes(3, [1, 2, 3]); // true
 includes(4, [1, 2, 3]); // false
@@ -50,7 +50,7 @@ includes('ac', 'banana'); // false`}
 
     <CodeBlock
       language="typescript"
-      code={`import { includes } from 'fp-kit';
+      code={`import { includes } from 'fp-pack';
 
 const users = [{ id: 1, name: 'Amy' }, { id: 2, name: 'Bob' }];
 
@@ -64,7 +64,7 @@ includes({ id: 3, name: 'Cara' }, users); // false`}
 
     <CodeBlock
       language="typescript"
-      code={`import { includes } from 'fp-kit';
+      code={`import { includes } from 'fp-pack';
 
 includes('/api', '/v1/api/users'); // true
 includes('auth', '/v1/api/users'); // false`}

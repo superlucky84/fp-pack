@@ -35,7 +35,7 @@ export const Cond_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { cond } from 'fp-kit';
+      code={`import { cond } from 'fp-pack';
 
 const classify = cond<number, string>([
   [n => n < 0,    n => '음수'],
@@ -60,7 +60,7 @@ classify(10);  // '양수'`}
 
     <CodeBlock
       language="typescript"
-      code={`import { cond } from 'fp-kit';
+      code={`import { cond } from 'fp-pack';
 
 // 숫자 분류
 const describe = cond<number, string>([
@@ -82,7 +82,7 @@ describe(-1);  // '영 또는 음수'`}
 
     <CodeBlock
       language="typescript"
-      code={`import { cond } from 'fp-kit';
+      code={`import { cond } from 'fp-pack';
 
 // 핸들러는 원본 값을 받음
 const calculate = cond<number, number>([
@@ -102,7 +102,7 @@ calculate(7);   // 8  (7 + 1)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { cond } from 'fp-kit';
+      code={`import { cond } from 'fp-pack';
 
 const onlyPositive = cond<number, string>([
   [n => n > 0, n => \`양수: \${n}\`]
@@ -133,7 +133,7 @@ withDefault(-5);   // '양수 아님: -5'`}
 
     <CodeBlock
       language="typescript"
-      code={`import { cond } from 'fp-kit';
+      code={`import { cond } from 'fp-pack';
 
 interface Response {
   status: number;
@@ -167,7 +167,7 @@ handleResponse({ status: 500, error: '내부 오류' });
 
     <CodeBlock
       language="typescript"
-      code={`import { cond } from 'fp-kit';
+      code={`import { cond } from 'fp-pack';
 
 interface User {
   role: 'admin' | 'editor' | 'viewer';
@@ -193,7 +193,7 @@ canEdit({ role: 'viewer', isPremium: true });      // false`}
 
     <CodeBlock
       language="typescript"
-      code={`import { cond } from 'fp-kit';
+      code={`import { cond } from 'fp-pack';
 
 interface Order {
   amount: number;
@@ -226,7 +226,7 @@ calculateDiscount({ amount: 100, items: 6, isVip: false });
 
     <CodeBlock
       language="typescript"
-      code={`import { cond } from 'fp-kit';
+      code={`import { cond } from 'fp-pack';
 
 interface FormData {
   email: string;
@@ -277,7 +277,7 @@ validateForm({ email: 'user@example.com', password: 'longpassword', age: 25 });
 
     <CodeBlock
       language="typescript"
-      code={`import { cond } from 'fp-kit';
+      code={`import { cond } from 'fp-pack';
 
 type GameState = 'idle' | 'playing' | 'paused' | 'gameover';
 
@@ -329,7 +329,7 @@ game = handleAction({ game, action: 'pause' });
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, cond } from 'fp-kit';
+      code={`import { pipe, cond } from 'fp-pack';
 
 // 여러 단계를 통해 데이터 처리
 const processNumber = pipe(

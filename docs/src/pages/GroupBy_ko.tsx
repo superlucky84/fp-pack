@@ -31,7 +31,7 @@ export const GroupBy_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { groupBy } from 'fp-kit';
+      code={`import { groupBy } from 'fp-pack';
 
 groupBy((n: number) => (n % 2 === 0 ? 'even' : 'odd'), [1, 2, 3, 4]);
 // { odd: [1, 3], even: [2, 4] }`}
@@ -64,7 +64,7 @@ groupBy((n: number) => (n % 2 === 0 ? 'even' : 'odd'), [1, 2, 3, 4]);
 
     <CodeBlock
       language="typescript"
-      code={`import { groupBy } from 'fp-kit';
+      code={`import { groupBy } from 'fp-pack';
 
 interface User {
   id: number;
@@ -88,7 +88,7 @@ const byRole = groupBy((u: User) => u.role, users);
 
     <CodeBlock
       language="typescript"
-      code={`import { groupBy } from 'fp-kit';
+      code={`import { groupBy } from 'fp-pack';
 
 interface Message {
   id: string;

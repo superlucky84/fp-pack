@@ -13,7 +13,7 @@ export const Sub = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { sub } from 'fp-kit';
+      code={`import { sub } from 'fp-pack';
 
 sub(5, 3);   // 2
 sub(1, 2);   // -1`}

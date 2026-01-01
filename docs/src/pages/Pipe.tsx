@@ -34,7 +34,7 @@ export const Pipe = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
+      code={`import { pipe } from 'fp-pack';
 
 const double = (n: number) => n * 2;
 const addTen = (n: number) => n + 10;
@@ -90,7 +90,7 @@ function pipe(...funcs: Array<(input: any) => any>): (input: any) => any;`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
+      code={`import { pipe } from 'fp-pack';
 
 const processName = pipe(
   (name: string) => name.trim(),
@@ -108,7 +108,7 @@ processName('  John Doe  ');  // "john-doe"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
+      code={`import { pipe } from 'fp-pack';
 
 const numbers = [1, 2, 3, 4, 5];
 
@@ -134,7 +134,7 @@ processNumbers(numbers);  // 24
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
+      code={`import { pipe } from 'fp-pack';
 
 interface User {
   id: number;
@@ -166,7 +166,7 @@ getActiveAdultNames(users);  // ["Alice", "Diana"]`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
+      code={`import { pipe } from 'fp-pack';
 
 const calculateFinalPrice = pipe(
   (price: number) => price * 0.9,        // 10% discount
@@ -184,7 +184,7 @@ calculateFinalPrice(100);  // "$99.00"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
+      code={`import { pipe } from 'fp-pack';
 
 const createSlug = pipe(
   (title: string) => title.toLowerCase(),
@@ -204,7 +204,7 @@ createSlug('  Multiple   Spaces  ');         // "multiple-spaces"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
+      code={`import { pipe } from 'fp-pack';
 
 interface RawInput {
   email?: string;
@@ -246,12 +246,12 @@ validateAndTransform({ email: '  TEST@EXAMPLE.COM  ', age: '25' });
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      pipe works great with other fp-kit utilities like curry for maximum composability:
+      pipe works great with other fp-pack utilities like curry for maximum composability:
     </p>
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, curry } from 'fp-kit';
+      code={`import { pipe, curry } from 'fp-pack';
 
 // Create curried helper functions
 const multiply = curry((a: number, b: number) => a * b);

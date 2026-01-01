@@ -71,7 +71,7 @@ function flatMap<T, R>(
 
     <CodeBlock
       language="typescript"
-      code={`import { flatMap } from 'fp-kit/stream';
+      code={`import { flatMap } from 'fp-pack/stream';
 
 // 각 숫자를 한 쌍의 값으로 확장
 const numbers = [1, 2, 3];
@@ -97,7 +97,7 @@ console.log(Array.from(words));
 
     <CodeBlock
       language="typescript"
-      code={`import { flatMap, filter, pipe } from 'fp-kit';
+      code={`import { flatMap, filter, pipe } from 'fp-pack';
 
 interface Category {
   id: number;
@@ -137,7 +137,7 @@ console.log(Array.from(allProducts));
 
     <CodeBlock
       language="typescript"
-      code={`import { flatMap, map, pipe } from 'fp-kit';
+      code={`import { flatMap, map, pipe } from 'fp-pack';
 
 interface Department {
   name: string;
@@ -190,7 +190,7 @@ for (const emp of allEmployees) {
 
     <CodeBlock
       language="typescript"
-      code={`import { flatMap, toArray } from 'fp-kit/stream';
+      code={`import { flatMap, toArray } from 'fp-pack/stream';
 
 interface User {
   id: number;
@@ -239,7 +239,7 @@ posts.forEach(post => {
 
     <CodeBlock
       language="typescript"
-      code={`import { flatMap, filter, pipe } from 'fp-kit';
+      code={`import { flatMap, filter, pipe } from 'fp-pack';
 import { readdir, stat } from 'fs/promises';
 import { join } from 'path';
 
@@ -298,7 +298,7 @@ for await (const file of projectFiles) {
 
     <CodeBlock
       language="typescript"
-      code={`import { flatMap, filter, map, pipe } from 'fp-kit';
+      code={`import { flatMap, filter, map, pipe } from 'fp-pack';
 
 const documents = [
   'The quick brown fox jumps over the lazy dog.',
@@ -344,7 +344,7 @@ for (const [word, count] of wordCount) {
 
     <CodeBlock
       language="typescript"
-      code={`import { flatMap } from 'fp-kit/stream';
+      code={`import { flatMap } from 'fp-pack/stream';
 
 interface Node {
   id: string;
@@ -412,7 +412,7 @@ console.log(\`총 값: \${totalValue}\`);
 
     <CodeBlock
       language="typescript"
-      code={`import { flatMap, map, pipe } from 'fp-kit';
+      code={`import { flatMap, map, pipe } from 'fp-pack';
 
 interface Order {
   orderId: number;

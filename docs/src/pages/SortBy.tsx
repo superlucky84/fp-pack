@@ -34,7 +34,7 @@ export const SortBy = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { sortBy } from 'fp-kit';
+      code={`import { sortBy } from 'fp-pack';
 
 interface User {
   name: string;
@@ -68,7 +68,7 @@ const byName = sortBy((user: User) => user.name, users);
 
     <CodeBlock
       language="typescript"
-      code={`import { sortBy } from 'fp-kit';
+      code={`import { sortBy } from 'fp-pack';
 
 const numbers = [3, 1, 4, 1, 5, 9, 2, 6];
 
@@ -87,7 +87,7 @@ sortBy((n: number) => Math.abs(n), [-5, 3, -1, 4, -2]);
 
     <CodeBlock
       language="typescript"
-      code={`import { sortBy } from 'fp-kit';
+      code={`import { sortBy } from 'fp-pack';
 
 const names = ['Charlie', 'Alice', 'Bob', 'David'];
 
@@ -110,7 +110,7 @@ sortBy((name: string) => name.toLowerCase(), ['charlie', 'Alice', 'BOB']);
 
     <CodeBlock
       language="typescript"
-      code={`import { sortBy } from 'fp-kit';
+      code={`import { sortBy } from 'fp-pack';
 
 interface Product {
   id: number;
@@ -146,7 +146,7 @@ sortBy((p: Product) => -p.rating, products);
 
     <CodeBlock
       language="typescript"
-      code={`import { sortBy } from 'fp-kit';
+      code={`import { sortBy } from 'fp-pack';
 
 interface Event {
   title: string;
@@ -175,7 +175,7 @@ const byPriority = sortBy((event: Event) => event.priority, events);
 
     <CodeBlock
       language="typescript"
-      code={`import { sortBy } from 'fp-kit';
+      code={`import { sortBy } from 'fp-pack';
 
 interface Student {
   firstName: string;
@@ -206,7 +206,7 @@ sortBy((s: Student) => \`\${s.lastName}, \${s.firstName}\`, students);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { sortBy } from 'fp-kit';
+      code={`import { sortBy } from 'fp-pack';
 
 const scores = [85, 92, 78, 95, 88];
 
@@ -230,7 +230,7 @@ sortBy((name: string) => name, names).reverse();
 
     <CodeBlock
       language="typescript"
-      code={`import { sortBy, curry } from 'fp-kit';
+      code={`import { sortBy, curry } from 'fp-pack';
 
 // Create curried version
 const sortByCurried = curry(sortBy);
@@ -311,7 +311,7 @@ sortByName(users);  // Sorted by name`}
         </h4>
         <CodeBlock
           language="typescript"
-          code={`import { sortBy } from 'fp-kit';
+          code={`import { sortBy } from 'fp-pack';
 
 // For numbers: negate the value
 sortBy((n: number) => -n, [3, 1, 4, 1, 5]);
@@ -329,7 +329,7 @@ sortBy((s: string) => s, ['c', 'a', 'b']).reverse();
         </h4>
         <CodeBlock
           language="typescript"
-          code={`import { sortBy } from 'fp-kit';
+          code={`import { sortBy } from 'fp-pack';
 
 interface Person {
   lastName: string;
@@ -354,7 +354,7 @@ sortBy((p: Person) => \`\${p.lastName}|\${p.firstName}\`, people);
         </h4>
         <CodeBlock
           language="typescript"
-          code={`import { sortBy } from 'fp-kit';
+          code={`import { sortBy } from 'fp-pack';
 
 interface Item {
   name: string;
@@ -386,7 +386,7 @@ sortBy((item: Item) => item.priority ?? -Infinity, items);
 
     <CodeBlock
       language="typescript"
-      code={`import { sortBy } from 'fp-kit';
+      code={`import { sortBy } from 'fp-pack';
 
 const users = [
   { name: 'Alice', age: 30 },
@@ -400,7 +400,7 @@ users.sort((a, b) => {
   return 0;
 });
 
-// fp-kit (immutable, concise)
+// fp-pack (immutable, concise)
 sortBy((user) => user.age, users);
 
 // Benefits:

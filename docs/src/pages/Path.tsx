@@ -13,7 +13,7 @@ export const Path = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { path } from 'fp-kit';
+      code={`import { path } from 'fp-pack';
 
 const user = { profile: { name: 'Ada', address: { city: 'Seoul' } } };
 

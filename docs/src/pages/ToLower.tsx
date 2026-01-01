@@ -27,10 +27,10 @@ export const ToLower = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { toLower } from 'fp-kit';
+      code={`import { toLower } from 'fp-pack';
 
 toLower('Hello');   // 'hello'
-toLower('FP-KIT');  // 'fp-kit'`}
+toLower('FP-KIT');  // 'fp-pack'`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -45,7 +45,7 @@ toLower('FP-KIT');  // 'fp-kit'`}
 
     <CodeBlock
       language="typescript"
-      code={`import { toLower } from 'fp-kit';
+      code={`import { toLower } from 'fp-pack';
 
 const emails = ['Alice@Example.com', 'BOB@EXAMPLE.COM'];
 const normalized = emails.map(toLower);

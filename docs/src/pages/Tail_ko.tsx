@@ -27,7 +27,7 @@ export const Tail_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { tail } from 'fp-kit';
+      code={`import { tail } from 'fp-pack';
 
 tail([1, 2, 3]);
 // [2, 3]
@@ -59,7 +59,7 @@ tail([]);
 
     <CodeBlock
       language="typescript"
-      code={`import { tail } from 'fp-kit';
+      code={`import { tail } from 'fp-pack';
 
 const rows = [
   ['name', 'age'],
@@ -77,7 +77,7 @@ const dataRows = tail(rows);
 
     <CodeBlock
       language="typescript"
-      code={`import { head, tail } from 'fp-kit';
+      code={`import { head, tail } from 'fp-pack';
 
 const numbers = [10, 20, 30];
 const first = head(numbers);

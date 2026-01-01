@@ -35,7 +35,7 @@ export const Unzip = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { unzip } from 'fp-kit';
+      code={`import { unzip } from 'fp-pack';
 
 const pairs: Array<[number, string]> = [
   [1, 'a'],
@@ -61,7 +61,7 @@ console.log(letters);  // ['a', 'b', 'c']`}
 
     <CodeBlock
       language="typescript"
-      code={`import { unzip } from 'fp-kit';
+      code={`import { unzip } from 'fp-pack';
 
 // Number and string pairs
 const data: Array<[number, string]> = [
@@ -92,7 +92,7 @@ const [statuses, flags] = unzip(mixed);
 
     <CodeBlock
       language="typescript"
-      code={`import { unzip } from 'fp-kit';
+      code={`import { unzip } from 'fp-pack';
 
 // Empty input returns two empty arrays
 const [left, right] = unzip([]);
@@ -106,7 +106,7 @@ const [left, right] = unzip([]);
 
     <CodeBlock
       language="typescript"
-      code={`import { zip, unzip } from 'fp-kit';
+      code={`import { zip, unzip } from 'fp-pack';
 
 const array1 = [1, 2, 3];
 const array2 = ['a', 'b', 'c'];
@@ -137,7 +137,7 @@ console.log(second);  // Same as original array2`}
 
     <CodeBlock
       language="typescript"
-      code={`import { unzip } from 'fp-kit';
+      code={`import { unzip } from 'fp-pack';
 
 // Extract keys and values from Object.entries result
 const config = {
@@ -163,7 +163,7 @@ console.log('Configuration values:', values);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { unzip } from 'fp-kit';
+      code={`import { unzip } from 'fp-pack';
 
 interface Point {
   x: number;
@@ -199,7 +199,7 @@ console.log(\`Bounding box: (\${minX}, \${minY}) to (\${maxX}, \${maxY})\`);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { unzip } from 'fp-kit';
+      code={`import { unzip } from 'fp-pack';
 
 // Time series data as timestamp-value pairs
 const timeSeries: Array<[number, number]> = [
@@ -231,7 +231,7 @@ const chartData = {
 
     <CodeBlock
       language="typescript"
-      code={`import { unzip } from 'fp-kit';
+      code={`import { unzip } from 'fp-pack';
 
 interface UserScore {
   userId: string;
@@ -267,7 +267,7 @@ console.log(\`Top performer: \${topUser} with \${highest} points\`);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { unzip } from 'fp-kit';
+      code={`import { unzip } from 'fp-pack';
 
 // Machine learning training data
 const trainingData: Array<[string, number[]]> = [
@@ -292,7 +292,7 @@ const model = trainModel(features, labels);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, filter, unzip } from 'fp-kit';
+      code={`import { pipe, filter, unzip } from 'fp-pack';
 
 interface Transaction {
   id: string;
@@ -358,7 +358,7 @@ console.log(\`Total positive: $\${amounts.reduce((a, b) => a + b, 0)}\`);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { zip, unzip } from 'fp-kit';
+      code={`import { zip, unzip } from 'fp-pack';
 
 // They are inverse operations
 const arr1 = [1, 2, 3];

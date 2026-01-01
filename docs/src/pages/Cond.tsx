@@ -35,7 +35,7 @@ export const Cond = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { cond } from 'fp-kit';
+      code={`import { cond } from 'fp-pack';
 
 const classify = cond<number, string>([
   [n => n < 0,    n => 'negative'],
@@ -60,7 +60,7 @@ classify(10);  // 'positive'`}
 
     <CodeBlock
       language="typescript"
-      code={`import { cond } from 'fp-kit';
+      code={`import { cond } from 'fp-pack';
 
 // Number classification
 const describe = cond<number, string>([
@@ -82,7 +82,7 @@ describe(-1);  // 'zero or negative'`}
 
     <CodeBlock
       language="typescript"
-      code={`import { cond } from 'fp-kit';
+      code={`import { cond } from 'fp-pack';
 
 // Handlers receive the original value
 const calculate = cond<number, number>([
@@ -102,7 +102,7 @@ calculate(7);   // 8  (7 + 1)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { cond } from 'fp-kit';
+      code={`import { cond } from 'fp-pack';
 
 const onlyPositive = cond<number, string>([
   [n => n > 0, n => \`Positive: \${n}\`]
@@ -133,7 +133,7 @@ withDefault(-5);   // 'Not positive: -5'`}
 
     <CodeBlock
       language="typescript"
-      code={`import { cond } from 'fp-kit';
+      code={`import { cond } from 'fp-pack';
 
 interface Response {
   status: number;
@@ -167,7 +167,7 @@ handleResponse({ status: 500, error: 'Internal error' });
 
     <CodeBlock
       language="typescript"
-      code={`import { cond } from 'fp-kit';
+      code={`import { cond } from 'fp-pack';
 
 interface User {
   role: 'admin' | 'editor' | 'viewer';
@@ -193,7 +193,7 @@ canEdit({ role: 'viewer', isPremium: true });      // false`}
 
     <CodeBlock
       language="typescript"
-      code={`import { cond } from 'fp-kit';
+      code={`import { cond } from 'fp-pack';
 
 interface Order {
   amount: number;
@@ -226,7 +226,7 @@ calculateDiscount({ amount: 100, items: 6, isVip: false });
 
     <CodeBlock
       language="typescript"
-      code={`import { cond } from 'fp-kit';
+      code={`import { cond } from 'fp-pack';
 
 interface FormData {
   email: string;
@@ -277,7 +277,7 @@ validateForm({ email: 'user@example.com', password: 'longpassword', age: 25 });
 
     <CodeBlock
       language="typescript"
-      code={`import { cond } from 'fp-kit';
+      code={`import { cond } from 'fp-pack';
 
 type GameState = 'idle' | 'playing' | 'paused' | 'gameover';
 
@@ -329,7 +329,7 @@ game = handleAction({ game, action: 'pause' });
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, cond } from 'fp-kit';
+      code={`import { pipe, cond } from 'fp-pack';
 
 // Process data through multiple stages
 const processNumber = pipe(

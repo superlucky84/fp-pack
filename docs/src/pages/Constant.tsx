@@ -36,7 +36,7 @@ export const Constant = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { constant } from 'fp-kit';
+      code={`import { constant } from 'fp-pack';
 
 const alwaysTrue = constant(true);
 const alwaysFive = constant(5);
@@ -81,7 +81,7 @@ alwaysHello();      // "hello"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { constant } from 'fp-kit';
+      code={`import { constant } from 'fp-pack';
 
 // Primitive values
 const alwaysZero = constant(0);
@@ -111,7 +111,7 @@ console.log(arr1 === arr2);  // true`}
 
     <CodeBlock
       language="typescript"
-      code={`import { constant } from 'fp-kit';
+      code={`import { constant } from 'fp-pack';
 
 const alwaysSuccess = constant({ status: 'success' });
 
@@ -133,7 +133,7 @@ alwaysSuccess(1, 2, 3, 'ignored');  // { status: 'success' }`}
 
     <CodeBlock
       language="typescript"
-      code={`import { constant } from 'fp-kit';
+      code={`import { constant } from 'fp-pack';
 
 interface Config {
   apiUrl: string;
@@ -165,7 +165,7 @@ function getConfig(userConfig?: Config): Config {
 
     <CodeBlock
       language="typescript"
-      code={`import { constant } from 'fp-kit';
+      code={`import { constant } from 'fp-pack';
 
 // Replace all values with a constant
 const numbers = [1, 2, 3, 4, 5];
@@ -191,7 +191,7 @@ const guestUsers = users.map(constant({ role: 'guest', active: false }));
 
     <CodeBlock
       language="typescript"
-      code={`import { constant } from 'fp-kit';
+      code={`import { constant } from 'fp-pack';
 
 // Instead of:
 const getValue = (condition: boolean) => {
@@ -220,7 +220,7 @@ handler({ important: 'data' });  // null (data ignored)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { constant } from 'fp-kit';
+      code={`import { constant } from 'fp-pack';
 
 // Simple event handler that always returns the same action
 const createClickHandler = (action: string) => {
@@ -251,7 +251,7 @@ Promise.resolve()
 
     <CodeBlock
       language="typescript"
-      code={`import { constant } from 'fp-kit';
+      code={`import { constant } from 'fp-pack';
 
 // Provide default transformer functions
 function processItems<T, U>(
@@ -290,7 +290,7 @@ fetchData('/api/data', err => console.error(err));`}
 
     <CodeBlock
       language="typescript"
-      code={`import { constant } from 'fp-kit';
+      code={`import { constant } from 'fp-pack';
 
 // Mock functions in tests
 const mockGetUser = constant({
@@ -325,7 +325,7 @@ const stub = {
 
     <CodeBlock
       language="typescript"
-      code={`import { constant, pipe } from 'fp-kit';
+      code={`import { constant, pipe } from 'fp-pack';
 
 // Use in pipe for conditional logic
 const processValue = (shouldDouble: boolean) => pipe(

@@ -59,7 +59,7 @@ function flatten<T>(
 
     <CodeBlock
       language="typescript"
-      code={`import { flatten } from 'fp-kit/stream';
+      code={`import { flatten } from 'fp-pack/stream';
 
 // Flatten array of arrays
 const nested = [[1, 2], [3, 4], [5]];
@@ -86,7 +86,7 @@ console.log(Array.from(numbers));
 
     <CodeBlock
       language="typescript"
-      code={`import { flatten, toArray } from 'fp-kit/stream';
+      code={`import { flatten, toArray } from 'fp-pack/stream';
 
 async function* fetchBatches() {
   yield Promise.resolve([1, 2, 3]);
@@ -116,7 +116,7 @@ console.log(result);
 
     <CodeBlock
       language="typescript"
-      code={`import { flatten, map, pipe } from 'fp-kit';
+      code={`import { flatten, map, pipe } from 'fp-pack';
 
 interface User {
   id: number;
@@ -158,7 +158,7 @@ for await (const user of allUsers) {
 
     <CodeBlock
       language="typescript"
-      code={`import { flatten } from 'fp-kit/stream';
+      code={`import { flatten } from 'fp-pack/stream';
 
 interface LogEntry {
   timestamp: Date;
@@ -221,7 +221,7 @@ for await (const log of allLogs) {
 
     <CodeBlock
       language="typescript"
-      code={`import { flatten, filter, pipe } from 'fp-kit';
+      code={`import { flatten, filter, pipe } from 'fp-pack';
 
 // Simulate reading a large file in chunks
 function* readFileInChunks(filePath: string): IterableIterator<string[]> {
@@ -266,7 +266,7 @@ console.log(\`Processed \${lineCount} lines\`);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { flatten, map, pipe } from 'fp-kit';
+      code={`import { flatten, map, pipe } from 'fp-pack';
 import { readFile } from 'fs/promises';
 
 async function* readFileLines(
@@ -326,7 +326,7 @@ console.log(\`Loaded \${configs.length} configuration entries\`);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { flatten, take, pipe } from 'fp-kit';
+      code={`import { flatten, take, pipe } from 'fp-pack';
 
 interface Product {
   id: number;
@@ -397,7 +397,7 @@ console.log(\`Average price: $\${avgPrice.toFixed(2)}\`);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { flatten, filter, map, pipe } from 'fp-kit';
+      code={`import { flatten, filter, map, pipe } from 'fp-pack';
 
 interface DataPoint {
   sensor: string;

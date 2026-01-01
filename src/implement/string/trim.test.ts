@@ -7,6 +7,6 @@ describe('trim', () => {
   });
 
   it('returns the same string when no trim needed', () => {
-    expect(trim('fp-kit')).toBe('fp-kit');
+    expect(trim('fp-pack')).toBe('fp-pack');
   });
 });

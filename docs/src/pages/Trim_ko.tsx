@@ -26,7 +26,7 @@ export const Trim_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { trim } from 'fp-kit';
+      code={`import { trim } from 'fp-pack';
 
 trim('  hello  '); // 'hello'
 trim('\\n\\tvalue\\t'); // 'value'`}
@@ -44,7 +44,7 @@ trim('\\n\\tvalue\\t'); // 'value'`}
 
     <CodeBlock
       language="typescript"
-      code={`import { trim } from 'fp-kit';
+      code={`import { trim } from 'fp-pack';
 
 const raw = '  Alice ';
 const normalized = trim(raw);

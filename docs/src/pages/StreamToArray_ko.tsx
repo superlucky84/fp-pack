@@ -27,7 +27,7 @@ export const StreamToArray_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { toArray } from 'fp-kit/stream';
+      code={`import { toArray } from 'fp-pack/stream';
 
 await toArray([1, 2, 3]);
 // [1, 2, 3]
@@ -60,8 +60,8 @@ await toArray(gen());
 
     <CodeBlock
       language="typescript"
-      code={`import { chunk, toArray } from 'fp-kit/stream';
-import { pipeAsync } from 'fp-kit';
+      code={`import { chunk, toArray } from 'fp-pack/stream';
+import { pipeAsync } from 'fp-pack';
 
 await pipeAsync(chunk(2), toArray)([1, 2, 3, 4]);
 // [[1, 2], [3, 4]]`}

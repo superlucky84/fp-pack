@@ -13,7 +13,7 @@ export const Floor_ko = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { floor } from 'fp-kit';
+      code={`import { floor } from 'fp-pack';
 
 floor(1.9);  // 1
 floor(-1.1); // -2

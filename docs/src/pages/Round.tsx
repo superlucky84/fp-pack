@@ -13,7 +13,7 @@ export const Round = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { round } from 'fp-kit';
+      code={`import { round } from 'fp-pack';
 
 round(1.4);   // 1
 round(1.5);   // 2`}

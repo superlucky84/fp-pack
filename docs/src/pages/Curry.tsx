@@ -33,7 +33,7 @@ export const Curry = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { curry } from 'fp-kit';
+      code={`import { curry } from 'fp-pack';
 
 // Regular function
 const add = (a: number, b: number) => a + b;
@@ -72,7 +72,7 @@ type Curry2<A, B, R> = {
     />
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      fp-kit's curry provides excellent TypeScript support with full type inference for
+      fp-pack's curry provides excellent TypeScript support with full type inference for
       functions with 2-5 parameters.
     </p>
 
@@ -88,7 +88,7 @@ type Curry2<A, B, R> = {
 
     <CodeBlock
       language="typescript"
-      code={`import { curry } from 'fp-kit';
+      code={`import { curry } from 'fp-pack';
 
 const multiply = curry((a: number, b: number) => a * b);
 const subtract = curry((a: number, b: number) => a - b);
@@ -115,7 +115,7 @@ half(10);    // 5`}
 
     <CodeBlock
       language="typescript"
-      code={`import { curry } from 'fp-kit';
+      code={`import { curry } from 'fp-pack';
 
 const replace = curry((search: string, replacement: string, text: string) =>
   text.replace(new RegExp(search, 'g'), replacement)
@@ -151,7 +151,7 @@ joinWithPipe(['x', 'y', 'z']);       // "x|y|z"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { curry } from 'fp-kit';
+      code={`import { curry } from 'fp-pack';
 
 const map = curry(<T, U>(fn: (x: T) => U, arr: T[]) => arr.map(fn));
 const filter = curry(<T>(pred: (x: T) => boolean, arr: T[]) => arr.filter(pred));
@@ -175,7 +175,7 @@ filterEvens(numbers);    // [2, 4]`}
 
     <CodeBlock
       language="typescript"
-      code={`import { curry } from 'fp-kit';
+      code={`import { curry } from 'fp-pack';
 
 const prop = curry(<T, K extends keyof T>(key: K, obj: T) => obj[key]);
 
@@ -204,7 +204,7 @@ users.map(getEmail);  // ["alice@example.com", "bob@example.com"]`}
 
     <CodeBlock
       language="typescript"
-      code={`import { curry } from 'fp-kit';
+      code={`import { curry } from 'fp-pack';
 
 const hasMinLength = curry((min: number, str: string) => str.length >= min);
 const hasMaxLength = curry((max: number, str: string) => str.length <= max);
@@ -236,7 +236,7 @@ isEmail('invalid');              // false`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, curry } from 'fp-kit';
+      code={`import { pipe, curry } from 'fp-pack';
 
 const add = curry((a: number, b: number) => a + b);
 const multiply = curry((a: number, b: number) => a * b);
@@ -259,7 +259,7 @@ calculate(5);   // 25
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, curry } from 'fp-kit';
+      code={`import { pipe, curry } from 'fp-pack';
 
 const filter = curry(<T>(pred: (x: T) => boolean, arr: T[]) => arr.filter(pred));
 const map = curry(<T, U>(fn: (x: T) => U, arr: T[]) => arr.map(fn));
@@ -294,7 +294,7 @@ getTotalPriceOfAvailableProducts(products);  // 1075`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, curry } from 'fp-kit';
+      code={`import { pipe, curry } from 'fp-pack';
 
 const setProtocol = curry((protocol: string, url: string) =>
   \`\${protocol}://\${url}\`
@@ -324,12 +324,12 @@ buildApiUrl('example.com');
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      fp-kit's curry is flexible - you can provide multiple parameters at once:
+      fp-pack's curry is flexible - you can provide multiple parameters at once:
     </p>
 
     <CodeBlock
       language="typescript"
-      code={`import { curry } from 'fp-kit';
+      code={`import { curry } from 'fp-pack';
 
 const add3 = curry((a: number, b: number, c: number) => a + b + c);
 

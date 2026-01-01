@@ -39,8 +39,8 @@ export const StreamDrop = () => (
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { drop, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { drop, toArray } from 'fp-pack/stream';
 
 // Skip first 2 items
 const result = pipe(
@@ -102,7 +102,7 @@ function drop<T>(
 
     <CodeBlock
       language="typescript"
-      code={`import { drop, take, dropWhile, toArray } from 'fp-kit/stream';
+      code={`import { drop, take, dropWhile, toArray } from 'fp-pack/stream';
 
 const data = [1, 2, 3, 4, 5];
 
@@ -147,8 +147,8 @@ toArray(dropWhile((n: number) => n < 3, data));
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { drop, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { drop, map, toArray } from 'fp-pack/stream';
 
 // CSV data with header
 const csvLines = [
@@ -197,8 +197,8 @@ const skipMetadata = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { drop, take, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { drop, take, toArray } from 'fp-pack/stream';
 
 // Get specific page of data
 function getPage<T>(
@@ -241,8 +241,8 @@ const page5 = getPage(infiniteItems(), 5, 10);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { drop, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { drop, map, toArray } from 'fp-pack/stream';
 
 // Sensor readings (first few are calibration)
 interface Reading {
@@ -283,8 +283,8 @@ const stableResults = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { drop, filter, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { drop, filter, map, toArray } from 'fp-pack/stream';
 
 // Process log entries after a certain point
 const logEntries = [
@@ -319,8 +319,8 @@ const recentErrors = pipe(
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { drop, take, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { drop, take, toArray } from 'fp-pack/stream';
 
 // Split data into head and tail
 const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -371,8 +371,8 @@ slidingWindows([1, 2, 3, 4, 5, 6], 3, 2);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { drop, take, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { drop, take, toArray } from 'fp-pack/stream';
 
 // Skip initial async values
 async function* asyncNumbers() {
@@ -434,8 +434,8 @@ const page2Users = await fetchUsersPage(20, 10);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe } from 'fp-kit';
-import { range, drop, take, map, toArray } from 'fp-kit/stream';
+      code={`import { pipe } from 'fp-pack';
+import { range, drop, take, map, toArray } from 'fp-pack/stream';
 
 // Efficient: Only processes items after skip
 const efficientExample = pipe(
