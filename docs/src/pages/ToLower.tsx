@@ -30,7 +30,7 @@ export const ToLower = () => (
       code={`import { toLower } from 'fp-pack';
 
 toLower('Hello');   // 'hello'
-toLower('FP-KIT');  // 'fp-pack'`}
+toLower('FP-PACK');  // 'fp-pack'`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />

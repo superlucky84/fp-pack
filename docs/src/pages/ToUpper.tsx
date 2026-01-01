@@ -30,7 +30,7 @@ export const ToUpper = () => (
       code={`import { toUpper } from 'fp-pack';
 
 toUpper('Hello');   // 'HELLO'
-toUpper('fp-pack');  // 'FP-KIT'`}
+toUpper('fp-pack');  // 'FP-PACK'`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />

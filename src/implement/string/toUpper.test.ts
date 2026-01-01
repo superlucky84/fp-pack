@@ -8,6 +8,6 @@ describe('toUpper', () => {
   });
 
   it('returns the same string when already uppercase', () => {
-    expect(toUpper('FP-KIT')).toBe('FP-KIT');
+    expect(toUpper('FP-PACK')).toBe('FP-PACK');
   });
 });

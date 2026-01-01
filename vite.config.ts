@@ -17,7 +17,7 @@ export default defineConfig({
         index: resolve(__dirname, 'src/index.ts'),
         'stream/index': resolve(__dirname, 'src/stream/index.ts'),
       },
-      name: 'FpKit',
+      name: 'FpPack',
     },
     rollupOptions: {
       external: [],
