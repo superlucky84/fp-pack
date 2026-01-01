@@ -285,6 +285,27 @@ const result = Array.from({ length: 1000000 }, (_, i) => i + 1)
 
 ## Coding Guidelines for AI Agents
 
+### 0. Detect Project Language (JS vs TS)
+
+Before writing code, check whether the project is JavaScript or TypeScript:
+
+- **TypeScript projects**: use explicit types, leverage generics, and keep type-safe signatures in examples.
+- **JavaScript projects**: avoid TypeScript-only syntax and prefer JSDoc only when it adds clarity or is already used.
+
+### 0.1 Quick Signature Lookup
+
+If a function signature or argument order is unclear, check the local declaration or source files:
+
+- Main exports: `dist/index.d.ts`
+- Stream exports: `dist/stream/index.d.ts`
+- Main utilities (fallback): `src/implement/**`
+- Stream utilities (fallback): `src/stream/**`
+- Installed package:
+  - `node_modules/fp-kit/dist/index.d.ts`
+  - `node_modules/fp-kit/dist/stream/index.d.ts`
+  - `node_modules/fp-kit/src/implement/**`
+  - `node_modules/fp-kit/src/stream/**`
+
 ### 1. Always Prefer pipe/pipeAsync
 
 ```typescript
