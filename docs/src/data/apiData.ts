@@ -21,6 +21,9 @@ export const apiData = [
   { title: 'once', path: '/composition/once', category: 'Composition' },
   { title: 'tap', path: '/composition/tap', category: 'Composition' },
   { title: 'sideEffect', path: '/composition/sideEffect', category: 'Composition' },
+  { title: 'isSideEffect', path: '/composition/isSideEffect', category: 'Composition' },
+  { title: 'matchSideEffect', path: '/composition/matchSideEffect', category: 'Composition' },
+  { title: 'runPipeResult', path: '/composition/runPipeResult', category: 'Composition' },
 
   // Control
   { title: 'when', path: '/control/when', category: 'Control' },

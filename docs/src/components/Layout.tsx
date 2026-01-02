@@ -36,6 +36,12 @@ import { Tap } from '@/pages/Tap';
 import { Tap_ko } from '@/pages/Tap_ko';
 import { SideEffect } from '@/pages/SideEffect';
 import { SideEffect_ko } from '@/pages/SideEffect_ko';
+import { IsSideEffect } from '@/pages/IsSideEffect';
+import { IsSideEffect_ko } from '@/pages/IsSideEffect_ko';
+import { MatchSideEffect } from '@/pages/MatchSideEffect';
+import { MatchSideEffect_ko } from '@/pages/MatchSideEffect_ko';
+import { RunPipeResult } from '@/pages/RunPipeResult';
+import { RunPipeResult_ko } from '@/pages/RunPipeResult_ko';
 import { Chunk } from '@/pages/Chunk';
 import { Chunk_ko } from '@/pages/Chunk_ko';
 import { Cond } from '@/pages/Cond';
@@ -329,6 +335,12 @@ const routes: Record<string, PageComponent> = {
   '/ko/composition/tap': Tap_ko,
   '/composition/sideEffect': SideEffect,
   '/ko/composition/sideEffect': SideEffect_ko,
+  '/composition/isSideEffect': IsSideEffect,
+  '/ko/composition/isSideEffect': IsSideEffect_ko,
+  '/composition/matchSideEffect': MatchSideEffect,
+  '/ko/composition/matchSideEffect': MatchSideEffect_ko,
+  '/composition/runPipeResult': RunPipeResult,
+  '/ko/composition/runPipeResult': RunPipeResult_ko,
   '/async/pipeAsync': PipeAsync,
   '/ko/async/pipeAsync': PipeAsync_ko,
   '/async/pipeAsyncSideEffect': PipeAsyncSideEffect,
