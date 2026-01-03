@@ -17,6 +17,43 @@ There's no framework and no heavy abstractions—just well-chosen helpers that m
 
 ---
 
+## Table of Contents
+
+- [Custom Utility Authoring Guide](#custom-utility-authoring-guide-for-pipe)
+- [Why fp-pack?](#why-fp-pack)
+- [Design Principles](#design-principles)
+- [Installation](#installation)
+- [AI Agent Skills (Optional)](#ai-agent-skills-optional)
+- [Quick Start](#quick-start)
+  - [Basic Pipe Composition](#basic-pipe-composition)
+  - [Async Operations with pipeAsync](#async-operations-with-pipeasync)
+  - [Object Transformation](#object-transformation)
+  - [Lazy Stream Processing](#lazy-stream-processing)
+- [API Reference](#api-reference)
+  - [Composition](#composition)
+  - [Control Flow](#control-flow)
+  - [Array](#array)
+  - [Object](#object)
+  - [Equality & Comparison](#equality--comparison)
+  - [Math](#math)
+  - [String](#string)
+  - [Async](#async)
+  - [Stream (Lazy Iterables)](#stream-lazy-iterables)
+  - [Nullable](#nullable)
+  - [Debug](#debug)
+- [Key Concepts](#key-concepts)
+  - [SideEffect Pattern](#sideeffect-pattern)
+  - [Pipe vs PipeAsync](#pipe-vs-pipeasync)
+  - [SideEffect Composition Rule](#sideeffect-composition-rule)
+  - [Stream vs Array](#stream-vs-array)
+- [What You Get](#what-you-get)
+- [Import Paths](#import-paths)
+- [Development](#development)
+- [Acknowledgements](#acknowledgements)
+- [License](#license)
+
+---
+
 ## Custom Utility Authoring Guide (for pipe)
 
 When you write your own helpers that should compose cleanly with `pipe`/`pipeAsync`, follow these conventions:
