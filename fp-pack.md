@@ -519,13 +519,13 @@ const gradeToLetter = cond([
 ### 6.1 Type-Safety Tips (prop/ifElse/cond)
 
 - `prop` returns `T[K] | undefined`. Use `propOr` (or guard) before array operations.
-- `ifElse` expects **functions** for both branches. If you already have a value, wrap it: `() => value`.
-- Use `from(value)` when you need a unary function that ignores input (handy for `ifElse` branches).
+- `ifElse` expects **functions** for both branches. If you already have a value, wrap it: `() => value` or use `from(value)` for cleaner constant branches.
+- Use `from(value)` when you need a unary function that ignores input (handy for `ifElse`/`cond` branches and data-first patterns).
 - `cond` returns `R | undefined`. Add a default branch and coalesce when you need a strict result.
 - In `pipeSideEffect`, keep step return types aligned to avoid wide unions.
 
 ```typescript
-import { pipe, propOr, append, assoc, ifElse, cond, from } from 'fp-pack';
+import { pipe, propOr, append, assoc, ifElse, cond, from, filter, map } from 'fp-pack';
 
 // propOr keeps the type strict for array ops
 const addTodo = (text: string, state: AppState) =>
@@ -542,12 +542,20 @@ const toggleTodo = (id: string) => ifElse(
   (todo) => todo
 );
 
-// from is useful for constant branches
+// from is useful for constant branches - cleaner than () => value
 const statusLabel = ifElse(
   (score: number) => score >= 60,
-  from('pass'),
+  from('pass'),    // Constant value
   from('fail')
 );
+
+// Data-first pattern with from: inject data into pipeline
+const processData = pipe(
+  from([1, 2, 3, 4, 5]),
+  filter((n: number) => n % 2 === 0),
+  map(n => n * 2)
+);
+const result = processData(); // [4, 8]
 
 // cond still returns R | undefined, so coalesce if needed
 const grade = (score: number) =>

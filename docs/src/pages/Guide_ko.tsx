@@ -452,7 +452,12 @@ export default curriedChunk;`}
       </li>
       <li>
         <code class="text-sm">ifElse</code>는 양쪽 분기에 <strong>함수</strong>를 기대합니다. 이미 값이 있다면{' '}
-        <code class="text-sm">() =&gt; value</code>로 감싸세요.
+        <code class="text-sm">() =&gt; value</code>로 감싸거나, 더 깔끔하게{' '}
+        <code class="text-sm">from(value)</code>를 사용하세요.
+      </li>
+      <li>
+        <code class="text-sm">from</code>은 <code class="text-sm">ifElse</code>와{' '}
+        <code class="text-sm">cond</code>의 상수 분기에 유용하며, 파이프라인에 데이터를 주입하는 데에도 사용됩니다 (data-first 패턴).
       </li>
       <li>
         <code class="text-sm">cond</code>는 <code class="text-sm">R | undefined</code>를 반환합니다. 기본 분기를 두고
@@ -465,7 +470,7 @@ export default curriedChunk;`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, propOr, append, assoc, ifElse, cond } from 'fp-pack';
+      code={`import { pipe, propOr, append, assoc, ifElse, cond, from } from 'fp-pack';
 
 // propOr로 배열 타입을 유지
 const addTodo = (text: string, state: AppState) =>
@@ -481,6 +486,21 @@ const toggleTodo = (id: string) => ifElse(
   assoc('completed', true),
   (todo) => todo
 );
+
+// from()으로 상수 분기 표현 - () => value보다 깔끔
+const getStatusLabel = ifElse(
+  (score: number) => score >= 60,
+  from('pass'),    // 상수 값
+  from('fail')
+);
+
+// from을 사용한 data-first 패턴: 파이프라인에 데이터 주입
+const processData = pipe(
+  from([1, 2, 3, 4, 5]),
+  filter((n: number) => n % 2 === 0),
+  map(n => n * 2)
+);
+const result = processData(); // [4, 8]
 
 // cond는 R | undefined이므로 보정
 const grade = (score: number) =>

@@ -453,7 +453,12 @@ export default curriedChunk;`}
       </li>
       <li>
         <code class="text-sm">ifElse</code> expects <strong>functions</strong> for both branches. If you already
-        have a value, wrap it with <code class="text-sm">() =&gt; value</code>.
+        have a value, wrap it with <code class="text-sm">() =&gt; value</code> or use{' '}
+        <code class="text-sm">from(value)</code> for cleaner constant branches.
+      </li>
+      <li>
+        <code class="text-sm">from</code> is useful for constant branches in <code class="text-sm">ifElse</code>{' '}
+        and <code class="text-sm">cond</code>, and for injecting data into pipelines (data-first pattern).
       </li>
       <li>
         <code class="text-sm">cond</code> returns <code class="text-sm">R | undefined</code>. Add a default branch
@@ -466,7 +471,7 @@ export default curriedChunk;`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, propOr, append, assoc, ifElse, cond } from 'fp-pack';
+      code={`import { pipe, propOr, append, assoc, ifElse, cond, from } from 'fp-pack';
 
 // propOr keeps the type strict for array ops
 const addTodo = (text: string, state: AppState) =>
@@ -482,6 +487,21 @@ const toggleTodo = (id: string) => ifElse(
   assoc('completed', true),
   (todo) => todo
 );
+
+// Use from() for constant branches - cleaner than () => value
+const getStatusLabel = ifElse(
+  (score: number) => score >= 60,
+  from('pass'),    // Constant value
+  from('fail')
+);
+
+// Data-first pattern with from: inject data into pipeline
+const processData = pipe(
+  from([1, 2, 3, 4, 5]),
+  filter((n: number) => n % 2 === 0),
+  map(n => n * 2)
+);
+const result = processData(); // [4, 8]
 
 // cond still returns R | undefined, so coalesce if needed
 const grade = (score: number) =>

@@ -100,15 +100,23 @@ export const Home_ko = () => (
           표준 파이프 연산
         </h3>
         <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-3">
-          업계 표준 관례를 따르는 익숙한 <code class="text-xs md:text-sm">pipe</code>와 <code class="text-xs md:text-sm">compose</code> 패턴.
+          <code class="text-xs md:text-sm">pipe</code>는 순수한 함수 합성 도구입니다. 편의에 따라 <code class="text-xs md:text-sm">from</code>으로 data-first 패턴을 선택적으로 사용할 수 있습니다.
         </p>
         <CodeBlock
           language="typescript"
-          code={`const result = pipe(
+          code={`// 표준: 함수 합성
+const result = pipe(
   filter(user => user.active),
   map(user => user.name),
   take(10)
-)(users);`}
+)(users);
+
+// 선택사항: from으로 data-first
+const process = pipe(
+  from([1, 2, 3, 4, 5]),
+  filter(n => n % 2 === 0)
+);
+process(); // [2, 4]`}
         />
       </div>
 

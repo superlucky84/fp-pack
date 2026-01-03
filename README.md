@@ -100,6 +100,31 @@ export default curriedChunk;
   // [4, 8, 12, 16, 20]
   ```
 
+- **Data-first with `from`**
+  Use `from` to inject constant values in pipelines and enable data-first patterns. Particularly useful with `ifElse` and `cond` for constant branches.
+
+  ```typescript
+  import { pipe, ifElse, from, filter, map } from 'fp-pack';
+
+  // Use from to return constant values in conditional branches
+  const getStatusLabel = ifElse(
+    (score: number) => score >= 60,
+    from('pass'),    // Constant value instead of (score) => 'pass'
+    from('fail')
+  );
+
+  const result = getStatusLabel(75); // 'pass'
+
+  // Data-first pattern: inject data into pipeline
+  const processWithData = pipe(
+    from([1, 2, 3, 4, 5]),
+    filter((n: number) => n % 2 === 0),
+    map(n => n * 2)
+  );
+
+  const processed = processWithData(); // [4, 8]
+  ```
+
 ## Installation
 
 ```bash
@@ -158,6 +183,8 @@ Once configured, AI assistants will automatically apply fp-pack coding patterns 
 
 ### Basic Pipe Composition
 
+`pipe` is a pure function composition tool - it takes functions and returns a new function that applies data to those composed functions.
+
 ```typescript
 import { pipe, map, filter, take } from 'fp-pack';
 
@@ -169,6 +196,21 @@ const processUsers = pipe(
 );
 
 const result = processUsers(users);
+```
+
+**Data-first with `from` (optional)**: While `pipe` is designed for composing functions, you can optionally use `from` to inject data directly into pipelines for convenience:
+
+```typescript
+import { pipe, from, filter, map } from 'fp-pack';
+
+// Optional: data-first pattern with from
+const processData = pipe(
+  from([1, 2, 3, 4, 5]),
+  filter((n: number) => n % 2 === 0),
+  map(n => n * 2)
+);
+
+const result = processData(); // [4, 8]
 ```
 
 ### Async Operations with pipeAsync

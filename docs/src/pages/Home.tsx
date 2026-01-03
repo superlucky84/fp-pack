@@ -100,15 +100,23 @@ export const Home = () => (
           Standard Pipe Operations
         </h3>
         <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-3">
-          Familiar <code class="text-xs md:text-sm">pipe</code> and <code class="text-xs md:text-sm">compose</code> patterns that follow industry-standard conventions.
+          <code class="text-xs md:text-sm">pipe</code> is a pure function composition tool. Optionally, use <code class="text-xs md:text-sm">from</code> for data-first patterns when convenient.
         </p>
         <CodeBlock
           language="typescript"
-          code={`const result = pipe(
+          code={`// Standard: function composition
+const result = pipe(
   filter(user => user.active),
   map(user => user.name),
   take(10)
-)(users);`}
+)(users);
+
+// Optional: data-first with from
+const process = pipe(
+  from([1, 2, 3, 4, 5]),
+  filter(n => n % 2 === 0)
+);
+process(); // [2, 4]`}
         />
       </div>
 
