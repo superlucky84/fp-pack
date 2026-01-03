@@ -100,7 +100,6 @@ function pipeSideEffect<A, B, R>(
   bc: (b: B) => R | SideEffect
 ): (a: A | SideEffect) => R | SideEffect;
 
-// ... up to 5 functions
 function pipeSideEffect(...funcs: Array<(input: any) => any>): (input: any) => any;`}
     />
 

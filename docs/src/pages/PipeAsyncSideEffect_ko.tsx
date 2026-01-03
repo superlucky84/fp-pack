@@ -96,7 +96,6 @@ function pipeAsyncSideEffect<A, B, R>(
   bc: (b: B) => R | SideEffect | Promise<R | SideEffect>
 ): (a: A | SideEffect) => Promise<R | SideEffect>;
 
-// ... 최대 5개 함수
 function pipeAsyncSideEffect(...funcs: Array<(input: any) => any>): (input: any) => Promise<any>;`}
     />
 

@@ -95,7 +95,6 @@ function pipeAsyncSideEffect<A, B, R>(
   bc: (b: B) => R | SideEffect | Promise<R | SideEffect>
 ): (a: A | SideEffect) => Promise<R | SideEffect>;
 
-// ... up to 5 functions
 function pipeAsyncSideEffect(...funcs: Array<(input: any) => any>): (input: any) => Promise<any>;`}
     />
 

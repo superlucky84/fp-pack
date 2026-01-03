@@ -68,7 +68,6 @@ function pipe<A, B, C, R>(
   bc: (b: B) => C,
   cd: (c: C) => R
 ): (a: A) => R;
-// ... up to 5 functions
 
 function pipe(...funcs: Array<(input: any) => any>): (input: any) => any;`}
     />

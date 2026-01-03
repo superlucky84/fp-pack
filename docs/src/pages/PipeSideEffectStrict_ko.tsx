@@ -60,9 +60,7 @@ const result = pipeline(5);`}
       language="typescript"
       code={`function pipeSideEffectStrict<A, R>(
   ab: (a: A) => R | SideEffect
-): (a: A | SideEffect) => R | SideEffect<UnionOfAllEffects>;
-
-// ... 최대 5개 함수`}
+): (a: A | SideEffect) => R | SideEffect<UnionOfAllEffects>;`}
     />
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">

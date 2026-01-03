@@ -100,7 +100,6 @@ function pipeSideEffect<A, B, R>(
   bc: (b: B) => R | SideEffect
 ): (a: A | SideEffect) => R | SideEffect;
 
-// ... 최대 5개 함수
 function pipeSideEffect(...funcs: Array<(input: any) => any>): (input: any) => any;`}
     />
 
