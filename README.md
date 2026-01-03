@@ -714,12 +714,12 @@ pnpm dev
 
 ## Acknowledgements
 
-fp-pack was inspired by and learned from excellent functional programming libraries in the JavaScript ecosystem:
+fp-pack draws inspiration from excellent functional programming libraries in the JavaScript ecosystem:
 
 - **[Ramda](https://ramdajs.com/)** - A practical functional library that pioneered many of the patterns we use today
 - **[FxJS](https://github.com/marpple/FxJS)** and **[FxTS](https://github.com/marpple/FxTS)** - Inspired by their exceptional combination of lazy evaluation and functional tooling patterns
 
-While fp-pack's implementation approaches differ (using generator functions, the SideEffect pattern, and pipe-first composition), we're deeply grateful for the influence these projects had on functional programming in JavaScript.
+We're deeply grateful for their influence. Our implementation explores different approaches using generator functions, the SideEffect pattern, and pipe-first composition.
 
 ## License
 
