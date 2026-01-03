@@ -56,9 +56,6 @@ export default curriedChunk;
 - ⚡ **SideEffect Pattern**
   Handle errors and side effects declaratively in SideEffect-aware pipelines. Use `pipeSideEffect` / `pipeAsyncSideEffect` to short-circuit on `SideEffect` without breaking composition. Focus on business logic, not error plumbing. For strict effect unions, use `pipeSideEffectStrict` / `pipeAsyncSideEffectStrict`.
 
-- 💧 **Lazy Stream Processing**
-  Efficient iterable processing with `stream/*` functions for memory-conscious operations on large datasets.
-
 - 📘 **JavaScript & TypeScript**
   Works seamlessly in JavaScript. Written in TypeScript for robust type inference when you need it.
 
@@ -67,6 +64,9 @@ export default curriedChunk;
 
 - 🪶 **Lightweight & Modular**
   Zero dependencies and tree-shakeable modules.
+
+- 💧 **Lazy Stream Processing**
+  Efficient iterable processing with `stream/*` functions for memory-conscious operations on large datasets.
 
 ---
 

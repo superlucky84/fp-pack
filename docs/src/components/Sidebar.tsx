@@ -13,6 +13,7 @@ export const Sidebar = mount(renew => {
         items: [
           { title: isKorean ? '소개' : 'Introduction', path: '/' },
           { title: isKorean ? '상세 가이드' : 'Detailed Guide', path: '/guide' },
+          { title: 'GitHub', path: 'https://github.com/superlucky84/fp-pack', external: true },
         ],
       },
       {
@@ -251,22 +252,33 @@ export const Sidebar = mount(renew => {
                       normalizedRoute === normalizedItem ||
                       normalizedRoute === `/ko${normalizedItem}` ||
                       (normalizedItem === '/' && normalizedRoute === '/ko');
+                    const isExternal = 'external' in item && item.external;
+
                     return (
                       <li key={item.path}>
                         <a
                           href={item.path}
                           onClick={(e: Event) => {
-                            e.preventDefault();
-                            navigateTo(item.path);
-                            store.sidebarOpen = false; // Close sidebar on mobile after navigation
+                            if (!isExternal) {
+                              e.preventDefault();
+                              navigateTo(item.path);
+                              store.sidebarOpen = false; // Close sidebar on mobile after navigation
+                            }
                           }}
+                          target={isExternal ? '_blank' : undefined}
+                          rel={isExternal ? 'noopener noreferrer' : undefined}
                           class={`block px-3 py-2 rounded-md text-sm transition-colors cursor-pointer ${
                             isActive
                               ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium'
                               : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-                          }`}
+                          } ${isExternal ? 'flex items-center gap-1' : ''}`}
                         >
                           {item.title}
+                          {isExternal && (
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                          )}
                         </a>
                       </li>
                     );

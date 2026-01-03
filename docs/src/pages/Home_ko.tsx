@@ -71,7 +71,7 @@ export const Home_ko = () => (
       <li class="flex items-start">
         <span class="text-blue-500 font-bold mr-3">🧩</span>
         <div>
-          <strong>실용적 추상화</strong> - 모나드 같은 함수형 패턴을 유익한 곳에 활용하되, 의례적인 형식은 배제. 모든 함수를 래핑할 필요 없이 <code class="text-sm">SideEffect</code> 패턴으로 우아하게 합성
+          <strong>실용적 추상화</strong> - 전통적인 모나드 패턴을 피하고 가벼운 <code class="text-sm">SideEffect</code> 마커로 에러 처리. 모든 함수를 래퍼로 감쌀 필요 없음
         </div>
       </li>
       <li class="flex items-start">

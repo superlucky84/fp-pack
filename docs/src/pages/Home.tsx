@@ -71,7 +71,7 @@ export const Home = () => (
       <li class="flex items-start">
         <span class="text-blue-500 font-bold mr-3">🧩</span>
         <div>
-          <strong>Pragmatic Abstraction</strong> - Leverages functional patterns like monads where beneficial, but without ceremony. No need to wrap every function - the <code class="text-sm">SideEffect</code> pattern handles composition elegantly
+          <strong>Pragmatic Abstraction</strong> - Avoids traditional monad patterns in favor of lightweight <code class="text-sm">SideEffect</code> markers for error handling. No need to wrap every function
         </div>
       </li>
       <li class="flex items-start">
