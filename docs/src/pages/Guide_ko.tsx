@@ -511,6 +511,34 @@ const grade = (score: number) =>
     />
 
     <h3 class="text-2xl font-medium text-gray-900 dark:text-white mb-3 mt-8">
+      타입 안전성을 위한 from()
+    </h3>
+
+    <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+      파이프라인 시작에 <code class="text-sm">() =&gt; value</code>를 사용하면 <code class="text-sm">pipe</code>가 unary 함수를 기대하기 때문에 타입 추론이 깨집니다. 대신 <code class="text-sm">from(value)</code>를 사용하세요.
+    </p>
+
+    <CodeBlock
+      language="typescript"
+      code={`import { pipe, from, filter, map } from 'fp-pack';
+
+// ❌ 잘못됨: 타입 추론 실패
+const broken = pipe(
+  () => [1, 2, 3, 4, 5],    // 타입: () => number[]
+  filter((n: number) => n % 2 === 0)  // 에러! (input) => output을 기대
+);
+
+// ✅ 올바름: from()이 올바른 unary 함수 생성
+const works = pipe(
+  from([1, 2, 3, 4, 5]),    // 타입: <I>(_: I) => number[]
+  filter((n: number) => n % 2 === 0),  // 완벽하게 작동
+  map(n => n * 2)
+);
+
+works(); // [4, 8] - 타입 에러 없음, 깔끔한 추론`}
+    />
+
+    <h3 class="text-2xl font-medium text-gray-900 dark:text-white mb-3 mt-8">
       3. pipe vs pipeSideEffect 선택
     </h3>
 
@@ -518,16 +546,99 @@ const grade = (score: number) =>
       <strong>기본 선택: <code class="text-sm">pipe</code> / <code class="text-sm">pipeAsync</code>로 시작하세요</strong>
     </p>
 
-    <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-      대부분의 데이터 변환은 순수하며 SideEffect 처리가 필요하지 않습니다. 동기 연산에는 <code class="text-sm">pipe</code>를, 비동기 연산에는 <code class="text-sm">pipeAsync</code>를 사용하세요.
+    <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      대부분의 데이터 변환은 순수하며 SideEffect 처리가 필요하지 않습니다. 다음 선택 가이드를 활용하세요:
     </p>
 
-    <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-6 space-y-2">
-      <li><code class="text-sm">pipe</code> - 동기, <strong>순수</strong> 변환 (99%의 경우)</li>
-      <li><code class="text-sm">pipeAsync</code> - 비동기, <strong>순수</strong> 변환 (99%의 경우)</li>
-      <li><code class="text-sm">pipeSideEffect</code> - <strong>필요한 경우에만</strong> SideEffect 단락 (동기)</li>
-      <li><code class="text-sm">pipeAsyncSideEffect</code> - <strong>필요한 경우에만</strong> SideEffect 단락 (비동기)</li>
-    </ul>
+    <div class="overflow-x-auto mb-6">
+      <table class="min-w-full border border-gray-300 dark:border-gray-700">
+        <thead class="bg-gray-100 dark:bg-gray-800">
+          <tr>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-700">
+              상황
+            </th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-700">
+              선택
+            </th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-700">
+              이유
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white dark:bg-gray-900">
+          <tr class="border-b border-gray-200 dark:border-gray-800">
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              순수한 데이터 변환 (동기)
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <code class="text-xs bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">pipe</code>
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              SideEffect 처리 불필요
+            </td>
+          </tr>
+          <tr class="border-b border-gray-200 dark:border-gray-800">
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              순수한 데이터 변환 (비동기)
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <code class="text-xs bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">pipeAsync</code>
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              SideEffect 처리 불필요
+            </td>
+          </tr>
+          <tr class="border-b border-gray-200 dark:border-gray-800">
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              조기 종료 + 부수 효과 (동기)
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <code class="text-xs bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded">pipeSideEffect</code>
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              SideEffect에서 자동 단락
+            </td>
+          </tr>
+          <tr class="border-b border-gray-200 dark:border-gray-800">
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              조기 종료 + 부수 효과 (비동기)
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <code class="text-xs bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded">pipeAsyncSideEffect</code>
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              SideEffect에서 자동 단락
+            </td>
+          </tr>
+          <tr class="border-b border-gray-200 dark:border-gray-800">
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              정확한 SideEffect 유니온 타입 (동기)
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <code class="text-xs bg-green-100 dark:bg-green-900 px-2 py-1 rounded">pipeSideEffectStrict</code>
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              분기별 정확한 유니온 추적
+            </td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              정확한 SideEffect 유니온 타입 (비동기)
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <code class="text-xs bg-green-100 dark:bg-green-900 px-2 py-1 rounded">pipeAsyncSideEffectStrict</code>
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              분기별 정확한 유니온 추적
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      <strong>요약:</strong> 99%의 경우 <code class="text-sm">pipe</code>/<code class="text-sm">pipeAsync</code>를 사용하세요. 부수 효과가 있는 조기 종료가 필요한 경우에만 SideEffect 버전으로 전환하세요.
+    </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 

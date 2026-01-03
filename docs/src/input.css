@@ -18,6 +18,45 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
   }
+
+  /* Mobile-friendly overflow handling */
+  pre,
+  code {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+
+  pre {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Prevent prose from breaking mobile layout */
+  .prose pre,
+  .prose code {
+    max-width: 100%;
+  }
+
+  .prose pre {
+    overflow-x: auto;
+  }
+
+  /* Handle long URLs and words */
+  .prose a,
+  .prose p,
+  .prose li {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+
+  /* Ensure tables don't overflow */
+  .prose table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 @layer utilities {

@@ -512,6 +512,34 @@ const grade = (score: number) =>
     />
 
     <h3 class="text-2xl font-medium text-gray-900 dark:text-white mb-3 mt-8">
+      Why from() for Type Safety
+    </h3>
+
+    <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+      Using <code class="text-sm">() =&gt; value</code> to start a pipeline breaks type inference because <code class="text-sm">pipe</code> expects unary functions. Use <code class="text-sm">from(value)</code> instead for proper typing.
+    </p>
+
+    <CodeBlock
+      language="typescript"
+      code={`import { pipe, from, filter, map } from 'fp-pack';
+
+// ❌ WRONG: Type inference fails
+const broken = pipe(
+  () => [1, 2, 3, 4, 5],    // Type: () => number[]
+  filter((n: number) => n % 2 === 0)  // Error! Expects (input) => output
+);
+
+// ✅ CORRECT: from() creates proper unary function
+const works = pipe(
+  from([1, 2, 3, 4, 5]),    // Type: <I>(_: I) => number[]
+  filter((n: number) => n % 2 === 0),  // Works perfectly
+  map(n => n * 2)
+);
+
+works(); // [4, 8] - No type errors, clean inference`}
+    />
+
+    <h3 class="text-2xl font-medium text-gray-900 dark:text-white mb-3 mt-8">
       3. Choose pipe vs pipeSideEffect
     </h3>
 
@@ -519,16 +547,99 @@ const grade = (score: number) =>
       <strong>Default choice: Start with <code class="text-sm">pipe</code> / <code class="text-sm">pipeAsync</code></strong>
     </p>
 
-    <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-      Most data transformations are pure and don't need SideEffect handling. Use <code class="text-sm">pipe</code> for sync operations and <code class="text-sm">pipeAsync</code> for async operations.
+    <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      Most data transformations are pure and don't need SideEffect handling. Use this decision table to choose the right variant:
     </p>
 
-    <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-6 space-y-2">
-      <li><code class="text-sm">pipe</code> - Synchronous, <strong>pure</strong> transformations (99% of cases)</li>
-      <li><code class="text-sm">pipeAsync</code> - Async, <strong>pure</strong> transformations (99% of cases)</li>
-      <li><code class="text-sm">pipeSideEffect</code> - <strong>Only when you need</strong> SideEffect short-circuiting (sync)</li>
-      <li><code class="text-sm">pipeAsyncSideEffect</code> - <strong>Only when you need</strong> SideEffect short-circuiting (async)</li>
-    </ul>
+    <div class="overflow-x-auto mb-6">
+      <table class="min-w-full border border-gray-300 dark:border-gray-700">
+        <thead class="bg-gray-100 dark:bg-gray-800">
+          <tr>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-700">
+              Your Situation
+            </th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-700">
+              Choose
+            </th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-700">
+              Why
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white dark:bg-gray-900">
+          <tr class="border-b border-gray-200 dark:border-gray-800">
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              Pure data transformation (sync)
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <code class="text-xs bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">pipe</code>
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              No SideEffect handling needed
+            </td>
+          </tr>
+          <tr class="border-b border-gray-200 dark:border-gray-800">
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              Pure data transformation (async)
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <code class="text-xs bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">pipeAsync</code>
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              No SideEffect handling needed
+            </td>
+          </tr>
+          <tr class="border-b border-gray-200 dark:border-gray-800">
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              Early termination + side effects (sync)
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <code class="text-xs bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded">pipeSideEffect</code>
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              Auto short-circuit on SideEffect
+            </td>
+          </tr>
+          <tr class="border-b border-gray-200 dark:border-gray-800">
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              Early termination + side effects (async)
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <code class="text-xs bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded">pipeAsyncSideEffect</code>
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              Auto short-circuit on SideEffect
+            </td>
+          </tr>
+          <tr class="border-b border-gray-200 dark:border-gray-800">
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              Need precise SideEffect union types (sync)
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <code class="text-xs bg-green-100 dark:bg-green-900 px-2 py-1 rounded">pipeSideEffectStrict</code>
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              Tracks exact union across branches
+            </td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              Need precise SideEffect union types (async)
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <code class="text-xs bg-green-100 dark:bg-green-900 px-2 py-1 rounded">pipeAsyncSideEffectStrict</code>
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              Tracks exact union across branches
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      <strong>Summary:</strong> Use <code class="text-sm">pipe</code>/<code class="text-sm">pipeAsync</code> for 99% of cases. Only switch to SideEffect variants when you need early termination with side effects.
+    </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 

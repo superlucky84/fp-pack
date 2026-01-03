@@ -610,8 +610,8 @@ export const Layout = mount(renew => {
           <div class="flex">
             <Sidebar />
 
-            <main class="flex-1 w-full min-w-0 px-6 md:px-12 py-8 max-w-full">
-              <div class="max-w-full md:max-w-[43rem] page-shell">
+            <main class="flex-1 w-full min-w-0 px-6 md:px-12 py-8 max-w-full overflow-x-hidden">
+              <div class="max-w-full md:max-w-[43rem] page-shell overflow-x-hidden">
                 <CurrentPage />
               </div>
             </main>
