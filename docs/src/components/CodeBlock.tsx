@@ -23,6 +23,11 @@ export const CodeBlock = lmount<CodeBlockProps>(() => {
 
     const lang = codeRef.value.className.match(/language-(\w+)/)?.[1] || 'typescript';
 
+    // Skip highlighting for plain text
+    if (lang === 'text' || lang === 'plaintext') {
+      return;
+    }
+
     if (lang === 'bash') {
       hljs.highlightElement(codeRef.value);
       if (codeRef.value.innerHTML) {
@@ -34,9 +39,15 @@ export const CodeBlock = lmount<CodeBlockProps>(() => {
       return;
     }
 
-    const original = codeRef.value.textContent || '';
-    const highlighted = hljs.highlight(original, { language: lang }).value;
-    codeRef.value.innerHTML = highlighted;
+    // Try to highlight, but gracefully fall back if language is unknown
+    try {
+      const original = codeRef.value.textContent || '';
+      const highlighted = hljs.highlight(original, { language: lang }).value;
+      codeRef.value.innerHTML = highlighted;
+    } catch (error) {
+      // If highlighting fails (unknown language), just leave the text as-is
+      console.warn(`Syntax highlighting failed for language: ${lang}`, error);
+    }
   });
 
   return ({ code, language }) => (
