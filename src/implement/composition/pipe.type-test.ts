@@ -71,6 +71,13 @@ export const pipeFromTenValue = pipeFromTen('input');
 type PipeFromTenValueExpected = string;
 export type PipeFromTenValueIsStrict = Expect<Equal<typeof pipeFromTenValue, PipeFromTenValueExpected>>;
 
+export const pipeFromTenValueNoInput = pipeFromTen();
+
+type PipeFromTenValueNoInputExpected = string;
+export type PipeFromTenValueNoInputIsStrict = Expect<
+  Equal<typeof pipeFromTenValueNoInput, PipeFromTenValueNoInputExpected>
+>;
+
 export const pipeWithSideEffectInput = pipeSideEffect(
   (value: number) => value + 1,
   (value) => value * 2,

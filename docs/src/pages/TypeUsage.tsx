@@ -350,7 +350,7 @@ console.log(path<string>(themePath, db));  // 'dark' (original unchanged)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { path, assocPath, curry } from 'fp-pack';
+      code={`import { path, assocPath } from 'fp-pack';
 import type { PathKey } from 'fp-pack';
 
 // Create a path builder utility
@@ -364,8 +364,8 @@ const userSettingsPath = buildPath('users', 0, 'settings');
 const userThemePath = buildPath('users', 0, 'settings', 'theme');
 
 // Create curried accessors
-const getName = curry(path<string>)(userNamePath);
-const getTheme = curry(path<string>)(userThemePath);
+const getName = path<string>(userNamePath);
+const getTheme = path<string>(userThemePath);
 
 const db = {
   users: [
@@ -405,20 +405,20 @@ function validate(input: string): ValidationResult {
   const num = parseInt(input, 10);
 
   if (isNaN(num)) {
-    return SideEffect.of(() => 'INVALID' as const);
+    return SideEffect.of(() => 'INVALID' as const, 'INVALID');
   }
   if (num < 0) {
-    return SideEffect.of(() => 'TOO_LOW' as const);
+    return SideEffect.of(() => 'TOO_LOW' as const, 'TOO_LOW');
   }
   if (num > 100) {
-    return SideEffect.of(() => 'TOO_HIGH' as const);
+    return SideEffect.of(() => 'TOO_HIGH' as const, 'TOO_HIGH');
   }
 
   return num;
 }
 
 // Define handlers with explicit typing
-const handlers: MatchHandlers<number, 'INVALID' | 'TOO_LOW' | 'TOO_HIGH', string> = {
+const handlers: MatchHandlers<number, string, string> = {
   value: (num) => \`Valid: \${num}\`,
   effect: (eff) => \`Error: \${eff.label ?? 'UNKNOWN'}\`
 };
@@ -453,10 +453,10 @@ interface User {
 
 function fetchUser(id: number): ApiResponse<User> {
   if (id < 0) {
-    return SideEffect.of(() => 'UNAUTHORIZED' as const);
+    return SideEffect.of(() => 'UNAUTHORIZED' as const, 'UNAUTHORIZED');
   }
   if (id > 1000) {
-    return SideEffect.of(() => 'NOT_FOUND' as const);
+    return SideEffect.of(() => 'NOT_FOUND' as const, 'NOT_FOUND');
   }
 
   return {
@@ -467,7 +467,7 @@ function fetchUser(id: number): ApiResponse<User> {
 }
 
 // Create different handlers for different scenarios
-const logHandlers: MatchHandlers<User, string, void> = {
+const logHandlers: MatchHandlers<User, void, void> = {
   value: (user) => console.log(\`Found user: \${user.name}\`),
   effect: (eff) => console.error(\`Error: \${eff.label}\`)
 };
