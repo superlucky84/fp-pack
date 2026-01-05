@@ -25,6 +25,21 @@ export const purePipe = pipe(
 type PurePipeExpected = (input: number) => string;
 export type PipePureIsStrict = Expect<Equal<typeof purePipe, PurePipeExpected>>;
 
+export const purePipeZero = pipe(() => 3, (value: number) => value + 1);
+
+type PurePipeZeroExpected = () => number;
+export type PipePureZeroIsStrict = Expect<Equal<typeof purePipeZero, PurePipeZeroExpected>>;
+
+export const purePipeZeroValue = purePipeZero();
+
+type PurePipeZeroValueExpected = number;
+export type PipePureZeroValueIsStrict = Expect<Equal<typeof purePipeZeroValue, PurePipeZeroValueExpected>>;
+
+export const purePipeValue = purePipe(1);
+
+type PurePipeValueExpected = string;
+export type PipePureValueIsStrict = Expect<Equal<typeof purePipeValue, PurePipeValueExpected>>;
+
 export const purePipeSix = pipe(
   (value: number) => value + 1,
   (value) => value * 2,
@@ -78,6 +93,16 @@ export type PipeFromTenValueNoInputIsStrict = Expect<
   Equal<typeof pipeFromTenValueNoInput, PipeFromTenValueNoInputExpected>
 >;
 
+export const pipeFromNoInput = pipe(from(1));
+
+type PipeFromNoInputExpected = (input?: unknown) => number;
+export type PipeFromNoInputIsStrict = Expect<Equal<typeof pipeFromNoInput, PipeFromNoInputExpected>>;
+
+export const pipeFromNoInputValue = pipeFromNoInput();
+
+type PipeFromNoInputValueExpected = number;
+export type PipeFromNoInputValueIsStrict = Expect<Equal<typeof pipeFromNoInputValue, PipeFromNoInputValueExpected>>;
+
 export const pipeWithSideEffectInput = pipeSideEffect(
   (value: number) => value + 1,
   (value) => value * 2,
@@ -88,6 +113,25 @@ export const pipeWithSideEffectValue = pipeWithSideEffectInput(sideEffectInput);
 
 type PipeExpected = (input: number | SideEffect<any>) => string | SideEffect<any>;
 export type PipeAcceptsSideEffectInput = Expect<Equal<typeof pipeWithSideEffectInput, PipeExpected>>;
+
+export const pipeSideEffectZero = pipeSideEffect(() => 1, (value: number) => value + 1);
+
+type PipeSideEffectZeroExpected = () => number | SideEffect<any>;
+export type PipeSideEffectZeroIsStrict = Expect<Equal<typeof pipeSideEffectZero, PipeSideEffectZeroExpected>>;
+
+export const pipeSideEffectZeroValue = pipeSideEffectZero();
+
+type PipeSideEffectZeroValueExpected = number | SideEffect<any>;
+export type PipeSideEffectZeroValueIsStrict = Expect<
+  Equal<typeof pipeSideEffectZeroValue, PipeSideEffectZeroValueExpected>
+>;
+
+export const pipeWithSideEffectValueInput = pipeWithSideEffectInput(1);
+
+type PipeWithSideEffectValueInputExpected = string | SideEffect<any>;
+export type PipeSideEffectValueInputIsStrict = Expect<
+  Equal<typeof pipeWithSideEffectValueInput, PipeWithSideEffectValueInputExpected>
+>;
 
 export const pipeSideEffectSix = pipeSideEffect(
   (value: number) => value + 1,
@@ -144,6 +188,20 @@ export type PipeSideEffectFromTenValueNoInputIsStrict = Expect<
   Equal<typeof pipeSideEffectFromTenValueNoInput, PipeSideEffectFromTenValueNoInputExpected>
 >;
 
+export const pipeSideEffectFromNoInput = pipeSideEffect(from(1));
+
+type PipeSideEffectFromNoInputExpected = (input?: unknown) => number | SideEffect<any>;
+export type PipeSideEffectFromNoInputIsStrict = Expect<
+  Equal<typeof pipeSideEffectFromNoInput, PipeSideEffectFromNoInputExpected>
+>;
+
+export const pipeSideEffectFromNoInputValue = pipeSideEffectFromNoInput();
+
+type PipeSideEffectFromNoInputValueExpected = number | SideEffect<any>;
+export type PipeSideEffectFromNoInputValueIsStrict = Expect<
+  Equal<typeof pipeSideEffectFromNoInputValue, PipeSideEffectFromNoInputValueExpected>
+>;
+
 export const purePipeAsync = pipeAsync(
   (value: number) => value + 1,
   async (value) => value * 2,
@@ -152,6 +210,23 @@ export const purePipeAsync = pipeAsync(
 
 type PurePipeAsyncExpected = (input: number) => Promise<string>;
 export type PipeAsyncPureIsStrict = Expect<Equal<typeof purePipeAsync, PurePipeAsyncExpected>>;
+
+export const purePipeAsyncZero = pipeAsync(() => 1, async (value: number) => value + 1);
+
+type PurePipeAsyncZeroExpected = () => Promise<number>;
+export type PipeAsyncPureZeroIsStrict = Expect<Equal<typeof purePipeAsyncZero, PurePipeAsyncZeroExpected>>;
+
+export const purePipeAsyncZeroValue = purePipeAsyncZero();
+
+type PurePipeAsyncZeroValueExpected = Promise<number>;
+export type PipeAsyncPureZeroValueIsStrict = Expect<
+  Equal<typeof purePipeAsyncZeroValue, PurePipeAsyncZeroValueExpected>
+>;
+
+export const purePipeAsyncValue = purePipeAsync(1);
+
+type PurePipeAsyncValueExpected = Promise<string>;
+export type PipeAsyncPureValueIsStrict = Expect<Equal<typeof purePipeAsyncValue, PurePipeAsyncValueExpected>>;
 
 export const purePipeAsyncSix = pipeAsync(
   (value: number) => value + 1,
@@ -208,6 +283,18 @@ export type PipeAsyncFromTenValueNoInputIsStrict = Expect<
   Equal<typeof pipeAsyncFromTenValueNoInput, PipeAsyncFromTenValueNoInputExpected>
 >;
 
+export const pipeAsyncFromNoInput = pipeAsync(from(1));
+
+type PipeAsyncFromNoInputExpected = (input?: unknown) => Promise<number>;
+export type PipeAsyncFromNoInputIsStrict = Expect<Equal<typeof pipeAsyncFromNoInput, PipeAsyncFromNoInputExpected>>;
+
+export const pipeAsyncFromNoInputValue = pipeAsyncFromNoInput();
+
+type PipeAsyncFromNoInputValueExpected = Promise<number>;
+export type PipeAsyncFromNoInputValueIsStrict = Expect<
+  Equal<typeof pipeAsyncFromNoInputValue, PipeAsyncFromNoInputValueExpected>
+>;
+
 export const pipeAsyncWithSideEffectInput = pipeAsyncSideEffect(
   (value: number) => value + 1,
   async (value) => value * 2,
@@ -219,6 +306,27 @@ export const pipeAsyncWithSideEffectValue = pipeAsyncWithSideEffectInput(sideEff
 type PipeAsyncExpected = (input: number | SideEffect<any>) => Promise<string | SideEffect<any>>;
 export type PipeAsyncAcceptsSideEffectInput = Expect<
   Equal<typeof pipeAsyncWithSideEffectInput, PipeAsyncExpected>
+>;
+
+export const pipeAsyncSideEffectZero = pipeAsyncSideEffect(() => 1, async (value: number) => value + 1);
+
+type PipeAsyncSideEffectZeroExpected = () => Promise<number | SideEffect<any>>;
+export type PipeAsyncSideEffectZeroIsStrict = Expect<
+  Equal<typeof pipeAsyncSideEffectZero, PipeAsyncSideEffectZeroExpected>
+>;
+
+export const pipeAsyncSideEffectZeroValue = pipeAsyncSideEffectZero();
+
+type PipeAsyncSideEffectZeroValueExpected = Promise<number | SideEffect<any>>;
+export type PipeAsyncSideEffectZeroValueIsStrict = Expect<
+  Equal<typeof pipeAsyncSideEffectZeroValue, PipeAsyncSideEffectZeroValueExpected>
+>;
+
+export const pipeAsyncWithSideEffectValueInput = pipeAsyncWithSideEffectInput(1);
+
+type PipeAsyncWithSideEffectValueInputExpected = Promise<string | SideEffect<any>>;
+export type PipeAsyncSideEffectValueInputIsStrict = Expect<
+  Equal<typeof pipeAsyncWithSideEffectValueInput, PipeAsyncWithSideEffectValueInputExpected>
 >;
 
 export const pipeAsyncSideEffectSix = pipeAsyncSideEffect(
@@ -280,6 +388,20 @@ export type PipeAsyncSideEffectFromTenValueNoInputIsStrict = Expect<
   Equal<typeof pipeAsyncSideEffectFromTenValueNoInput, PipeAsyncSideEffectFromTenValueNoInputExpected>
 >;
 
+export const pipeAsyncSideEffectFromNoInput = pipeAsyncSideEffect(from(1));
+
+type PipeAsyncSideEffectFromNoInputExpected = (input?: unknown) => Promise<number | SideEffect<any>>;
+export type PipeAsyncSideEffectFromNoInputIsStrict = Expect<
+  Equal<typeof pipeAsyncSideEffectFromNoInput, PipeAsyncSideEffectFromNoInputExpected>
+>;
+
+export const pipeAsyncSideEffectFromNoInputValue = pipeAsyncSideEffectFromNoInput();
+
+type PipeAsyncSideEffectFromNoInputValueExpected = Promise<number | SideEffect<any>>;
+export type PipeAsyncSideEffectFromNoInputValueIsStrict = Expect<
+  Equal<typeof pipeAsyncSideEffectFromNoInputValue, PipeAsyncSideEffectFromNoInputValueExpected>
+>;
+
 export const strictPipeSideEffect = pipeSideEffectStrict(
   (value: number) => value + 1,
   (value) => (value > 1 ? value : SideEffect.of(() => 'LOW' as const)),
@@ -287,6 +409,11 @@ export const strictPipeSideEffect = pipeSideEffectStrict(
 );
 
 export const strictPipeSideEffectResult = strictPipeSideEffect(1);
+
+type StrictPipeSideEffectResultExpected = number | SideEffect<'LOW' | 0>;
+export type PipeSideEffectStrictResultIsStrict = Expect<
+  Equal<typeof strictPipeSideEffectResult, StrictPipeSideEffectResultExpected>
+>;
 
 type StrictSideEffectEffects = EffectUnion<typeof strictPipeSideEffectResult>;
 type StrictSideEffectEffectsExpected = 'LOW' | 0;
@@ -305,7 +432,29 @@ export type PipeSideEffectStrictRunPipeResultIsStrict = Expect<
   Equal<typeof strictPipeSideEffectRunResult, StrictPipeSideEffectRunExpected>
 >;
 
+export const strictPipeSideEffectZero = pipeSideEffectStrict(
+  () => 1,
+  (value: number) => (value > 0 ? value : SideEffect.of(() => 'LOW' as const))
+);
+
+type StrictPipeSideEffectZeroExpected = () => number | SideEffect<'LOW'>;
+export type PipeSideEffectStrictZeroIsStrict = Expect<
+  Equal<typeof strictPipeSideEffectZero, StrictPipeSideEffectZeroExpected>
+>;
+
+export const strictPipeSideEffectZeroValue = strictPipeSideEffectZero();
+
+type StrictPipeSideEffectZeroValueExpected = number | SideEffect<'LOW'>;
+export type PipeSideEffectStrictZeroValueIsStrict = Expect<
+  Equal<typeof strictPipeSideEffectZeroValue, StrictPipeSideEffectZeroValueExpected>
+>;
+
 export const strictPipeSideEffectInput = strictPipeSideEffect(SideEffect.of(() => 'INPUT' as const));
+
+type StrictPipeSideEffectInputExpected = number | SideEffect<'LOW' | 0 | 'INPUT'>;
+export type PipeSideEffectStrictInputIsStrict = Expect<
+  Equal<typeof strictPipeSideEffectInput, StrictPipeSideEffectInputExpected>
+>;
 
 type StrictSideEffectInputEffects = EffectUnion<typeof strictPipeSideEffectInput>;
 type StrictSideEffectInputEffectsExpected = 'LOW' | 0 | 'INPUT';
@@ -370,6 +519,11 @@ export const strictPipeSideEffectFromTen = pipeSideEffectStrict(
 
 export const strictPipeSideEffectFromTenResult = strictPipeSideEffectFromTen('input');
 
+type StrictSideEffectFromTenResultExpected = number | SideEffect<'LOW' | 'MID' | 0>;
+export type PipeSideEffectStrictFromTenResultIsStrict = Expect<
+  Equal<typeof strictPipeSideEffectFromTenResult, StrictSideEffectFromTenResultExpected>
+>;
+
 type StrictFromTenEffects = EffectUnion<typeof strictPipeSideEffectFromTenResult>;
 type StrictFromTenEffectsExpected = 'LOW' | 'MID' | 0;
 export type PipeSideEffectStrictFromTenEffects = Expect<
@@ -381,6 +535,11 @@ type StrictFromTenValueExpected = number;
 export type PipeSideEffectStrictFromTenValue = Expect<Equal<StrictFromTenValue, StrictFromTenValueExpected>>;
 
 export const strictPipeSideEffectFromTenResultNoInput = strictPipeSideEffectFromTen();
+
+type StrictSideEffectFromTenNoInputExpected = number | SideEffect<'LOW' | 'MID' | 0>;
+export type PipeSideEffectStrictFromTenNoInputIsStrict = Expect<
+  Equal<typeof strictPipeSideEffectFromTenResultNoInput, StrictSideEffectFromTenNoInputExpected>
+>;
 
 type StrictFromTenNoInputEffects = EffectUnion<typeof strictPipeSideEffectFromTenResultNoInput>;
 type StrictFromTenNoInputEffectsExpected = 'LOW' | 'MID' | 0;
@@ -394,6 +553,23 @@ export type PipeSideEffectStrictFromTenNoInputValue = Expect<
   Equal<StrictFromTenNoInputValue, StrictFromTenNoInputValueExpected>
 >;
 
+export const strictPipeSideEffectFromNoInput = pipeSideEffectStrict(from(1));
+
+type StrictPipeSideEffectFromNoInputExpected = {
+  (input?: unknown): number | SideEffect<never>;
+  <EIn>(input?: unknown | SideEffect<EIn>): number | SideEffect<EIn>;
+};
+export type PipeSideEffectStrictFromNoInputIsStrict = Expect<
+  Equal<typeof strictPipeSideEffectFromNoInput, StrictPipeSideEffectFromNoInputExpected>
+>;
+
+export const strictPipeSideEffectFromNoInputValue = strictPipeSideEffectFromNoInput();
+
+type StrictPipeSideEffectFromNoInputValueExpected = number | SideEffect<never>;
+export type PipeSideEffectStrictFromNoInputValueIsStrict = Expect<
+  Equal<typeof strictPipeSideEffectFromNoInputValue, StrictPipeSideEffectFromNoInputValueExpected>
+>;
+
 export const strictPipeAsyncSideEffect = pipeAsyncSideEffectStrict(
   (value: number) => value + 1,
   async (value) => (value > 1 ? value : SideEffect.of(() => 'LOW' as const)),
@@ -401,6 +577,11 @@ export const strictPipeAsyncSideEffect = pipeAsyncSideEffectStrict(
 );
 
 export const strictPipeAsyncSideEffectResult = strictPipeAsyncSideEffect(1);
+
+type StrictPipeAsyncSideEffectResultExpected = Promise<number | SideEffect<'LOW' | 0>>;
+export type PipeAsyncSideEffectStrictResultIsStrict = Expect<
+  Equal<typeof strictPipeAsyncSideEffectResult, StrictPipeAsyncSideEffectResultExpected>
+>;
 
 type StrictPipeAsyncResolved = Awaited<typeof strictPipeAsyncSideEffectResult>;
 type StrictPipeAsyncEffects = EffectUnion<StrictPipeAsyncResolved>;
@@ -413,6 +594,23 @@ type StrictPipeAsyncValue = ValueUnion<StrictPipeAsyncResolved>;
 type StrictPipeAsyncValueExpected = number;
 export type PipeAsyncSideEffectStrictValue = Expect<
   Equal<StrictPipeAsyncValue, StrictPipeAsyncValueExpected>
+>;
+
+export const strictPipeAsyncSideEffectZero = pipeAsyncSideEffectStrict(
+  () => 1,
+  async (value: number) => (value > 0 ? value : SideEffect.of(() => 'LOW' as const))
+);
+
+type StrictPipeAsyncSideEffectZeroExpected = () => Promise<number | SideEffect<'LOW'>>;
+export type PipeAsyncSideEffectStrictZeroIsStrict = Expect<
+  Equal<typeof strictPipeAsyncSideEffectZero, StrictPipeAsyncSideEffectZeroExpected>
+>;
+
+export const strictPipeAsyncSideEffectZeroValue = strictPipeAsyncSideEffectZero();
+
+type StrictPipeAsyncSideEffectZeroValueExpected = Promise<number | SideEffect<'LOW'>>;
+export type PipeAsyncSideEffectStrictZeroValueIsStrict = Expect<
+  Equal<typeof strictPipeAsyncSideEffectZeroValue, StrictPipeAsyncSideEffectZeroValueExpected>
 >;
 
 export const strictPipeAsyncSideEffectSix = pipeAsyncSideEffectStrict(
@@ -482,6 +680,11 @@ export const strictPipeAsyncSideEffectFromTen = pipeAsyncSideEffectStrict(
 
 export const strictPipeAsyncSideEffectFromTenResult = strictPipeAsyncSideEffectFromTen('input');
 
+type StrictAsyncFromTenResultExpected = Promise<number | SideEffect<'LOW' | 'MID' | 0>>;
+export type PipeAsyncSideEffectStrictFromTenResultIsStrict = Expect<
+  Equal<typeof strictPipeAsyncSideEffectFromTenResult, StrictAsyncFromTenResultExpected>
+>;
+
 type StrictAsyncFromTenResolved = Awaited<typeof strictPipeAsyncSideEffectFromTenResult>;
 type StrictAsyncFromTenEffects = EffectUnion<StrictAsyncFromTenResolved>;
 type StrictAsyncFromTenEffectsExpected = 'LOW' | 'MID' | 0;
@@ -497,6 +700,11 @@ export type PipeAsyncSideEffectStrictFromTenValue = Expect<
 
 export const strictPipeAsyncSideEffectFromTenResultNoInput = strictPipeAsyncSideEffectFromTen();
 
+type StrictAsyncFromTenNoInputResultExpected = Promise<number | SideEffect<'LOW' | 'MID' | 0>>;
+export type PipeAsyncSideEffectStrictFromTenNoInputIsStrict = Expect<
+  Equal<typeof strictPipeAsyncSideEffectFromTenResultNoInput, StrictAsyncFromTenNoInputResultExpected>
+>;
+
 type StrictAsyncFromTenNoInputResolved = Awaited<typeof strictPipeAsyncSideEffectFromTenResultNoInput>;
 type StrictAsyncFromTenNoInputEffects = EffectUnion<StrictAsyncFromTenNoInputResolved>;
 type StrictAsyncFromTenNoInputEffectsExpected = 'LOW' | 'MID' | 0;
@@ -509,3 +717,47 @@ type StrictAsyncFromTenNoInputValueExpected = number;
 export type PipeAsyncSideEffectStrictFromTenNoInputValue = Expect<
   Equal<StrictAsyncFromTenNoInputValue, StrictAsyncFromTenNoInputValueExpected>
 >;
+
+export const strictPipeAsyncSideEffectFromNoInput = pipeAsyncSideEffectStrict(from(1));
+
+type StrictAsyncSideEffectFromNoInputExpected = {
+  (input?: unknown): Promise<number | SideEffect<never>>;
+  <EIn>(input?: unknown | SideEffect<EIn>): Promise<number | SideEffect<EIn>>;
+};
+export type PipeAsyncSideEffectStrictFromNoInputIsStrict = Expect<
+  Equal<typeof strictPipeAsyncSideEffectFromNoInput, StrictAsyncSideEffectFromNoInputExpected>
+>;
+
+export const strictPipeAsyncSideEffectFromNoInputValue = strictPipeAsyncSideEffectFromNoInput();
+
+type StrictAsyncSideEffectFromNoInputValueExpected = Promise<number | SideEffect<never>>;
+export type PipeAsyncSideEffectStrictFromNoInputValueIsStrict = Expect<
+  Equal<typeof strictPipeAsyncSideEffectFromNoInputValue, StrictAsyncSideEffectFromNoInputValueExpected>
+>;
+
+// Negative cases: input required when not using from/zero-arity.
+// @ts-expect-error input required for unary pipe
+purePipe();
+// @ts-expect-error input required for unary pipeSideEffect
+pipeWithSideEffectInput();
+// @ts-expect-error input required for unary pipeSideEffectStrict
+strictPipeSideEffect();
+// @ts-expect-error input required for unary pipeAsync
+purePipeAsync();
+// @ts-expect-error input required for unary pipeAsyncSideEffect
+pipeAsyncWithSideEffectInput();
+// @ts-expect-error input required for unary pipeAsyncSideEffectStrict
+strictPipeAsyncSideEffect();
+
+// @ts-expect-error input required for direct pipe call
+pipe((value: number) => value + 1)();
+// @ts-expect-error input required for direct pipeSideEffect call
+pipeSideEffect((value: number) => value + 1)();
+// @ts-expect-error input required for direct pipeSideEffectStrict call
+pipeSideEffectStrict((value: number) => value + 1)();
+// @ts-expect-error input required for direct pipeAsync call
+pipeAsync((value: number) => value + 1)();
+// @ts-expect-error input required for direct pipeAsyncSideEffect call
+pipeAsyncSideEffect((value: number) => value + 1)();
+// @ts-expect-error input required for direct pipeAsyncSideEffectStrict call
+pipeAsyncSideEffectStrict((value: number) => value + 1)();

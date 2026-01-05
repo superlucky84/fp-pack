@@ -2,6 +2,7 @@ import type { FromFn } from '../composition/from';
 
 /** pipeAsync - 비동기 함수 합성 */
 type AsyncOrSync<A, R> = (a: A) => R | Promise<R>;
+type ZeroFn<R> = () => R | Promise<R>;
 type PipeInput<Fns extends AsyncOrSync<any, any>[]> = Fns extends [AsyncOrSync<infer A, any>, ...AsyncOrSync<any, any>[]]
   ? A
   : never;
@@ -17,6 +18,76 @@ type PipeAsyncFrom<Fns extends [FromFn<any>, ...AsyncOrSync<any, any>[]]> = (
   input?: PipeInput<Fns>
 ) => Promise<PipeOutput<Fns>>;
 
+function pipeAsync<R>(ab: ZeroFn<R>): () => Promise<Awaited<R>>;
+function pipeAsync<B, R>(ab: ZeroFn<B>, bc: AsyncOrSync<Awaited<B>, R>): () => Promise<Awaited<R>>;
+function pipeAsync<B, C, R>(
+  ab: ZeroFn<B>,
+  bc: AsyncOrSync<Awaited<B>, C>,
+  cd: AsyncOrSync<Awaited<C>, R>
+): () => Promise<Awaited<R>>;
+function pipeAsync<B, C, D, R>(
+  ab: ZeroFn<B>,
+  bc: AsyncOrSync<Awaited<B>, C>,
+  cd: AsyncOrSync<Awaited<C>, D>,
+  de: AsyncOrSync<Awaited<D>, R>
+): () => Promise<Awaited<R>>;
+function pipeAsync<B, C, D, E, R>(
+  ab: ZeroFn<B>,
+  bc: AsyncOrSync<Awaited<B>, C>,
+  cd: AsyncOrSync<Awaited<C>, D>,
+  de: AsyncOrSync<Awaited<D>, E>,
+  ef: AsyncOrSync<Awaited<E>, R>
+): () => Promise<Awaited<R>>;
+function pipeAsync<B, C, D, E, F, R>(
+  ab: ZeroFn<B>,
+  bc: AsyncOrSync<Awaited<B>, C>,
+  cd: AsyncOrSync<Awaited<C>, D>,
+  de: AsyncOrSync<Awaited<D>, E>,
+  ef: AsyncOrSync<Awaited<E>, F>,
+  fg: AsyncOrSync<Awaited<F>, R>
+): () => Promise<Awaited<R>>;
+function pipeAsync<B, C, D, E, F, G, R>(
+  ab: ZeroFn<B>,
+  bc: AsyncOrSync<Awaited<B>, C>,
+  cd: AsyncOrSync<Awaited<C>, D>,
+  de: AsyncOrSync<Awaited<D>, E>,
+  ef: AsyncOrSync<Awaited<E>, F>,
+  fg: AsyncOrSync<Awaited<F>, G>,
+  gh: AsyncOrSync<Awaited<G>, R>
+): () => Promise<Awaited<R>>;
+function pipeAsync<B, C, D, E, F, G, H, R>(
+  ab: ZeroFn<B>,
+  bc: AsyncOrSync<Awaited<B>, C>,
+  cd: AsyncOrSync<Awaited<C>, D>,
+  de: AsyncOrSync<Awaited<D>, E>,
+  ef: AsyncOrSync<Awaited<E>, F>,
+  fg: AsyncOrSync<Awaited<F>, G>,
+  gh: AsyncOrSync<Awaited<G>, H>,
+  hi: AsyncOrSync<Awaited<H>, R>
+): () => Promise<Awaited<R>>;
+function pipeAsync<B, C, D, E, F, G, H, I, R>(
+  ab: ZeroFn<B>,
+  bc: AsyncOrSync<Awaited<B>, C>,
+  cd: AsyncOrSync<Awaited<C>, D>,
+  de: AsyncOrSync<Awaited<D>, E>,
+  ef: AsyncOrSync<Awaited<E>, F>,
+  fg: AsyncOrSync<Awaited<F>, G>,
+  gh: AsyncOrSync<Awaited<G>, H>,
+  hi: AsyncOrSync<Awaited<H>, I>,
+  ij: AsyncOrSync<Awaited<I>, R>
+): () => Promise<Awaited<R>>;
+function pipeAsync<B, C, D, E, F, G, H, I, J, R>(
+  ab: ZeroFn<B>,
+  bc: AsyncOrSync<Awaited<B>, C>,
+  cd: AsyncOrSync<Awaited<C>, D>,
+  de: AsyncOrSync<Awaited<D>, E>,
+  ef: AsyncOrSync<Awaited<E>, F>,
+  fg: AsyncOrSync<Awaited<F>, G>,
+  gh: AsyncOrSync<Awaited<G>, H>,
+  hi: AsyncOrSync<Awaited<H>, I>,
+  ij: AsyncOrSync<Awaited<I>, J>,
+  jk: AsyncOrSync<Awaited<J>, R>
+): () => Promise<Awaited<R>>;
 function pipeAsync<Fns extends [FromFn<any>, ...AsyncOrSync<any, any>[]]>(...funcs: Fns): PipeAsyncFrom<Fns>;
 function pipeAsync<A, R>(ab: AsyncOrSync<A, R>): (a: A) => Promise<Awaited<R>>;
 function pipeAsync<A, B, R>(ab: AsyncOrSync<A, B>, bc: AsyncOrSync<Awaited<B>, R>): (a: A) => Promise<Awaited<R>>;
