@@ -470,6 +470,44 @@ const grade = (score: number) =>
     />
 
     <h3 class="text-2xl font-medium text-gray-900 dark:text-white mb-3 mt-8">
+      2.3 Data-last Generic Caveats
+    </h3>
+
+    <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+      If a data-last helper returns a generic function whose type is decided only by the final data input, TypeScript
+      cannot infer that type inside <code class="text-sm">pipe</code>/<code class="text-sm">pipeAsync</code>.
+      Use a data-first wrapper, an explicit generic, or a typed alias when needed.
+    </p>
+
+    <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-6 space-y-2">
+      <li>
+        <strong>Array</strong>: <code class="text-sm">chunk</code>, <code class="text-sm">drop</code>, <code class="text-sm">take</code>, <code class="text-sm">zip</code>
+      </li>
+      <li>
+        <strong>Object</strong>: <code class="text-sm">assoc</code>, <code class="text-sm">assocPath</code>, <code class="text-sm">dissocPath</code>, <code class="text-sm">evolve</code>, <code class="text-sm">mapValues</code>, <code class="text-sm">merge</code>, <code class="text-sm">mergeDeep</code>, <code class="text-sm">omit</code>, <code class="text-sm">path</code>, <code class="text-sm">pathOr</code>, <code class="text-sm">pick</code>, <code class="text-sm">prop</code>, <code class="text-sm">propOr</code>, <code class="text-sm">propStrict</code>
+      </li>
+      <li><strong>Async</strong>: <code class="text-sm">timeout</code></li>
+      <li><strong>Stream</strong>: <code class="text-sm">chunk</code>, <code class="text-sm">drop</code>, <code class="text-sm">take</code>, <code class="text-sm">zip</code></li>
+    </ul>
+
+    <CodeBlock
+      language="typescript"
+      code={`import { pipe, zip, some } from 'fp-pack';
+
+// Option 1: data-first wrapper
+const withWrapper = pipe(
+  (values: number[]) => zip([1, 2, 3], values),
+  some(([a, b]) => a > b)
+);
+
+// Option 2: explicit type annotation
+const withHint = pipe(
+  zip([1, 2, 3]) as (values: number[]) => Array<[number, number]>,
+  some(([a, b]) => a > b)
+);`}
+    />
+
+    <h3 class="text-2xl font-medium text-gray-900 dark:text-white mb-3 mt-8">
       Why from() for Type Safety
     </h3>
 

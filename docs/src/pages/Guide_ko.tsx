@@ -469,6 +469,44 @@ const grade = (score: number) =>
     />
 
     <h3 class="text-2xl font-medium text-gray-900 dark:text-white mb-3 mt-8">
+      2.3 data-last 제네릭 주의사항
+    </h3>
+
+    <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+      data-last 유틸이 마지막 데이터 입력에서만 타입이 결정되는 제네릭 함수를 반환하는 경우,
+      <code class="text-sm">pipe</code>/<code class="text-sm">pipeAsync</code> 안에서는 TypeScript가 타입을 역추론하지 못합니다.
+      필요하면 data-first 래핑, 명시적 제네릭, 또는 타입 힌트를 사용하세요.
+    </p>
+
+    <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-6 space-y-2">
+      <li>
+        <strong>Array</strong>: <code class="text-sm">chunk</code>, <code class="text-sm">drop</code>, <code class="text-sm">take</code>, <code class="text-sm">zip</code>
+      </li>
+      <li>
+        <strong>Object</strong>: <code class="text-sm">assoc</code>, <code class="text-sm">assocPath</code>, <code class="text-sm">dissocPath</code>, <code class="text-sm">evolve</code>, <code class="text-sm">mapValues</code>, <code class="text-sm">merge</code>, <code class="text-sm">mergeDeep</code>, <code class="text-sm">omit</code>, <code class="text-sm">path</code>, <code class="text-sm">pathOr</code>, <code class="text-sm">pick</code>, <code class="text-sm">prop</code>, <code class="text-sm">propOr</code>, <code class="text-sm">propStrict</code>
+      </li>
+      <li><strong>Async</strong>: <code class="text-sm">timeout</code></li>
+      <li><strong>Stream</strong>: <code class="text-sm">chunk</code>, <code class="text-sm">drop</code>, <code class="text-sm">take</code>, <code class="text-sm">zip</code></li>
+    </ul>
+
+    <CodeBlock
+      language="typescript"
+      code={`import { pipe, zip, some } from 'fp-pack';
+
+// 방법 1: data-first 래핑
+const withWrapper = pipe(
+  (values: number[]) => zip([1, 2, 3], values),
+  some(([a, b]) => a > b)
+);
+
+// 방법 2: 명시적 타입 힌트
+const withHint = pipe(
+  zip([1, 2, 3]) as (values: number[]) => Array<[number, number]>,
+  some(([a, b]) => a > b)
+);`}
+    />
+
+    <h3 class="text-2xl font-medium text-gray-900 dark:text-white mb-3 mt-8">
       타입 안전성을 위한 from()
     </h3>
 

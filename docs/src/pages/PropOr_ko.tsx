@@ -21,6 +21,35 @@ propOr('unknown', 'name', user); // 'Ada'
 propOr('unknown', 'age', user);  // 'unknown'`}
     />
 
+    <div class="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 rounded">
+      <p class="text-sm md:text-base text-yellow-900 dark:text-yellow-100">
+        <strong class="font-semibold">참고:</strong> data-last 파이프라인에서는 TypeScript가 이 유틸의 최종 데이터 타입을 추론하지 못할 수 있습니다.
+        간단한 타입 힌트나 data-first 래핑을 사용하세요. 자세한 내용은{' '}
+        <a
+          href="/guide/type-usage"
+          onClick={(e: Event) => {
+            e.preventDefault();
+            navigateTo('/guide/type-usage');
+          }}
+          class="underline decoration-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-200"
+        >
+          타입 활용
+        </a>{' '}
+        과{' '}
+        <a
+          href="/guide"
+          onClick={(e: Event) => {
+            e.preventDefault();
+            navigateTo('/guide');
+          }}
+          class="underline decoration-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-200"
+        >
+          상세 가이드
+        </a>
+        를 참고하세요.
+      </p>
+    </div>
+
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">

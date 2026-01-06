@@ -140,6 +140,51 @@ const filteredUsers = filterUsers(users);
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
+      data-last 제네릭 추론 한계
+    </h2>
+
+    <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      data-last로 부분 적용된 유틸이 제네릭 함수를 반환하고, 그 타입이 <strong>마지막 데이터 인자</strong>에서만
+      결정되는 경우 <code class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-sm">pipe</code> /
+      <code class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-sm">pipeAsync</code> 안에서 타입 추론이 깨질 수 있습니다.
+      이는 TypeScript 한계이며 런타임 문제가 아닙니다.
+    </p>
+
+    <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      해결책은 data-first 래핑, 명시적 제네릭, 또는 커리 함수의 타입 힌트/캐스팅입니다.
+    </p>
+
+    <CodeBlock
+      language="typescript"
+      code={`import { pipe, zip, some } from 'fp-pack';
+
+// 방법 1: data-first 래핑
+const withWrapper = pipe(
+  (values: number[]) => zip([1, 2, 3], values),
+  some(([a, b]) => a > b)
+);
+
+// 방법 2: 명시적 타입 힌트
+const withHint = pipe(
+  zip([1, 2, 3]) as (values: number[]) => Array<[number, number]>,
+  some(([a, b]) => a > b)
+);`}
+    />
+
+    <h3 class="text-xl md:text-2xl font-medium text-gray-900 dark:text-white mb-3 mt-8">
+      타입 힌트가 필요한 유틸리티
+    </h3>
+
+    <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-6 space-y-2">
+      <li><strong>Array</strong>: <code class="text-sm">chunk</code>, <code class="text-sm">drop</code>, <code class="text-sm">take</code>, <code class="text-sm">zip</code></li>
+      <li><strong>Object</strong>: <code class="text-sm">assoc</code>, <code class="text-sm">assocPath</code>, <code class="text-sm">dissocPath</code>, <code class="text-sm">evolve</code>, <code class="text-sm">mapValues</code>, <code class="text-sm">merge</code>, <code class="text-sm">mergeDeep</code>, <code class="text-sm">omit</code>, <code class="text-sm">path</code>, <code class="text-sm">pathOr</code>, <code class="text-sm">pick</code>, <code class="text-sm">prop</code>, <code class="text-sm">propOr</code>, <code class="text-sm">propStrict</code></li>
+      <li><strong>Async</strong>: <code class="text-sm">timeout</code></li>
+      <li><strong>Stream</strong>: <code class="text-sm">chunk</code>, <code class="text-sm">drop</code>, <code class="text-sm">take</code>, <code class="text-sm">zip</code></li>
+    </ul>
+
+    <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
+
+    <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
       from 기반 파이프라인 타입
     </h2>
 

@@ -140,6 +140,51 @@ const filteredUsers = filterUsers(users);
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
+      Data-last Generic Inference Caveats
+    </h2>
+
+    <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      When a curried utility returns a generic function whose type is only determined by the <strong>data argument</strong>
+      (the last argument), TypeScript cannot infer that type inside <code class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-sm">pipe</code> /
+      <code class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-sm">pipeAsync</code>. This is a TypeScript limitation,
+      not a runtime issue.
+    </p>
+
+    <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      Use one of these workarounds: data-first wrapper, explicit generic, or a typed alias/annotation for the curried function.
+    </p>
+
+    <CodeBlock
+      language="typescript"
+      code={`import { pipe, zip, some } from 'fp-pack';
+
+// Option 1: data-first wrapper
+const withWrapper = pipe(
+  (values: number[]) => zip([1, 2, 3], values),
+  some(([a, b]) => a > b)
+);
+
+// Option 2: explicit type annotation
+const withHint = pipe(
+  zip([1, 2, 3]) as (values: number[]) => Array<[number, number]>,
+  some(([a, b]) => a > b)
+);`}
+    />
+
+    <h3 class="text-xl md:text-2xl font-medium text-gray-900 dark:text-white mb-3 mt-8">
+      Utilities That May Need a Type Hint
+    </h3>
+
+    <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-6 space-y-2">
+      <li><strong>Array</strong>: <code class="text-sm">chunk</code>, <code class="text-sm">drop</code>, <code class="text-sm">take</code>, <code class="text-sm">zip</code></li>
+      <li><strong>Object</strong>: <code class="text-sm">assoc</code>, <code class="text-sm">assocPath</code>, <code class="text-sm">dissocPath</code>, <code class="text-sm">evolve</code>, <code class="text-sm">mapValues</code>, <code class="text-sm">merge</code>, <code class="text-sm">mergeDeep</code>, <code class="text-sm">omit</code>, <code class="text-sm">path</code>, <code class="text-sm">pathOr</code>, <code class="text-sm">pick</code>, <code class="text-sm">prop</code>, <code class="text-sm">propOr</code>, <code class="text-sm">propStrict</code></li>
+      <li><strong>Async</strong>: <code class="text-sm">timeout</code></li>
+      <li><strong>Stream</strong>: <code class="text-sm">chunk</code>, <code class="text-sm">drop</code>, <code class="text-sm">take</code>, <code class="text-sm">zip</code></li>
+    </ul>
+
+    <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
+
+    <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
       from-Based Pipeline Types
     </h2>
 

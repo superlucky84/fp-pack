@@ -69,6 +69,33 @@ const fetchUserData = async (userId: string) => {
 
 > For SideEffect-aware async pipelines, use `pipeAsyncSideEffect` (or `pipeAsyncSideEffectStrict` for strict unions).
 
+## Data-last Generic Inference Caveats
+
+Some data-last helpers return a **generic function** whose type is determined only by the final data argument. Inside
+`pipe`/`pipeAsync`, TypeScript cannot infer that type, so you may need a small type hint or a data-first wrapper.
+
+```typescript
+import { pipe, zip, some } from 'fp-pack';
+
+// Option 1: data-first wrapper
+const withWrapper = pipe(
+  (values: number[]) => zip([1, 2, 3], values),
+  some(([a, b]) => a > b)
+);
+
+// Option 2: explicit type annotation
+const withHint = pipe(
+  zip([1, 2, 3]) as (values: number[]) => Array<[number, number]>,
+  some(([a, b]) => a > b)
+);
+```
+
+**Utilities that may need a type hint in data-last pipelines:**
+- **Array**: `chunk`, `drop`, `take`, `zip`
+- **Object**: `assoc`, `assocPath`, `dissocPath`, `evolve`, `mapValues`, `merge`, `mergeDeep`, `omit`, `path`, `pathOr`, `pick`, `prop`, `propOr`, `propStrict`
+- **Async**: `timeout`
+- **Stream**: `chunk`, `drop`, `take`, `zip`
+
 ## SideEffect Pattern - For Special Cases Only
 
 **Most cases: Use `pipe` / `pipeAsync` - they're simpler and sufficient for 99% of use cases.**
