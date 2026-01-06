@@ -117,7 +117,7 @@ export type PipeAsyncArrayIsStrict = Expect<Equal<typeof pipeAsyncArray, PipeAsy
 export const pipeAsyncSideEffectArray = pipeAsyncSideEffect(
   uniqBy((value: number) => value) as (values: number[]) => number[],
   some((value: number) => value > 5) as (values: number[]) => boolean,
-  async (hasLarge) => (hasLarge ? hasLarge : SideEffect.of(() => 'NO_LARGE' as const))
+  async (hasLarge) => (hasLarge ? Boolean(hasLarge) : SideEffect.of(() => 'NO_LARGE' as const))
 );
 
 type PipeAsyncSideEffectArrayExpected = (input: number[] | SideEffect<any>) => Promise<boolean | SideEffect<any>>;
