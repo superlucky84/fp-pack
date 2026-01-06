@@ -162,7 +162,7 @@ const readRole = (value: Account) => path<string>(["profile", "role"], value);
 const clearRole = dissocPath<Account>(["profile", "role"]);
 
 export const pipeSideEffectStrictObject = pipeSideEffectStrict(
-  assocPath(["profile", "role"], "member"),
+  setRole,
   (value: Account) =>
     value.id ? value : SideEffect.of(() => "NO_ID" as const),
   (value: Account) =>
@@ -217,7 +217,7 @@ const pickConfig = pick(["id", "flags"] as Array<"id" | "flags">) as (
 ) => Pick<AsyncConfig, "id" | "flags">;
 
 export const pipeAsyncObject = pipeAsync(
-  (value: AsyncConfig) => mergeDeep({ flags: { active: true } }, value),
+  addDefaults,
   bumpAsyncCount,
   async (value: AsyncConfig) => value,
   pickConfig

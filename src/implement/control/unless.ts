@@ -11,6 +11,18 @@ type Unless = {
     fn: (value: Widen<T>) => R
   ) => (value: Widen<T>) => Widen<T> | R;
   <T>(
+    ...args: [predicate: (value: Widen<T>) => boolean, fn: (value: Widen<T>) => Widen<T>]
+  ): (value: Widen<T>) => Widen<T>;
+  <T, R>(
+    ...args: [predicate: (value: Widen<T>) => boolean, fn: (value: Widen<T>) => R]
+  ): (value: Widen<T>) => Widen<T> | R;
+  <T>(
+    ...args: [predicate: (value: Widen<T>) => boolean, fn: (value: Widen<T>) => Widen<T>, value: Widen<T>]
+  ): Widen<T>;
+  <T, R>(
+    ...args: [predicate: (value: Widen<T>) => boolean, fn: (value: Widen<T>) => R, value: Widen<T>]
+  ): Widen<T> | R;
+  <T>(
     ...args: [predicate: (value: NoInfer<Widen<T>>) => boolean, fn: (value: Widen<T>) => Widen<T>]
   ): (value: Widen<T>) => Widen<T>;
   <T, R>(

@@ -72,7 +72,7 @@ export const pipeArrayControlString = pipe(
   (value) => `${value}`,
   trim,
   toUpper,
-  log('total')
+  log<string>('total')
 );
 
 type PipeArrayControlStringExpected = (input: any[]) => string;

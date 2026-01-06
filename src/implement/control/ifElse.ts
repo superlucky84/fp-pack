@@ -7,6 +7,20 @@ type IfElse = {
     ...args: [predicate: (value: T) => boolean]
   ): (onTrue: (value: T) => RTrue) => (onFalse: (value: T) => RFalse) => (value: T) => RTrue | RFalse;
   <T, RTrue, RFalse>(
+    ...args: [predicate: (value: T) => boolean, onTrue: (value: T) => RTrue]
+  ): (onFalse: (value: T) => RFalse) => (value: T) => RTrue | RFalse;
+  <T, RTrue, RFalse>(
+    ...args: [predicate: (value: T) => boolean, onTrue: (value: T) => RTrue, onFalse: (value: T) => RFalse]
+  ): (value: T) => RTrue | RFalse;
+  <T, RTrue, RFalse>(
+    ...args: [
+      predicate: (value: T) => boolean,
+      onTrue: (value: T) => RTrue,
+      onFalse: (value: T) => RFalse,
+      value: T
+    ]
+  ): RTrue | RFalse;
+  <T, RTrue, RFalse>(
     ...args: [predicate: (value: NoInfer<T>) => boolean, onTrue: (value: T) => RTrue]
   ): (onFalse: (value: T) => RFalse) => (value: T) => RTrue | RFalse;
   <T, RTrue, RFalse>(
