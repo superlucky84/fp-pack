@@ -24,6 +24,17 @@ const updated = evolve({
 // { id: 2, name: "a" }`}
     />
 
+    <div class="bg-blue-50 dark:bg-blue-900/20 p-4 mb-6 rounded border border-blue-200 dark:border-blue-800">
+      <p class="text-sm md:text-base text-blue-800 dark:text-blue-200 leading-relaxed">
+        <span class="font-medium">팁:</span>
+        <br />
+        data-last(커링)으로 쓸 때는 제네릭을 빼고 변환 함수 파라미터에 타입을 적어주세요 (예:{' '}
+        <code class="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">value: number</code>). 제네릭이 필요하면
+        data-first로 호출하세요:{' '}
+        <code class="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">evolve&lt;MyType&gt;(schema, obj)</code>.
+      </p>
+    </div>
+
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
