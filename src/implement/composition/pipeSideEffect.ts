@@ -8,6 +8,7 @@ type MaybeSideEffect<T> = T | SideEffect<any>;
 type NonSideEffect<T> = Exclude<T, SideEffect<any>>;
 type UnaryFn<A, R> = (a: A) => MaybeSideEffect<R>;
 type ZeroFn<R> = () => MaybeSideEffect<R>;
+type AnyFn = (...args: any[]) => any;
 
 type FnInput<F> = F extends (a: infer A) => any ? A : never;
 type FnReturn<F> = F extends (...args: any[]) => infer R ? R : never;
@@ -16,6 +17,20 @@ type PipeResult<F> = MaybeSideEffect<FnValue<F>>;
 
 type ValidateFn<Fn extends UnaryFn<any, any>, Expected> =
   NoInfer<Expected> extends FnInput<Fn> ? Fn : Fn & PipeError<Expected, FnInput<Fn>>;
+type PipeCheckResult<Fns extends [AnyFn, ...AnyFn[]]> =
+  Fns extends [infer F, infer G, ...infer Rest]
+    ? F extends AnyFn
+      ? G extends AnyFn
+        ? [FnValue<F>] extends [FnInput<G>]
+          ? Rest extends AnyFn[]
+            ? PipeCheckResult<[G, ...Rest]>
+            : true
+          : PipeError<FnValue<F>, FnInput<G>>
+        : PipeError<FnValue<F>, FnInput<G>>
+      : PipeError<unknown, unknown>
+    : true;
+type PipeCheck<Fns extends [AnyFn, ...AnyFn[]]> =
+  Fns & (PipeCheckResult<Fns> extends true ? unknown : PipeCheckResult<Fns>);
 
 type PipeInput<Fns extends UnaryFn<any, any>[]> = Fns extends [UnaryFn<infer A, any>, ...UnaryFn<any, any>[]]
   ? A
@@ -435,8 +450,8 @@ function pipeSideEffect<
   jk: ValidateFn<F10, FnValue<F9>>
 ): (a: FnInput<F1> | SideEffect<any>) => PipeResult<F10>;
 
-function pipeSideEffect<Fns extends [FromFn<any>, ...UnaryFn<any, any>[]]>(...funcs: Fns): PipeSideEffectFrom<Fns>;
-function pipeSideEffect<Fns extends [UnaryFn<any, any>, ...UnaryFn<any, any>[]]>(...funcs: Fns): PipeSideEffect<Fns>;
+function pipeSideEffect<Fns extends [FromFn<any>, ...UnaryFn<any, any>[]]>(...funcs: PipeCheck<Fns>): PipeSideEffectFrom<Fns>;
+function pipeSideEffect<Fns extends [UnaryFn<any, any>, ...UnaryFn<any, any>[]]>(...funcs: PipeCheck<Fns>): PipeSideEffect<Fns>;
 function pipeSideEffect(...funcs: Array<UnaryFn<any, any>>): (input: any) => any;
 function pipeSideEffect(...funcs: Array<(input: any) => any>) {
   return (init: any) => {

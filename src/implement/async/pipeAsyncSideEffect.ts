@@ -10,6 +10,7 @@ type NonSideEffect<T> = Exclude<T, SideEffect<any>>;
 type AsyncOrSync<A, R> = (a: A) => MaybeSideEffect<R> | Promise<MaybeSideEffect<R>>;
 type FirstAsyncOrSync<A, R> = AsyncOrSync<A, R> & { __from?: never };
 type ZeroFn<R> = () => MaybeSideEffect<R> | Promise<MaybeSideEffect<R>>;
+type AnyFn = (...args: any[]) => any;
 
 type FnInput<F> = F extends (a: infer A) => any ? A : never;
 type FnReturn<F> = F extends (...args: any[]) => infer R ? R : never;
@@ -18,6 +19,20 @@ type PipeResult<F> = MaybeSideEffect<FnValue<F>>;
 
 type ValidateFn<Fn extends AsyncOrSync<any, any>, Expected> =
   NoInfer<Expected> extends FnInput<Fn> ? Fn : Fn & PipeError<Expected, FnInput<Fn>>;
+type PipeCheckResult<Fns extends [AnyFn, ...AnyFn[]]> =
+  Fns extends [infer F, infer G, ...infer Rest]
+    ? F extends AnyFn
+      ? G extends AnyFn
+        ? [FnValue<F>] extends [FnInput<G>]
+          ? Rest extends AnyFn[]
+            ? PipeCheckResult<[G, ...Rest]>
+            : true
+          : PipeError<FnValue<F>, FnInput<G>>
+        : PipeError<FnValue<F>, FnInput<G>>
+      : PipeError<unknown, unknown>
+    : true;
+type PipeCheck<Fns extends [AnyFn, ...AnyFn[]]> =
+  Fns & (PipeCheckResult<Fns> extends true ? unknown : PipeCheckResult<Fns>);
 
 type PipeInput<Fns extends AsyncOrSync<any, any>[]> = Fns extends [
   AsyncOrSync<infer A, any>,
@@ -449,10 +464,10 @@ function pipeAsyncSideEffect<
 ): (a: FnInput<F1> | SideEffect<any>) => Promise<PipeResult<F10>>;
 
 function pipeAsyncSideEffect<Fns extends [FromFn<any>, ...AsyncOrSync<any, any>[]]>(
-  ...funcs: Fns
+  ...funcs: PipeCheck<Fns>
 ): PipeAsyncSideEffectFrom<Fns>;
 function pipeAsyncSideEffect<Fns extends [FirstAsyncOrSync<any, any>, ...AsyncOrSync<any, any>[]]>(
-  ...funcs: Fns
+  ...funcs: PipeCheck<Fns>
 ): PipeAsyncSideEffect<Fns>;
 function pipeAsyncSideEffect(...funcs: Array<AsyncOrSync<any, any>>): (value: any) => Promise<any>;
 function pipeAsyncSideEffect(...funcs: Array<(arg: any) => any>) {

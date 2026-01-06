@@ -17,6 +17,20 @@ type FnValue<F> = NonSideEffect<Awaited<FnReturn<F>>>;
 
 type ValidateFn<Fn extends AsyncOrSync<any, any>, Expected> =
   NoInfer<Expected> extends FnInput<Fn> ? Fn : Fn & PipeError<Expected, FnInput<Fn>>;
+type PipeCheckResult<Fns extends [AnyFn, ...AnyFn[]]> =
+  Fns extends [infer F, infer G, ...infer Rest]
+    ? F extends AnyFn
+      ? G extends AnyFn
+        ? [FnValue<F>] extends [FnInput<G>]
+          ? Rest extends AnyFn[]
+            ? PipeCheckResult<[G, ...Rest]>
+            : true
+          : PipeError<FnValue<F>, FnInput<G>>
+        : PipeError<FnValue<F>, FnInput<G>>
+      : PipeError<unknown, unknown>
+    : true;
+type PipeCheck<Fns extends [AnyFn, ...AnyFn[]]> =
+  Fns & (PipeCheckResult<Fns> extends true ? unknown : PipeCheckResult<Fns>);
 
 type EffectOfReturn<R> = R extends SideEffect<infer E> ? E : never;
 type EffectOfFn<F> = EffectOfReturn<Awaited<FnReturn<F>>>;
@@ -461,10 +475,10 @@ function pipeAsyncSideEffectStrict<
 ): StrictUnaryReturn<FnInput<F1>, F10, [F1, F2, F3, F4, F5, F6, F7, F8, F9, F10]>;
 
 function pipeAsyncSideEffectStrict<Fns extends [FromFn<any>, ...AsyncOrSync<any, any>[]]>(
-  ...funcs: Fns
+  ...funcs: PipeCheck<Fns>
 ): PipeAsyncSideEffectStrictFrom<Fns>;
 function pipeAsyncSideEffectStrict<Fns extends [FirstAsyncOrSync<any, any>, ...AsyncOrSync<any, any>[]]>(
-  ...funcs: Fns
+  ...funcs: PipeCheck<Fns>
 ): PipeAsyncSideEffectStrict<Fns>;
 function pipeAsyncSideEffectStrict(...funcs: Array<(input: any) => any>) {
   return async (init?: any) => {

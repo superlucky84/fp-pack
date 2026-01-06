@@ -4,10 +4,25 @@ type PipeError<From, To> = { __pipe_error: ['pipe', From, '->', To] };
 type NoInfer<T> = [T][T extends any ? 0 : never];
 type UnaryFn<A, R> = (a: A) => R;
 type ZeroFn<R> = () => R;
+type AnyFn = (...args: any[]) => any;
 type FnInput<F> = F extends (a: infer A) => any ? A : never;
 type FnOutput<F> = F extends (...args: any[]) => infer R ? R : never;
 type ValidateFn<Fn extends UnaryFn<any, any>, Expected> =
   NoInfer<Expected> extends FnInput<Fn> ? Fn : Fn & PipeError<Expected, FnInput<Fn>>;
+type PipeCheckResult<Fns extends [AnyFn, ...AnyFn[]]> =
+  Fns extends [infer F, infer G, ...infer Rest]
+    ? F extends AnyFn
+      ? G extends AnyFn
+        ? [FnOutput<F>] extends [FnInput<G>]
+          ? Rest extends AnyFn[]
+            ? PipeCheckResult<[G, ...Rest]>
+            : true
+          : PipeError<FnOutput<F>, FnInput<G>>
+        : PipeError<FnOutput<F>, FnInput<G>>
+      : PipeError<unknown, unknown>
+    : true;
+type PipeCheck<Fns extends [AnyFn, ...AnyFn[]]> =
+  Fns & (PipeCheckResult<Fns> extends true ? unknown : PipeCheckResult<Fns>);
 
 type PipeInput<Fns extends UnaryFn<any, any>[]> = Fns extends [UnaryFn<infer A, any>, ...UnaryFn<any, any>[]]
   ? A
@@ -416,7 +431,7 @@ function pipe<
   jk: ValidateFn<F10, FnOutput<F9>>
 ): (a: FnInput<F1>) => FnOutput<F10>;
 
-function pipe<Fns extends [UnaryFn<any, any>, ...UnaryFn<any, any>[]]>(...funcs: Fns): Pipe<Fns>;
+function pipe<Fns extends [UnaryFn<any, any>, ...UnaryFn<any, any>[]]>(...funcs: PipeCheck<Fns>): Pipe<Fns>;
 function pipe(...funcs: Array<UnaryFn<any, any>>): (input: any) => any;
 function pipe(...funcs: Array<(input: any) => any>) {
   return (init: any) => {
