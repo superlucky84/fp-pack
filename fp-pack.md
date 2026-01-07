@@ -11,7 +11,7 @@ Before following this document:
 - Check `node_modules/fp-pack` exists
 - Check existing code imports from `fp-pack` or `fp-pack/stream`
 
-If `fp-pack` is **not** installed, use the project’s existing conventions. Do **not** suggest adding fp-pack unless the user asks.
+If `fp-pack` is **not** installed, use the project's existing conventions. Do **not** suggest adding fp-pack unless the user asks.
 
 ---
 
@@ -23,24 +23,165 @@ When writing or editing code in an fp-pack project:
 - Use `stream/*` for lazy/large/iterable processing; use array/object utils for small/eager data.
 - Use SideEffect-aware pipes only when you need **early exit**: `pipeSideEffect*` / `pipeAsyncSideEffect*`.
 - **Never call `runPipeResult` inside a pipeline**; call it at the boundary (event handler, service wrapper, etc.).
-- If TypeScript inference gets stuck with a data-last generic, use a small wrapper, an explicit type hint, or `pipeHint`.
+- If TypeScript inference gets stuck with a data-last generic, use a small wrapper or `pipeHint`.
 
-## Philosophy (What fp-pack Optimizes For)
+---
 
-fp-pack is a TypeScript FP utility library focused on:
-1) Function composition via `pipe` / `pipeAsync`
-2) Declarative, immutable transforms (avoid loops and mutations)
-3) Practical TypeScript inference (data-last + currying for most helpers)
-4) Optional early-exit handling via `SideEffect` (only when needed)
-5) Lazy iterable processing via `fp-pack/stream` for performance-sensitive flows
+## ⛔ CRITICAL MISTAKES TO AVOID (Read This First!)
+
+Before you write any code, know these anti-patterns. These are the most common mistakes that break fp-pack pipelines:
+
+### ❌ WRONG: Using `() => value` for constants in pipelines
+
+```ts
+// ❌ BAD - Type inference fails
+const broken = pipe(
+  () => [1, 2, 3, 4, 5],
+  filter((n: number) => n % 2 === 0)  // Error!
+);
+
+// ✅ CORRECT - Use from() for constant values
+const works = pipe(
+  from([1, 2, 3, 4, 5]),
+  filter((n: number) => n % 2 === 0)
+);
+```
+
+### ❌ WRONG: Using raw values with ifElse/cond
+
+```ts
+// ❌ BAD
+const broken = ifElse((score: number) => score >= 60, 'pass', 'fail');
+
+// ✅ CORRECT - Use from() to wrap constant values
+const works = ifElse((score: number) => score >= 60, from('pass'), from('fail'));
+```
+
+### ❌ WRONG: Calling runPipeResult inside a pipeline
+
+```ts
+// ❌ BAD
+const broken = pipe(validateUser, runPipeResult, processUser);
+
+// ✅ CORRECT - Call runPipeResult OUTSIDE the pipeline
+const pipeline = pipeSideEffect(validateUser, processUser);
+const result = runPipeResult(pipeline(userData));
+```
+
+### ❌ WRONG: Using pipe with SideEffect-returning functions
+
+```ts
+// ❌ BAD
+const broken = pipe(
+  findUser,           // Returns User | SideEffect
+  (user) => user.email  // Error! SideEffect has no 'email'
+);
+
+// ✅ CORRECT - Use pipeSideEffect for SideEffect handling
+const works = pipeSideEffect(
+  findUser,
+  (user) => user.email  // Automatically skipped if SideEffect
+);
+```
+
+### ❌ WRONG: Mutating arrays/objects
+
+```ts
+// ❌ BAD
+users.push(newUser);
+user.name = 'Updated';
+
+// ✅ CORRECT - Use immutable operations
+const updatedUsers = append(newUser, users);
+const updatedUser = assoc('name', 'Updated', user);
+```
+
+### ❌ WRONG: Imperative loops instead of declarative transforms
+
+```ts
+// ❌ BAD
+const results = [];
+for (const user of users) {
+  if (user.active) results.push(user.name.toUpperCase());
+}
+
+// ✅ CORRECT
+const results = pipe(
+  filter((user: User) => user.active),
+  map(user => user.name.toUpperCase())
+)(users);
+```
+
+**Remember:** If you encounter any of these patterns, STOP and use the correct fp-pack approach instead!
+
+---
+
+## 💡 Real-World Examples (Learn by Doing)
+
+Study these common patterns first:
+
+### Example 1: User Data Processing Pipeline
+
+```ts
+import { pipe, filter, map, take, sortBy } from 'fp-pack';
+
+const getTopActiveUsers = pipe(
+  filter((user: User) => user.active && user.lastLogin > cutoffDate),
+  sortBy((user) => -user.activityScore),
+  map(user => ({ id: user.id, name: user.name, score: user.activityScore })),
+  take(10)
+);
+
+const topUsers = getTopActiveUsers(allUsers);
+```
+
+### Example 2: API Request with Error Handling
+
+```ts
+import { pipeAsyncSideEffect, SideEffect, runPipeResult } from 'fp-pack';
+
+const fetchUserData = pipeAsyncSideEffect(
+  async (userId: string) => {
+    const res = await fetch(`/api/users/${userId}`);
+    return res.ok ? res : SideEffect.of(() => `HTTP ${res.status}`);
+  },
+  async (res) => res.json(),
+  (data) => data.verified ? data : SideEffect.of(() => 'User not verified')
+);
+
+// Call at boundary
+const result = runPipeResult(await fetchUserData('user-123'));
+```
+
+### Example 3: Data Transformation with from()
+
+```ts
+import { pipe, from, ifElse, filter, map } from 'fp-pack';
+
+// Constant value injection
+const getStatusMessage = ifElse(
+  (count: number) => count > 0,
+  from('Items available'),
+  from('No items found')
+);
+
+// Data-first pattern
+const processWithData = pipe(
+  from([1, 2, 3, 4, 5]),
+  filter((n: number) => n % 2 === 0),
+  map(n => n * 2)
+);
+
+const result = processWithData(); // [4, 8]
+```
+
+**These patterns cover 90% of real-world use cases!**
 
 ---
 
 ## Core Composition
 
 ### `pipe` (sync)
-
-Use `pipe` to build a unary function:
 
 ```ts
 import { pipe, filter, map, take } from 'fp-pack';
@@ -54,8 +195,6 @@ const processUsers = pipe(
 
 ### `pipeAsync` (async)
 
-Use `pipeAsync` when any step is async:
-
 ```ts
 import { pipeAsync } from 'fp-pack';
 
@@ -68,119 +207,81 @@ const fetchUser = pipeAsync(
 
 ---
 
-## Currying & Data-Last Conventions
+## Currying & Data-Last
 
-Most multi-arg helpers are **data-last** and **curried**, so they work naturally in `pipe`:
-
+Most multi-arg helpers are **data-last** and **curried**:
 - Good: `map(fn)`, `filter(pred)`, `replace(from, to)`, `assoc('k', v)`, `path(['a','b'])`
-- Avoid in pipelines: helpers that require you to pass the data first, or that return a function whose type depends on the final data arg (see next section)
-
-Single-arg helpers are already unary; “currying them” adds no value—just use them directly.
+- Single-arg helpers are already unary—just use them directly
 
 ---
 
-## TypeScript: Data-last Generic Inference Caveats (Important)
+## TypeScript: Data-last Generic Inference
 
-Some data-last helpers return a **generic function** whose type is only determined by the final data argument.
-Inside `pipe`/`pipeAsync`, TypeScript sometimes can’t infer that type, so you may need a tiny hint.
+Some data-last helpers return a **generic function** whose type is only determined by the final data argument. Inside `pipe`, TypeScript sometimes can't infer that type.
 
-### Recommended fixes (choose 1)
+### Quick fixes (choose 1)
 
 ```ts
 import { pipe, pipeHint, zip, some } from 'fp-pack';
 
-// 1) data-first wrapper (most explicit)
+// 1) data-first wrapper
 const withWrapper = pipe(
   (values: number[]) => zip([1, 2, 3], values),
   some(([a, b]) => a > b)
 );
 
-// 2) explicit function type hint (short, but uses an assertion)
-const withHint = pipe(
-  zip([1, 2, 3]) as (values: number[]) => Array<[number, number]>,
-  some(([a, b]) => a > b)
-);
-
-// 3) pipeHint helper (keeps pipeline style)
+// 2) pipeHint helper
 const withPipeHint = pipe(
   pipeHint<number[], Array<[number, number]>>(zip([1, 2, 3])),
   some(([a, b]) => a > b)
 );
 ```
 
-### Utilities that may need a hint in data-last pipelines
-
-- Array: `chunk`, `drop`, `take`, `zip`
-- Object: `assoc`, `assocPath`, `dissocPath`, `evolve`, `mapValues`, `merge`, `mergeDeep`, `omit`, `path`, `pathOr`, `pick`, `prop`, `propOr`, `propStrict`
-- Async: `timeout`
-- Stream: `chunk`, `drop`, `take`, `zip`
-
-When in doubt: check the `.d.ts` signature (see “Quick Signature Lookup”).
+**Utilities that may need a hint:** `chunk`, `drop`, `take`, `zip`, `assoc`, `path`, `prop`, `timeout`
 
 ---
 
 ## SideEffect Pattern (Use Only When Needed)
 
-Most code should use `pipe` / `pipeAsync`. Use SideEffect-aware pipes only when you truly need **early termination**:
+Most code should use `pipe` / `pipeAsync`. Use SideEffect-aware pipes only when you need **early termination**:
 - validation pipelines that should stop early
 - recoverable errors you want to model as data
 - branching flows where you want to short-circuit
 
 ### SideEffect-aware pipes
 - `pipeSideEffect` / `pipeAsyncSideEffect`: convenient, but may widen effects to `any`
-- `pipeSideEffectStrict` / `pipeAsyncSideEffectStrict`: preserves strict union effects (recommended when you care about types)
-
-### Rules
-- Do **not** call `runPipeResult` or `matchSideEffect` **inside** the pipeline.
-- Prefer `isSideEffect` for precise runtime narrowing in both branches.
-- Use `runPipeResult` only at the boundary, and provide generics if inference is widened.
+- `pipeSideEffectStrict` / `pipeAsyncSideEffectStrict`: preserves strict union effects (recommended)
 
 ### Key functions
 - `SideEffect.of(effectFn, label?)`
 - `isSideEffect(value)` (type guard)
 - `runPipeResult(result)` (execute effect or return value; **outside** pipelines)
-- `matchSideEffect(result, { value, effect })`
 
-### `runPipeResult` type behavior (important)
-
-- If the input is **narrowed** to `SideEffect<R>` (e.g. inside `if (isSideEffect(x))`), `runPipeResult(x)` returns `R`.
-- If the input is **widened** to `SideEffect<any>` or `any` (common with non-strict pipelines), `runPipeResult(x)` becomes `any` unless you provide generics.
+### Example
 
 ```ts
-import {
-  pipeSideEffect,
-  pipeSideEffectStrict,
-  SideEffect,
-  isSideEffect,
-  runPipeResult,
-} from 'fp-pack';
+import { pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
 
-const nonStrict = pipeSideEffect(
-  (n: number) => (n > 0 ? n : SideEffect.of(() => 'NEG' as const))
-);
-const widened: number | SideEffect<any> = nonStrict(-1);
-const unsafe = runPipeResult(widened); // any
+const validate = (n: number) => (n > 0 ? n : SideEffect.of(() => 'NEG' as const));
+const pipeline = pipeSideEffectStrict(validate, (n) => n + 1);
 
-const strict = pipeSideEffectStrict(
-  (n: number) => (n > 0 ? n : SideEffect.of(() => 'NEG' as const))
-);
-const precise = strict(-1); // number | SideEffect<'NEG'>
+const result = pipeline(-1); // number | SideEffect<'NEG'>
 
-if (isSideEffect(precise)) {
-  const err = runPipeResult(precise); // 'NEG'
+if (isSideEffect(result)) {
+  const err = runPipeResult(result); // 'NEG'
+} else {
+  // result is number
 }
 ```
 
 ---
 
-## Stream Functions (`fp-pack/stream`) — Lazy Iterables
+## Stream Functions (`fp-pack/stream`)
 
 Use stream utilities when:
-- data is large or unbounded (`range`, streams, generators)
-- you want lazy evaluation (avoid allocating intermediate arrays)
+- data is large or unbounded
+- you want lazy evaluation
 - you want to support `Iterable` and `AsyncIterable`
-
-Stream utilities are in `fp-pack/stream` and are designed to be pipe-friendly.
 
 ```ts
 import { pipe } from 'fp-pack';
@@ -198,115 +299,78 @@ const result = first100SquaresOfEvens(range(Infinity));
 
 ---
 
-## Available Functions (Practical Index)
-
-This is not a complete API reference; it’s the “what to reach for” index when composing pipelines.
+## Available Functions (Quick Index)
 
 ### Composition
 - `pipe`, `pipeAsync`
 - SideEffect-aware: `pipeSideEffect`, `pipeSideEffectStrict`, `pipeAsyncSideEffect`, `pipeAsyncSideEffectStrict`
-- Utilities: `from`, `tap`, `tap0`, `once`, `memoize`, `identity`, `constant`, `flip`, `partial`, `curry`, `compose`, `complement`
+- Utilities: `from`, `tap`, `tap0`, `once`, `memoize`, `identity`, `constant`, `curry`, `compose`
 - SideEffect helpers: `SideEffect`, `isSideEffect`, `matchSideEffect`, `runPipeResult`
 
 ### Array
-- Core transforms: `map`, `filter`, `flatMap`, `reduce`, `scan`
+- Transforms: `map`, `filter`, `flatMap`, `reduce`, `scan`
 - Queries: `find`, `some`, `every`
-- Slicing: `take`, `drop`, `takeWhile`, `dropWhile`, `chunk`
-- Ordering/grouping: `sort`, `sortBy`, `groupBy`, `uniqBy`
-- Pairing: `zip`, `zipWith`
-- Combining: `concat`, `append`, `prepend`, `flatten`
+- Slicing: `take`, `drop`, `chunk`
+- Ordering: `sort`, `sortBy`, `groupBy`, `uniqBy`
+- Combining: `zip`, `concat`, `append`, `flatten`
 
 ### Object
-- Access: `prop`, `propOr`, `propStrict`, `path`, `pathOr`
+- Access: `prop`, `path`, `propOr`, `pathOr`
 - Pick/drop: `pick`, `omit`
 - Updates: `assoc`, `assocPath`, `dissocPath`
 - Merge: `merge`, `mergeDeep`
 - Transforms: `mapValues`, `evolve`
-- Predicates: `has`
 
 ### Control Flow
 - `ifElse`, `when`, `unless`, `cond`, `guard`, `tryCatch`
 
 ### Async
 - `retry`, `timeout`, `delay`
-- Function-returning helpers: `debounce*`, `throttle`
+- `debounce*`, `throttle`
 
 ### Stream (Lazy Iterables)
 - Building: `range`
 - Transforms: `map`, `filter`, `flatMap`, `flatten`
-- Slicing: `take`, `drop`, `takeWhile`, `dropWhile`, `chunk`
-- Queries/reductions: `find`, `some`, `every`, `reduce`, `scan`
-- Pairing/combining: `zip`, `zipWith`, `concat`, `append`, `prepend`
+- Slicing: `take`, `drop`, `chunk`
+- Queries: `find`, `some`, `every`, `reduce`
+- Combining: `zip`, `concat`
 - Utilities: `toArray`, `toAsync`
 
-### Math / String / Equality / Debug
-- Math: `add`, `sub`, `mul`, `div`, `randomInt`, `clamp`
-- String: `split`, `join`, `replace`, `match`, `trim`
+### Others
+- Math: `add`, `sub`, `mul`, `div`, `clamp`
+- String: `split`, `join`, `replace`, `trim`
 - Equality: `equals`, `isNil`
 - Debug: `assert`, `invariant`
 
 ---
 
-## Micro-Patterns (Keep It Short)
+## Micro-Patterns
 
-### Boundary handling (UI/event/service)
-
-Do the work in a pipeline, unwrap at the boundary:
+### Boundary handling
 
 ```ts
-import { pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
+const pipeline = pipeSideEffectStrict(validate, process);
 
-const validate = (n: number) => (n > 0 ? n : SideEffect.of(() => 'NEG' as const));
-const pipeline = pipeSideEffectStrict(validate, (n) => n + 1);
-
-export const handler = (n: number) => {
-  const result = pipeline(n);
-  if (isSideEffect(result)) return runPipeResult(result); // 'NEG'
-  return result; // number
+export const handler = (data) => {
+  const result = pipeline(data);
+  if (isSideEffect(result)) return runPipeResult(result);
+  return result;
 };
 ```
 
-### Data-first style with `from()`
-
-Some agents/users prefer “data-first” pipelines. You can keep `pipe` data-last and still write data-first flows by injecting the initial value with `from()`:
+### Data-first with from()
 
 ```ts
-import { pipe, from, map, filter, take } from 'fp-pack';
-
-// data-first feeling: start with data, then compose transforms
 const result = pipe(
   from([1, 2, 3, 4, 5]),
   filter((n: number) => n % 2 === 0),
-  map((n) => n * 10),
-  take(2)
-)(); // [20, 40]
-
-// same idea when you already have an input (normal usage)
-const process = pipe(
-  filter((n: number) => n % 2 === 0),
   map((n) => n * 10)
-);
-const result2 = process([1, 2, 3, 4, 5]); // [20, 40]
+)(); // [20, 40]
 ```
 
-### `ifElse` uses functions (not values)
+### Stream to array
 
 ```ts
-import { ifElse, from } from 'fp-pack';
-
-const label = ifElse(
-  (n: number) => n >= 60,
-  from('pass'),
-  from('fail')
-);
-```
-
-### Stream pipeline to array
-
-```ts
-import { pipe } from 'fp-pack';
-import { map, filter, toArray } from 'fp-pack/stream';
-
 const toIds = pipe(
   filter((u: User) => u.active),
   map((u) => u.id),
@@ -314,46 +378,9 @@ const toIds = pipe(
 );
 ```
 
-### Data-last inference workaround (when needed)
-
-Use a wrapper or `pipeHint` when a data-last generic won’t infer inside `pipe`:
+### Object updates
 
 ```ts
-import { pipe, pipeHint, zip } from 'fp-pack';
-
-// wrapper
-const zipUsers = pipe((xs: User[]) => zip(['a', 'b', 'c'], xs));
-
-// pipeHint
-const zipUsers2 = pipe(
-  pipeHint<User[], Array<[string, User]>>(zip(['a', 'b', 'c']))
-);
-```
-
-### Async pipelines (retry/timeout)
-
-Keep async steps inside `pipeAsync` and push configuration (like `timeout`) via currying:
-
-```ts
-import { pipeAsync, retry, timeout } from 'fp-pack';
-
-const fetchJson = pipeAsync(
-  (url: string) => fetch(url),
-  (res) => res.json()
-);
-
-const fetchJsonWithGuards = pipeAsync(
-  fetchJson,
-  timeout(5_000),
-  retry(3)
-);
-```
-
-### Object updates (avoid mutation)
-
-```ts
-import { pipe, assocPath, merge } from 'fp-pack';
-
 const updateAccount = pipe(
   assocPath(['profile', 'role'], 'member'),
   merge({ updatedAt: Date.now() })
@@ -362,71 +389,40 @@ const updateAccount = pipe(
 
 ---
 
-## Decision Guide (What Should the Agent Pick?)
+## Decision Guide
 
 - Is everything sync and pure? → `pipe`
 - Any step async? → `pipeAsync`
 - Need early-exit + typed effect unions? → `pipeSideEffectStrict` / `pipeAsyncSideEffectStrict`
-- Need early-exit but type precision doesn’t matter? → `pipeSideEffect` / `pipeAsyncSideEffect`
-- Handling result at boundary?
-  - Need exact branch types? → `isSideEffect` + separate branches
-  - Just want to “unwrap” and don’t care about precision? → `runPipeResult` (provide generics if widened)
+- Need early-exit but type precision doesn't matter? → `pipeSideEffect` / `pipeAsyncSideEffect`
+- Handling result at boundary? → `isSideEffect` for branching, `runPipeResult` to unwrap
 - Large/unbounded/iterable data? → `fp-pack/stream`
 
 ---
 
-## Quick Reference
-
-### Import Paths
+## Import Paths
 
 - Main: `import { pipe, map, filter } from 'fp-pack'`
-- SideEffect pipes: `import { pipeSideEffect, pipeSideEffectStrict, SideEffect } from 'fp-pack'`
+- SideEffect: `import { pipeSideEffect, SideEffect } from 'fp-pack'`
 - Async: `import { pipeAsync, retry, timeout } from 'fp-pack'`
 - Stream: `import { map, filter, toArray } from 'fp-pack/stream'`
-
-### When to Use What
-
-- Pure sync transforms: `pipe`
-- Pure async transforms: `pipeAsync`
-- Early-exit pipelines: `pipeSideEffect*` / `pipeAsyncSideEffect*`
-- Strict effect unions: prefer `pipeSideEffectStrict` / `pipeAsyncSideEffectStrict`
-- Runtime branching: prefer `isSideEffect`
-- Boundary unwrapping: `runPipeResult` (provide generics if inference is widened)
-- Large/unbounded data: `fp-pack/stream`
-
----
-
-## Anti-Patterns (Avoid)
-
-- Imperative loops when a pipeline is clearer
-- Mutating inputs (prefer immutable transforms)
-- Chaining `Array.prototype.*` in complex transforms (prefer `pipe`)
-- Calling `runPipeResult` inside a SideEffect-aware pipeline
-- Adding “classic monads” to emulate Option/Either instead of using `SideEffect` pipes when necessary
 
 ---
 
 ## Quick Signature Lookup (When Unsure)
 
-Prefer local types first:
+If TypeScript inference is stuck or you need to verify a function signature:
+
+**In fp-pack project:**
 - Main types: `dist/index.d.ts`
 - Stream types: `dist/stream/index.d.ts`
 
-If you’re in a consumer project:
-- `node_modules/fp-pack/dist/index.d.ts`
-- `node_modules/fp-pack/dist/stream/index.d.ts`
-
----
-
-## Writing New Helpers (If Needed)
-
-If you add your own utilities that should compose well:
-- Keep them **unary** for pipelines (or return a unary function via currying).
-- Prefer **data-last** argument order.
-- For generic/overloaded helpers, consider providing an explicit type alias to preserve inference in TypeScript.
+**In consumer project:**
+- Main types: `node_modules/fp-pack/dist/index.d.ts`
+- Stream types: `node_modules/fp-pack/dist/stream/index.d.ts`
 
 ---
 
 ## Summary
 
-Default to `pipe` / `pipeAsync`, keep helpers data-last and unary, switch to `stream/*` when laziness matters, and reserve SideEffect-aware pipelines for true early-exit flows. Use `isSideEffect` for precise narrowing and call `runPipeResult` only at the boundary (with generics if inference widens to `any`).
+Default to `pipe` / `pipeAsync`, keep helpers data-last and unary, switch to `stream/*` when laziness matters, and reserve SideEffect-aware pipelines for true early-exit flows. Use `isSideEffect` for precise narrowing and call `runPipeResult` only at the boundary.
