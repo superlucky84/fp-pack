@@ -55,7 +55,9 @@
     "dist",
     "src",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "dist/ai-addons",
+    "dist/skills"
   ],
   "sideEffects": false,
   "scripts": {
