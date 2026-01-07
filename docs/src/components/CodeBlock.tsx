@@ -3,12 +3,14 @@ import hljs from 'highlight.js/lib/core';
 import typescript from 'highlight.js/lib/languages/typescript';
 import javascript from 'highlight.js/lib/languages/javascript';
 import bash from 'highlight.js/lib/languages/bash';
+import yaml from 'highlight.js/lib/languages/yaml';
 
 hljs.registerLanguage('typescript', typescript);
 hljs.registerLanguage('tsx', typescript);
 hljs.registerLanguage('javascript', javascript);
 hljs.registerLanguage('js', javascript);
 hljs.registerLanguage('bash', bash);
+hljs.registerLanguage('yaml', yaml);
 
 interface CodeBlockProps {
   code: string;

@@ -193,6 +193,16 @@ Once configured, AI assistants will automatically apply fp-pack coding patterns 
 
 > **Note:** The skills file is located at `node_modules/fp-pack/dist/skills/fp-pack.md` after installation. You can also view it in the [GitHub repository](https://github.com/superlucky84/fp-pack/blob/main/fp-pack.md).
 
+### AI Agent Role Add-on (Global)
+
+For agents with system prompt support (OpenCode, custom agents), fp-pack provides a **reusable behavior module** that conditionally enforces fp-pack patterns when fp-pack is detected in the project.
+
+Unlike skills files which are project-specific, this add-on is attached directly to your agent's system prompt, making it work across all your projects. It automatically activates only when fp-pack is installed.
+
+📖 **[View AI Agent Role Add-on Documentation](https://superlucky84.github.io/fp-pack/ai-agent-addon)**
+
+The add-on is located at `node_modules/fp-pack/dist/ai-addons/fp-pack-agent-addon.md` after installation.
+
 ## Quick Start
 
 ### Basic Pipe Composition

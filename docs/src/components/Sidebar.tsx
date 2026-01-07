@@ -15,6 +15,7 @@ export const Sidebar = mount(renew => {
           { title: isKorean ? '상세 가이드' : 'Detailed Guide', path: '/guide' },
           { title: isKorean ? '타입 활용' : 'Type Usage', path: '/guide/type-usage' },
           { title: isKorean ? 'AI Agent Skills' : 'AI Agent Skills', path: '/ai-agent-skills' },
+          { title: isKorean ? 'AI Agent Role Add-on' : 'AI Agent Role Add-on', path: '/ai-agent-addon' },
           { title: 'GitHub', path: 'https://github.com/superlucky84/fp-pack', external: true },
         ],
       },

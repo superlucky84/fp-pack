@@ -129,6 +129,19 @@ When user requests violate these constraints, respond with:
 When existing code violates these constraints, either:
 1. Refactor to fp-pack patterns automatically
 2. Warn about violations and suggest refactoring
+
+REFERENCE MATERIALS (NOT PART OF BEHAVIORAL RULES):
+
+This document is the **sole authoritative specification** for fp-pack-first coding behavior.
+
+If you need detailed usage examples, API patterns, or additional explanations
+for human readers, the following reference material may exist:
+
+node_modules/fp-pack/dist/skills/fp-pack.md
+
+This reference material is **optional**. Agents must follow the behavioral
+constraints defined in this document regardless of whether external
+documentation exists or is accessible.
 ```
 
 ## Minimal fp-pack Interface Context
