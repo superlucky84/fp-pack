@@ -2,6 +2,19 @@
 
 Document Version: {{version}}
 
+## ⚠️ Activation Condition
+
+**These guidelines apply ONLY when fp-pack is installed in the current project.**
+
+Before following these instructions, verify fp-pack availability:
+- Check `package.json` for fp-pack in dependencies or devDependencies
+- Check if `node_modules/fp-pack` exists
+- Check if existing code imports from fp-pack
+
+If fp-pack is NOT installed, use standard coding practices for the project. Do NOT suggest installing fp-pack unless explicitly requested by the user.
+
+---
+
 This document provides guidelines for AI coding assistants when working in projects that use fp-pack. Follow these instructions to write clean, declarative, functional code using fp-pack's utilities.
 
 ## Project Philosophy
