@@ -1,6 +1,6 @@
 {
   "name": "fp-pack",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "type": "module",
   "description": "Functional programming utilities library for TypeScript",
   "keywords": [
