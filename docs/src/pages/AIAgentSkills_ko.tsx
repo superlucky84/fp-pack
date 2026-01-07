@@ -10,6 +10,15 @@ export const AIAgentSkills_ko = () => (
       AI 코딩 어시스턴트가 fp-pack 스타일의 함수형 코드를 자동으로 작성하도록 도와줍니다
     </p>
 
+    <div class="bg-purple-50 dark:bg-purple-900/20 p-6 rounded-lg border border-purple-200 dark:border-purple-800 mb-8">
+      <h3 class="text-lg font-medium text-purple-900 dark:text-purple-200 mb-2">
+        실험적 설계 (Experimental by Design)
+      </h3>
+      <p class="text-sm text-purple-800 dark:text-purple-300">
+        이 명세는 fp-pack을 AI 코딩 에이전트의 일급 행동 제약으로 어떻게 적용할 수 있는지 탐구합니다.
+      </p>
+    </div>
+
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">

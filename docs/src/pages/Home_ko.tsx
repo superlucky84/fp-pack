@@ -370,6 +370,27 @@ Copy-Item node_modules/fp-pack/dist/skills/fp-pack/SKILL.md $HOME/.codex/skills/
       설정을 완료하면 AI 어시스턴트가 코드 작성 시 자동으로 fp-pack 코딩 패턴을 적용합니다.
     </p>
 
+    <div class="bg-indigo-50 dark:bg-indigo-900/20 p-4 md:p-6 rounded-lg border border-indigo-200 dark:border-indigo-800 mb-6">
+      <h3 class="text-lg font-medium text-indigo-900 dark:text-indigo-200 mb-2">
+        🌐 AI Agent Role Add-on (전역)
+      </h3>
+      <p class="text-sm text-indigo-800 dark:text-indigo-300 mb-2">
+        시스템 프롬프트를 지원하는 에이전트(OpenCode, 커스텀 에이전트 등)의 경우, fp-pack은 프로젝트에서 fp-pack이 감지될 때 조건부로 패턴을 강제하는 <strong>재사용 가능한 행동 모듈</strong>을 제공합니다.
+      </p>
+      <p class="text-sm text-indigo-800 dark:text-indigo-300">
+        <a
+          href="/ko/ai-agent-addon"
+          onClick={(e: Event) => {
+            e.preventDefault();
+            navigateTo('/ko/ai-agent-addon');
+          }}
+          class="text-indigo-600 dark:text-indigo-400 hover:underline font-medium cursor-pointer"
+        >
+          AI Agent Role Add-on 자세히 보기 →
+        </a>
+      </p>
+    </div>
+
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-3xl font-semibold text-gray-900 dark:text-white mb-4">

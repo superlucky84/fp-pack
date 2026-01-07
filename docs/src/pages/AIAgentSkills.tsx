@@ -10,6 +10,15 @@ export const AIAgentSkills = () => (
       Help AI coding assistants write fp-pack-style functional code automatically
     </p>
 
+    <div class="bg-purple-50 dark:bg-purple-900/20 p-6 rounded-lg border border-purple-200 dark:border-purple-800 mb-8">
+      <h3 class="text-lg font-medium text-purple-900 dark:text-purple-200 mb-2">
+        Experimental by Design
+      </h3>
+      <p class="text-sm text-purple-800 dark:text-purple-300">
+        This specification explores how fp-pack can be applied as a first-class behavioral constraint for AI coding agents.
+      </p>
+    </div>
+
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">

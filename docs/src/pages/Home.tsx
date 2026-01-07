@@ -370,6 +370,27 @@ Copy-Item node_modules/fp-pack/dist/skills/fp-pack/SKILL.md $HOME/.codex/skills/
       Once configured, your AI assistant will automatically apply fp-pack coding patterns when helping you write code.
     </p>
 
+    <div class="bg-indigo-50 dark:bg-indigo-900/20 p-4 md:p-6 rounded-lg border border-indigo-200 dark:border-indigo-800 mb-6">
+      <h3 class="text-lg font-medium text-indigo-900 dark:text-indigo-200 mb-2">
+        🌐 AI Agent Role Add-on (Global)
+      </h3>
+      <p class="text-sm text-indigo-800 dark:text-indigo-300 mb-2">
+        For agents with system prompt support (OpenCode, custom agents), fp-pack provides a <strong>reusable behavior module</strong> that conditionally enforces patterns when fp-pack is detected in the project.
+      </p>
+      <p class="text-sm text-indigo-800 dark:text-indigo-300">
+        <a
+          href="/ai-agent-addon"
+          onClick={(e: Event) => {
+            e.preventDefault();
+            navigateTo('/ai-agent-addon');
+          }}
+          class="text-indigo-600 dark:text-indigo-400 hover:underline font-medium cursor-pointer"
+        >
+          Learn about AI Agent Role Add-on →
+        </a>
+      </p>
+    </div>
+
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-3xl font-semibold text-gray-900 dark:text-white mb-4">
