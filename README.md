@@ -17,6 +17,12 @@ There's no framework and no heavy abstractions—just well-chosen helpers that m
 
 ---
 
+> **⚠️ Experimental Project**
+>
+> fp-pack is an experimental exploration of functional programming patterns in TypeScript. While functional and tested, APIs may evolve as we discover better approaches. Use in production at your discretion.
+
+---
+
 <div align="center">
 
 ### 📚 [**Full Documentation**](https://superlucky84.github.io/fp-pack/)
