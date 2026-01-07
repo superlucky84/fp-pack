@@ -123,7 +123,9 @@ function matchSideEffect<T, R>(
 ): R;
 
 // Execute SideEffect or return value
-function runPipeResult<T, R>(value: T | SideEffect<R>): T | R;`}
+function runPipeResult<R>(result: SideEffect<R>): R;
+function runPipeResult<T>(result: T): T extends SideEffect<infer R> ? R : T;
+function runPipeResult<T, R = any>(result: T | SideEffect<R>): T | R;`}
     />
 
     <div class="border-l-4 border-red-500 bg-red-50 dark:bg-red-900/20 p-4 mb-6 rounded-r mt-6">
@@ -137,6 +139,8 @@ function runPipeResult<T, R>(value: T | SideEffect<R>): T | R;`}
         ✅ <strong>If the input type is precise, inference is preserved.</strong>
         <br />
         ⚠️ <strong>If the input is widened to <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">SideEffect&lt;any&gt;</code> or <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">any</code>, the result becomes <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">any</code>.</strong>
+        <br />
+        ✅ <strong>If the input is narrowed to <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">SideEffect&lt;R&gt;</code> (e.g. after <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">isSideEffect</code>), <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">runPipeResult</code> returns <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">R</code>.</strong>
         <br />
         <br />
         ✅ <strong>For precise type safety, use <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">isSideEffect</code> type guard:</strong>
@@ -323,7 +327,7 @@ console.log(output); // "Division by zero"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
+      code={`import { pipeSideEffect, pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
 
 const processNumbers = pipeSideEffect(
   (nums: number[]) => nums.filter(n => n % 2 === 1),
@@ -352,7 +356,17 @@ const unsafeResult = runPipeResult(widened);
 // unsafeResult: any
 
 const safeResult = runPipeResult<number[], string>(oddsDoubled);
-// safeResult: number[] | string (union type - safe but not narrowed)`}
+// safeResult: number[] | string (union type - safe but not narrowed)
+
+// ✅ With strict pipelines, SideEffect types are preserved
+const strictResult = pipeSideEffectStrict(
+  (nums: number[]) => nums.length > 0 ? nums : SideEffect.of(() => 'EMPTY' as const),
+  (nums) => nums
+)([]);
+
+if (isSideEffect(strictResult)) {
+  const error = runPipeResult(strictResult); // 'EMPTY'
+}`}
     />
 
     <div class="bg-blue-50 dark:bg-blue-900/20 p-4 mb-6 rounded border border-blue-200 dark:border-blue-800">
@@ -367,7 +381,9 @@ const safeResult = runPipeResult<number[], string>(oddsDoubled);
         ⚠️ <code class="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">runPipeResult</code> returns <code class="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">any</code> when the input is widened to{' '}
         <code class="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">SideEffect&lt;any&gt;</code> or{' '}
         <code class="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">any</code> due to the default{' '}
-        <code class="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">R=any</code> parameter.
+        <code class="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">R=any</code> parameter. If the input is narrowed to{' '}
+        <code class="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">SideEffect&lt;R&gt;</code>, it returns{' '}
+        <code class="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">R</code>.
         <br />
         Only use <code class="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">runPipeResult</code> when you don't need precise types or when you provide explicit type parameters.
         <br />

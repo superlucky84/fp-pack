@@ -68,6 +68,8 @@ const result = runPipeResult(processAgePipeline(15));
         <br />
         ⚠️ <strong>If the input is widened to <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">SideEffect&lt;any&gt;</code> or <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">any</code>, the result becomes <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">any</code>.</strong>
         <br />
+        ✅ <strong>If the input is narrowed to <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">SideEffect&lt;R&gt;</code>, <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">runPipeResult</code> returns <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">R</code>.</strong>
+        <br />
         <br />
         ✅ <strong>For precise type safety, use <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">isSideEffect</code> type guard:</strong>
         <br />
@@ -88,7 +90,9 @@ const result = runPipeResult(processAgePipeline(15));
 
     <CodeBlock
       language="typescript"
-      code={`function runPipeResult<T, R = any>(result: T | SideEffect<R>): T | R`}
+      code={`function runPipeResult<R>(result: SideEffect<R>): R
+function runPipeResult<T>(result: T): T extends SideEffect<infer R> ? R : T
+function runPipeResult<T, R = any>(result: T | SideEffect<R>): T | R`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -210,7 +214,7 @@ try {
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
+      code={`import { pipeSideEffect, pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
 
 const divide = (a: number, b: number) =>
   b !== 0 ? a / b : SideEffect.of(() => 'Division by zero');
@@ -236,6 +240,15 @@ if (!isSideEffect(result)) {
   console.error(\`Error: \${error}\`);
 }
 
+// ✅ If the SideEffect type is precise, runPipeResult returns that effect type
+const strictResult = pipeSideEffectStrict(
+  (n: number) => (n > 0 ? n : SideEffect.of(() => 'LOW' as const))
+)(-1);
+
+if (isSideEffect(strictResult)) {
+  const error = runPipeResult(strictResult); // 'LOW'
+}
+
 // Recommendation: Use isSideEffect for type-safe branching
 // Only use runPipeResult when you don't need precise types`}
     />
@@ -258,7 +271,7 @@ if (!isSideEffect(result)) {
         <strong>3. For type safety, prefer isSideEffect over runPipeResult:</strong>
         <br />
         <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">isSideEffect</code> provides exact type narrowing.
-        <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">runPipeResult</code> returns <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">any</code> when the input is widened; provide generics to recover.
+        <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">runPipeResult</code> returns <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">any</code> when the input is widened; provide generics to recover. If the input is narrowed to <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">SideEffect&lt;R&gt;</code>, it returns <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">R</code>.
       </p>
     </div>
 

@@ -254,7 +254,7 @@ const result = pipeline(5);`}
     <ul class="space-y-3 text-gray-700 dark:text-gray-300 mb-6">
       <li><code class="text-sm">SideEffect.of(fn, label?)</code> - Create a side effect container</li>
       <li><code class="text-sm">isSideEffect(value)</code> - Type guard for <strong>runtime checking</strong> whether a value is a SideEffect</li>
-      <li><code class="text-sm">runPipeResult&lt;T, R&gt;(result)</code> - Execute SideEffect or return value (call <strong>OUTSIDE</strong> pipelines). If the input is widened to <code class="text-sm">SideEffect&lt;any&gt;</code>, provide generics to recover a safe union.</li>
+      <li><code class="text-sm">runPipeResult&lt;T, R&gt;(result)</code> - Execute SideEffect or return value (call <strong>OUTSIDE</strong> pipelines). If the input is narrowed to <code class="text-sm">SideEffect&lt;R&gt;</code>, it returns <code class="text-sm">R</code>. If the input is widened to <code class="text-sm">SideEffect&lt;any&gt;</code>, provide generics to recover a safe union.</li>
       <li><code class="text-sm">matchSideEffect(result, {'{'} value, effect {'}'})</code> - Pattern match on result</li>
     </ul>
 
@@ -263,7 +263,7 @@ const result = pipeline(5);`}
         ⚠️ CRITICAL: runPipeResult Type Safety
       </p>
       <p class="text-sm md:text-base text-orange-800 dark:text-orange-200">
-        <code class="text-sm">runPipeResult&lt;T, R=any&gt;</code> has default <code class="text-sm">R=any</code>. If the input type is precise, inference is preserved. If the input is widened to <code class="text-sm">SideEffect&lt;any&gt;</code> (or <code class="text-sm">any</code>), the result becomes <code class="text-sm">any</code> unless you provide generics. Prefer <code class="text-sm">isSideEffect</code> for precise narrowing.
+        <code class="text-sm">runPipeResult&lt;T, R=any&gt;</code> has default <code class="text-sm">R=any</code>. If the input type is precise, inference is preserved. If the input is widened to <code class="text-sm">SideEffect&lt;any&gt;</code> (or <code class="text-sm">any</code>), the result becomes <code class="text-sm">any</code> unless you provide generics. If the input is narrowed to <code class="text-sm">SideEffect&lt;R&gt;</code>, it returns <code class="text-sm">R</code>. Prefer <code class="text-sm">isSideEffect</code> for precise narrowing.
       </p>
     </div>
 
@@ -273,7 +273,7 @@ const result = pipeline(5);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
+      code={`import { pipeSideEffect, pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
 
 const processNumbers = pipeSideEffect(
   (nums: number[]) => nums.filter(n => n % 2 === 1),
@@ -305,7 +305,17 @@ const unsafeResult = runPipeResult(widened);
 
 // ✅ CORRECT: Provide generics to recover a safe union
 const safeResult = runPipeResult<number[], string>(oddsDoubled);
-// safeResult: number[] | string (union type - safe but not narrowed)`}
+// safeResult: number[] | string (union type - safe but not narrowed)
+
+// ✅ With strict pipelines, SideEffect types are preserved
+const strictResult = pipeSideEffectStrict(
+  (nums: number[]) => nums.length > 0 ? nums : SideEffect.of(() => 'EMPTY' as const),
+  (nums) => nums
+)([]);
+
+if (isSideEffect(strictResult)) {
+  const error = runPipeResult(strictResult); // 'EMPTY'
+}`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />

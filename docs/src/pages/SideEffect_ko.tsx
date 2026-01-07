@@ -123,7 +123,9 @@ function matchSideEffect<T, R>(
 ): R;
 
 // SideEffect 실행 또는 값 반환
-function runPipeResult<T, R>(value: T | SideEffect<R>): T | R;`}
+function runPipeResult<R>(result: SideEffect<R>): R;
+function runPipeResult<T>(result: T): T extends SideEffect<infer R> ? R : T;
+function runPipeResult<T, R = any>(result: T | SideEffect<R>): T | R;`}
     />
 
     <div class="border-l-4 border-red-500 bg-red-50 dark:bg-red-900/20 p-4 mb-6 rounded-r mt-6">
@@ -137,6 +139,8 @@ function runPipeResult<T, R>(value: T | SideEffect<R>): T | R;`}
         ✅ <strong>입력 타입이 정확하면 추론이 유지됩니다.</strong>
         <br />
         ⚠️ <strong>입력이 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">SideEffect&lt;any&gt;</code> 또는 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">any</code>로 넓어지면(비엄격 파이프라인에서 흔함) 결과가 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">any</code>가 됩니다.</strong>
+        <br />
+        ✅ <strong>입력이 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">SideEffect&lt;R&gt;</code>로 좁혀지면(예: <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">isSideEffect</code> 이후), <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">runPipeResult</code>는 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">R</code>을 반환합니다.</strong>
         <br />
         <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded text-xs">const result = runPipeResult(pipeline(data)); // result: any (입력이 넓어짐)</code>
         <br />
@@ -325,7 +329,7 @@ console.log(output); // "0으로 나눔"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
+      code={`import { pipeSideEffect, pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
 
 const processNumbers = pipeSideEffect(
   (nums: number[]) => nums.filter(n => n % 2 === 1),
@@ -354,7 +358,17 @@ const unsafeResult = runPipeResult(widened);
 // unsafeResult: any
 
 const safeResult = runPipeResult<number[], string>(oddsDoubled);
-// safeResult: number[] | string (유니온 타입 - 안전하지만 좁혀지지 않음)`}
+// safeResult: number[] | string (유니온 타입 - 안전하지만 좁혀지지 않음)
+
+// ✅ 엄격 파이프라인에서는 SideEffect 타입이 보존됨
+const strictResult = pipeSideEffectStrict(
+  (nums: number[]) => nums.length > 0 ? nums : SideEffect.of(() => 'EMPTY' as const),
+  (nums) => nums
+)([]);
+
+if (isSideEffect(strictResult)) {
+  const error = runPipeResult(strictResult); // 'EMPTY'
+}`}
     />
 
     <div class="bg-blue-50 dark:bg-blue-900/20 p-4 mb-6 rounded border border-blue-200 dark:border-blue-800">
@@ -370,6 +384,7 @@ const safeResult = runPipeResult<number[], string>(oddsDoubled);
         <code class="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">SideEffect&lt;any&gt;</code> 또는{' '}
         <code class="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">any</code>로 넓어지면 기본{' '}
         <code class="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">R=any</code> 매개변수 때문에 <code class="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">any</code>를 반환합니다.
+        입력이 <code class="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">SideEffect&lt;R&gt;</code>로 좁혀지면 <code class="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">R</code>을 반환합니다.
         <br />
         정확한 타입이 필요하지 않거나 명시적인 타입 매개변수를 제공할 때만 <code class="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">runPipeResult</code>를 사용하세요.
         <br />

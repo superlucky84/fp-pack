@@ -90,7 +90,7 @@ There's no framework and no heavy abstractions—just well-chosen helpers that m
   `pipe` (sync) and `pipeAsync` (async) are the primary composition tools. All utilities are designed to work seamlessly in pipe chains.
 
 - **Pragmatic error handling**
-  The `SideEffect` pattern handles errors and side effects declaratively in `pipeSideEffect`/`pipeAsyncSideEffect` pipelines. Write normal functions that compose naturally—these pipelines automatically short-circuit when they encounter a `SideEffect`, eliminating the need for wrapper types everywhere. For strict union typing across branches, use `pipeSideEffectStrict` / `pipeAsyncSideEffectStrict`. Use `runPipeResult`/`matchSideEffect` **outside** the pipeline. If the result type is widened (e.g. `SideEffect<any>`), provide generics to recover a safe union. Use `isSideEffect` for precise runtime narrowing.
+  The `SideEffect` pattern handles errors and side effects declaratively in `pipeSideEffect`/`pipeAsyncSideEffect` pipelines. Write normal functions that compose naturally—these pipelines automatically short-circuit when they encounter a `SideEffect`, eliminating the need for wrapper types everywhere. For strict union typing across branches, use `pipeSideEffectStrict` / `pipeAsyncSideEffectStrict`. Use `runPipeResult`/`matchSideEffect` **outside** the pipeline. If the input is narrowed to `SideEffect<R>` (e.g. after `isSideEffect`), `runPipeResult` returns `R`. If the result type is widened (e.g. `SideEffect<any>`), provide generics to recover a safe union. Use `isSideEffect` for precise runtime narrowing.
 
 - **Immutable & Pure by default**
   Core utilities avoid mutations and side effects. Any exception is explicitly named (e.g. `tap`, `log`).
@@ -330,7 +330,7 @@ Functions for composing and transforming other functions.
 - **SideEffect** - Side effect container for SideEffect-aware pipelines
 - **isSideEffect** - Type guard for runtime checking whether a value is a SideEffect
 - **matchSideEffect** - Pattern match on value or SideEffect
-- **runPipeResult** - Execute SideEffect or return value (call OUTSIDE pipelines). If the input is widened to `SideEffect<any>`/`any`, the result becomes `any`; provide explicit type parameters `runPipeResult<SuccessType, ErrorType>` to recover a safe union. Use `isSideEffect` for precise type narrowing.
+- **runPipeResult** - Execute SideEffect or return value (call OUTSIDE pipelines). If the input is widened to `SideEffect<any>`/`any`, the result becomes `any`; provide explicit type parameters `runPipeResult<SuccessType, ErrorType>` to recover a safe union. When the input is narrowed to `SideEffect<R>` (e.g. after `isSideEffect`), `runPipeResult` returns `R`. Use `isSideEffect` for precise type narrowing.
 
 ### Control Flow
 
@@ -572,7 +572,7 @@ const result = runPipeResult(paymentPipeline(userCard));
 **Type-safe result handling with `isSideEffect`:**
 
 ```typescript
-import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
+import { pipeSideEffect, pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
 
 const processNumbers = pipeSideEffect(
   (nums: number[]) => nums.filter(n => n % 2 === 1),
@@ -595,6 +595,16 @@ if (!isSideEffect(oddsDoubled)) {
   console.log(`Error: ${error}`);  // error: any
 }
 
+// ✅ If you have a precise SideEffect type, runPipeResult returns the effect type
+const strictResult = pipeSideEffectStrict(
+  (n: number) => (n > 0 ? n : SideEffect.of(() => 'LOW' as const))
+)(-1);
+
+if (isSideEffect(strictResult)) {
+  const error = runPipeResult(strictResult);
+  // error: 'LOW'
+}
+
 // ⚠️ If the result type is widened, inference is lost
 const widened: number[] | SideEffect<any> = oddsDoubled;
 const unsafeResult = runPipeResult(widened);  // result: any
@@ -610,6 +620,7 @@ const safeResult = runPipeResult<number[], string>(oddsDoubled);  // result: num
 - ✅ **Precise input types**: `T | SideEffect<'E'>` preserves `T | 'E'` without extra annotations.
 - ⚠️ **Widened inputs**: `T | SideEffect<any>` (or `any`) collapses to `any`.
 - ✅ **With generics**: `runPipeResult<SuccessType, ErrorType>(result)` restores a safe union when inference is lost.
+- ✅ **After narrowing**: If the input is `SideEffect<'E'>` (e.g. inside `if (isSideEffect(...))`), `runPipeResult` returns `'E'`.
 - ✅ **With isSideEffect**: Use for runtime checking and precise narrowing.
 
 Provide generics when inference is lost; prefer `isSideEffect` for precise narrowing.

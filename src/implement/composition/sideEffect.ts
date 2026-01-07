@@ -30,6 +30,9 @@ export function matchSideEffect<T, RValue, REffect = any>(
   return handlers.value(result as T);
 }
 
+export function runPipeResult<T, R>(result: SideEffect<R>): R;
+export function runPipeResult<T>(result: T): T extends SideEffect<infer R> ? R : T;
+export function runPipeResult<T, R=any>(result: T | SideEffect<R>): T | R;
 export function runPipeResult<T, R=any>(result: T | SideEffect<R>): T | R {
   if (isSideEffect(result)) {
     return result.effect() as R;

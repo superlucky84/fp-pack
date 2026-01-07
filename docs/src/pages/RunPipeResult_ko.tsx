@@ -68,6 +68,8 @@ const result = runPipeResult(processAgePipeline(15));
         <br />
         ⚠️ <strong>입력이 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">SideEffect&lt;any&gt;</code> 또는 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">any</code>로 넓어지면 결과가 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">any</code>가 됩니다.</strong>
         <br />
+        ✅ <strong>입력이 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">SideEffect&lt;R&gt;</code>로 좁혀지면 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">runPipeResult</code>는 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">R</code>을 반환합니다.</strong>
+        <br />
         <br />
         ✅ <strong>정확한 타입 안전성을 위해 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">isSideEffect</code> 타입 가드 사용:</strong>
         <br />
@@ -88,7 +90,9 @@ const result = runPipeResult(processAgePipeline(15));
 
     <CodeBlock
       language="typescript"
-      code={`function runPipeResult<T, R = any>(result: T | SideEffect<R>): T | R`}
+      code={`function runPipeResult<R>(result: SideEffect<R>): R
+function runPipeResult<T>(result: T): T extends SideEffect<infer R> ? R : T
+function runPipeResult<T, R = any>(result: T | SideEffect<R>): T | R`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -210,7 +214,7 @@ try {
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
+      code={`import { pipeSideEffect, pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
 
 const divide = (a: number, b: number) =>
   b !== 0 ? a / b : SideEffect.of(() => '0으로 나눌 수 없습니다');
@@ -236,6 +240,15 @@ if (!isSideEffect(result)) {
   console.error(\`에러: \${error}\`);
 }
 
+// ✅ SideEffect 타입이 정확하면 runPipeResult도 그 타입으로 반환
+const strictResult = pipeSideEffectStrict(
+  (n: number) => (n > 0 ? n : SideEffect.of(() => 'LOW' as const))
+)(-1);
+
+if (isSideEffect(strictResult)) {
+  const error = runPipeResult(strictResult); // 'LOW'
+}
+
 // 권장: 타입 안전 분기를 위해 isSideEffect 사용
 // 정확한 타입이 필요 없을 때만 runPipeResult 사용`}
     />
@@ -258,7 +271,7 @@ if (!isSideEffect(result)) {
         <strong>3. 타입 안전성을 위해 runPipeResult보다 isSideEffect 선호:</strong>
         <br />
         <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">isSideEffect</code>는 정확한 타입 좁히기를 제공합니다.
-        <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">runPipeResult</code>는 입력이 넓어졌을 때 <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">any</code>를 반환합니다. 필요하면 제네릭으로 복구하세요.
+        <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">runPipeResult</code>는 입력이 넓어졌을 때 <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">any</code>를 반환합니다. 필요하면 제네릭으로 복구하세요. 입력이 <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">SideEffect&lt;R&gt;</code>로 좁혀지면 <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">R</code>을 반환합니다.
       </p>
     </div>
 

@@ -57,8 +57,9 @@ if (!isSideEffect(result)) {
         <span class="font-medium">✅ 왜 isSideEffect를 사용하나요?</span>
         <br />
         <br />
-        <strong>정확한 타입 좁히기:</strong> 유니온 타입을 반환하는 <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">runPipeResult</code>와
-        달리(<code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">SideEffect&lt;any&gt;</code> 또는 <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">any</code>로 입력이 넓어지면 <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">any</code> 반환),
+        <strong>정확한 타입 좁히기:</strong> 유니온 타입을 반환하는 <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">runPipeResult</code>는
+        입력이 <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">SideEffect&lt;any&gt;</code> 또는 <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">any</code>로 넓어지면 <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">any</code>를 반환하고,
+        입력이 <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">SideEffect&lt;R&gt;</code>로 좁혀지면 <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">R</code>을 반환합니다.
         <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">isSideEffect</code>는
         성공과 에러 분기 모두에서 타입을 좁혀줍니다.
         <br />
@@ -67,6 +68,8 @@ if (!isSideEffect(result)) {
         입력이 <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">SideEffect&lt;any&gt;</code> 또는{' '}
         <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">any</code>로 넓어지면 기본{' '}
         <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">R=any</code> 파라미터 때문에 <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">any</code>를 반환합니다.
+        입력이 <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">SideEffect&lt;R&gt;</code>로 좁혀지면
+        <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">R</code>을 반환합니다.
         <br />
         <br />
         성공 및 에러 처리 경로 모두에서 정확한 타입이 필요할 때 <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">isSideEffect</code>를
@@ -136,7 +139,7 @@ if (!isSideEffect(userOrError)) {
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
+      code={`import { pipeSideEffect, pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
 
 const divide = (a: number, b: number) =>
   b !== 0
@@ -166,6 +169,15 @@ if (!isSideEffect(result)) {
   // result는 비엄격 파이프라인에서 SideEffect<any>
   const error = result.effect();
   console.error(\`에러: \${error}\`);
+}
+
+// ✅ 엄격 파이프라인에서는 SideEffect 타입이 보존됨
+const strictResult = pipeSideEffectStrict(
+  (n: number) => (n > 0 ? n : SideEffect.of(() => 'LOW' as const))
+)(-1);
+
+if (isSideEffect(strictResult)) {
+  const error = runPipeResult(strictResult); // 'LOW'
 }`}
     />
 

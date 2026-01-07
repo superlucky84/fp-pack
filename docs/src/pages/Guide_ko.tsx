@@ -254,7 +254,7 @@ const result = pipeline(5);`}
     <ul class="space-y-3 text-gray-700 dark:text-gray-300 mb-6">
       <li><code class="text-sm">SideEffect.of(fn, label?)</code> - 부수 효과 컨테이너 생성</li>
       <li><code class="text-sm">isSideEffect(value)</code> - 값이 SideEffect인지 <strong>런타임 체크</strong>하는 타입 가드</li>
-      <li><code class="text-sm">runPipeResult&lt;T, R&gt;(result)</code> - SideEffect 실행 또는 값 반환 (파이프라인 <strong>외부</strong>에서 호출). 입력 타입이 <code class="text-sm">SideEffect&lt;any&gt;</code>로 넓어졌다면 제네릭으로 안전한 유니온을 복구하세요.</li>
+      <li><code class="text-sm">runPipeResult&lt;T, R&gt;(result)</code> - SideEffect 실행 또는 값 반환 (파이프라인 <strong>외부</strong>에서 호출). 입력이 <code class="text-sm">SideEffect&lt;R&gt;</code>로 좁혀지면 <code class="text-sm">R</code>을 반환합니다. 입력 타입이 <code class="text-sm">SideEffect&lt;any&gt;</code>로 넓어졌다면 제네릭으로 안전한 유니온을 복구하세요.</li>
       <li><code class="text-sm">matchSideEffect(result, {'{'} value, effect {'}'})</code> - 결과에 대한 패턴 매치</li>
     </ul>
 
@@ -263,7 +263,7 @@ const result = pipeline(5);`}
         ⚠️ 중요: runPipeResult 타입 안전성
       </p>
       <p class="text-sm md:text-base text-orange-800 dark:text-orange-200">
-        <code class="text-sm">runPipeResult&lt;T, R=any&gt;</code>는 기본값 <code class="text-sm">R=any</code>를 가집니다. 입력 타입이 정확하면 추론이 유지되고, 입력이 <code class="text-sm">SideEffect&lt;any&gt;</code>(또는 <code class="text-sm">any</code>)로 넓어지면 결과가 <code class="text-sm">any</code>가 됩니다. 이때 제네릭을 제공해 유니온을 복구하세요. 정확한 내로잉은 <code class="text-sm">isSideEffect</code>를 사용하세요.
+        <code class="text-sm">runPipeResult&lt;T, R=any&gt;</code>는 기본값 <code class="text-sm">R=any</code>를 가집니다. 입력 타입이 정확하면 추론이 유지되고, 입력이 <code class="text-sm">SideEffect&lt;any&gt;</code>(또는 <code class="text-sm">any</code>)로 넓어지면 결과가 <code class="text-sm">any</code>가 됩니다. 입력이 <code class="text-sm">SideEffect&lt;R&gt;</code>로 좁혀지면 <code class="text-sm">R</code>을 반환합니다. 이때 제네릭을 제공해 유니온을 복구하세요. 정확한 내로잉은 <code class="text-sm">isSideEffect</code>를 사용하세요.
       </p>
     </div>
 
@@ -273,7 +273,7 @@ const result = pipeline(5);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
+      code={`import { pipeSideEffect, pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
 
 const processNumbers = pipeSideEffect(
   (nums: number[]) => nums.filter(n => n % 2 === 1),
@@ -305,7 +305,17 @@ const unsafeResult = runPipeResult(widened);
 
 // ✅ 올바름: 제네릭으로 안전한 유니온 복구
 const safeResult = runPipeResult<number[], string>(oddsDoubled);
-// safeResult: number[] | string (유니온 타입 - 안전하지만 좁혀지지 않음)`}
+// safeResult: number[] | string (유니온 타입 - 안전하지만 좁혀지지 않음)
+
+// ✅ 엄격 파이프라인에서는 SideEffect 타입이 보존됨
+const strictResult = pipeSideEffectStrict(
+  (nums: number[]) => nums.length > 0 ? nums : SideEffect.of(() => 'EMPTY' as const),
+  (nums) => nums
+)([]);
+
+if (isSideEffect(strictResult)) {
+  const error = runPipeResult(strictResult); // 'EMPTY'
+}`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />

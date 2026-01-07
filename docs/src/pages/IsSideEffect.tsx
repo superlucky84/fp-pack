@@ -58,7 +58,7 @@ if (!isSideEffect(result)) {
         <br />
         <br />
         <strong>Precise type narrowing:</strong> Unlike <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">runPipeResult</code>,
-        which returns a union type (or <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">any</code> when the input is widened),{' '}
+        which returns a union type (or <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">any</code> when the input is widened, and <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">R</code> when the input is <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">SideEffect&lt;R&gt;</code>),{' '}
         <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">isSideEffect</code> narrows
         the type in both the success and error branches.
         <br />
@@ -68,6 +68,8 @@ if (!isSideEffect(result)) {
         <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">SideEffect&lt;any&gt;</code> or{' '}
         <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">any</code> due to the default{' '}
         <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">R=any</code> parameter.
+        If the input is narrowed to <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">SideEffect&lt;R&gt;</code>,
+        it returns <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">R</code>.
         <br />
         <br />
         Use <code class="bg-green-100 dark:bg-green-900/40 px-1 py-0.5 rounded">isSideEffect</code> when you need exact types
@@ -137,7 +139,7 @@ if (!isSideEffect(userOrError)) {
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
+      code={`import { pipeSideEffect, pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
 
 const divide = (a: number, b: number) =>
   b !== 0
@@ -167,6 +169,15 @@ if (!isSideEffect(result)) {
   // result is SideEffect<any> in non-strict pipelines
   const error = result.effect();
   console.error(\`Error: \${error}\`);
+}
+
+// ✅ Strict pipelines preserve effect types
+const strictResult = pipeSideEffectStrict(
+  (n: number) => (n > 0 ? n : SideEffect.of(() => 'LOW' as const))
+)(-1);
+
+if (isSideEffect(strictResult)) {
+  const error = runPipeResult(strictResult); // 'LOW'
 }`}
     />
 
