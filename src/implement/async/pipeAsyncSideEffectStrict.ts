@@ -15,8 +15,6 @@ type ZeroFn<R> = () => R | Promise<R>;
 type FnInput<F> = F extends (a: infer A) => any ? A : never;
 type FnReturn<F> = F extends (...args: any[]) => infer R ? R : never;
 type FnValue<F> = NonSideEffect<Awaited<FnReturn<F>>>;
-type Apply<F, A> = F extends (a: A) => infer R ? R : never;
-type ApplyValue<F, A> = NonSideEffect<Awaited<Apply<F, A>>>;
 
 type ValidateFn<Fn extends AsyncOrSync<any, any>, Expected> =
   (Fn extends (a: NoInfer<Expected>) => any ? Fn : Fn & PipeError<Expected, FnInput<Fn>>) &
@@ -39,11 +37,16 @@ type PipeCheck<Fns extends [AnyFn, ...AnyFn[]]> =
 type EffectOfReturn<R> = R extends SideEffect<infer E> ? E : never;
 type EffectOfFn<F> = EffectOfReturn<Awaited<FnReturn<F>>>;
 type EffectsOf<Fns extends AnyFn[]> = EffectOfFn<Fns[number]>;
+type EffectOfValue<T> = T extends SideEffect<infer E> ? E : never;
+type EffectsOfValues<Values extends any[]> = EffectOfValue<Values[number]>;
 
 type StrictResult<FLast, Fns extends AnyFn[]> = MaybeSideEffect<FnValue<FLast>, EffectsOf<Fns>>;
 type StrictResultWithInput<FLast, Fns extends AnyFn[], EIn> = MaybeSideEffect<FnValue<FLast>, EffectsOf<Fns> | EIn>;
-type StrictResultValue<AOut, Fns extends AnyFn[]> = MaybeSideEffect<AOut, EffectsOf<Fns>>;
-type StrictResultValueWithInput<AOut, Fns extends AnyFn[], EIn> = MaybeSideEffect<AOut, EffectsOf<Fns> | EIn>;
+type StrictResultValueChain<AOut, Values extends any[]> = MaybeSideEffect<NonSideEffect<AOut>, EffectsOfValues<Values>>;
+type StrictResultValueChainWithInput<AOut, Values extends any[], EIn> = MaybeSideEffect<
+  NonSideEffect<AOut>,
+  EffectsOfValues<Values> | EIn
+>;
 type StrictUnaryReturn<A, FLast, Fns extends AnyFn[]> = {
   (input: A): Promise<StrictResult<FLast, Fns>>;
   <EIn>(input: A | SideEffect<EIn>): Promise<MaybeSideEffect<FnValue<FLast>, EffectsOf<Fns> | EIn>>;
@@ -83,336 +86,176 @@ type PipeCheckWithInput<Input, Fns extends [AnyFn, ...AnyFn[]]> =
 
 function pipeAsyncSideEffectStrict<A>(input: NonFunction<A>): Promise<A>;
 function pipeAsyncSideEffectStrict<A, EIn>(input: NonFunction<A> | SideEffect<EIn>): Promise<A | SideEffect<EIn>>;
-function pipeAsyncSideEffectStrict<
-  A,
-  F1 extends AsyncOrSync<A, any>
->(
+function pipeAsyncSideEffectStrict<A, B>(
   input: NonFunction<A>,
-  ab: ValidateFn<F1, A>
-): Promise<StrictResultValue<ApplyValue<F1, A>, [F1]>>;
-function pipeAsyncSideEffectStrict<
-  A,
-  EIn,
-  F1 extends AsyncOrSync<A, any>
->(
+  ab: AsyncOrSync<A, B>
+): Promise<StrictResultValueChain<B, [B]>>;
+function pipeAsyncSideEffectStrict<A, EIn, B>(
   input: NonFunction<A> | SideEffect<EIn>,
-  ab: ValidateFn<F1, A>
-): Promise<StrictResultValueWithInput<ApplyValue<F1, A>, [F1], EIn>>;
-function pipeAsyncSideEffectStrict<
-  A,
-  F1 extends AsyncOrSync<A, any>,
-  F2 extends AsyncOrSync<ApplyValue<F1, A>, any>
->(
+  ab: AsyncOrSync<A, B>
+): Promise<StrictResultValueChainWithInput<B, [B], EIn>>;
+function pipeAsyncSideEffectStrict<A, B, C>(
   input: NonFunction<A>,
-  ab: ValidateFn<F1, A>,
-  bc: ValidateFn<F2, ApplyValue<F1, A>>
-): Promise<StrictResultValue<ApplyValue<F2, ApplyValue<F1, A>>, [F1, F2]>>;
-function pipeAsyncSideEffectStrict<
-  A,
-  EIn,
-  F1 extends AsyncOrSync<A, any>,
-  F2 extends AsyncOrSync<ApplyValue<F1, A>, any>
->(
+  ab: AsyncOrSync<A, B>,
+  bc: AsyncOrSync<NonSideEffect<B>, C>
+): Promise<StrictResultValueChain<C, [B, C]>>;
+function pipeAsyncSideEffectStrict<A, EIn, B, C>(
   input: NonFunction<A> | SideEffect<EIn>,
-  ab: ValidateFn<F1, A>,
-  bc: ValidateFn<F2, ApplyValue<F1, A>>
-): Promise<StrictResultValueWithInput<ApplyValue<F2, ApplyValue<F1, A>>, [F1, F2], EIn>>;
-function pipeAsyncSideEffectStrict<
-  A,
-  F1 extends AsyncOrSync<A, any>,
-  F2 extends AsyncOrSync<ApplyValue<F1, A>, any>,
-  F3 extends AsyncOrSync<ApplyValue<F2, ApplyValue<F1, A>>, any>
->(
+  ab: AsyncOrSync<A, B>,
+  bc: AsyncOrSync<NonSideEffect<B>, C>
+): Promise<StrictResultValueChainWithInput<C, [B, C], EIn>>;
+function pipeAsyncSideEffectStrict<A, B, C, D>(
   input: NonFunction<A>,
-  ab: ValidateFn<F1, A>,
-  bc: ValidateFn<F2, ApplyValue<F1, A>>,
-  cd: ValidateFn<F3, ApplyValue<F2, ApplyValue<F1, A>>>
-): Promise<StrictResultValue<ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>, [F1, F2, F3]>>;
-function pipeAsyncSideEffectStrict<
-  A,
-  EIn,
-  F1 extends AsyncOrSync<A, any>,
-  F2 extends AsyncOrSync<ApplyValue<F1, A>, any>,
-  F3 extends AsyncOrSync<ApplyValue<F2, ApplyValue<F1, A>>, any>
->(
+  ab: AsyncOrSync<A, B>,
+  bc: AsyncOrSync<NonSideEffect<B>, C>,
+  cd: AsyncOrSync<NonSideEffect<C>, D>
+): Promise<StrictResultValueChain<D, [B, C, D]>>;
+function pipeAsyncSideEffectStrict<A, EIn, B, C, D>(
   input: NonFunction<A> | SideEffect<EIn>,
-  ab: ValidateFn<F1, A>,
-  bc: ValidateFn<F2, ApplyValue<F1, A>>,
-  cd: ValidateFn<F3, ApplyValue<F2, ApplyValue<F1, A>>>
-): Promise<StrictResultValueWithInput<ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>, [F1, F2, F3], EIn>>;
-function pipeAsyncSideEffectStrict<
-  A,
-  F1 extends AsyncOrSync<A, any>,
-  F2 extends AsyncOrSync<ApplyValue<F1, A>, any>,
-  F3 extends AsyncOrSync<ApplyValue<F2, ApplyValue<F1, A>>, any>,
-  F4 extends AsyncOrSync<ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>, any>
->(
+  ab: AsyncOrSync<A, B>,
+  bc: AsyncOrSync<NonSideEffect<B>, C>,
+  cd: AsyncOrSync<NonSideEffect<C>, D>
+): Promise<StrictResultValueChainWithInput<D, [B, C, D], EIn>>;
+function pipeAsyncSideEffectStrict<A, B, C, D, E>(
   input: NonFunction<A>,
-  ab: ValidateFn<F1, A>,
-  bc: ValidateFn<F2, ApplyValue<F1, A>>,
-  cd: ValidateFn<F3, ApplyValue<F2, ApplyValue<F1, A>>>,
-  de: ValidateFn<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>
-): Promise<StrictResultValue<ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>, [F1, F2, F3, F4]>>;
-function pipeAsyncSideEffectStrict<
-  A,
-  EIn,
-  F1 extends AsyncOrSync<A, any>,
-  F2 extends AsyncOrSync<ApplyValue<F1, A>, any>,
-  F3 extends AsyncOrSync<ApplyValue<F2, ApplyValue<F1, A>>, any>,
-  F4 extends AsyncOrSync<ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>, any>
->(
+  ab: AsyncOrSync<A, B>,
+  bc: AsyncOrSync<NonSideEffect<B>, C>,
+  cd: AsyncOrSync<NonSideEffect<C>, D>,
+  de: AsyncOrSync<NonSideEffect<D>, E>
+): Promise<StrictResultValueChain<E, [B, C, D, E]>>;
+function pipeAsyncSideEffectStrict<A, EIn, B, C, D, E>(
   input: NonFunction<A> | SideEffect<EIn>,
-  ab: ValidateFn<F1, A>,
-  bc: ValidateFn<F2, ApplyValue<F1, A>>,
-  cd: ValidateFn<F3, ApplyValue<F2, ApplyValue<F1, A>>>,
-  de: ValidateFn<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>
-): Promise<StrictResultValueWithInput<ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>, [F1, F2, F3, F4], EIn>>;
-function pipeAsyncSideEffectStrict<
-  A,
-  F1 extends AsyncOrSync<A, any>,
-  F2 extends AsyncOrSync<ApplyValue<F1, A>, any>,
-  F3 extends AsyncOrSync<ApplyValue<F2, ApplyValue<F1, A>>, any>,
-  F4 extends AsyncOrSync<ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>, any>,
-  F5 extends AsyncOrSync<ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>, any>
->(
+  ab: AsyncOrSync<A, B>,
+  bc: AsyncOrSync<NonSideEffect<B>, C>,
+  cd: AsyncOrSync<NonSideEffect<C>, D>,
+  de: AsyncOrSync<NonSideEffect<D>, E>
+): Promise<StrictResultValueChainWithInput<E, [B, C, D, E], EIn>>;
+function pipeAsyncSideEffectStrict<A, B, C, D, E, F>(
   input: NonFunction<A>,
-  ab: ValidateFn<F1, A>,
-  bc: ValidateFn<F2, ApplyValue<F1, A>>,
-  cd: ValidateFn<F3, ApplyValue<F2, ApplyValue<F1, A>>>,
-  de: ValidateFn<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>,
-  ef: ValidateFn<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>
-): Promise<StrictResultValue<ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>, [F1, F2, F3, F4, F5]>>;
-function pipeAsyncSideEffectStrict<
-  A,
-  EIn,
-  F1 extends AsyncOrSync<A, any>,
-  F2 extends AsyncOrSync<ApplyValue<F1, A>, any>,
-  F3 extends AsyncOrSync<ApplyValue<F2, ApplyValue<F1, A>>, any>,
-  F4 extends AsyncOrSync<ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>, any>,
-  F5 extends AsyncOrSync<ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>, any>
->(
+  ab: AsyncOrSync<A, B>,
+  bc: AsyncOrSync<NonSideEffect<B>, C>,
+  cd: AsyncOrSync<NonSideEffect<C>, D>,
+  de: AsyncOrSync<NonSideEffect<D>, E>,
+  ef: AsyncOrSync<NonSideEffect<E>, F>
+): Promise<StrictResultValueChain<F, [B, C, D, E, F]>>;
+function pipeAsyncSideEffectStrict<A, EIn, B, C, D, E, F>(
   input: NonFunction<A> | SideEffect<EIn>,
-  ab: ValidateFn<F1, A>,
-  bc: ValidateFn<F2, ApplyValue<F1, A>>,
-  cd: ValidateFn<F3, ApplyValue<F2, ApplyValue<F1, A>>>,
-  de: ValidateFn<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>,
-  ef: ValidateFn<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>
-): Promise<StrictResultValueWithInput<ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>, [F1, F2, F3, F4, F5], EIn>>;
-function pipeAsyncSideEffectStrict<
-  A,
-  F1 extends AsyncOrSync<A, any>,
-  F2 extends AsyncOrSync<ApplyValue<F1, A>, any>,
-  F3 extends AsyncOrSync<ApplyValue<F2, ApplyValue<F1, A>>, any>,
-  F4 extends AsyncOrSync<ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>, any>,
-  F5 extends AsyncOrSync<ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>, any>,
-  F6 extends AsyncOrSync<ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>, any>
->(
+  ab: AsyncOrSync<A, B>,
+  bc: AsyncOrSync<NonSideEffect<B>, C>,
+  cd: AsyncOrSync<NonSideEffect<C>, D>,
+  de: AsyncOrSync<NonSideEffect<D>, E>,
+  ef: AsyncOrSync<NonSideEffect<E>, F>
+): Promise<StrictResultValueChainWithInput<F, [B, C, D, E, F], EIn>>;
+function pipeAsyncSideEffectStrict<A, B, C, D, E, F, G>(
   input: NonFunction<A>,
-  ab: ValidateFn<F1, A>,
-  bc: ValidateFn<F2, ApplyValue<F1, A>>,
-  cd: ValidateFn<F3, ApplyValue<F2, ApplyValue<F1, A>>>,
-  de: ValidateFn<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>,
-  ef: ValidateFn<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>,
-  fg: ValidateFn<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>
-): Promise<StrictResultValue<ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>, [F1, F2, F3, F4, F5, F6]>>;
-function pipeAsyncSideEffectStrict<
-  A,
-  EIn,
-  F1 extends AsyncOrSync<A, any>,
-  F2 extends AsyncOrSync<ApplyValue<F1, A>, any>,
-  F3 extends AsyncOrSync<ApplyValue<F2, ApplyValue<F1, A>>, any>,
-  F4 extends AsyncOrSync<ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>, any>,
-  F5 extends AsyncOrSync<ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>, any>,
-  F6 extends AsyncOrSync<ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>, any>
->(
+  ab: AsyncOrSync<A, B>,
+  bc: AsyncOrSync<NonSideEffect<B>, C>,
+  cd: AsyncOrSync<NonSideEffect<C>, D>,
+  de: AsyncOrSync<NonSideEffect<D>, E>,
+  ef: AsyncOrSync<NonSideEffect<E>, F>,
+  fg: AsyncOrSync<NonSideEffect<F>, G>
+): Promise<StrictResultValueChain<G, [B, C, D, E, F, G]>>;
+function pipeAsyncSideEffectStrict<A, EIn, B, C, D, E, F, G>(
   input: NonFunction<A> | SideEffect<EIn>,
-  ab: ValidateFn<F1, A>,
-  bc: ValidateFn<F2, ApplyValue<F1, A>>,
-  cd: ValidateFn<F3, ApplyValue<F2, ApplyValue<F1, A>>>,
-  de: ValidateFn<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>,
-  ef: ValidateFn<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>,
-  fg: ValidateFn<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>
-): Promise<StrictResultValueWithInput<ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>, [F1, F2, F3, F4, F5, F6], EIn>>;
-function pipeAsyncSideEffectStrict<
-  A,
-  F1 extends AsyncOrSync<A, any>,
-  F2 extends AsyncOrSync<ApplyValue<F1, A>, any>,
-  F3 extends AsyncOrSync<ApplyValue<F2, ApplyValue<F1, A>>, any>,
-  F4 extends AsyncOrSync<ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>, any>,
-  F5 extends AsyncOrSync<ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>, any>,
-  F6 extends AsyncOrSync<ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>, any>,
-  F7 extends AsyncOrSync<ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>, any>
->(
+  ab: AsyncOrSync<A, B>,
+  bc: AsyncOrSync<NonSideEffect<B>, C>,
+  cd: AsyncOrSync<NonSideEffect<C>, D>,
+  de: AsyncOrSync<NonSideEffect<D>, E>,
+  ef: AsyncOrSync<NonSideEffect<E>, F>,
+  fg: AsyncOrSync<NonSideEffect<F>, G>
+): Promise<StrictResultValueChainWithInput<G, [B, C, D, E, F, G], EIn>>;
+function pipeAsyncSideEffectStrict<A, B, C, D, E, F, G, H>(
   input: NonFunction<A>,
-  ab: ValidateFn<F1, A>,
-  bc: ValidateFn<F2, ApplyValue<F1, A>>,
-  cd: ValidateFn<F3, ApplyValue<F2, ApplyValue<F1, A>>>,
-  de: ValidateFn<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>,
-  ef: ValidateFn<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>,
-  fg: ValidateFn<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>,
-  gh: ValidateFn<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>
-): Promise<StrictResultValue<ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>, [F1, F2, F3, F4, F5, F6, F7]>>;
-function pipeAsyncSideEffectStrict<
-  A,
-  EIn,
-  F1 extends AsyncOrSync<A, any>,
-  F2 extends AsyncOrSync<ApplyValue<F1, A>, any>,
-  F3 extends AsyncOrSync<ApplyValue<F2, ApplyValue<F1, A>>, any>,
-  F4 extends AsyncOrSync<ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>, any>,
-  F5 extends AsyncOrSync<ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>, any>,
-  F6 extends AsyncOrSync<ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>, any>,
-  F7 extends AsyncOrSync<ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>, any>
->(
+  ab: AsyncOrSync<A, B>,
+  bc: AsyncOrSync<NonSideEffect<B>, C>,
+  cd: AsyncOrSync<NonSideEffect<C>, D>,
+  de: AsyncOrSync<NonSideEffect<D>, E>,
+  ef: AsyncOrSync<NonSideEffect<E>, F>,
+  fg: AsyncOrSync<NonSideEffect<F>, G>,
+  gh: AsyncOrSync<NonSideEffect<G>, H>
+): Promise<StrictResultValueChain<H, [B, C, D, E, F, G, H]>>;
+function pipeAsyncSideEffectStrict<A, EIn, B, C, D, E, F, G, H>(
   input: NonFunction<A> | SideEffect<EIn>,
-  ab: ValidateFn<F1, A>,
-  bc: ValidateFn<F2, ApplyValue<F1, A>>,
-  cd: ValidateFn<F3, ApplyValue<F2, ApplyValue<F1, A>>>,
-  de: ValidateFn<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>,
-  ef: ValidateFn<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>,
-  fg: ValidateFn<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>,
-  gh: ValidateFn<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>
-): Promise<StrictResultValueWithInput<ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>, [F1, F2, F3, F4, F5, F6, F7], EIn>>;
-function pipeAsyncSideEffectStrict<
-  A,
-  F1 extends AsyncOrSync<A, any>,
-  F2 extends AsyncOrSync<ApplyValue<F1, A>, any>,
-  F3 extends AsyncOrSync<ApplyValue<F2, ApplyValue<F1, A>>, any>,
-  F4 extends AsyncOrSync<ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>, any>,
-  F5 extends AsyncOrSync<ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>, any>,
-  F6 extends AsyncOrSync<ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>, any>,
-  F7 extends AsyncOrSync<ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>, any>,
-  F8 extends AsyncOrSync<ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>, any>
->(
+  ab: AsyncOrSync<A, B>,
+  bc: AsyncOrSync<NonSideEffect<B>, C>,
+  cd: AsyncOrSync<NonSideEffect<C>, D>,
+  de: AsyncOrSync<NonSideEffect<D>, E>,
+  ef: AsyncOrSync<NonSideEffect<E>, F>,
+  fg: AsyncOrSync<NonSideEffect<F>, G>,
+  gh: AsyncOrSync<NonSideEffect<G>, H>
+): Promise<StrictResultValueChainWithInput<H, [B, C, D, E, F, G, H], EIn>>;
+function pipeAsyncSideEffectStrict<A, B, C, D, E, F, G, H, I>(
   input: NonFunction<A>,
-  ab: ValidateFn<F1, A>,
-  bc: ValidateFn<F2, ApplyValue<F1, A>>,
-  cd: ValidateFn<F3, ApplyValue<F2, ApplyValue<F1, A>>>,
-  de: ValidateFn<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>,
-  ef: ValidateFn<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>,
-  fg: ValidateFn<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>,
-  gh: ValidateFn<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>,
-  hi: ValidateFn<F8, ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>>
-): Promise<StrictResultValue<ApplyValue<F8, ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>>, [F1, F2, F3, F4, F5, F6, F7, F8]>>;
-function pipeAsyncSideEffectStrict<
-  A,
-  EIn,
-  F1 extends AsyncOrSync<A, any>,
-  F2 extends AsyncOrSync<ApplyValue<F1, A>, any>,
-  F3 extends AsyncOrSync<ApplyValue<F2, ApplyValue<F1, A>>, any>,
-  F4 extends AsyncOrSync<ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>, any>,
-  F5 extends AsyncOrSync<ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>, any>,
-  F6 extends AsyncOrSync<ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>, any>,
-  F7 extends AsyncOrSync<ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>, any>,
-  F8 extends AsyncOrSync<ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>, any>
->(
+  ab: AsyncOrSync<A, B>,
+  bc: AsyncOrSync<NonSideEffect<B>, C>,
+  cd: AsyncOrSync<NonSideEffect<C>, D>,
+  de: AsyncOrSync<NonSideEffect<D>, E>,
+  ef: AsyncOrSync<NonSideEffect<E>, F>,
+  fg: AsyncOrSync<NonSideEffect<F>, G>,
+  gh: AsyncOrSync<NonSideEffect<G>, H>,
+  hi: AsyncOrSync<NonSideEffect<H>, I>
+): Promise<StrictResultValueChain<I, [B, C, D, E, F, G, H, I]>>;
+function pipeAsyncSideEffectStrict<A, EIn, B, C, D, E, F, G, H, I>(
   input: NonFunction<A> | SideEffect<EIn>,
-  ab: ValidateFn<F1, A>,
-  bc: ValidateFn<F2, ApplyValue<F1, A>>,
-  cd: ValidateFn<F3, ApplyValue<F2, ApplyValue<F1, A>>>,
-  de: ValidateFn<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>,
-  ef: ValidateFn<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>,
-  fg: ValidateFn<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>,
-  gh: ValidateFn<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>,
-  hi: ValidateFn<F8, ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>>
-): Promise<StrictResultValueWithInput<ApplyValue<F8, ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>>, [F1, F2, F3, F4, F5, F6, F7, F8], EIn>>;
-function pipeAsyncSideEffectStrict<
-  A,
-  F1 extends AsyncOrSync<A, any>,
-  F2 extends AsyncOrSync<ApplyValue<F1, A>, any>,
-  F3 extends AsyncOrSync<ApplyValue<F2, ApplyValue<F1, A>>, any>,
-  F4 extends AsyncOrSync<ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>, any>,
-  F5 extends AsyncOrSync<ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>, any>,
-  F6 extends AsyncOrSync<ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>, any>,
-  F7 extends AsyncOrSync<ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>, any>,
-  F8 extends AsyncOrSync<ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>, any>,
-  F9 extends AsyncOrSync<ApplyValue<F8, ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>>, any>
->(
+  ab: AsyncOrSync<A, B>,
+  bc: AsyncOrSync<NonSideEffect<B>, C>,
+  cd: AsyncOrSync<NonSideEffect<C>, D>,
+  de: AsyncOrSync<NonSideEffect<D>, E>,
+  ef: AsyncOrSync<NonSideEffect<E>, F>,
+  fg: AsyncOrSync<NonSideEffect<F>, G>,
+  gh: AsyncOrSync<NonSideEffect<G>, H>,
+  hi: AsyncOrSync<NonSideEffect<H>, I>
+): Promise<StrictResultValueChainWithInput<I, [B, C, D, E, F, G, H, I], EIn>>;
+function pipeAsyncSideEffectStrict<A, B, C, D, E, F, G, H, I, J>(
   input: NonFunction<A>,
-  ab: ValidateFn<F1, A>,
-  bc: ValidateFn<F2, ApplyValue<F1, A>>,
-  cd: ValidateFn<F3, ApplyValue<F2, ApplyValue<F1, A>>>,
-  de: ValidateFn<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>,
-  ef: ValidateFn<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>,
-  fg: ValidateFn<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>,
-  gh: ValidateFn<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>,
-  hi: ValidateFn<F8, ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>>,
-  ij: ValidateFn<F9, ApplyValue<F8, ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>>>
-): Promise<StrictResultValue<ApplyValue<F9, ApplyValue<F8, ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>>>, [F1, F2, F3, F4, F5, F6, F7, F8, F9]>>;
-function pipeAsyncSideEffectStrict<
-  A,
-  EIn,
-  F1 extends AsyncOrSync<A, any>,
-  F2 extends AsyncOrSync<ApplyValue<F1, A>, any>,
-  F3 extends AsyncOrSync<ApplyValue<F2, ApplyValue<F1, A>>, any>,
-  F4 extends AsyncOrSync<ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>, any>,
-  F5 extends AsyncOrSync<ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>, any>,
-  F6 extends AsyncOrSync<ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>, any>,
-  F7 extends AsyncOrSync<ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>, any>,
-  F8 extends AsyncOrSync<ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>, any>,
-  F9 extends AsyncOrSync<ApplyValue<F8, ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>>, any>
->(
+  ab: AsyncOrSync<A, B>,
+  bc: AsyncOrSync<NonSideEffect<B>, C>,
+  cd: AsyncOrSync<NonSideEffect<C>, D>,
+  de: AsyncOrSync<NonSideEffect<D>, E>,
+  ef: AsyncOrSync<NonSideEffect<E>, F>,
+  fg: AsyncOrSync<NonSideEffect<F>, G>,
+  gh: AsyncOrSync<NonSideEffect<G>, H>,
+  hi: AsyncOrSync<NonSideEffect<H>, I>,
+  ij: AsyncOrSync<NonSideEffect<I>, J>
+): Promise<StrictResultValueChain<J, [B, C, D, E, F, G, H, I, J]>>;
+function pipeAsyncSideEffectStrict<A, EIn, B, C, D, E, F, G, H, I, J>(
   input: NonFunction<A> | SideEffect<EIn>,
-  ab: ValidateFn<F1, A>,
-  bc: ValidateFn<F2, ApplyValue<F1, A>>,
-  cd: ValidateFn<F3, ApplyValue<F2, ApplyValue<F1, A>>>,
-  de: ValidateFn<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>,
-  ef: ValidateFn<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>,
-  fg: ValidateFn<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>,
-  gh: ValidateFn<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>,
-  hi: ValidateFn<F8, ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>>,
-  ij: ValidateFn<F9, ApplyValue<F8, ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>>>
-): Promise<StrictResultValueWithInput<ApplyValue<F9, ApplyValue<F8, ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>>>, [F1, F2, F3, F4, F5, F6, F7, F8, F9], EIn>>;
-function pipeAsyncSideEffectStrict<
-  A,
-  F1 extends AsyncOrSync<A, any>,
-  F2 extends AsyncOrSync<ApplyValue<F1, A>, any>,
-  F3 extends AsyncOrSync<ApplyValue<F2, ApplyValue<F1, A>>, any>,
-  F4 extends AsyncOrSync<ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>, any>,
-  F5 extends AsyncOrSync<ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>, any>,
-  F6 extends AsyncOrSync<ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>, any>,
-  F7 extends AsyncOrSync<ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>, any>,
-  F8 extends AsyncOrSync<ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>, any>,
-  F9 extends AsyncOrSync<ApplyValue<F8, ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>>, any>,
-  F10 extends AsyncOrSync<ApplyValue<F9, ApplyValue<F8, ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>>>, any>
->(
+  ab: AsyncOrSync<A, B>,
+  bc: AsyncOrSync<NonSideEffect<B>, C>,
+  cd: AsyncOrSync<NonSideEffect<C>, D>,
+  de: AsyncOrSync<NonSideEffect<D>, E>,
+  ef: AsyncOrSync<NonSideEffect<E>, F>,
+  fg: AsyncOrSync<NonSideEffect<F>, G>,
+  gh: AsyncOrSync<NonSideEffect<G>, H>,
+  hi: AsyncOrSync<NonSideEffect<H>, I>,
+  ij: AsyncOrSync<NonSideEffect<I>, J>
+): Promise<StrictResultValueChainWithInput<J, [B, C, D, E, F, G, H, I, J], EIn>>;
+function pipeAsyncSideEffectStrict<A, B, C, D, E, F, G, H, I, J, K>(
   input: NonFunction<A>,
-  ab: ValidateFn<F1, A>,
-  bc: ValidateFn<F2, ApplyValue<F1, A>>,
-  cd: ValidateFn<F3, ApplyValue<F2, ApplyValue<F1, A>>>,
-  de: ValidateFn<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>,
-  ef: ValidateFn<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>,
-  fg: ValidateFn<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>,
-  gh: ValidateFn<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>,
-  hi: ValidateFn<F8, ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>>,
-  ij: ValidateFn<F9, ApplyValue<F8, ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>>>,
-  jk: ValidateFn<F10, ApplyValue<F9, ApplyValue<F8, ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>>>>
-): Promise<StrictResultValue<ApplyValue<F10, ApplyValue<F9, ApplyValue<F8, ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>>>>, [F1, F2, F3, F4, F5, F6, F7, F8, F9, F10]>>;
-function pipeAsyncSideEffectStrict<
-  A,
-  EIn,
-  F1 extends AsyncOrSync<A, any>,
-  F2 extends AsyncOrSync<ApplyValue<F1, A>, any>,
-  F3 extends AsyncOrSync<ApplyValue<F2, ApplyValue<F1, A>>, any>,
-  F4 extends AsyncOrSync<ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>, any>,
-  F5 extends AsyncOrSync<ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>, any>,
-  F6 extends AsyncOrSync<ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>, any>,
-  F7 extends AsyncOrSync<ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>, any>,
-  F8 extends AsyncOrSync<ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>, any>,
-  F9 extends AsyncOrSync<ApplyValue<F8, ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>>, any>,
-  F10 extends AsyncOrSync<ApplyValue<F9, ApplyValue<F8, ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>>>, any>
->(
+  ab: AsyncOrSync<A, B>,
+  bc: AsyncOrSync<NonSideEffect<B>, C>,
+  cd: AsyncOrSync<NonSideEffect<C>, D>,
+  de: AsyncOrSync<NonSideEffect<D>, E>,
+  ef: AsyncOrSync<NonSideEffect<E>, F>,
+  fg: AsyncOrSync<NonSideEffect<F>, G>,
+  gh: AsyncOrSync<NonSideEffect<G>, H>,
+  hi: AsyncOrSync<NonSideEffect<H>, I>,
+  ij: AsyncOrSync<NonSideEffect<I>, J>,
+  jk: AsyncOrSync<NonSideEffect<J>, K>
+): Promise<StrictResultValueChain<K, [B, C, D, E, F, G, H, I, J, K]>>;
+function pipeAsyncSideEffectStrict<A, EIn, B, C, D, E, F, G, H, I, J, K>(
   input: NonFunction<A> | SideEffect<EIn>,
-  ab: ValidateFn<F1, A>,
-  bc: ValidateFn<F2, ApplyValue<F1, A>>,
-  cd: ValidateFn<F3, ApplyValue<F2, ApplyValue<F1, A>>>,
-  de: ValidateFn<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>,
-  ef: ValidateFn<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>,
-  fg: ValidateFn<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>,
-  gh: ValidateFn<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>,
-  hi: ValidateFn<F8, ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>>,
-  ij: ValidateFn<F9, ApplyValue<F8, ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>>>,
-  jk: ValidateFn<F10, ApplyValue<F9, ApplyValue<F8, ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>>>>
-): Promise<StrictResultValueWithInput<ApplyValue<F10, ApplyValue<F9, ApplyValue<F8, ApplyValue<F7, ApplyValue<F6, ApplyValue<F5, ApplyValue<F4, ApplyValue<F3, ApplyValue<F2, ApplyValue<F1, A>>>>>>>>>>, [F1, F2, F3, F4, F5, F6, F7, F8, F9, F10], EIn>>;
+  ab: AsyncOrSync<A, B>,
+  bc: AsyncOrSync<NonSideEffect<B>, C>,
+  cd: AsyncOrSync<NonSideEffect<C>, D>,
+  de: AsyncOrSync<NonSideEffect<D>, E>,
+  ef: AsyncOrSync<NonSideEffect<E>, F>,
+  fg: AsyncOrSync<NonSideEffect<F>, G>,
+  gh: AsyncOrSync<NonSideEffect<G>, H>,
+  hi: AsyncOrSync<NonSideEffect<H>, I>,
+  ij: AsyncOrSync<NonSideEffect<I>, J>,
+  jk: AsyncOrSync<NonSideEffect<J>, K>
+): Promise<StrictResultValueChainWithInput<K, [B, C, D, E, F, G, H, I, J, K], EIn>>;
 function pipeAsyncSideEffectStrict<A, Fns extends [AsyncOrSync<any, any>, ...AsyncOrSync<any, any>[]]>(
   input: NonFunction<A>,
   ...funcs: PipeCheckWithInput<A, Fns>

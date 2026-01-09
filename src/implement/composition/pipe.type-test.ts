@@ -832,3 +832,29 @@ type PipeAsyncSideEffectValueFirstTapExpected = Promise<AppState | SideEffect<an
 export type PipeAsyncSideEffectValueFirstTapIsStrict = Expect<
   Equal<typeof pipeAsyncSideEffectValueFirstTap, PipeAsyncSideEffectValueFirstTapExpected>
 >;
+
+export const pipeSideEffectStrictValueFirstTap = pipeSideEffectStrict(
+  appState,
+  tap((state) => state.todos.length)
+);
+
+type PipeSideEffectStrictValueFirstTapExpected = AppState | SideEffect<never>;
+export type PipeSideEffectStrictValueFirstTapIsStrict = Expect<
+  Equal<typeof pipeSideEffectStrictValueFirstTap, PipeSideEffectStrictValueFirstTapExpected>
+>;
+
+type PipeSideEffectStrictValueFirstTapEffects = EffectUnion<typeof pipeSideEffectStrictValueFirstTap>;
+type PipeSideEffectStrictValueFirstTapEffectsExpected = never;
+export type PipeSideEffectStrictValueFirstTapEffectsIsStrict = Expect<
+  Equal<PipeSideEffectStrictValueFirstTapEffects, PipeSideEffectStrictValueFirstTapEffectsExpected>
+>;
+
+export const pipeAsyncSideEffectStrictValueFirstTap = pipeAsyncSideEffectStrict(
+  appState,
+  tap((state) => state.todos.length)
+);
+
+type PipeAsyncSideEffectStrictValueFirstTapExpected = Promise<AppState | SideEffect<never>>;
+export type PipeAsyncSideEffectStrictValueFirstTapIsStrict = Expect<
+  Equal<typeof pipeAsyncSideEffectStrictValueFirstTap, PipeAsyncSideEffectStrictValueFirstTapExpected>
+>;
