@@ -24,6 +24,7 @@ export const Sidebar = mount(renew => {
         items: [
           { title: 'pipe', path: '/composition/pipe' },
           { title: 'pipeHint', path: '/composition/pipeHint' },
+          { title: 'pipeWithDeps', path: '/composition/pipeWithDeps' },
           { title: 'pipeSideEffect', path: '/composition/pipeSideEffect' },
           { title: 'pipeSideEffectStrict', path: '/composition/pipeSideEffectStrict' },
           { title: 'compose', path: '/composition/compose' },

@@ -340,6 +340,7 @@ export default curriedChunk;
 Functions for composing and transforming other functions.
 
 - **pipe** - Compose functions left to right (f → g → h)
+- **pipeWithDeps** - Bind dependencies once and inject them into pipeline steps
 - **pipeSideEffect** - Compose functions left to right with SideEffect short-circuiting
 - **pipeSideEffectStrict** - SideEffect composition with strict effect unions
 - **compose** - Compose functions right to left (h → g → f)

@@ -16,6 +16,8 @@ import { Pipe } from '@/pages/Pipe';
 import { Pipe_ko } from '@/pages/Pipe_ko';
 import { PipeHint } from '@/pages/PipeHint';
 import { PipeHint_ko } from '@/pages/PipeHint_ko';
+import { PipeWithDeps } from '@/pages/PipeWithDeps';
+import { PipeWithDeps_ko } from '@/pages/PipeWithDeps_ko';
 import { PipeSideEffect } from '@/pages/PipeSideEffect';
 import { PipeSideEffect_ko } from '@/pages/PipeSideEffect_ko';
 import { PipeSideEffectStrict } from '@/pages/PipeSideEffectStrict';
@@ -325,6 +327,8 @@ const routes: Record<string, PageComponent> = {
   '/ko/composition/pipe': Pipe_ko,
   '/composition/pipeHint': PipeHint,
   '/ko/composition/pipeHint': PipeHint_ko,
+  '/composition/pipeWithDeps': PipeWithDeps,
+  '/ko/composition/pipeWithDeps': PipeWithDeps_ko,
   '/composition/pipeSideEffect': PipeSideEffect,
   '/ko/composition/pipeSideEffect': PipeSideEffect_ko,
   '/composition/pipeSideEffectStrict': PipeSideEffectStrict,
