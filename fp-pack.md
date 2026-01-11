@@ -18,6 +18,7 @@ If `fp-pack` is **not** installed, use the project's existing conventions. Do **
 ## Core Rules (Keep In Memory)
 
 - Use `pipe`/`pipeAsync` for 2+ steps; for a single step, call the function directly.
+- Use `pipeStrict`/`pipeAsyncStrict` when you want stricter mismatch detection; otherwise stick to `pipe`/`pipeAsync`.
 - Prefer value-first: `pipe(value, ...)` / `pipeAsync(value, ...)` runs immediately and improves inference (the input anchors types). Use functions-first only when you need a reusable pipeline.
 - If the first arg is a function, it's treated as composition; wrap function values with `from()`.
 - Keep pipeline functions **unary**; prefer data-last, curried helpers.
@@ -292,7 +293,7 @@ const result = pipe(
 ## Available Functions (Quick Index)
 
 ### Composition
-- `pipe`, `pipeAsync`
+- `pipe`, `pipeStrict`, `pipeAsync`, `pipeAsyncStrict`
 - SideEffect-aware: `pipeSideEffect`, `pipeSideEffectStrict`, `pipeAsyncSideEffect`, `pipeAsyncSideEffectStrict`
 - Utilities: `from`, `tap`, `tap0`, `once`, `memoize`, `identity`, `constant`, `curry`, `compose`
 - SideEffect helpers: `SideEffect`, `isSideEffect`, `matchSideEffect`, `runPipeResult`

@@ -1,4 +1,5 @@
 export { default as pipeAsync } from './pipeAsync';
+export { default as pipeAsyncStrict } from './pipeAsyncStrict';
 export { default as pipeAsyncSideEffect } from './pipeAsyncSideEffect';
 export { default as pipeAsyncSideEffectStrict } from './pipeAsyncSideEffectStrict';
 export { default as delay } from './delay';

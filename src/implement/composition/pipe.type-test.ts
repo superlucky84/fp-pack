@@ -1,9 +1,11 @@
 import SideEffect, { runPipeResult } from './sideEffect';
 import from from './from';
 import pipe from './pipe';
+import pipeStrict from './pipeStrict';
 import pipeSideEffect from './pipeSideEffect';
 import pipeSideEffectStrict from './pipeSideEffectStrict';
 import pipeAsync from '../async/pipeAsync';
+import pipeAsyncStrict from '../async/pipeAsyncStrict';
 import pipeAsyncSideEffect from '../async/pipeAsyncSideEffect';
 import pipeAsyncSideEffectStrict from '../async/pipeAsyncSideEffectStrict';
 import tap from './tap';
@@ -105,6 +107,71 @@ export const pipeFromNoInputValue = pipeFromNoInput();
 
 type PipeFromNoInputValueExpected = number;
 export type PipeFromNoInputValueIsStrict = Expect<Equal<typeof pipeFromNoInputValue, PipeFromNoInputValueExpected>>;
+
+export const purePipeStrict = pipeStrict(
+  (value: number) => value + 1,
+  (value: number) => value * 2,
+  (value: number) => `n:${value}`
+);
+
+type PurePipeStrictExpected = (input: number) => string;
+export type PipeStrictPureIsStrict = Expect<Equal<typeof purePipeStrict, PurePipeStrictExpected>>;
+
+export const purePipeStrictZero = pipeStrict(() => 3, (value: number) => value + 1);
+
+type PurePipeStrictZeroExpected = () => number;
+export type PipeStrictZeroIsStrict = Expect<Equal<typeof purePipeStrictZero, PurePipeStrictZeroExpected>>;
+
+export const purePipeStrictZeroValue = purePipeStrictZero();
+
+type PurePipeStrictZeroValueExpected = number;
+export type PipeStrictZeroValueIsStrict = Expect<Equal<typeof purePipeStrictZeroValue, PurePipeStrictZeroValueExpected>>;
+
+export const purePipeStrictValue = pipeStrict(
+  1,
+  (value: number) => value + 1,
+  (value: number) => `n:${value}`
+);
+
+type PurePipeStrictValueExpected = string;
+export type PipeStrictValueIsStrict = Expect<Equal<typeof purePipeStrictValue, PurePipeStrictValueExpected>>;
+
+export const pipeStrictFromTen = pipeStrict(
+  from(1),
+  (value: number) => value + 1,
+  (value: number) => value * 2,
+  (value: number) => `${value}`,
+  (value: string) => value.padStart(3, '0'),
+  (value: string) => value.length,
+  (value: number) => value + 1,
+  (value: number) => `${value}`,
+  (value: string) => value.padStart(4, '0'),
+  (value: string) => `n:${value}`
+);
+
+export const pipeStrictFromTenValue = pipeStrictFromTen('input');
+
+type PipeStrictFromTenValueExpected = string;
+export type PipeStrictFromTenValueIsStrict = Expect<Equal<typeof pipeStrictFromTenValue, PipeStrictFromTenValueExpected>>;
+
+export const pipeStrictFromTenValueNoInput = pipeStrictFromTen();
+
+type PipeStrictFromTenValueNoInputExpected = string;
+export type PipeStrictFromTenValueNoInputIsStrict = Expect<
+  Equal<typeof pipeStrictFromTenValueNoInput, PipeStrictFromTenValueNoInputExpected>
+>;
+
+export const pipeStrictFromNoInput = pipeStrict(from(1));
+
+type PipeStrictFromNoInputExpected = (input?: unknown) => number;
+export type PipeStrictFromNoInputIsStrict = Expect<Equal<typeof pipeStrictFromNoInput, PipeStrictFromNoInputExpected>>;
+
+export const pipeStrictFromNoInputValue = pipeStrictFromNoInput();
+
+type PipeStrictFromNoInputValueExpected = number;
+export type PipeStrictFromNoInputValueIsStrict = Expect<
+  Equal<typeof pipeStrictFromNoInputValue, PipeStrictFromNoInputValueExpected>
+>;
 
 export const pipeWithSideEffectInput = pipeSideEffect(
   (value: number) => value + 1,
@@ -296,6 +363,73 @@ export const pipeAsyncFromNoInputValue = pipeAsyncFromNoInput();
 type PipeAsyncFromNoInputValueExpected = Promise<number>;
 export type PipeAsyncFromNoInputValueIsStrict = Expect<
   Equal<typeof pipeAsyncFromNoInputValue, PipeAsyncFromNoInputValueExpected>
+>;
+
+export const purePipeAsyncStrict = pipeAsyncStrict(
+  (value: number) => value + 1,
+  async (value: number) => value * 2,
+  (value: number) => `n:${value}`
+);
+
+type PurePipeAsyncStrictExpected = (input: number) => Promise<string>;
+export type PipeAsyncStrictPureIsStrict = Expect<Equal<typeof purePipeAsyncStrict, PurePipeAsyncStrictExpected>>;
+
+export const purePipeAsyncStrictZero = pipeAsyncStrict(() => 1, async (value: number) => value + 1);
+
+type PurePipeAsyncStrictZeroExpected = () => Promise<number>;
+export type PipeAsyncStrictZeroIsStrict = Expect<Equal<typeof purePipeAsyncStrictZero, PurePipeAsyncStrictZeroExpected>>;
+
+export const purePipeAsyncStrictZeroValue = purePipeAsyncStrictZero();
+
+type PurePipeAsyncStrictZeroValueExpected = Promise<number>;
+export type PipeAsyncStrictZeroValueIsStrict = Expect<
+  Equal<typeof purePipeAsyncStrictZeroValue, PurePipeAsyncStrictZeroValueExpected>
+>;
+
+export const purePipeAsyncStrictValue = pipeAsyncStrict(1);
+
+type PurePipeAsyncStrictValueExpected = Promise<number>;
+export type PipeAsyncStrictValueIsStrict = Expect<Equal<typeof purePipeAsyncStrictValue, PurePipeAsyncStrictValueExpected>>;
+
+export const pipeAsyncStrictFromTen = pipeAsyncStrict(
+  from(1),
+  (value: number) => value + 1,
+  async (value: number) => value * 2,
+  (value: number) => `${value}`,
+  (value: string) => value.padStart(3, '0'),
+  async (value: string) => value.length,
+  (value: number) => value + 1,
+  (value: number) => `${value}`,
+  (value: string) => value.padStart(4, '0'),
+  (value: string) => `n:${value}`
+);
+
+export const pipeAsyncStrictFromTenValue = pipeAsyncStrictFromTen('input');
+
+type PipeAsyncStrictFromTenValueExpected = Promise<string>;
+export type PipeAsyncStrictFromTenValueIsStrict = Expect<
+  Equal<typeof pipeAsyncStrictFromTenValue, PipeAsyncStrictFromTenValueExpected>
+>;
+
+export const pipeAsyncStrictFromTenValueNoInput = pipeAsyncStrictFromTen();
+
+type PipeAsyncStrictFromTenValueNoInputExpected = Promise<string>;
+export type PipeAsyncStrictFromTenValueNoInputIsStrict = Expect<
+  Equal<typeof pipeAsyncStrictFromTenValueNoInput, PipeAsyncStrictFromTenValueNoInputExpected>
+>;
+
+export const pipeAsyncStrictFromNoInput = pipeAsyncStrict(from(1));
+
+type PipeAsyncStrictFromNoInputExpected = (input?: unknown) => Promise<number>;
+export type PipeAsyncStrictFromNoInputIsStrict = Expect<
+  Equal<typeof pipeAsyncStrictFromNoInput, PipeAsyncStrictFromNoInputExpected>
+>;
+
+export const pipeAsyncStrictFromNoInputValue = pipeAsyncStrictFromNoInput();
+
+type PipeAsyncStrictFromNoInputValueExpected = Promise<number>;
+export type PipeAsyncStrictFromNoInputValueIsStrict = Expect<
+  Equal<typeof pipeAsyncStrictFromNoInputValue, PipeAsyncStrictFromNoInputValueExpected>
 >;
 
 export const pipeAsyncWithSideEffectInput = pipeAsyncSideEffect(
@@ -741,12 +875,16 @@ export type PipeAsyncSideEffectStrictFromNoInputValueIsStrict = Expect<
 // Negative cases: input required when not using from/zero-arity.
 // @ts-expect-error input required for unary pipe
 purePipe();
+// @ts-expect-error input required for unary pipeStrict
+purePipeStrict();
 // @ts-expect-error input required for unary pipeSideEffect
 pipeWithSideEffectInput();
 // @ts-expect-error input required for unary pipeSideEffectStrict
 strictPipeSideEffect();
 // @ts-expect-error input required for unary pipeAsync
 purePipeAsync();
+// @ts-expect-error input required for unary pipeAsyncStrict
+purePipeAsyncStrict();
 // @ts-expect-error input required for unary pipeAsyncSideEffect
 pipeAsyncWithSideEffectInput();
 // @ts-expect-error input required for unary pipeAsyncSideEffectStrict
@@ -754,12 +892,16 @@ strictPipeAsyncSideEffect();
 
 // @ts-expect-error input required for direct pipe call
 pipe((value: number) => value + 1)();
+// @ts-expect-error input required for direct pipeStrict call
+pipeStrict((value: number) => value + 1)();
 // @ts-expect-error input required for direct pipeSideEffect call
 pipeSideEffect((value: number) => value + 1)();
 // @ts-expect-error input required for direct pipeSideEffectStrict call
 pipeSideEffectStrict((value: number) => value + 1)();
 // @ts-expect-error input required for direct pipeAsync call
 pipeAsync((value: number) => value + 1)();
+// @ts-expect-error input required for direct pipeAsyncStrict call
+pipeAsyncStrict((value: number) => value + 1)();
 // @ts-expect-error input required for direct pipeAsyncSideEffect call
 pipeAsyncSideEffect((value: number) => value + 1)();
 // @ts-expect-error input required for direct pipeAsyncSideEffectStrict call
@@ -773,6 +915,14 @@ const strictMismatchFn3 = (userName: string) => userName.toLowerCase();
 pipeSideEffectStrict(1, strictMismatchFn1, strictMismatchFn2);
 // @ts-expect-error mismatched types in pipeSideEffectStrict with explicit annotation
 pipeSideEffectStrict(1, strictMismatchFn1, strictMismatchFn3);
+// @ts-expect-error mismatched types in pipeStrict
+pipeStrict(1, strictMismatchFn1, strictMismatchFn2);
+// @ts-expect-error mismatched types in pipeStrict with explicit annotation
+pipeStrict(1, strictMismatchFn1, strictMismatchFn3);
+// @ts-expect-error mismatched types in pipeAsyncStrict
+pipeAsyncStrict(1, strictMismatchFn1, strictMismatchFn2);
+// @ts-expect-error mismatched types in pipeAsyncStrict with explicit annotation
+pipeAsyncStrict(1, strictMismatchFn1, strictMismatchFn3);
 
 type AppState = {
   todos: number[];

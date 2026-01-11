@@ -75,7 +75,7 @@ export const Guide = () => (
     </p>
 
     <ol class="space-y-3 text-gray-700 dark:text-gray-300 list-decimal list-inside mb-8">
-      <li><strong>Function Composition</strong>: Use <code class="text-sm">pipe</code> and <code class="text-sm">pipeAsync</code> as the primary tools for combining operations</li>
+      <li><strong>Function Composition</strong>: Use <code class="text-sm">pipe</code> and <code class="text-sm">pipeAsync</code> as the primary tools for combining operations (use <code class="text-sm">pipeStrict</code> / <code class="text-sm">pipeAsyncStrict</code> for stricter mismatch checks)</li>
       <li><strong>Declarative Code</strong>: Prefer function composition over imperative loops and mutations</li>
       <li><strong>No Monad Pattern</strong>: Traditional FP monads (Option, Either, etc.) are NOT used - they don't compose well with <code class="text-sm">pipe</code></li>
       <li><strong>SideEffect Pattern</strong>: Handle errors and side effects using <code class="text-sm">SideEffect</code> with <code class="text-sm">pipeSideEffect</code> / <code class="text-sm">pipeAsyncSideEffect</code> pipelines. For strict unions, use <code class="text-sm">pipeSideEffectStrict</code> / <code class="text-sm">pipeAsyncSideEffectStrict</code></li>
@@ -641,6 +641,17 @@ zeroArg(); // [4, 8] - No type errors, clean inference`}
           </tr>
           <tr class="border-b border-gray-200 dark:border-gray-800">
             <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              Stricter mismatch detection (sync)
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <code class="text-xs bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">pipeStrict</code>
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              Tighter type checks between steps
+            </td>
+          </tr>
+          <tr class="border-b border-gray-200 dark:border-gray-800">
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
               Pure data transformation (async)
             </td>
             <td class="px-4 py-3 text-sm">
@@ -648,6 +659,17 @@ zeroArg(); // [4, 8] - No type errors, clean inference`}
             </td>
             <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
               No SideEffect handling needed
+            </td>
+          </tr>
+          <tr class="border-b border-gray-200 dark:border-gray-800">
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              Stricter mismatch detection (async)
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <code class="text-xs bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">pipeAsyncStrict</code>
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              Tighter type checks between steps
             </td>
           </tr>
           <tr class="border-b border-gray-200 dark:border-gray-800">

@@ -290,6 +290,7 @@ const result = Array.from({ length: 1000000 }, (_, i) => i + 1)
 
 ### Composition
 - `pipe` - Left-to-right function composition (sync)
+- `pipeStrict` - Left-to-right composition with stricter type checks
 - `pipeSideEffect` - Left-to-right composition with SideEffect short-circuiting
 - `pipeSideEffectStrict` - SideEffect composition with strict effect unions
 - `compose` - Right-to-left function composition
@@ -311,6 +312,7 @@ const result = Array.from({ length: 1000000 }, (_, i) => i + 1)
 
 ### Async
 - `pipeAsync` - Async function composition
+- `pipeAsyncStrict` - Async composition with stricter type checks
 - `pipeAsyncSideEffect` - Async composition with SideEffect short-circuiting
 - `pipeAsyncSideEffectStrict` - Async SideEffect composition with strict effect unions
 - `delay` - Delay execution
@@ -760,14 +762,15 @@ const updateUser = assoc('lastLogin', new Date());
 ## Quick Reference
 
 ### Import Paths
-- Main functions: `import { pipe, map, filter } from 'fp-pack'`
-- Async: `import { pipeAsync, delay, retry } from 'fp-pack'`
+- Main functions: `import { pipe, pipeStrict, map, filter } from 'fp-pack'`
+- Async: `import { pipeAsync, pipeAsyncStrict, delay, retry } from 'fp-pack'`
 - SideEffect: `import { pipeSideEffect, pipeSideEffectStrict, pipeAsyncSideEffect, pipeAsyncSideEffectStrict, SideEffect } from 'fp-pack'`
 - Stream: `import { map, filter, toArray } from 'fp-pack/stream'`
 
 ### When to Use What
 - **Pure sync transformations**: `pipe` + array/object functions
 - **Pure async operations**: `pipeAsync`
+- **Stricter mismatch checks**: `pipeStrict` (sync) / `pipeAsyncStrict` (async)
 - **Error handling with SideEffect**: `pipeSideEffect` (sync) / `pipeAsyncSideEffect` (async)
 - **Strict SideEffect unions**: `pipeSideEffectStrict` (sync) / `pipeAsyncSideEffectStrict` (async)
 - **Type-safe result handling**: `isSideEffect` for precise type narrowing (prefer this when you need branch-specific types)

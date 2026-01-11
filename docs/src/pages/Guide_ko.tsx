@@ -75,7 +75,7 @@ export const Guide_ko = () => (
     </p>
 
     <ol class="space-y-3 text-gray-700 dark:text-gray-300 list-decimal list-inside mb-8">
-      <li><strong>함수 조합</strong>: <code class="text-sm">pipe</code>와 <code class="text-sm">pipeAsync</code>를 연산 결합의 주요 도구로 사용</li>
+      <li><strong>함수 조합</strong>: <code class="text-sm">pipe</code>와 <code class="text-sm">pipeAsync</code>를 연산 결합의 주요 도구로 사용 (더 엄격한 타입 검사가 필요하면 <code class="text-sm">pipeStrict</code> / <code class="text-sm">pipeAsyncStrict</code> 사용)</li>
       <li><strong>선언적 코드</strong>: 명령형 루프 및 변이보다 함수 조합 선호</li>
       <li><strong>모나드 패턴 없음</strong>: 전통적인 FP 모나드(Option, Either 등)는 사용하지 않음 - <code class="text-sm">pipe</code>와 잘 조합되지 않음</li>
       <li><strong>SideEffect 패턴</strong>: <code class="text-sm">pipeSideEffect</code> / <code class="text-sm">pipeAsyncSideEffect</code> 파이프라인과 함께 <code class="text-sm">SideEffect</code>를 사용하여 에러 및 부수 효과 처리. 엄격한 유니온 타입이 필요하면 <code class="text-sm">pipeSideEffectStrict</code> / <code class="text-sm">pipeAsyncSideEffectStrict</code> 사용</li>
@@ -647,6 +647,17 @@ zeroArg(); // [4, 8] - 타입 에러 없음, 깔끔한 추론`}
           </tr>
           <tr class="border-b border-gray-200 dark:border-gray-800">
             <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              더 엄격한 타입 불일치 검출 (동기)
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <code class="text-xs bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">pipeStrict</code>
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              단계 간 타입 검사를 더 강하게 적용
+            </td>
+          </tr>
+          <tr class="border-b border-gray-200 dark:border-gray-800">
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
               순수한 데이터 변환 (비동기)
             </td>
             <td class="px-4 py-3 text-sm">
@@ -654,6 +665,17 @@ zeroArg(); // [4, 8] - 타입 에러 없음, 깔끔한 추론`}
             </td>
             <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
               SideEffect 처리 불필요
+            </td>
+          </tr>
+          <tr class="border-b border-gray-200 dark:border-gray-800">
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              더 엄격한 타입 불일치 검출 (비동기)
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <code class="text-xs bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">pipeAsyncStrict</code>
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+              단계 간 타입 검사를 더 강하게 적용
             </td>
           </tr>
           <tr class="border-b border-gray-200 dark:border-gray-800">

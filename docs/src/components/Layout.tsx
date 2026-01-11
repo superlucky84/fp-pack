@@ -14,6 +14,8 @@ import { AIAgentAddon } from '@/pages/AIAgentAddon';
 import { AIAgentAddon_ko } from '@/pages/AIAgentAddon_ko';
 import { Pipe } from '@/pages/Pipe';
 import { Pipe_ko } from '@/pages/Pipe_ko';
+import { PipeStrict } from '@/pages/PipeStrict';
+import { PipeStrict_ko } from '@/pages/PipeStrict_ko';
 import { PipeHint } from '@/pages/PipeHint';
 import { PipeHint_ko } from '@/pages/PipeHint_ko';
 import { PipeWithDeps } from '@/pages/PipeWithDeps';
@@ -279,6 +281,8 @@ import { Trim } from '@/pages/Trim';
 import { Trim_ko } from '@/pages/Trim_ko';
 import { PipeAsync } from '@/pages/PipeAsync';
 import { PipeAsync_ko } from '@/pages/PipeAsync_ko';
+import { PipeAsyncStrict } from '@/pages/PipeAsyncStrict';
+import { PipeAsyncStrict_ko } from '@/pages/PipeAsyncStrict_ko';
 import { PipeAsyncSideEffect } from '@/pages/PipeAsyncSideEffect';
 import { PipeAsyncSideEffect_ko } from '@/pages/PipeAsyncSideEffect_ko';
 import { PipeAsyncSideEffectStrict } from '@/pages/PipeAsyncSideEffectStrict';
@@ -325,6 +329,8 @@ const routes: Record<string, PageComponent> = {
   '/ko/ai-agent-addon': AIAgentAddon_ko,
   '/composition/pipe': Pipe,
   '/ko/composition/pipe': Pipe_ko,
+  '/composition/pipeStrict': PipeStrict,
+  '/ko/composition/pipeStrict': PipeStrict_ko,
   '/composition/pipeHint': PipeHint,
   '/ko/composition/pipeHint': PipeHint_ko,
   '/composition/pipeWithDeps': PipeWithDeps,
@@ -367,6 +373,8 @@ const routes: Record<string, PageComponent> = {
   '/ko/composition/runPipeResult': RunPipeResult_ko,
   '/async/pipeAsync': PipeAsync,
   '/ko/async/pipeAsync': PipeAsync_ko,
+  '/async/pipeAsyncStrict': PipeAsyncStrict,
+  '/ko/async/pipeAsyncStrict': PipeAsyncStrict_ko,
   '/async/pipeAsyncSideEffect': PipeAsyncSideEffect,
   '/ko/async/pipeAsyncSideEffect': PipeAsyncSideEffect_ko,
   '/async/pipeAsyncSideEffectStrict': PipeAsyncSideEffectStrict,

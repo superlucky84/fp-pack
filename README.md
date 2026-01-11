@@ -269,6 +269,8 @@ const fetchUserProfile = pipeAsync(
 const profile = await fetchUserProfile('user-123');
 ```
 
+Need stricter mismatch detection? Use `pipeAsyncStrict`.
+
 ### Object Transformation
 
 ```typescript
@@ -340,6 +342,7 @@ export default curriedChunk;
 Functions for composing and transforming other functions.
 
 - **pipe** - Compose functions left to right (f → g → h)
+- **pipeStrict** - Strict typing for pure pipelines
 - **pipeWithDeps** - Bind dependencies once and inject them into pipeline steps
 - **pipeSideEffect** - Compose functions left to right with SideEffect short-circuiting
 - **pipeSideEffectStrict** - SideEffect composition with strict effect unions
@@ -486,6 +489,7 @@ Functions for string manipulation. All operations return new strings.
 Functions for asynchronous operations.
 
 - **pipeAsync** - Compose async/sync functions (pure)
+- **pipeAsyncStrict** - Strict typing for async pipelines
 - **pipeAsyncSideEffect** - Async composition with SideEffect short-circuiting
 - **pipeAsyncSideEffectStrict** - Async SideEffect composition with strict effect unions
 - **delay** - Wait for specified milliseconds

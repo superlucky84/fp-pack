@@ -1,4 +1,5 @@
 export { default as pipe } from './pipe';
+export { default as pipeStrict } from './pipeStrict';
 export { default as pipeHint } from './pipeHint';
 export { default as pipeWithDeps } from './pipeWithDeps';
 export { default as pipeSideEffect } from './pipeSideEffect';

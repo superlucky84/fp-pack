@@ -294,6 +294,22 @@ result;  // 5
 
     <div class="grid gap-6 mt-6">
       <a
+        href="/composition/pipeStrict"
+        onClick={(e: Event) => {
+          e.preventDefault();
+          navigateTo('/composition/pipeStrict');
+        }}
+        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-emerald-500 dark:hover:border-emerald-500 transition-colors cursor-pointer"
+      >
+        <h3 class="text-lg md:text-xl font-medium text-emerald-600 dark:text-emerald-400 mb-2">
+          pipeStrict →
+        </h3>
+        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
+          순수 파이프라인에서 더 엄격한 타입 검사.
+        </p>
+      </a>
+
+      <a
         href="/composition/pipeSideEffect"
         onClick={(e: Event) => {
           e.preventDefault();

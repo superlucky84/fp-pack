@@ -23,6 +23,7 @@ export const Sidebar = mount(renew => {
         title: isKorean ? '조합' : 'Composition',
         items: [
           { title: 'pipe', path: '/composition/pipe' },
+          { title: 'pipeStrict', path: '/composition/pipeStrict' },
           { title: 'pipeHint', path: '/composition/pipeHint' },
           { title: 'pipeWithDeps', path: '/composition/pipeWithDeps' },
           { title: 'pipeSideEffect', path: '/composition/pipeSideEffect' },
@@ -68,6 +69,7 @@ export const Sidebar = mount(renew => {
         title: isKorean ? '비동기' : 'Async',
         items: [
           { title: 'pipeAsync', path: '/async/pipeAsync' },
+          { title: 'pipeAsyncStrict', path: '/async/pipeAsyncStrict' },
           { title: 'pipeAsyncSideEffect', path: '/async/pipeAsyncSideEffect' },
           { title: 'pipeAsyncSideEffectStrict', path: '/async/pipeAsyncSideEffectStrict' },
           { title: 'delay', path: '/async/delay' },
