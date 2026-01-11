@@ -95,6 +95,9 @@ There's no framework and no heavy abstractions—just well-chosen helpers that m
 - **Pipe-centric composition**
   `pipe` (sync) and `pipeAsync` (async) are the primary composition tools. All utilities are designed to work seamlessly in pipe chains.
 
+- **DX-optimized type inference**
+  **"Don't let strictness hinder inference."** fp-pack's standard `pipe` prioritizes **global type stability** over local constraints at connection points. The inference chain, designed without `NoInfer`, lets TypeScript derive perfect result types at the end of your pipeline—even without manual annotations. This **"Global Stability"** approach means you write less, TypeScript infers more, and your pipelines just work. When you need stricter mismatch detection, use `pipeStrict`/`pipeAsyncStrict`; for maximum inference power with minimal friction, stick to `pipe`/`pipeAsync`.
+
 - **Pragmatic error handling**
   The `SideEffect` pattern handles errors and side effects declaratively in `pipeSideEffect`/`pipeAsyncSideEffect` pipelines. Write normal functions that compose naturally—these pipelines automatically short-circuit when they encounter a `SideEffect`, eliminating the need for wrapper types everywhere. For strict union typing across branches, use `pipeSideEffectStrict` / `pipeAsyncSideEffectStrict`. Use `runPipeResult`/`matchSideEffect` **outside** the pipeline. If the input is narrowed to `SideEffect<R>` (e.g. after `isSideEffect`), `runPipeResult` returns `R`. If the result type is widened (e.g. `SideEffect<any>`), provide generics to recover a safe union. Use `isSideEffect` for precise runtime narrowing.
 
@@ -664,9 +667,9 @@ Provide generics when inference is lost; prefer `isSideEffect` for precise narro
 Most data transformations are pure and don't need SideEffect handling. Use `pipe` for sync operations and `pipeAsync` for async operations. **Only switch to SideEffect-aware pipes when you actually need** early termination or error handling with side effects.
 
 **Pure Pipelines:**
-- **`pipe`** - Synchronous, **pure** transformations (99% of cases)
-- **`pipeStrict`** - Sync pipe with stricter type checking (catches mismatches earlier)
-- **`pipeAsync`** - Async, **pure** transformations (99% of cases)
+- **`pipe`** - Synchronous, **pure** transformations (99% of cases) - **DX-optimized** for global type inference
+- **`pipeStrict`** - Sync pipe with stricter type checking (catches mismatches earlier at connection points)
+- **`pipeAsync`** - Async, **pure** transformations (99% of cases) - **DX-optimized** for global type inference
 - **`pipeAsyncStrict`** - Async pipe with stricter type checking
 
 **SideEffect-Aware Pipelines:**
@@ -675,7 +678,9 @@ Most data transformations are pure and don't need SideEffect handling. Use `pipe
 - **`pipeAsyncSideEffect`** - **Only when you need** SideEffect short-circuiting (async)
 - **`pipeAsyncSideEffectStrict`** - Async SideEffect pipelines with strict effect unions
 
-**Important:** `pipe` and `pipeAsync` are for **pure** functions only—they don't handle `SideEffect`. If your pipeline can return `SideEffect`, use `pipeSideEffect` or `pipeAsyncSideEffect` instead. Choose the strict variants (`pipeStrict`, `pipeAsyncStrict`, `pipeSideEffectStrict`, `pipeAsyncSideEffectStrict`) when you need stricter type checking or precise unions for SideEffect results.
+**Important:**
+- `pipe` and `pipeAsync` are for **pure** functions only—they don't handle `SideEffect`. If your pipeline can return `SideEffect`, use `pipeSideEffect` or `pipeAsyncSideEffect` instead.
+- **Inference vs Strictness trade-off**: Standard `pipe`/`pipeAsync` prioritize **global type stability** (TypeScript infers the final result perfectly without manual annotations). Strict variants (`pipeStrict`, `pipeAsyncStrict`) catch type mismatches earlier but may require more type hints. Choose based on your needs: maximum inference power (standard) vs early error detection (strict).
 
 ```typescript
 // Pure sync pipe - no SideEffect handling
