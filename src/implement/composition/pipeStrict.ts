@@ -565,4 +565,7 @@ function pipeStrict(...args: Array<any>) {
   return rest.reduce((acc, fn) => fn(acc), input);
 }
 
-export default pipeStrict;
+const pipeStrictWithBrand = pipeStrict as typeof pipeStrict & { readonly __pipe_strict: true };
+Object.defineProperty(pipeStrictWithBrand, '__pipe_strict', { value: true });
+
+export default pipeStrictWithBrand;

@@ -1,9 +1,13 @@
 import from from './from';
 import SideEffect from './sideEffect';
 import pipe from './pipe';
+import pipeStrict from './pipeStrict';
 import pipeWithDeps from './pipeWithDeps';
 import pipeAsyncSideEffect from '../async/pipeAsyncSideEffect';
+import pipeAsyncSideEffectStrict from '../async/pipeAsyncSideEffectStrict';
+import pipeAsyncStrict from '../async/pipeAsyncStrict';
 import pipeSideEffect from './pipeSideEffect';
+import pipeSideEffectStrict from './pipeSideEffectStrict';
 
 type Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B ? 1 : 2) ? true : false;
 type Extends<A, B> = A extends B ? true : false;
@@ -25,6 +29,15 @@ const pipeSyncDeps = pipeWithDeps(pipe)(
 
 type PipeSyncDepsExpected = (deps: { add: number }) => string;
 export type PipeSyncDepsIsStrict = Expect<Equal<typeof pipeSyncDeps, PipeSyncDepsExpected>>;
+
+const pipeSyncStrictDeps = pipeWithDeps(pipeStrict)(
+  5,
+  (value: number, deps: { add: number }) => value + deps.add,
+  (value: number) => `${value}`
+);
+
+type PipeSyncStrictDepsExpected = (deps: { add: number }) => string;
+export type PipeSyncStrictDepsIsStrict = Expect<Equal<typeof pipeSyncStrictDeps, PipeSyncStrictDepsExpected>>;
 
 const pipeSyncDepsDataLast = pipeWithDeps(pipe)(
   (value: number, deps: { add: number }) => value + deps.add,
@@ -62,6 +75,15 @@ const pipeAsyncDeps = pipeWithDeps(pipeAsyncSideEffect)(
 type PipeAsyncDepsExpected = (deps: Db & Logger) => Promise<number | SideEffect<any>>;
 export type PipeAsyncDepsIsStrict = Expect<Equal<typeof pipeAsyncDeps, PipeAsyncDepsExpected>>;
 
+const pipeAsyncStrictDeps = pipeWithDeps(pipeAsyncStrict)(
+  1,
+  async (id: number, deps: Db) => deps.query(id),
+  (user: { name: string }) => user.name
+);
+
+type PipeAsyncStrictDepsExpected = (deps: Db) => Promise<string>;
+export type PipeAsyncStrictDepsIsStrict = Expect<Equal<typeof pipeAsyncStrictDeps, PipeAsyncStrictDepsExpected>>;
+
 const pipeAsyncDepsDataLast = pipeWithDeps(pipeAsyncSideEffect)(
   async (id: number, deps: Db) => deps.query(id),
   (user: { name: string }) => user.name,
@@ -75,3 +97,18 @@ type PipeAsyncDepsDataLastExpected = (input: number) => (deps: Db & Logger) => P
 export type PipeAsyncDepsDataLastIsStrict = Expect<
   Extends<typeof pipeAsyncDepsDataLast, PipeAsyncDepsDataLastExpected>
 >;
+
+const strictMismatchFn1 = (id: number) => id;
+const strictMismatchFn2 = (userName: string) => userName;
+
+// @ts-expect-error mismatched types in pipeWithDeps(pipeSideEffectStrict)
+pipeWithDeps(pipeSideEffectStrict)(1, strictMismatchFn1, strictMismatchFn2);
+
+// @ts-expect-error mismatched types in pipeWithDeps(pipeAsyncSideEffectStrict)
+pipeWithDeps(pipeAsyncSideEffectStrict)(1, strictMismatchFn1, strictMismatchFn2);
+
+// @ts-expect-error mismatched types in pipeWithDeps(pipeStrict)
+pipeWithDeps(pipeStrict)(1, strictMismatchFn1, strictMismatchFn2);
+
+// @ts-expect-error mismatched types in pipeWithDeps(pipeAsyncStrict)
+pipeWithDeps(pipeAsyncStrict)(1, strictMismatchFn1, strictMismatchFn2);

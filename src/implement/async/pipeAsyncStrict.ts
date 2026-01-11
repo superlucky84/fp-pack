@@ -598,4 +598,7 @@ function pipeAsyncStrict(...args: Array<any>) {
   return run(input, rest);
 }
 
-export default pipeAsyncStrict;
+const pipeAsyncStrictWithBrand = pipeAsyncStrict as typeof pipeAsyncStrict & { readonly __pipe_async_strict: true };
+Object.defineProperty(pipeAsyncStrictWithBrand, '__pipe_async_strict', { value: true });
+
+export default pipeAsyncStrictWithBrand;
