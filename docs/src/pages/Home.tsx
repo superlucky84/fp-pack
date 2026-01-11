@@ -100,8 +100,8 @@ export const Home = () => (
           Standard Pipe Operations
         </h3>
         <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-3">
-          <code class="text-xs md:text-sm">pipe</code> is a pure function composition tool. Prefer value-first
-          <code class="text-xs md:text-sm">pipe(data, ...)</code> for inference, and use <code class="text-xs md:text-sm">from</code> when you need a zero-argument pipeline.
+          <code class="text-xs md:text-sm">pipe</code> / <code class="text-xs md:text-sm">pipeAsync</code> are pure function composition tools. Prefer value-first
+          <code class="text-xs md:text-sm">pipe(data, ...)</code> for inference. Use <code class="text-xs md:text-sm">pipeStrict</code> / <code class="text-xs md:text-sm">pipeAsyncStrict</code> for stricter type checking when you need to catch mismatches earlier.
         </p>
         <CodeBlock
           language="typescript"

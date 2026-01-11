@@ -100,8 +100,8 @@ export const Home_ko = () => (
           표준 파이프 연산
         </h3>
         <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-3">
-          <code class="text-xs md:text-sm">pipe</code>는 순수한 함수 합성 도구입니다. 타입 추론을 위해
-          <code class="text-xs md:text-sm">pipe(data, ...)</code> 형태를 우선 사용하고, 인자 없는 파이프가 필요하면 <code class="text-xs md:text-sm">from</code>을 사용하세요.
+          <code class="text-xs md:text-sm">pipe</code> / <code class="text-xs md:text-sm">pipeAsync</code>는 순수한 함수 합성 도구입니다. 타입 추론을 위해
+          <code class="text-xs md:text-sm">pipe(data, ...)</code> 형태를 우선 사용하세요. 타입 불일치를 더 엄격하게 검사하려면 <code class="text-xs md:text-sm">pipeStrict</code> / <code class="text-xs md:text-sm">pipeAsyncStrict</code>를 사용하세요.
         </p>
         <CodeBlock
           language="typescript"

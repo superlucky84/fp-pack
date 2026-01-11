@@ -663,14 +663,19 @@ Provide generics when inference is lost; prefer `isSideEffect` for precise narro
 
 Most data transformations are pure and don't need SideEffect handling. Use `pipe` for sync operations and `pipeAsync` for async operations. **Only switch to SideEffect-aware pipes when you actually need** early termination or error handling with side effects.
 
+**Pure Pipelines:**
 - **`pipe`** - Synchronous, **pure** transformations (99% of cases)
+- **`pipeStrict`** - Sync pipe with stricter type checking (catches mismatches earlier)
 - **`pipeAsync`** - Async, **pure** transformations (99% of cases)
+- **`pipeAsyncStrict`** - Async pipe with stricter type checking
+
+**SideEffect-Aware Pipelines:**
 - **`pipeSideEffect`** - **Only when you need** SideEffect short-circuiting (sync)
-- **`pipeAsyncSideEffect`** - **Only when you need** SideEffect short-circuiting (async)
 - **`pipeSideEffectStrict`** - Sync SideEffect pipelines with strict effect unions
+- **`pipeAsyncSideEffect`** - **Only when you need** SideEffect short-circuiting (async)
 - **`pipeAsyncSideEffectStrict`** - Async SideEffect pipelines with strict effect unions
 
-**Important:** `pipe` and `pipeAsync` are for **pure** functions only—they don't handle `SideEffect`. If your pipeline can return `SideEffect`, use `pipeSideEffect` or `pipeAsyncSideEffect` instead. Choose the strict variants when you need precise unions for SideEffect results.
+**Important:** `pipe` and `pipeAsync` are for **pure** functions only—they don't handle `SideEffect`. If your pipeline can return `SideEffect`, use `pipeSideEffect` or `pipeAsyncSideEffect` instead. Choose the strict variants (`pipeStrict`, `pipeAsyncStrict`, `pipeSideEffectStrict`, `pipeAsyncSideEffectStrict`) when you need stricter type checking or precise unions for SideEffect results.
 
 ```typescript
 // Pure sync pipe - no SideEffect handling
