@@ -75,6 +75,79 @@ const result = await pipeAsync('42', fetchUser, getName); // 'Ada'`}
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
+      Choosing Your Pipe: Flexibility vs. Strictness
+    </h2>
+
+    <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      fp-pack offers two variants of async pipes to let you choose between type inference
+      flexibility and strict type safety.
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <div class="border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+        <h4 class="text-lg font-medium text-blue-900 dark:text-blue-100 mb-2">
+          pipeAsync (The Flexible Default)
+        </h4>
+        <ul class="list-disc list-inside space-y-2 text-sm text-gray-700 dark:text-gray-300">
+          <li>
+            <strong>Goal:</strong> Best-in-class type inference for async operations.
+          </li>
+          <li>
+            <strong>Pro:</strong> Excellent at inferring the final output type of complex,
+            generic pipelines with minimal need for manual type annotations. It prioritizes a
+            smooth developer experience (DX).
+          </li>
+          <li>
+            <strong>Con:</strong> To achieve this, it is more lenient and may not catch all type
+            mismatches between functions, which could lead to runtime errors.
+          </li>
+        </ul>
+      </div>
+      <div class="border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-lg">
+        <h4 class="text-lg font-medium text-emerald-900 dark:text-emerald-100 mb-2">
+          pipeAsyncStrict (The Safe Alternative)
+        </h4>
+        <ul class="list-disc list-inside space-y-2 text-sm text-gray-700 dark:text-gray-300">
+          <li>
+            <strong>Goal:</strong> Maximum type safety in async pipelines.
+          </li>
+          <li>
+            <strong>Pro:</strong> Immediately catches type mismatches between each function in the
+            pipeline, preventing a class of bugs at compile time.
+          </li>
+          <li>
+            <strong>Con:</strong> In some advanced generic scenarios, this strictness can get in
+            the way of type inference, requiring you to add more explicit type hints.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="border-l-4 border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 p-4 mb-6 rounded-r">
+      <p class="text-sm md:text-base text-yellow-800 dark:text-yellow-200 leading-relaxed">
+        <span class="font-medium">💡 Recommendation:</span>
+        <br />
+        <br />
+        Start with <strong>pipeAsync</strong> for its great DX. If you are working on a critical part
+        of your application where type safety is paramount, or if you find{' '}
+        <strong>pipeAsync</strong> is too lenient, switch to{' '}
+        <a
+          href="/async/pipeAsyncStrict"
+          onClick={(e: Event) => {
+            e.preventDefault();
+            navigateTo('/async/pipeAsyncStrict');
+          }}
+          class="font-semibold text-emerald-700 dark:text-emerald-300"
+        >
+          pipeAsyncStrict
+        </a>
+        .
+      </p>
+    </div>
+
+    <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
+
+    <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
       SideEffect Pipelines
     </h2>
 

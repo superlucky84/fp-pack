@@ -245,6 +245,78 @@ result;  // 5
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
+      어떤 파이프를 선택할까?: 유연성 vs 엄격성
+    </h2>
+
+    <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      fp-pack은 추론의 유연성과 엄격한 타입 안전성 사이에서 선택할 수 있도록 두 가지 버전의 순수
+      파이프를 제공합니다.
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <div class="border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+        <h4 class="text-lg font-medium text-blue-900 dark:text-blue-100 mb-2">
+          pipe (유연한 기본 파이프)
+        </h4>
+        <ul class="list-disc list-inside space-y-2 text-sm text-gray-700 dark:text-gray-300">
+          <li>
+            <strong>목표:</strong> 최상의 타입 추론 능력.
+          </li>
+          <li>
+            <strong>장점:</strong> 복잡하고 제네릭한 파이프라인에서도 최종 결과 타입을 놀랍도록
+            잘 추론해내며, 수동 타입 명시의 필요성을 최소화합니다. 부드러운 개발 경험(DX)을
+            우선시합니다.
+          </li>
+          <li>
+            <strong>단점:</strong> 이를 위해 중간 단계의 타입 검사가 다소 너그러워, 함수 간의 모든
+            타입 불일치를 잡아내지 못할 수 있으며 이는 런타임 에러로 이어질 수 있습니다.
+          </li>
+        </ul>
+      </div>
+      <div class="border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-lg">
+        <h4 class="text-lg font-medium text-emerald-900 dark:text-emerald-100 mb-2">
+          pipeStrict (안전한 대안)
+        </h4>
+        <ul class="list-disc list-inside space-y-2 text-sm text-gray-700 dark:text-gray-300">
+          <li>
+            <strong>목표:</strong> 최대한의 타입 안정성.
+          </li>
+          <li>
+            <strong>장점:</strong> 파이프라인의 각 함수 연결 단계에서 타입 불일치가 발생하면 즉시
+            컴파일 에러를 발생시켜 버그를 예방합니다.
+          </li>
+          <li>
+            <strong>단점:</strong> 일부 고급 제네릭 시나리오에서는 이 엄격함이 오히려 타입 추론을
+            방해하여, 개발자가 직접 타입 힌트를 더 추가해야 할 수 있습니다.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="border-l-4 border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 p-4 mb-6 rounded-r">
+      <p class="text-sm md:text-base text-yellow-800 dark:text-yellow-200 leading-relaxed">
+        <span class="font-medium">💡 추천:</span>
+        <br />
+        <br />
+        훌륭한 개발 경험을 위해 <strong>pipe</strong>로 시작하세요. 만약 타입 안정성이 매우
+        중요하거나, <strong>pipe</strong>가 너무 너그럽다고 느껴지는 부분에서는{' '}
+        <a
+          href="/composition/pipeStrict"
+          onClick={(e: Event) => {
+            e.preventDefault();
+            navigateTo('/composition/pipeStrict');
+          }}
+          class="font-semibold text-emerald-700 dark:text-emerald-300"
+        >
+          pipeStrict
+        </a>
+        로 전환하여 사용하세요.
+      </p>
+    </div>
+
+    <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
+
+    <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
       SideEffect 파이프라인
     </h2>
 

@@ -53,6 +53,84 @@ const result = pipeSideEffectStrict(
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
+      어떤 파이프를 선택할까?: 유연성 vs 엄격성
+    </h2>
+
+    <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      순수 파이프와 마찬가지로, fp-pack은 두 가지 버전의 SideEffect 파이프를 제공합니다. 어떤 것을
+      선택하는지는 최종{' '}
+      <strong class="font-semibold text-orange-600 dark:text-orange-400">SideEffect</strong>의 타입이
+      어떻게 추론되는지에 영향을 줍니다.
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <div class="border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+        <h4 class="text-lg font-medium text-blue-900 dark:text-blue-100 mb-2">
+          pipeSideEffect (유연함)
+        </h4>
+        <ul class="list-disc list-inside space-y-2 text-sm text-gray-700 dark:text-gray-300">
+          <li>
+            <strong>목표:</strong> 성공 경로에 대한 부드러운 타입 추론.
+          </li>
+          <li>
+            <strong>장점:</strong> 주로 성공 케이스에 관심이 있고 모든 실패 케이스를 비슷하게
+            처리할 때 훌륭한 개발 경험을 제공합니다.
+          </li>
+          <li>
+            <strong>단점:</strong> 최종 SideEffect 타입이{' '}
+            <code class="text-xs">SideEffect&lt;any&gt;</code>로 넓어져, 각기 다른 실패 원인의
+            타입 정보를 잃게 됩니다. 이로 인해 다양한 실패 케이스를 타입-안전하게 처리하기
+            어렵습니다.
+          </li>
+        </ul>
+      </div>
+      <div class="border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-lg">
+        <h4 class="text-lg font-medium text-emerald-900 dark:text-emerald-100 mb-2">
+          pipeSideEffectStrict (안전함)
+        </h4>
+        <ul class="list-disc list-inside space-y-2 text-sm text-gray-700 dark:text-gray-300">
+          <li>
+            <strong>목표:</strong> 모든 경로에 대한 최대한의 타입 안정성.
+          </li>
+          <li>
+            <strong>장점:</strong> 최종 SideEffect 타입이 파이프라인에서 가능한 모든 이펙트의
+            정확한 유니온 타입(예:{' '}
+            <code class="text-xs">SideEffect&lt;'A' | 'B'&gt;</code>)임을 보장합니다. 이는
+            실패 케이스에 대한 강력한 타입-안전 패턴 매칭을 가능하게 합니다.
+          </li>
+          <li>
+            <strong>단점:</strong> 이 엄격함으로 인해 컴파일러가 모든 가능한 이펙트 타입을 자동으로
+            통합하지 못할 경우, 때때로 명시적인 타입 어노테이션이 필요할 수 있습니다.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="border-l-4 border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 p-4 mb-6 rounded-r">
+      <p class="text-sm md:text-base text-yellow-800 dark:text-yellow-200 leading-relaxed">
+        <span class="font-medium">💡 추천:</span>
+        <br />
+        <br />
+        현재 <strong>pipeSideEffectStrict</strong> 문서를 보고 계십니다. 각기 다른 실패 타입을
+        구분하여 타입-안전하게 처리해야 할 때 이 함수를 사용하세요. 만약 실패를 포괄적으로
+        처리하고 더 부드러운 개발 경험을 선호한다면,{' '}
+        <a
+          href="/composition/pipeSideEffect"
+          onClick={(e: Event) => {
+            e.preventDefault();
+            navigateTo('/composition/pipeSideEffect');
+          }}
+          class="font-semibold text-blue-700 dark:text-blue-300"
+        >
+          pipeSideEffect
+        </a>
+        사용을 고려해 보세요.
+      </p>
+    </div>
+
+    <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
+
+    <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
       Type Signature
     </h2>
 

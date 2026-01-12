@@ -52,6 +52,84 @@ const result = pipeSideEffectStrict(
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
+      Choosing Your Pipe: Flexibility vs. Strictness
+    </h2>
+
+    <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      Just like pure pipes, fp-pack offers two variants of SideEffect pipes. The choice impacts
+      how the types of the final{' '}
+      <strong class="font-semibold text-orange-600 dark:text-orange-400">SideEffect</strong> are
+      inferred.
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <div class="border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+        <h4 class="text-lg font-medium text-blue-900 dark:text-blue-100 mb-2">
+          pipeSideEffect (Flexible)
+        </h4>
+        <ul class="list-disc list-inside space-y-2 text-sm text-gray-700 dark:text-gray-300">
+          <li>
+            <strong>Goal:</strong> Smooth inference for the success path.
+          </li>
+          <li>
+            <strong>Pro:</strong> Offers a great developer experience when you primarily care about the
+            successful result and treat all potential failures similarly.
+          </li>
+          <li>
+            <strong>Con:</strong> The final SideEffect type is often widened to{' '}
+            <code class="text-xs">SideEffect&lt;any&gt;</code>, losing the specific types of
+            different potential effects. This prevents exhaustive, type-safe handling of
+            different failure cases.
+          </li>
+        </ul>
+      </div>
+      <div class="border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-lg">
+        <h4 class="text-lg font-medium text-emerald-900 dark:text-emerald-100 mb-2">
+          pipeSideEffectStrict (Safe)
+        </h4>
+        <ul class="list-disc list-inside space-y-2 text-sm text-gray-700 dark:text-gray-300">
+          <li>
+            <strong>Goal:</strong> Maximum type safety for all paths.
+          </li>
+          <li>
+            <strong>Pro:</strong> Guarantees the final SideEffect type is a precise union of all
+            possible effects from the pipeline (e.g.,{' '}
+            <code class="text-xs">SideEffect&lt;'A' | 'B'&gt;</code>). This allows for robust,
+            type-safe pattern matching on failure cases.
+          </li>
+          <li>
+            <strong>Con:</strong> This strictness can sometimes require more explicit type
+            annotations if the compiler cannot automatically unify all possible effect types.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="border-l-4 border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 p-4 mb-6 rounded-r">
+      <p class="text-sm md:text-base text-yellow-800 dark:text-yellow-200 leading-relaxed">
+        <span class="font-medium">💡 Recommendation:</span>
+        <br />
+        <br />
+        You are viewing <strong>pipeSideEffectStrict</strong>. Use this when you need to programmatically
+        distinguish between different failure types and handle them with full type safety. If you only
+        need to handle failures generally and prefer a smoother developer experience, consider using{' '}
+        <a
+          href="/composition/pipeSideEffect"
+          onClick={(e: Event) => {
+            e.preventDefault();
+            navigateTo('/composition/pipeSideEffect');
+          }}
+          class="font-semibold text-blue-700 dark:text-blue-300"
+        >
+          pipeSideEffect
+        </a>
+        .
+      </p>
+    </div>
+
+    <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
+
+    <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
       Type Signature
     </h2>
 
