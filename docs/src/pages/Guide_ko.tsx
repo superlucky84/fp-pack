@@ -193,6 +193,24 @@ const fetchUserData = async (userId: string) => {
       </p>
     </div>
 
+    <div class="mt-8 p-5 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30 rounded-lg border border-indigo-200 dark:border-indigo-800">
+      <h3 class="text-lg font-semibold text-indigo-900 dark:text-indigo-100 mb-2">
+        📖 올바른 파이프 변형을 선택하는 데 도움이 필요하신가요?
+      </h3>
+      <p class="text-sm text-indigo-800 dark:text-indigo-200 mb-3">
+        fp-pack은 여러 파이프 변형(pipe, pipeStrict, pipeSideEffect 등)을 제공하며, 각각 다른 사용 사례에 최적화되어 있습니다. 각 변형을 언제 사용해야 하는지 이해하는 것이 효과적인 사용의 핵심입니다.
+      </p>
+      <button
+        onClick={() => navigateTo('/ko/guide/pipe-choice-guide')}
+        class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white rounded-md transition-colors text-sm font-medium"
+      >
+        파이프 선택 가이드 읽기
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-3xl font-semibold text-gray-900 dark:text-white mb-4">

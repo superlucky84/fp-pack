@@ -193,6 +193,24 @@ const fetchUserData = async (userId: string) => {
       </p>
     </div>
 
+    <div class="mt-8 p-5 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30 rounded-lg border border-indigo-200 dark:border-indigo-800">
+      <h3 class="text-lg font-semibold text-indigo-900 dark:text-indigo-100 mb-2">
+        📖 Need help choosing the right pipe variant?
+      </h3>
+      <p class="text-sm text-indigo-800 dark:text-indigo-200 mb-3">
+        fp-pack offers multiple pipe variants (pipe, pipeStrict, pipeSideEffect, etc.) each optimized for different use cases. Understanding when to use each variant is key to effective usage.
+      </p>
+      <button
+        onClick={() => navigateTo('/guide/pipe-choice-guide')}
+        class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white rounded-md transition-colors text-sm font-medium"
+      >
+        Read the Pipe Choice Guide
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-3xl font-semibold text-gray-900 dark:text-white mb-4">

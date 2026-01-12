@@ -13,11 +13,11 @@ export const Sidebar = mount(renew => {
         items: [
           { title: isKorean ? '소개' : 'Introduction', path: '/' },
           { title: isKorean ? '상세 가이드' : 'Detailed Guide', path: '/guide' },
-          { title: isKorean ? '타입 활용' : 'Type Usage', path: '/guide/type-usage' },
           {
             title: isKorean ? '파이프 선택 가이드' : 'Pipe Choice Guide',
             path: '/guide/pipe-choice-guide',
           },
+          { title: isKorean ? '타입 활용' : 'Type Usage', path: '/guide/type-usage' },
           { title: isKorean ? 'AI Agent Skills' : 'AI Agent Skills', path: '/ai-agent-skills' },
           { title: isKorean ? 'AI Agent Role Add-on' : 'AI Agent Role Add-on', path: '/ai-agent-addon' },
           { title: 'GitHub', path: 'https://github.com/superlucky84/fp-pack', external: true },
