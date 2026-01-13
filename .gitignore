@@ -8,6 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 CLAUDE.md
 AGENTS.md
+GEMINI.md
 .claude
 
 node_modules
