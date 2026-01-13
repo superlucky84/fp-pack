@@ -15,6 +15,21 @@ export const PipeChoiceGuide = () => (
       </p>
     </div>
 
+    {/* Design Philosophy Section */}
+    <div class="bg-blue-50 dark:bg-blue-950/30 border-l-4 border-blue-500 dark:border-blue-400 rounded-r-lg p-5 mb-8">
+      <p class="text-gray-800 dark:text-gray-200 text-sm leading-relaxed mb-2">
+        💡 <strong>Want to dive deeper?</strong>
+      </p>
+      <p class="text-gray-700 dark:text-gray-300 text-sm m-0">
+        Read the detailed discussion on why fp-pack chose this design approach. See the <strong>"An aside: some design considerations I explored"</strong> section in{' '}
+        <a href="https://github.com/superlucky84/fp-pack/issues/5#issuecomment-3734373986"
+           class="text-blue-600 dark:text-blue-400 hover:underline"
+           target="_blank" rel="noopener noreferrer">
+          Type Safety vs Inference Trade-offs
+        </a>
+      </p>
+    </div>
+
     <div class="space-y-10">
       {/* Section 1 */}
       <section class="relative">
