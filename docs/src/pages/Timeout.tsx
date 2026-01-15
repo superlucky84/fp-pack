@@ -113,5 +113,45 @@ await run();`}
       </svg>
       View on GitHub
     </a>
+
+    <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
+
+    <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
+      Related Functions
+    </h2>
+
+    <div class="grid gap-6 mt-6">
+      <a
+        href="/async/retry"
+        onClick={(e: Event) => {
+          e.preventDefault();
+          navigateTo('/async/retry');
+        }}
+        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer"
+      >
+        <h3 class="text-lg md:text-xl font-medium text-blue-600 dark:text-blue-400 mb-2">
+          retry →
+        </h3>
+        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
+          Retry failed operations, often combined with timeout for resilient async workflows.
+        </p>
+      </a>
+
+      <a
+        href="/async/pipeAsync"
+        onClick={(e: Event) => {
+          e.preventDefault();
+          navigateTo('/async/pipeAsync');
+        }}
+        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-500 transition-colors cursor-pointer"
+      >
+        <h3 class="text-lg md:text-xl font-medium text-purple-600 dark:text-purple-400 mb-2">
+          pipeAsync →
+        </h3>
+        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
+          Compose async functions in a pipeline where timeout can guard individual steps.
+        </p>
+      </a>
+    </div>
   </div>
 );

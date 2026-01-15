@@ -58,14 +58,27 @@ await toArray(gen());
       With pipeAsync
     </h2>
 
+    <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      In data-first usage (<code class="text-sm">toArray(value)</code> or <code class="text-sm">pipe(value, ..., toArray)</code>),
+      TypeScript can usually infer <code class="text-sm">T</code> from the concrete input. In function-first pipes
+      (<code class="text-sm">pipeAsync(fn1, fn2, toArray)</code>), there is no value anchor, so inference can be brittle.
+      In those cases, specify the element type with <code class="text-sm">toArray&lt;T&gt;</code> to keep the pipeline precise.
+    </p>
+
     <CodeBlock
       language="typescript"
       code={`import { chunk, toArray } from 'fp-pack/stream';
 import { pipeAsync } from 'fp-pack';
 
-await pipeAsync(chunk(2), toArray)([1, 2, 3, 4]);
+await pipeAsync(chunk(2), toArray<number[]>)([1, 2, 3, 4]);
 // [[1, 2], [3, 4]]`}
     />
+
+    <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mt-6 mb-6">
+      Tip: <code class="text-sm">T</code> is the element type, not the final array. For example, after
+      <code class="text-sm">chunk(2)</code> the stream yields <code class="text-sm">number[]</code>, so you pass
+      <code class="text-sm">toArray&lt;number[]&gt;</code>.
+    </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 

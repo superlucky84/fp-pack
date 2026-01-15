@@ -58,14 +58,27 @@ await toArray(gen());
       pipeAsync와 함께 사용
     </h2>
 
+    <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      data-first(<code class="text-sm">toArray(value)</code> 또는 <code class="text-sm">pipe(value, ..., toArray)</code>)에서는
+      입력값이 앵커가 되어 <code class="text-sm">T</code>를 잘 추론합니다. 반면 함수 우선 파이프
+      (<code class="text-sm">pipeAsync(fn1, fn2, toArray)</code>)는 값 앵커가 없어 추론이 흔들릴 수 있으니,
+      <code class="text-sm">toArray&lt;T&gt;</code>로 요소 타입을 명시하는 것을 권장합니다.
+    </p>
+
     <CodeBlock
       language="typescript"
       code={`import { chunk, toArray } from 'fp-pack/stream';
 import { pipeAsync } from 'fp-pack';
 
-await pipeAsync(chunk(2), toArray)([1, 2, 3, 4]);
+await pipeAsync(chunk(2), toArray<number[]>)([1, 2, 3, 4]);
 // [[1, 2], [3, 4]]`}
     />
+
+    <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mt-6 mb-6">
+      참고: <code class="text-sm">T</code>는 최종 배열이 아니라 요소 타입입니다. 예를 들어
+      <code class="text-sm">chunk(2)</code> 이후에는 요소가 <code class="text-sm">number[]</code>이므로
+      <code class="text-sm">toArray&lt;number[]&gt;</code>처럼 지정합니다.
+    </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 

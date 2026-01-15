@@ -1,4 +1,5 @@
 import { CodeBlock } from '@/components/CodeBlock';
+import { navigateTo } from '@/store';
 
 export const Throttle_ko = () => (
   <div class="prose prose-lg dark:prose-invert max-w-none">
@@ -77,5 +78,45 @@ log(3); // 즉시 1, 100ms 후 3`}
       </svg>
       GitHub에서 보기
     </a>
+
+    <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
+
+    <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
+      연관된 유틸리티
+    </h2>
+
+    <div class="grid gap-6 mt-6">
+      <a
+        href="/async/debounce"
+        onClick={(e: Event) => {
+          e.preventDefault();
+          navigateTo('/async/debounce');
+        }}
+        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer"
+      >
+        <h3 class="text-lg md:text-xl font-medium text-blue-600 dark:text-blue-400 mb-2">
+          debounce →
+        </h3>
+        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
+          조용한 기간이 지난 후에 함수 실행을 지연하며, throttle과 상호 보완적입니다.
+        </p>
+      </a>
+
+      <a
+        href="/composition/once"
+        onClick={(e: Event) => {
+          e.preventDefault();
+          navigateTo('/composition/once');
+        }}
+        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-500 transition-colors cursor-pointer"
+      >
+        <h3 class="text-lg md:text-xl font-medium text-purple-600 dark:text-purple-400 mb-2">
+          once →
+        </h3>
+        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
+          함수를 한 번만 실행하는 또 다른 형태의 비율 제한입니다.
+        </p>
+      </a>
+    </div>
   </div>
 );

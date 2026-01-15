@@ -112,5 +112,45 @@ await run();`}
       </svg>
       GitHub에서 보기
     </a>
+
+    <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
+
+    <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
+      연관된 유틸리티
+    </h2>
+
+    <div class="grid gap-6 mt-6">
+      <a
+        href="/async/retry"
+        onClick={(e: Event) => {
+          e.preventDefault();
+          navigateTo('/async/retry');
+        }}
+        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer"
+      >
+        <h3 class="text-lg md:text-xl font-medium text-blue-600 dark:text-blue-400 mb-2">
+          retry →
+        </h3>
+        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
+          실패한 작업을 재시도하며, 안정적인 비동기 워크플로우를 위해 timeout과 자주 결합됩니다.
+        </p>
+      </a>
+
+      <a
+        href="/async/pipeAsync"
+        onClick={(e: Event) => {
+          e.preventDefault();
+          navigateTo('/async/pipeAsync');
+        }}
+        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-500 transition-colors cursor-pointer"
+      >
+        <h3 class="text-lg md:text-xl font-medium text-purple-600 dark:text-purple-400 mb-2">
+          pipeAsync →
+        </h3>
+        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
+          timeout이 개별 단계를 보호할 수 있는 파이프라인에서 비동기 함수를 합성합니다.
+        </p>
+      </a>
+    </div>
   </div>
 );

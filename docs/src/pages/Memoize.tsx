@@ -342,7 +342,7 @@ fibonacci(100); // Instant (if already computed smaller values)`}
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Next Steps
+      Related Functions
     </h2>
 
     <div class="grid gap-6 mt-6">

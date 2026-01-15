@@ -1,6 +1,8 @@
 import curry from '../composition/curry';
 
 type Some = {
+  <T, S extends T>(...args: [predicate: (value: T) => value is S]): (arr: T[]) => boolean;
+  <T, S extends T>(...args: [predicate: (value: T) => value is S, arr: T[]]): boolean;
   <T>(...args: [predicate: (value: T) => boolean]): (arr: T[]) => boolean;
   <T>(...args: [predicate: (value: T) => boolean, arr: T[]]): boolean;
 };

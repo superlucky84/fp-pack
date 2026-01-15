@@ -138,5 +138,61 @@ const result = await pipeAsync('42', fetchUser, getName); // 'Ada'`}
       </svg>
       View on GitHub
     </a>
+
+    <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
+
+    <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
+      Related Functions
+    </h2>
+
+    <div class="grid gap-6 mt-6">
+      <a
+        href="/async/pipeAsyncStrict"
+        onClick={(e: Event) => {
+          e.preventDefault();
+          navigateTo('/async/pipeAsyncStrict');
+        }}
+        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer"
+      >
+        <h3 class="text-lg md:text-xl font-medium text-blue-600 dark:text-blue-400 mb-2">
+          pipeAsyncStrict →
+        </h3>
+        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
+          Stricter type checking for async pipelines with explicit type validation.
+        </p>
+      </a>
+
+      <a
+        href="/async/pipeAsyncSideEffect"
+        onClick={(e: Event) => {
+          e.preventDefault();
+          navigateTo('/async/pipeAsyncSideEffect');
+        }}
+        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-500 transition-colors cursor-pointer"
+      >
+        <h3 class="text-lg md:text-xl font-medium text-purple-600 dark:text-purple-400 mb-2">
+          pipeAsyncSideEffect →
+        </h3>
+        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
+          Async pipeline with SideEffect support for early exits and error handling.
+        </p>
+      </a>
+
+      <a
+        href="/composition/pipe"
+        onClick={(e: Event) => {
+          e.preventDefault();
+          navigateTo('/composition/pipe');
+        }}
+        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-orange-500 dark:hover:border-orange-500 transition-colors cursor-pointer"
+      >
+        <h3 class="text-lg md:text-xl font-medium text-orange-600 dark:text-orange-400 mb-2">
+          pipe →
+        </h3>
+        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
+          Synchronous function composition for non-async workflows.
+        </p>
+      </a>
+    </div>
   </div>
 );

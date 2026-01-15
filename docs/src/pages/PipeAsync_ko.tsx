@@ -136,5 +136,61 @@ const result = await pipeAsync('42', fetchUser, getName); // 'Ada'`}
       </svg>
       GitHub에서 보기
     </a>
+
+    <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
+
+    <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
+      연관된 유틸리티
+    </h2>
+
+    <div class="grid gap-6 mt-6">
+      <a
+        href="/async/pipeAsyncStrict"
+        onClick={(e: Event) => {
+          e.preventDefault();
+          navigateTo('/async/pipeAsyncStrict');
+        }}
+        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer"
+      >
+        <h3 class="text-lg md:text-xl font-medium text-blue-600 dark:text-blue-400 mb-2">
+          pipeAsyncStrict →
+        </h3>
+        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
+          명시적 타입 검증으로 더 엄격한 비동기 파이프라인 타입 체킹을 제공합니다.
+        </p>
+      </a>
+
+      <a
+        href="/async/pipeAsyncSideEffect"
+        onClick={(e: Event) => {
+          e.preventDefault();
+          navigateTo('/async/pipeAsyncSideEffect');
+        }}
+        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-500 transition-colors cursor-pointer"
+      >
+        <h3 class="text-lg md:text-xl font-medium text-purple-600 dark:text-purple-400 mb-2">
+          pipeAsyncSideEffect →
+        </h3>
+        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
+          조기 종료와 에러 처리를 위한 SideEffect를 지원하는 비동기 파이프라인입니다.
+        </p>
+      </a>
+
+      <a
+        href="/composition/pipe"
+        onClick={(e: Event) => {
+          e.preventDefault();
+          navigateTo('/composition/pipe');
+        }}
+        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-orange-500 dark:hover:border-orange-500 transition-colors cursor-pointer"
+      >
+        <h3 class="text-lg md:text-xl font-medium text-orange-600 dark:text-orange-400 mb-2">
+          pipe →
+        </h3>
+        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
+          비동기가 아닌 워크플로우를 위한 동기 함수 합성입니다.
+        </p>
+      </a>
+    </div>
   </div>
 );

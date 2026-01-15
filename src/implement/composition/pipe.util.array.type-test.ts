@@ -13,6 +13,8 @@ import uniqBy from '../array/uniqBy';
 import zip from '../array/zip';
 import flatMap from '../array/flatMap';
 import find from '../array/find';
+import map from '../array/map';
+import filter from '../array/filter';
 import some from '../array/some';
 import every from '../array/every';
 
@@ -29,6 +31,10 @@ type User = {
   active: boolean;
   tags: string[];
 };
+
+type MixedValue = string | number | null;
+
+const isString = (value: MixedValue): value is string => typeof value === 'string';
 
 const sortByScore = sortBy((user: User) => user.score);
 const uniqById = uniqBy((user: User) => user.id);
@@ -73,6 +79,30 @@ export const pipeArrayEveryUnique = pipe(
 
 type PipeArrayEveryUniqueExpected = (input: number[]) => boolean;
 export type PipeArrayEveryUniqueIsStrict = Expect<Equal<typeof pipeArrayEveryUnique, PipeArrayEveryUniqueExpected>>;
+
+export const pipeArrayFilterStrings = pipe(
+  filter(isString),
+  map((value: string) => value.toUpperCase())
+);
+
+type PipeArrayFilterStringsExpected = (input: MixedValue[]) => string[];
+export type PipeArrayFilterStringsIsStrict = Expect<
+  Equal<typeof pipeArrayFilterStrings, PipeArrayFilterStringsExpected>
+>;
+
+export const arrayEveryString = every(isString);
+
+type ArrayEveryStringExpected = (input: MixedValue[]) => input is string[];
+export type ArrayEveryStringIsStrict = Expect<
+  Equal<typeof arrayEveryString, ArrayEveryStringExpected>
+>;
+
+export const arraySomeString = some(isString);
+
+type ArraySomeStringExpected = (input: MixedValue[]) => boolean;
+export type ArraySomeStringIsStrict = Expect<
+  Equal<typeof arraySomeString, ArraySomeStringExpected>
+>;
 
 const findActive = find((user: User) => user.active);
 

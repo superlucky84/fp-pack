@@ -1,8 +1,10 @@
 import curry from '../composition/curry';
 
 type Every = {
-  <T>(...args: [predicate: (value: T) => boolean]): (arr: T[]) => boolean;
-  <T>(...args: [predicate: (value: T) => boolean, arr: T[]]): boolean;
+  <T, S extends T>(predicate: (value: T) => value is S): (arr: T[]) => arr is S[];
+  <T, S extends T>(predicate: (value: T) => value is S, arr: T[]): arr is S[];
+  <T>(predicate: (value: T) => boolean): (arr: T[]) => boolean;
+  <T>(predicate: (value: T) => boolean, arr: T[]): boolean;
 };
 
 /**
