@@ -73,6 +73,66 @@ export const purePipeTen = pipe(
 type PurePipeTenExpected = (input: number) => string;
 export type PipePureTenIsStrict = Expect<Equal<typeof purePipeTen, PurePipeTenExpected>>;
 
+export const purePipeEleven = pipe(
+  (value: number) => value + 1,
+  (value: number) => value * 2,
+  (value: number) => `v:${value}`,
+  (value: string) => value.toUpperCase(),
+  (value: string) => value.length,
+  (value: number) => value + 3,
+  (value: number) => value * 2,
+  (value: number) => `${value}`,
+  (value: string) => value.padStart(4, '0'),
+  (value: string) => value.length,
+  (value: number) => `n:${value}`
+);
+
+type PurePipeElevenExpected = (input: number) => string;
+export type PipePureElevenIsStrict = Expect<Equal<typeof purePipeEleven, PurePipeElevenExpected>>;
+
+export const purePipeElevenValue = purePipeEleven(1);
+
+type PurePipeElevenValueExpected = string;
+export type PipePureElevenValueIsStrict = Expect<
+  Equal<typeof purePipeElevenValue, PurePipeElevenValueExpected>
+>;
+
+const pipeElevenFnsHinted: [
+  (value: number) => number,
+  (value: number) => number,
+  (value: number) => string,
+  (value: string) => string,
+  (value: string) => number,
+  (value: number) => number,
+  (value: number) => number,
+  (value: number) => string,
+  (value: string) => string,
+  (value: string) => number,
+  (value: number) => string
+] = [
+  (value: number) => value + 1,
+  (value: number) => value * 2,
+  (value: number) => `v:${value}`,
+  (value: string) => value.toUpperCase(),
+  (value: string) => value.length,
+  (value: number) => value + 3,
+  (value: number) => value * 2,
+  (value: number) => `${value}`,
+  (value: string) => value.padStart(4, '0'),
+  (value: string) => value.length,
+  (value: number) => `n:${value}`
+];
+
+export const purePipeElevenValueHinted = pipe<number, typeof pipeElevenFnsHinted>(
+  1,
+  ...pipeElevenFnsHinted
+);
+
+type PurePipeElevenValueHintedExpected = string;
+export type PipePureElevenValueHintedIsStrict = Expect<
+  Equal<typeof purePipeElevenValueHinted, PurePipeElevenValueHintedExpected>
+>;
+
 export const pipeFromTen = pipe(
   from(1),
   (value: number) => value + 1,
@@ -135,6 +195,68 @@ export const purePipeStrictValue = pipeStrict(
 
 type PurePipeStrictValueExpected = string;
 export type PipeStrictValueIsStrict = Expect<Equal<typeof purePipeStrictValue, PurePipeStrictValueExpected>>;
+
+export const purePipeStrictEleven = pipeStrict(
+  (value: number) => value + 1,
+  (value: number) => value * 2,
+  (value: number) => `v:${value}`,
+  (value: string) => value.toUpperCase(),
+  (value: string) => value.length,
+  (value: number) => value + 3,
+  (value: number) => value * 2,
+  (value: number) => `${value}`,
+  (value: string) => value.padStart(4, '0'),
+  (value: string) => value.length,
+  (value: number) => `n:${value}`
+);
+
+type PurePipeStrictElevenExpected = (input: number) => string;
+export type PipeStrictElevenIsStrict = Expect<
+  Equal<typeof purePipeStrictEleven, PurePipeStrictElevenExpected>
+>;
+
+export const purePipeStrictElevenValue = purePipeStrictEleven(1);
+
+type PurePipeStrictElevenValueExpected = string;
+export type PipeStrictElevenValueIsStrict = Expect<
+  Equal<typeof purePipeStrictElevenValue, PurePipeStrictElevenValueExpected>
+>;
+
+const pipeStrictElevenFnsHinted: [
+  (value: number) => number,
+  (value: number) => number,
+  (value: number) => string,
+  (value: string) => string,
+  (value: string) => number,
+  (value: number) => number,
+  (value: number) => number,
+  (value: number) => string,
+  (value: string) => string,
+  (value: string) => number,
+  (value: number) => string
+] = [
+  (value: number) => value + 1,
+  (value: number) => value * 2,
+  (value: number) => `v:${value}`,
+  (value: string) => value.toUpperCase(),
+  (value: string) => value.length,
+  (value: number) => value + 3,
+  (value: number) => value * 2,
+  (value: number) => `${value}`,
+  (value: string) => value.padStart(4, '0'),
+  (value: string) => value.length,
+  (value: number) => `n:${value}`
+];
+
+export const purePipeStrictElevenValueHinted = pipeStrict<number, typeof pipeStrictElevenFnsHinted>(
+  1,
+  ...pipeStrictElevenFnsHinted
+);
+
+type PurePipeStrictElevenValueHintedExpected = string;
+export type PipeStrictElevenValueHintedIsStrict = Expect<
+  Equal<typeof purePipeStrictElevenValueHinted, PurePipeStrictElevenValueHintedExpected>
+>;
 
 export const pipeStrictFromTen = pipeStrict(
   from(1),
@@ -231,6 +353,35 @@ export const pipeSideEffectTen = pipeSideEffect(
 type PipeSideEffectTenExpected = (input: number | SideEffect<any>) => string | SideEffect<any>;
 export type PipeSideEffectTenIsStrict = Expect<Equal<typeof pipeSideEffectTen, PipeSideEffectTenExpected>>;
 
+export const pipeSideEffectEleven = pipeSideEffect(
+  (value: number) => value + 1,
+  (value: number) => value * 2,
+  (value: number) => `v:${value}`,
+  (value: string) => value.toUpperCase(),
+  (value: string) => value.length,
+  (value: number) => value + 3,
+  (value: number) => value * 2,
+  (value: number) => `${value}`,
+  (value: string) => value.padStart(4, '0'),
+  (value: string) => value.length,
+  (value: number) => `n:${value}`
+);
+
+type PipeSideEffectElevenExpected = (input: number | SideEffect<any>) => string | SideEffect<any>;
+export type PipeSideEffectElevenIsStrict = Expect<
+  Equal<typeof pipeSideEffectEleven, PipeSideEffectElevenExpected>
+>;
+
+export const pipeSideEffectElevenValueHinted = pipeSideEffect<number, typeof pipeElevenFnsHinted>(
+  1,
+  ...pipeElevenFnsHinted
+);
+
+type PipeSideEffectElevenValueHintedExpected = string | SideEffect<any>;
+export type PipeSideEffectElevenValueHintedIsStrict = Expect<
+  Equal<typeof pipeSideEffectElevenValueHinted, PipeSideEffectElevenValueHintedExpected>
+>;
+
 export const pipeSideEffectFromTen = pipeSideEffect(
   from(1),
   (value: number) => value + 1,
@@ -326,6 +477,68 @@ export const purePipeAsyncTen = pipeAsync(
 type PurePipeAsyncTenExpected = (input: number) => Promise<string>;
 export type PipeAsyncPureTenIsStrict = Expect<Equal<typeof purePipeAsyncTen, PurePipeAsyncTenExpected>>;
 
+export const purePipeAsyncEleven = pipeAsync(
+  (value: number) => value + 1,
+  async (value: number) => value * 2,
+  (value: number) => `v:${value}`,
+  async (value: string) => value.toUpperCase(),
+  (value: string) => value.length,
+  async (value: number) => value + 3,
+  (value: number) => value * 2,
+  async (value: number) => `${value}`,
+  (value: string) => value.padStart(4, '0'),
+  async (value: string) => value.length,
+  (value: number) => `n:${value}`
+);
+
+type PurePipeAsyncElevenExpected = (input: number) => Promise<string>;
+export type PipeAsyncPureElevenIsStrict = Expect<
+  Equal<typeof purePipeAsyncEleven, PurePipeAsyncElevenExpected>
+>;
+
+export const purePipeAsyncElevenValue = purePipeAsyncEleven(1);
+
+type PurePipeAsyncElevenValueExpected = Promise<string>;
+export type PipeAsyncPureElevenValueIsStrict = Expect<
+  Equal<typeof purePipeAsyncElevenValue, PurePipeAsyncElevenValueExpected>
+>;
+
+const pipeAsyncElevenFnsHinted: [
+  (value: number) => number,
+  (value: number) => Promise<number>,
+  (value: number) => string,
+  (value: string) => Promise<string>,
+  (value: string) => number,
+  (value: number) => Promise<number>,
+  (value: number) => number,
+  (value: number) => Promise<string>,
+  (value: string) => string,
+  (value: string) => Promise<number>,
+  (value: number) => string
+] = [
+  (value: number) => value + 1,
+  async (value: number) => value * 2,
+  (value: number) => `v:${value}`,
+  async (value: string) => value.toUpperCase(),
+  (value: string) => value.length,
+  async (value: number) => value + 3,
+  (value: number) => value * 2,
+  async (value: number) => `${value}`,
+  (value: string) => value.padStart(4, '0'),
+  async (value: string) => value.length,
+  (value: number) => `n:${value}`
+];
+
+export const purePipeAsyncElevenValueHinted = pipeAsync<number, typeof pipeAsyncElevenFnsHinted>(
+  1,
+  ...pipeAsyncElevenFnsHinted
+);
+
+type PurePipeAsyncElevenValueHintedExpected = Promise<string>;
+export type PipeAsyncPureElevenValueHintedIsStrict = Expect<
+  Equal<typeof purePipeAsyncElevenValueHinted, PurePipeAsyncElevenValueHintedExpected>
+>;
+
 export const pipeAsyncFromTen = pipeAsync(
   from(1),
   async (value: number) => value + 1,
@@ -390,6 +603,71 @@ export const purePipeAsyncStrictValue = pipeAsyncStrict(1);
 
 type PurePipeAsyncStrictValueExpected = Promise<number>;
 export type PipeAsyncStrictValueIsStrict = Expect<Equal<typeof purePipeAsyncStrictValue, PurePipeAsyncStrictValueExpected>>;
+
+export const purePipeAsyncStrictEleven = pipeAsyncStrict(
+  (value: number) => value + 1,
+  async (value: number) => value * 2,
+  (value: number) => `v:${value}`,
+  async (value: string) => value.toUpperCase(),
+  (value: string) => value.length,
+  async (value: number) => value + 3,
+  (value: number) => value * 2,
+  async (value: number) => `${value}`,
+  (value: string) => value.padStart(4, '0'),
+  async (value: string) => value.length,
+  (value: number) => `n:${value}`
+);
+
+type PurePipeAsyncStrictElevenExpected = (input: number) => Promise<string>;
+export type PipeAsyncStrictElevenIsStrict = Expect<
+  Equal<typeof purePipeAsyncStrictEleven, PurePipeAsyncStrictElevenExpected>
+>;
+
+export const purePipeAsyncStrictElevenValue = purePipeAsyncStrictEleven(1);
+
+type PurePipeAsyncStrictElevenValueExpected = Promise<string>;
+export type PipeAsyncStrictElevenValueIsStrict = Expect<
+  Equal<typeof purePipeAsyncStrictElevenValue, PurePipeAsyncStrictElevenValueExpected>
+>;
+
+const pipeAsyncStrictElevenFnsHinted: [
+  (value: number) => number,
+  (value: number) => Promise<number>,
+  (value: number) => string,
+  (value: string) => Promise<string>,
+  (value: string) => number,
+  (value: number) => Promise<number>,
+  (value: number) => number,
+  (value: number) => Promise<string>,
+  (value: string) => string,
+  (value: string) => Promise<number>,
+  (value: number) => string
+] = [
+  (value: number) => value + 1,
+  async (value: number) => value * 2,
+  (value: number) => `v:${value}`,
+  async (value: string) => value.toUpperCase(),
+  (value: string) => value.length,
+  async (value: number) => value + 3,
+  (value: number) => value * 2,
+  async (value: number) => `${value}`,
+  (value: string) => value.padStart(4, '0'),
+  async (value: string) => value.length,
+  (value: number) => `n:${value}`
+];
+
+export const purePipeAsyncStrictElevenValueHinted = pipeAsyncStrict<
+  number,
+  typeof pipeAsyncStrictElevenFnsHinted
+>(
+  1,
+  ...pipeAsyncStrictElevenFnsHinted
+);
+
+type PurePipeAsyncStrictElevenValueHintedExpected = Promise<string>;
+export type PipeAsyncStrictElevenValueHintedIsStrict = Expect<
+  Equal<typeof purePipeAsyncStrictElevenValueHinted, PurePipeAsyncStrictElevenValueHintedExpected>
+>;
 
 export const pipeAsyncStrictFromTen = pipeAsyncStrict(
   from(1),
@@ -496,6 +774,35 @@ export const pipeAsyncSideEffectTen = pipeAsyncSideEffect(
 type PipeAsyncSideEffectTenExpected = (input: number | SideEffect<any>) => Promise<string | SideEffect<any>>;
 export type PipeAsyncSideEffectTenIsStrict = Expect<
   Equal<typeof pipeAsyncSideEffectTen, PipeAsyncSideEffectTenExpected>
+>;
+
+export const pipeAsyncSideEffectEleven = pipeAsyncSideEffect(
+  (value: number) => value + 1,
+  async (value: number) => value * 2,
+  (value: number) => `v:${value}`,
+  async (value: string) => value.toUpperCase(),
+  (value: string) => value.length,
+  async (value: number) => value + 3,
+  (value: number) => value * 2,
+  async (value: number) => `${value}`,
+  (value: string) => value.padStart(4, '0'),
+  async (value: string) => value.length,
+  (value: number) => `n:${value}`
+);
+
+type PipeAsyncSideEffectElevenExpected = (input: number | SideEffect<any>) => Promise<string | SideEffect<any>>;
+export type PipeAsyncSideEffectElevenIsStrict = Expect<
+  Equal<typeof pipeAsyncSideEffectEleven, PipeAsyncSideEffectElevenExpected>
+>;
+
+export const pipeAsyncSideEffectElevenValueHinted = pipeAsyncSideEffect<number, typeof pipeAsyncElevenFnsHinted>(
+  1,
+  ...pipeAsyncElevenFnsHinted
+);
+
+type PipeAsyncSideEffectElevenValueHintedExpected = Promise<string | SideEffect<any>>;
+export type PipeAsyncSideEffectElevenValueHintedIsStrict = Expect<
+  Equal<typeof pipeAsyncSideEffectElevenValueHinted, PipeAsyncSideEffectElevenValueHintedExpected>
 >;
 
 export const pipeAsyncSideEffectFromTen = pipeAsyncSideEffect(
@@ -640,6 +947,42 @@ export type PipeSideEffectStrictTenEffects = Expect<Equal<StrictTenEffects, Stri
 type StrictTenValue = ValueUnion<typeof strictPipeSideEffectTenResult>;
 type StrictTenValueExpected = number;
 export type PipeSideEffectStrictTenValue = Expect<Equal<StrictTenValue, StrictTenValueExpected>>;
+
+export const strictPipeSideEffectEleven = pipeSideEffectStrict(
+  (value: number) => value + 1,
+  (value: number) => (value > 1 ? value : SideEffect.of(() => 'LOW' as const)),
+  (value: number) => value * 2,
+  (value: number) => (value > 3 ? value : SideEffect.of(() => 'MID' as const)),
+  (value: number) => value + 3,
+  (value: number) => (value > 10 ? value : SideEffect.of(() => 0 as const)),
+  (value: number) => value * 2,
+  (value: number) => value - 1,
+  (value: number) => value + 4,
+  (value: number) => (value > 20 ? value : SideEffect.of(() => 'HIGH' as const)),
+  (value: number) => `n:${value}`
+);
+
+export const strictPipeSideEffectElevenResult = strictPipeSideEffectEleven(1);
+
+type StrictElevenEffects = EffectUnion<typeof strictPipeSideEffectElevenResult>;
+type StrictElevenEffectsExpected = 'LOW' | 'MID' | 0 | 'HIGH';
+export type PipeSideEffectStrictElevenEffects = Expect<
+  Equal<StrictElevenEffects, StrictElevenEffectsExpected>
+>;
+
+type StrictElevenValue = ValueUnion<typeof strictPipeSideEffectElevenResult>;
+type StrictElevenValueExpected = string;
+export type PipeSideEffectStrictElevenValue = Expect<Equal<StrictElevenValue, StrictElevenValueExpected>>;
+
+export const strictPipeSideEffectElevenValueHinted = pipeSideEffectStrict<number, typeof pipeStrictElevenFnsHinted>(
+  1,
+  ...pipeStrictElevenFnsHinted
+);
+
+type StrictPipeSideEffectElevenValueHintedExpected = string | SideEffect<never>;
+export type PipeSideEffectStrictElevenValueHintedIsStrict = Expect<
+  Equal<typeof strictPipeSideEffectElevenValueHinted, StrictPipeSideEffectElevenValueHintedExpected>
+>;
 
 export const strictPipeSideEffectFromTen = pipeSideEffectStrict(
   from(1),
@@ -800,6 +1143,48 @@ type StrictAsyncTenValue = ValueUnion<StrictAsyncTenResolved>;
 type StrictAsyncTenValueExpected = number;
 export type PipeAsyncSideEffectStrictTenValue = Expect<
   Equal<StrictAsyncTenValue, StrictAsyncTenValueExpected>
+>;
+
+export const strictPipeAsyncSideEffectEleven = pipeAsyncSideEffectStrict(
+  (value: number) => value + 1,
+  async (value: number) => (value > 1 ? value : SideEffect.of(() => 'LOW' as const)),
+  (value: number) => value * 2,
+  async (value: number) => (value > 3 ? value : SideEffect.of(() => 'MID' as const)),
+  (value: number) => value + 3,
+  async (value: number) => (value > 10 ? value : SideEffect.of(() => 0 as const)),
+  (value: number) => value * 2,
+  async (value: number) => value - 1,
+  (value: number) => value + 4,
+  async (value: number) => (value > 20 ? value : SideEffect.of(() => 'HIGH' as const)),
+  (value: number) => `n:${value}`
+);
+
+export const strictPipeAsyncSideEffectElevenResult = strictPipeAsyncSideEffectEleven(1);
+
+type StrictAsyncElevenResolved = Awaited<typeof strictPipeAsyncSideEffectElevenResult>;
+type StrictAsyncElevenEffects = EffectUnion<StrictAsyncElevenResolved>;
+type StrictAsyncElevenEffectsExpected = 'LOW' | 'MID' | 0 | 'HIGH';
+export type PipeAsyncSideEffectStrictElevenEffects = Expect<
+  Equal<StrictAsyncElevenEffects, StrictAsyncElevenEffectsExpected>
+>;
+
+type StrictAsyncElevenValue = ValueUnion<StrictAsyncElevenResolved>;
+type StrictAsyncElevenValueExpected = string;
+export type PipeAsyncSideEffectStrictElevenValue = Expect<
+  Equal<StrictAsyncElevenValue, StrictAsyncElevenValueExpected>
+>;
+
+export const strictPipeAsyncSideEffectElevenValueHinted = pipeAsyncSideEffectStrict<
+  number,
+  typeof pipeAsyncStrictElevenFnsHinted
+>(
+  1,
+  ...pipeAsyncStrictElevenFnsHinted
+);
+
+type StrictPipeAsyncSideEffectElevenValueHintedExpected = Promise<string | SideEffect<never>>;
+export type PipeAsyncSideEffectStrictElevenValueHintedIsStrict = Expect<
+  Equal<typeof strictPipeAsyncSideEffectElevenValueHinted, StrictPipeAsyncSideEffectElevenValueHintedExpected>
 >;
 
 export const strictPipeAsyncSideEffectFromTen = pipeAsyncSideEffectStrict(
