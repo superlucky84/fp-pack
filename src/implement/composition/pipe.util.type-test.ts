@@ -68,6 +68,10 @@ const streamMapAsyncNumber = streamMap(async (value: number) => value + 1) as (
 ) => IterableIterator<Promise<number>>;
 const streamToArrayNumber = streamToArray<number>;
 const trimAsync = async (value: string): Promise<string> => value.trim();
+const toUnknownString = (value: string): unknown => value;
+const toAnyString = (value: string): any => value;
+const toUnknownAsync = async (value: string): Promise<unknown> => value;
+const toAnyAsync = async (value: string): Promise<any> => value;
 
 export const pipeArrayControlString = pipe(
   flattenDeep<number>,
@@ -131,6 +135,40 @@ export type PipeUserNameFnFirstMatchesDataFirst = Expect<
   Equal<typeof pipeUserNameFnFirstResult, typeof pipeUserNameDataFirst>
 >;
 
+export const pipeUnknownOutput = pipe(
+  toUnknownString
+);
+
+type PipeUnknownOutputExpected = (input: string) => unknown;
+export type PipeUnknownOutputIsStrict = Expect<Equal<typeof pipeUnknownOutput, PipeUnknownOutputExpected>>;
+
+export const pipeAnyOutput = pipe(
+  toAnyString
+);
+
+type PipeAnyOutputExpected = (input: string) => any;
+export type PipeAnyOutputIsStrict = Expect<Equal<typeof pipeAnyOutput, PipeAnyOutputExpected>>;
+
+export const pipeUnknownDataFirst = pipe(
+  'seed',
+  toUnknownString
+);
+
+type PipeUnknownDataFirstExpected = unknown;
+export type PipeUnknownDataFirstIsStrict = Expect<
+  Equal<typeof pipeUnknownDataFirst, PipeUnknownDataFirstExpected>
+>;
+
+export const pipeAnyDataFirst = pipe(
+  'seed',
+  toAnyString
+);
+
+type PipeAnyDataFirstExpected = any;
+export type PipeAnyDataFirstIsStrict = Expect<
+  Equal<typeof pipeAnyDataFirst, PipeAnyDataFirstExpected>
+>;
+
 export const pipeStrictUserNameFnFirst = pipeStrict(
   getName,
   getOrElse(''),
@@ -139,6 +177,24 @@ export const pipeStrictUserNameFnFirst = pipeStrict(
 
 export type PipeStrictUserNameFnFirstMatchesDefault = Expect<
   Equal<typeof pipeStrictUserNameFnFirst, typeof pipeUserNameFnFirst>
+>;
+
+export const pipeStrictUnknownOutput = pipeStrict(
+  toUnknownString
+);
+
+type PipeStrictUnknownOutputExpected = (input: string) => unknown;
+export type PipeStrictUnknownOutputIsStrict = Expect<
+  Equal<typeof pipeStrictUnknownOutput, PipeStrictUnknownOutputExpected>
+>;
+
+export const pipeStrictAnyOutput = pipeStrict(
+  toAnyString
+);
+
+type PipeStrictAnyOutputExpected = (input: string) => any;
+export type PipeStrictAnyOutputIsStrict = Expect<
+  Equal<typeof pipeStrictAnyOutput, PipeStrictAnyOutputExpected>
 >;
 
 export const pipeStrictUserNameDataFirst = pipeStrict(
@@ -261,6 +317,24 @@ export type PipeAsyncUserNameFnFirstMatchesDataFirst = Expect<
   Equal<typeof pipeAsyncUserNameFnFirstResult, typeof pipeAsyncUserNameDataFirst>
 >;
 
+export const pipeAsyncUnknownOutput = pipeAsync(
+  toUnknownAsync
+);
+
+type PipeAsyncUnknownOutputExpected = (input: string) => Promise<unknown>;
+export type PipeAsyncUnknownOutputIsStrict = Expect<
+  Equal<typeof pipeAsyncUnknownOutput, PipeAsyncUnknownOutputExpected>
+>;
+
+export const pipeAsyncAnyOutput = pipeAsync(
+  toAnyAsync
+);
+
+type PipeAsyncAnyOutputExpected = (input: string) => Promise<any>;
+export type PipeAsyncAnyOutputIsStrict = Expect<
+  Equal<typeof pipeAsyncAnyOutput, PipeAsyncAnyOutputExpected>
+>;
+
 export const pipeAsyncStrictUserNameFnFirst = pipeAsyncStrict(
   getName,
   getOrElse(''),
@@ -270,6 +344,24 @@ export const pipeAsyncStrictUserNameFnFirst = pipeAsyncStrict(
 
 export type PipeAsyncStrictUserNameFnFirstMatchesDefault = Expect<
   Equal<typeof pipeAsyncStrictUserNameFnFirst, typeof pipeAsyncUserNameFnFirst>
+>;
+
+export const pipeAsyncStrictUnknownOutput = pipeAsyncStrict(
+  toUnknownAsync
+);
+
+type PipeAsyncStrictUnknownOutputExpected = (input: string) => Promise<unknown>;
+export type PipeAsyncStrictUnknownOutputIsStrict = Expect<
+  Equal<typeof pipeAsyncStrictUnknownOutput, PipeAsyncStrictUnknownOutputExpected>
+>;
+
+export const pipeAsyncStrictAnyOutput = pipeAsyncStrict(
+  toAnyAsync
+);
+
+type PipeAsyncStrictAnyOutputExpected = (input: string) => Promise<any>;
+export type PipeAsyncStrictAnyOutputIsStrict = Expect<
+  Equal<typeof pipeAsyncStrictAnyOutput, PipeAsyncStrictAnyOutputExpected>
 >;
 
 export const pipeAsyncStrictUserNameDataFirst = pipeAsyncStrict(

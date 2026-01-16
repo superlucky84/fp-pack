@@ -20,6 +20,15 @@ type ValueUnion<T> = Exclude<T, SideEffect<any>>;
 
 const toUpper = (value: string) => value.toUpperCase();
 const toLength = (value: string) => value.length;
+type Audit = { id: number; label: string; active?: boolean };
+type AuditFn = (id: number, label: string, active?: boolean) => Audit;
+type LabeledThis = { tag: string };
+type ThisFn = (this: LabeledThis, value: number) => string;
+
+const auditFn: AuditFn = (id, label, active) => ({ id, label, active });
+const thisFn: ThisFn = function (this: LabeledThis, value: number) {
+  return `${this.tag}:${value}`;
+};
 
 export const pipeDebounce = pipe(
   debounce(toUpper),
@@ -29,6 +38,26 @@ export const pipeDebounce = pipe(
 type PipeDebounceExpected = (input: number) => (value: string) => string;
 export type PipeDebounceIsStrict = Expect<Equal<typeof pipeDebounce, PipeDebounceExpected>>;
 
+export const debounceDirect = debounce(auditFn, 50);
+export type DebounceDirectIsStrict = Expect<Equal<typeof debounceDirect, AuditFn>>;
+
+export const debounceCurried = debounce(auditFn);
+type DebounceCurriedExpected = (ms: number) => AuditFn;
+export type DebounceCurriedIsStrict = Expect<Equal<typeof debounceCurried, DebounceCurriedExpected>>;
+
+export const debounceCurriedApplied = debounceCurried(50);
+export type DebounceCurriedParamsIsStrict = Expect<
+  Equal<Parameters<typeof debounceCurriedApplied>, Parameters<AuditFn>>
+>;
+export type DebounceCurriedReturnIsStrict = Expect<
+  Equal<ReturnType<typeof debounceCurriedApplied>, ReturnType<AuditFn>>
+>;
+
+export const debounceThisDirect = debounce(thisFn, 25);
+export type DebounceThisIsStrict = Expect<
+  Equal<ThisParameterType<typeof debounceThisDirect>, ThisParameterType<ThisFn>>
+>;
+
 export const pipeThrottle = pipe(
   throttle(toLength),
   (fn: (value: string) => number) => fn
@@ -36,6 +65,26 @@ export const pipeThrottle = pipe(
 
 type PipeThrottleExpected = (input: number) => (value: string) => number;
 export type PipeThrottleIsStrict = Expect<Equal<typeof pipeThrottle, PipeThrottleExpected>>;
+
+export const throttleDirect = throttle(auditFn, 60);
+export type ThrottleDirectIsStrict = Expect<Equal<typeof throttleDirect, AuditFn>>;
+
+export const throttleCurried = throttle(auditFn);
+type ThrottleCurriedExpected = (ms: number) => AuditFn;
+export type ThrottleCurriedIsStrict = Expect<Equal<typeof throttleCurried, ThrottleCurriedExpected>>;
+
+export const throttleCurriedApplied = throttleCurried(60);
+export type ThrottleCurriedParamsIsStrict = Expect<
+  Equal<Parameters<typeof throttleCurriedApplied>, Parameters<AuditFn>>
+>;
+export type ThrottleCurriedReturnIsStrict = Expect<
+  Equal<ReturnType<typeof throttleCurriedApplied>, ReturnType<AuditFn>>
+>;
+
+export const throttleThisDirect = throttle(thisFn, 30);
+export type ThrottleThisIsStrict = Expect<
+  Equal<ThisParameterType<typeof throttleThisDirect>, ThisParameterType<ThisFn>>
+>;
 
 export const pipeSideEffectDebounce = pipeSideEffect(
   debounce(toUpper),

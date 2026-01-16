@@ -16,6 +16,7 @@ import append from '../../stream/append';
 import prepend from '../../stream/prepend';
 import map from '../../stream/map';
 import toArray from '../../stream/toArray';
+import toAsync from '../../stream/toAsync';
 
 type Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B ? 1 : 2)
   ? true
@@ -63,6 +64,66 @@ const streamPrependNumber = prepend(0) as (
 
 const streamToArrayString = toArray<string>;
 const streamToArrayNumber = toArray<number>;
+const asyncPromiseNumbers = {} as AsyncIterable<Promise<number>>;
+const syncPromiseNumbers = {} as Iterable<Promise<number>>;
+const promisedAsyncPromiseNumbers = {} as Promise<AsyncIterable<Promise<number>>>;
+const promisedSyncPromiseNumbers = {} as Promise<Iterable<Promise<number>>>;
+
+export const toArrayFromAsyncPromise = streamToArrayNumber(asyncPromiseNumbers);
+
+type ToArrayFromAsyncPromiseExpected = Promise<number[]>;
+export type ToArrayFromAsyncPromiseIsStrict = Expect<
+  Equal<typeof toArrayFromAsyncPromise, ToArrayFromAsyncPromiseExpected>
+>;
+
+export const toArrayFromSyncPromise = streamToArrayNumber(syncPromiseNumbers);
+
+type ToArrayFromSyncPromiseExpected = Promise<number[]>;
+export type ToArrayFromSyncPromiseIsStrict = Expect<
+  Equal<typeof toArrayFromSyncPromise, ToArrayFromSyncPromiseExpected>
+>;
+
+export const toArrayFromPromisedAsyncPromise = streamToArrayNumber(promisedAsyncPromiseNumbers);
+
+type ToArrayFromPromisedAsyncPromiseExpected = Promise<number[]>;
+export type ToArrayFromPromisedAsyncPromiseIsStrict = Expect<
+  Equal<typeof toArrayFromPromisedAsyncPromise, ToArrayFromPromisedAsyncPromiseExpected>
+>;
+
+export const toArrayFromPromisedSyncPromise = streamToArrayNumber(promisedSyncPromiseNumbers);
+
+type ToArrayFromPromisedSyncPromiseExpected = Promise<number[]>;
+export type ToArrayFromPromisedSyncPromiseIsStrict = Expect<
+  Equal<typeof toArrayFromPromisedSyncPromise, ToArrayFromPromisedSyncPromiseExpected>
+>;
+
+export const toAsyncFromAsyncPromise = toAsync<number>(asyncPromiseNumbers);
+
+type ToAsyncFromAsyncPromiseExpected = AsyncIterable<number>;
+export type ToAsyncFromAsyncPromiseIsStrict = Expect<
+  Equal<typeof toAsyncFromAsyncPromise, ToAsyncFromAsyncPromiseExpected>
+>;
+
+export const toAsyncFromSyncPromise = toAsync<number>(syncPromiseNumbers);
+
+type ToAsyncFromSyncPromiseExpected = AsyncIterable<number>;
+export type ToAsyncFromSyncPromiseIsStrict = Expect<
+  Equal<typeof toAsyncFromSyncPromise, ToAsyncFromSyncPromiseExpected>
+>;
+
+export const toAsyncFromPromisedAsyncPromise = toAsync<number>(promisedAsyncPromiseNumbers);
+
+type ToAsyncFromPromisedAsyncPromiseExpected = AsyncIterable<number>;
+export type ToAsyncFromPromisedAsyncPromiseIsStrict = Expect<
+  Equal<typeof toAsyncFromPromisedAsyncPromise, ToAsyncFromPromisedAsyncPromiseExpected>
+>;
+
+export const toAsyncFromPromisedSyncPromise = toAsync<number>(promisedSyncPromiseNumbers);
+
+type ToAsyncFromPromisedSyncPromiseExpected = AsyncIterable<number>;
+export type ToAsyncFromPromisedSyncPromiseIsStrict = Expect<
+  Equal<typeof toAsyncFromPromisedSyncPromise, ToAsyncFromPromisedSyncPromiseExpected>
+>;
 
 export const pipeStreamScanZipWith = pipe(
   (end: number) => range(0, end),
