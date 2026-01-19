@@ -6,12 +6,14 @@
   **A practical functional toolkit for JavaScript and TypeScript.**
 </div>
 
-The core philosophy of `fp-pack` is simple: **if you know functions, pipes, and currying, you're ready to use it.** It’s a pipe-first toolkit for everyday code—approachable, zero-deps, and tree-shakeable.
+The core philosophy of `fp-pack` is simple: **if you know functions, pipes, and currying, you're ready to use it.** It's a pipe-first toolkit for everyday code—approachable, zero-deps, and tree-shakeable.
+
+**No complex monads. No wrapper ceremony.** Just plain functions that compose naturally, with an optional `SideEffect` pattern for early exits and error handling.
 
 At a glance:
 - **Composition-first** APIs centered around `pipe` / `pipeAsync`.
 - **TypeScript-native** utilities with strong inference (pipelines often work without manual type annotations).
-- **Optional SideEffect** pipelines for early exits when you need them (`pipeSideEffect` / `pipeAsyncSideEffect`) — no wrapper ceremony.
+- **SideEffect pattern** for early exits and error handling — write normal functions, mark exceptional paths with `SideEffect.of()`, and let the pipeline handle the rest. No monad wrappers required.
 
 If you want functional composition without a lot of ceremony, `fp-pack` is designed to be a practical starting point that still scales to larger codebases.
 
