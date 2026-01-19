@@ -217,6 +217,25 @@ const fetchUserData = async (userId: string) => {
       SideEffect 패턴 - 특수한 경우에만
     </h2>
 
+    <div class="mt-6 p-5 bg-emerald-50 dark:bg-emerald-900/20 border-l-4 border-emerald-500 rounded">
+      <h3 class="text-lg font-semibold text-emerald-900 dark:text-emerald-100 mb-2">
+        SideEffect 사용법이 더 필요하신가요?
+      </h3>
+      <p class="text-sm text-emerald-800 dark:text-emerald-200 mb-3">
+        언제 SideEffect 파이프를 써야 하는지, 단락 동작, runPipeResult와 matchSideEffect 사용법을
+        정리한 상세 가이드를 확인하세요.
+      </p>
+      <button
+        onClick={() => navigateTo('/ko/guide/side-effect-guide')}
+        class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-md transition-colors text-sm font-medium"
+      >
+        SideEffect 사용 가이드 읽기
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+
     <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
       <strong>대부분의 경우: <code class="text-sm">pipe</code> / <code class="text-sm">pipeAsync</code>를 사용하세요 - 더 간단하며 99%의 사용 사례에 충분합니다.</strong>
     </p>

@@ -17,6 +17,10 @@ export const Sidebar = mount(renew => {
             title: isKorean ? '파이프 선택 가이드' : 'Pipe Choice Guide',
             path: '/guide/pipe-choice-guide',
           },
+          {
+            title: isKorean ? 'SideEffect 사용 가이드' : 'SideEffect Usage Guide',
+            path: '/guide/side-effect-guide',
+          },
           { title: isKorean ? '타입 활용' : 'Type Usage', path: '/guide/type-usage' },
           { title: isKorean ? 'AI Agent Skills' : 'AI Agent Skills', path: '/ai-agent-skills' },
           { title: isKorean ? 'AI Agent Role Add-on' : 'AI Agent Role Add-on', path: '/ai-agent-addon' },

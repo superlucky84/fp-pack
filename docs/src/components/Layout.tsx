@@ -10,6 +10,8 @@ import { TypeUsage } from '@/pages/TypeUsage';
 import { TypeUsage_ko } from '@/pages/TypeUsage_ko';
 import { PipeChoiceGuide } from '@/pages/PipeChoiceGuide';
 import { PipeChoiceGuide_ko } from '@/pages/PipeChoiceGuide_ko';
+import { SideEffectGuide } from '@/pages/SideEffectGuide';
+import { SideEffectGuide_ko } from '@/pages/SideEffectGuide_ko';
 import { AIAgentSkills } from '@/pages/AIAgentSkills';
 import { AIAgentSkills_ko } from '@/pages/AIAgentSkills_ko';
 import { AIAgentAddon } from '@/pages/AIAgentAddon';
@@ -327,6 +329,8 @@ const routes: Record<string, PageComponent> = {
   '/ko/guide/type-usage': TypeUsage_ko,
   '/guide/pipe-choice-guide': PipeChoiceGuide,
   '/ko/guide/pipe-choice-guide': PipeChoiceGuide_ko,
+  '/guide/side-effect-guide': SideEffectGuide,
+  '/ko/guide/side-effect-guide': SideEffectGuide_ko,
   '/ai-agent-skills': AIAgentSkills,
   '/ko/ai-agent-skills': AIAgentSkills_ko,
   '/ai-agent-addon': AIAgentAddon,
