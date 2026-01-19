@@ -1145,6 +1145,44 @@ export type PipeAsyncSideEffectStrictTenValue = Expect<
   Equal<StrictAsyncTenValue, StrictAsyncTenValueExpected>
 >;
 
+export const pipeAsyncSideEffectMixed = pipeAsyncSideEffect(
+  (value: number) => value + 1,
+  async (value: number) => value * 2,
+  (value: number) => (value > 2 ? value : SideEffect.of(() => 'LOW' as const)),
+  async (value: number) => (value > 10 ? `${value}` : SideEffect.of(() => 'MID' as const)),
+  (value: string) => value.length,
+  async (value: number) => `n:${value}`
+);
+
+type PipeAsyncSideEffectMixedExpected = (input: number | SideEffect<any>) => Promise<string | SideEffect<any>>;
+export type PipeAsyncSideEffectMixedIsStrict = Expect<
+  Equal<typeof pipeAsyncSideEffectMixed, PipeAsyncSideEffectMixedExpected>
+>;
+
+export const strictPipeAsyncSideEffectMixed = pipeAsyncSideEffectStrict(
+  (value: number) => value + 1,
+  async (value: number) => value * 2,
+  (value: number) => (value > 2 ? value : SideEffect.of(() => 'LOW' as const)),
+  async (value: number) => (value > 10 ? `${value}` : SideEffect.of(() => 'MID' as const)),
+  (value: string) => value.length,
+  async (value: number) => `n:${value}`
+);
+
+export const strictPipeAsyncSideEffectMixedResult = strictPipeAsyncSideEffectMixed(1);
+
+type StrictAsyncMixedResolved = Awaited<typeof strictPipeAsyncSideEffectMixedResult>;
+type StrictAsyncMixedEffects = EffectUnion<StrictAsyncMixedResolved>;
+type StrictAsyncMixedEffectsExpected = 'LOW' | 'MID';
+export type PipeAsyncSideEffectStrictMixedEffects = Expect<
+  Equal<StrictAsyncMixedEffects, StrictAsyncMixedEffectsExpected>
+>;
+
+type StrictAsyncMixedValue = ValueUnion<StrictAsyncMixedResolved>;
+type StrictAsyncMixedValueExpected = string;
+export type PipeAsyncSideEffectStrictMixedValue = Expect<
+  Equal<StrictAsyncMixedValue, StrictAsyncMixedValueExpected>
+>;
+
 export const strictPipeAsyncSideEffectEleven = pipeAsyncSideEffectStrict(
   (value: number) => value + 1,
   async (value: number) => (value > 1 ? value : SideEffect.of(() => 'LOW' as const)),

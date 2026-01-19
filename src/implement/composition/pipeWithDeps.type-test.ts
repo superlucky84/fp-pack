@@ -57,10 +57,34 @@ const pipeSyncDepsFrom = pipeWithDeps(pipe)(
 type PipeSyncDepsFromExpected = (input?: unknown) => (deps: unknown) => number;
 export type PipeSyncDepsFromIsStrict = Expect<Equal<typeof pipeSyncDepsFrom, PipeSyncDepsFromExpected>>;
 
+const pipeSyncDepsFromWithDeps = pipeWithDeps(pipe)(
+  from(5),
+  (value: number) => value * 2,
+  (value: number, deps: { add: number }) => value + deps.add,
+  (value: number) => `${value}`
+);
+
+type PipeSyncDepsFromWithDepsExpected = (input?: unknown) => (deps: { add: number }) => string;
+export type PipeSyncDepsFromWithDepsIsStrict = Expect<
+  Equal<typeof pipeSyncDepsFromWithDeps, PipeSyncDepsFromWithDepsExpected>
+>;
+
 const pipeSideEffectDeps = pipeWithDeps(pipeSideEffect)((value: number) => value + 1);
 
 type PipeSideEffectDepsExpected = (input: number | SideEffect<any>) => (deps: unknown) => number | SideEffect<any>;
 export type PipeSideEffectDepsIsStrict = Expect<Extends<typeof pipeSideEffectDeps, PipeSideEffectDepsExpected>>;
+
+const pipeSideEffectDepsFrom = pipeWithDeps(pipeSideEffect)(
+  from(5),
+  (value: number) => value + 1,
+  (value: number, deps: { label: string }) =>
+    value > 3 ? `${deps.label}:${value}` : SideEffect.of(() => 'LOW' as const)
+);
+
+type PipeSideEffectDepsFromExpected = (input?: unknown | SideEffect<any>) => (deps: { label: string }) => string | SideEffect<any>;
+export type PipeSideEffectDepsFromIsStrict = Expect<
+  Equal<typeof pipeSideEffectDepsFrom, PipeSideEffectDepsFromExpected>
+>;
 
 const pipeAsyncDeps = pipeWithDeps(pipeAsyncSideEffect)(
   1,
@@ -75,6 +99,18 @@ const pipeAsyncDeps = pipeWithDeps(pipeAsyncSideEffect)(
 type PipeAsyncDepsExpected = (deps: Db & Logger) => Promise<number | SideEffect<any>>;
 export type PipeAsyncDepsIsStrict = Expect<Equal<typeof pipeAsyncDeps, PipeAsyncDepsExpected>>;
 
+const pipeAsyncDepsFrom = pipeWithDeps(pipeAsyncSideEffect)(
+  from(5),
+  async (value: number) => value * 2,
+  (value: number, deps: { label: string }) =>
+    value > 3 ? `${deps.label}:${value}` : SideEffect.of(() => 'LOW' as const)
+);
+
+type PipeAsyncDepsFromExpected = (input?: unknown | SideEffect<any>) => (deps: { label: string }) => Promise<
+  string | SideEffect<any>
+>;
+export type PipeAsyncDepsFromIsStrict = Expect<Equal<typeof pipeAsyncDepsFrom, PipeAsyncDepsFromExpected>>;
+
 const pipeAsyncStrictDeps = pipeWithDeps(pipeAsyncStrict)(
   1,
   async (id: number, deps: Db) => deps.query(id),
@@ -83,6 +119,16 @@ const pipeAsyncStrictDeps = pipeWithDeps(pipeAsyncStrict)(
 
 type PipeAsyncStrictDepsExpected = (deps: Db) => Promise<string>;
 export type PipeAsyncStrictDepsIsStrict = Expect<Equal<typeof pipeAsyncStrictDeps, PipeAsyncStrictDepsExpected>>;
+
+pipeWithDeps(pipeAsyncStrict)(
+  from(5),
+  // @ts-expect-error from() loses anchor info in pipeWithDeps + pipeAsyncStrict
+  async (value: number) => value * 2,
+  (value: number, deps: Logger) => {
+    deps.log(`${value}`);
+    return `${value}`;
+  }
+);
 
 const pipeAsyncDepsDataLast = pipeWithDeps(pipeAsyncSideEffect)(
   async (id: number, deps: Db) => deps.query(id),

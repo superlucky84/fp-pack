@@ -1,4 +1,4 @@
-import SideEffect, { isSideEffect, runPipeResult } from './sideEffect';
+import SideEffect, { isSideEffect, matchSideEffect, runPipeResult } from './sideEffect';
 import pipeSideEffect from './pipeSideEffect';
 
 type Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B ? 1 : 2)
@@ -6,6 +6,7 @@ type Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B 
   : false;
 type Expect<T extends true> = T;
 type IsAny<T> = 0 extends (1 & T) ? true : false;
+type IsUnknown<T> = unknown extends T ? (T extends unknown ? (IsAny<T> extends true ? false : true) : false) : false;
 
 const divide = (a: number, b: number) =>
   b !== 0 ? a / b : SideEffect.of(() => 'DIVIDE_BY_ZERO');
@@ -109,3 +110,21 @@ assertNumberOrString(runPipeResultExplicitValue);
 const maybeNullable: SideEffect<string | null> = SideEffect.of(() => (Math.random() > 0.5 ? 'OK' : null));
 const nullableResult = runPipeResult(maybeNullable);
 assertNullableString(nullableResult);
+
+const matchSideEffectWidened: number | SideEffect<any> = Math.random() > 0.5 ? 1 : SideEffect.of(() => 'ERR' as const);
+export const matchSideEffectWidenedResult = matchSideEffect(matchSideEffectWidened, {
+  value: (value: number) => value + 1,
+  effect: (effect) => effect.effect()
+});
+
+export type MatchSideEffectWidenedIsUnknown = Expect<IsUnknown<typeof matchSideEffectWidenedResult>>;
+
+export const matchSideEffectExplicitResult = matchSideEffect<number, number, string>(matchSideEffectWidened, {
+  value: (value) => value + 1,
+  effect: (effect) => effect.effect() as string
+});
+
+type MatchSideEffectExplicitExpected = number | string;
+export type MatchSideEffectExplicitIsStrict = Expect<
+  Equal<typeof matchSideEffectExplicitResult, MatchSideEffectExplicitExpected>
+>;

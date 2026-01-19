@@ -35,6 +35,7 @@ type User = {
 type MixedValue = string | number | null;
 
 const isString = (value: MixedValue): value is string => typeof value === 'string';
+const isStringUnknown = (value: unknown): value is string => typeof value === 'string';
 
 const sortByScore = sortBy((user: User) => user.score);
 const uniqById = uniqBy((user: User) => user.id);
@@ -90,11 +91,28 @@ export type PipeArrayFilterStringsIsStrict = Expect<
   Equal<typeof pipeArrayFilterStrings, PipeArrayFilterStringsExpected>
 >;
 
+export const pipeArrayFilterUnknownStrings = pipe(
+  filter(isStringUnknown),
+  map((value: string) => value.toUpperCase())
+);
+
+type PipeArrayFilterUnknownStringsExpected = (input: unknown[]) => string[];
+export type PipeArrayFilterUnknownStringsIsStrict = Expect<
+  Equal<typeof pipeArrayFilterUnknownStrings, PipeArrayFilterUnknownStringsExpected>
+>;
+
 export const arrayEveryString = every(isString);
 
 type ArrayEveryStringExpected = (input: MixedValue[]) => input is string[];
 export type ArrayEveryStringIsStrict = Expect<
   Equal<typeof arrayEveryString, ArrayEveryStringExpected>
+>;
+
+export const arrayEveryUnknownString = every(isStringUnknown);
+
+type ArrayEveryUnknownStringExpected = (input: unknown[]) => input is string[];
+export type ArrayEveryUnknownStringIsStrict = Expect<
+  Equal<typeof arrayEveryUnknownString, ArrayEveryUnknownStringExpected>
 >;
 
 export const arraySomeString = some(isString);

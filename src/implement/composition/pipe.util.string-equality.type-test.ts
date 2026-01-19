@@ -46,6 +46,40 @@ export type PipeStringSplitRegexIsStrict = Expect<
   Equal<typeof pipeStringSplitRegex, PipeStringSplitRegexExpected>
 >;
 
+const splitSeparatorUnion: string | RegExp = Math.random() > 0.5 ? ',' : /\s+/;
+export const pipeStringSplitUnion = pipe(
+  split(splitSeparatorUnion),
+  (parts) => parts.join('|')
+);
+
+type PipeStringSplitUnionExpected = (input: string) => string;
+export type PipeStringSplitUnionIsStrict = Expect<
+  Equal<typeof pipeStringSplitUnion, PipeStringSplitUnionExpected>
+>;
+
+const replacePatternUnion: string | RegExp = Math.random() > 0.5 ? 'a' : /a/g;
+export const pipeStringReplaceUnion = pipe(
+  replace(replacePatternUnion, 'b'),
+  (value) => value.length
+);
+
+type PipeStringReplaceUnionExpected = (input: string) => number;
+export type PipeStringReplaceUnionIsStrict = Expect<
+  Equal<typeof pipeStringReplaceUnion, PipeStringReplaceUnionExpected>
+>;
+
+const matchPatternUnion: RegExp | string = Math.random() > 0.5 ? /a/g : 'a';
+const matchPatternRegExp = matchPatternUnion instanceof RegExp ? matchPatternUnion : new RegExp(matchPatternUnion);
+export const pipeStringMatchUnion = pipe(
+  match(matchPatternRegExp),
+  (result) => (result ? result.length : 0)
+);
+
+type PipeStringMatchUnionExpected = (input: string) => number;
+export type PipeStringMatchUnionIsStrict = Expect<
+  Equal<typeof pipeStringMatchUnion, PipeStringMatchUnionExpected>
+>;
+
 export const pipeStringEquals = pipe(
   split(','),
   (parts) => parts[0] ?? '',
