@@ -17,11 +17,6 @@ At a glance:
 
 If you want functional composition without a lot of ceremony, `fp-pack` is designed to be a practical starting point that still scales to larger codebases.
 
----
-
-> **⚠️ Project Status**
->
-> fp-pack is actively evolving as we refine its functional patterns in TypeScript. The core API is stable enough for daily use, but some edges may change as we improve the design.
 
 ---
 
