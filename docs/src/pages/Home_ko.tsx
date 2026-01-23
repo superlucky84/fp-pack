@@ -307,7 +307,7 @@ const result = runPipeResult(
     </h2>
 
     <p class="text-gray-700 dark:text-gray-300 mb-4">
-      fp-pack은 AI 코딩 어시스턴트(Claude Code, GitHub Copilot, Cursor 등)가 자동으로 fp-pack 스타일의 함수형 코드를 작성하도록 돕는 스킬 파일을 포함합니다.
+      fp-pack은 AI 코딩 어시스턴트(Claude Code, GitHub Copilot, Cursor 등)가 자동으로 fp-pack 스타일의 함수형 코드를 작성하도록 돕는 스킬 패키지를 포함합니다.
     </p>
 
     <div class="border-l-4 border-green-500 bg-green-50 dark:bg-green-900/20 p-4 md:p-6 mb-6 rounded-r">
@@ -339,7 +339,7 @@ const result = runPipeResult(
     </h3>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-4">
-      AI 코딩 어시스턴트가 스킬 파일을 지원한다면, <code class="text-xs md:text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">fp-pack.md</code>를 적절한 디렉토리에 복사하세요.
+      AI 코딩 어시스턴트가 스킬 패키지를 지원한다면, <code class="text-xs md:text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">skills/fp-pack</code> 폴더를 적절한 디렉토리에 복사하세요.
     </p>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-4">
@@ -349,15 +349,21 @@ const result = runPipeResult(
     <CodeBlock
       language="bash"
       code={`# Unix/macOS/Linux
-cp node_modules/fp-pack/dist/skills/fp-pack.md .claude/skills/
+mkdir -p .claude/skills/fp-pack
+cp -R node_modules/fp-pack/dist/skills/fp-pack/* .claude/skills/fp-pack/
 
 # Windows (PowerShell)
-Copy-Item node_modules/fp-pack/dist/skills/fp-pack.md .claude/skills/
+New-Item -ItemType Directory -Force -Path .claude/skills/fp-pack
+Copy-Item node_modules/fp-pack/dist/skills/fp-pack/* .claude/skills/fp-pack -Recurse
 
 # 또는 수동으로 디렉토리 생성 후 복사
-mkdir -p .claude/skills
-cp node_modules/fp-pack/dist/skills/fp-pack.md .claude/skills/`}
+mkdir -p .claude/skills/fp-pack
+cp -R node_modules/fp-pack/dist/skills/fp-pack/* .claude/skills/fp-pack/`}
     />
+
+    <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mt-3 mb-4">
+      단일 파일만 허용하는 도구라면 <code class="text-xs md:text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">.claude/skills/fp-pack/SKILL.md</code>를 가리키거나, 해당 파일을 <code class="text-xs md:text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">.claude/skills/fp-pack.md</code>로 링크하세요.
+    </p>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-4">
       <strong>Codex의 경우:</strong> <code class="text-xs md:text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">~/.codex/skills/fp-pack/</code>에 복사
@@ -367,11 +373,11 @@ cp node_modules/fp-pack/dist/skills/fp-pack.md .claude/skills/`}
       language="bash"
       code={`# Unix/macOS/Linux
 mkdir -p ~/.codex/skills/fp-pack
-cp node_modules/fp-pack/dist/skills/fp-pack/SKILL.md ~/.codex/skills/fp-pack/SKILL.md
+cp -R node_modules/fp-pack/dist/skills/fp-pack/* ~/.codex/skills/fp-pack/
 
 # Windows (PowerShell)
 New-Item -ItemType Directory -Force -Path "$HOME/.codex/skills/fp-pack"
-Copy-Item node_modules/fp-pack/dist/skills/fp-pack/SKILL.md $HOME/.codex/skills/fp-pack/SKILL.md`}
+Copy-Item node_modules/fp-pack/dist/skills/fp-pack/* $HOME/.codex/skills/fp-pack -Recurse`}
     />
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mt-4 mb-2">

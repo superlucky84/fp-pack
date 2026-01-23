@@ -1,6 +1,19 @@
+---
+name: fp-pack
+description: Use when working in projects that use fp-pack; follow pipe, SideEffect, and curry guidelines.
+metadata:
+  short-description: fp-pack workflow
+  version: {{version}}
+---
+
 # fp-pack AI Agent Skills
 
 Document Version: {{version}}
+
+Additional materials (optional):
+- constraints/ (rules, mistakes, troubleshooting)
+- reference/ (composition, currying, TypeScript inference)
+- examples/ (quick examples)
 
 ## ⚠️ Activation Condition (Read First)
 

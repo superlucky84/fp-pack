@@ -135,7 +135,7 @@ When existing code could be improved with fp-pack:
 REFERENCE MATERIALS (NOT PART OF BEHAVIORAL RULES):
 
 For detailed guidance on fp-pack patterns and usage, refer to:
-node_modules/fp-pack/dist/skills/fp-pack.md
+node_modules/fp-pack/dist/skills/fp-pack/
 
 This reference material provides comprehensive examples, troubleshooting tips,
 and pattern guidance that complements the behavioral guidelines above.
@@ -265,7 +265,7 @@ fp-pack patterns benefit from guidance because:
 
 ### Balanced Approach
 
-This add-on follows fp-pack.md's philosophy:
+This add-on follows the fp-pack SKILL.md philosophy:
 - "Use pipe for 2+ steps; for single steps, call the function directly"
 - "For trivial one-liners, using native JS directly is fine"
 - "Reach for fp-pack when composition adds clarity or reuse"
@@ -297,7 +297,7 @@ This detection-based activation allows a single agent configuration to work appr
 ### Design Constraints
 
 This add-on intentionally avoids:
-- **Complete API coverage**: Full API documentation belongs in separate references (fp-pack.md)
+- **Complete API coverage**: Full API documentation belongs in separate references (skills/fp-pack/ reference files)
 - **Framework-specific patterns**: UI framework integration belongs in project-specific documentation
 - **Implementation details**: Internal fp-pack architecture is irrelevant to usage
 - **Absolute prohibitions**: "Never" statements reduce flexibility and pragmatism

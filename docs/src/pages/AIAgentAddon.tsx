@@ -94,7 +94,7 @@ When existing code could be improved with fp-pack:
 REFERENCE MATERIALS (NOT PART OF BEHAVIORAL RULES):
 
 For detailed guidance on fp-pack patterns and usage, refer to:
-node_modules/fp-pack/dist/skills/fp-pack.md
+node_modules/fp-pack/dist/skills/fp-pack/
 
 This reference material provides comprehensive examples, troubleshooting tips,
 and pattern guidance that complements the behavioral guidelines above.`;
@@ -125,7 +125,7 @@ export const AIAgentAddon = () => (
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      The fp-pack Agent Role Add-on is a copy-paste ready behavior extension for AI coding agents (OpenCode, custom agents, IDE extensions, etc.). Unlike skills files that are project-specific, this add-on is attached directly to your agent's system prompt, making it work across all your projects.
+      The fp-pack Agent Role Add-on is a copy-paste ready behavior extension for AI coding agents (OpenCode, custom agents, IDE extensions, etc.). Unlike skills packages that are project-specific, this add-on is attached directly to your agent's system prompt, making it work across all your projects.
     </p>
 
     <div class="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-800 mb-6">

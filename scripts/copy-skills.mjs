@@ -1,17 +1,24 @@
-import { mkdirSync, readFileSync, writeFileSync } from 'fs';
-import { dirname } from 'path';
+import {
+  copyFileSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  writeFileSync
+} from 'fs';
+import { dirname, extname, join } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = dirname(__dirname);
 
-const skillsRoot = `${projectRoot}/dist/skills`;
-const codexSkillDir = `${skillsRoot}/fp-pack`;
+const skillsSourceRoot = `${projectRoot}/skills`;
+const skillsDistRoot = `${projectRoot}/dist/skills`;
 const aiAddonsRoot = `${projectRoot}/dist/ai-addons`;
 
-// Create dist/skills and dist/ai-addons directories
-mkdirSync(skillsRoot, { recursive: true });
-mkdirSync(codexSkillDir, { recursive: true });
+// Reset dist/skills and create dist/ai-addons directories
+rmSync(skillsDistRoot, { recursive: true, force: true });
+mkdirSync(skillsDistRoot, { recursive: true });
 mkdirSync(aiAddonsRoot, { recursive: true });
 
 const packageJson = JSON.parse(
@@ -19,21 +26,38 @@ const packageJson = JSON.parse(
 );
 const version = packageJson.version ?? '0.0.0';
 
-// Process fp-pack.md (skills document)
-const skillsSource = readFileSync(`${projectRoot}/fp-pack.md`, 'utf8');
-const skillsWithVersion = skillsSource.replace('{{version}}', version);
+const copySkillsTree = (sourceDir, targetDir) => {
+  mkdirSync(targetDir, { recursive: true });
+  const entries = readdirSync(sourceDir, { withFileTypes: true });
 
-// Copy fp-pack.md to dist/skills/ with version injected
-writeFileSync(`${skillsRoot}/fp-pack.md`, skillsWithVersion);
+  entries.forEach((entry) => {
+    const sourcePath = join(sourceDir, entry.name);
+    const targetPath = join(targetDir, entry.name);
 
-const codexFrontmatter = `---\nname: fp-pack\ndescription: Use when working in projects that use fp-pack; follow pipe, SideEffect, and curry guidelines.\nmetadata:\n  short-description: fp-pack workflow\n---\n\n`;
-const codexSkillContent = `${codexFrontmatter}${skillsWithVersion}`;
+    if (entry.isDirectory()) {
+      copySkillsTree(sourcePath, targetPath);
+      return;
+    }
 
-// Copy fp-pack.md to dist/skills/fp-pack/SKILL.md for Codex with YAML frontmatter
-writeFileSync(`${codexSkillDir}/SKILL.md`, codexSkillContent);
+    if (!entry.isFile()) {
+      return;
+    }
 
-console.log('✓ Copied fp-pack.md to dist/skills/');
-console.log('✓ Copied SKILL.md to dist/skills/fp-pack/');
+    if (extname(entry.name) === '.md') {
+      const content = readFileSync(sourcePath, 'utf8');
+      const withVersion = content.replace(/{{version}}/g, version);
+      writeFileSync(targetPath, withVersion);
+      return;
+    }
+
+    copyFileSync(sourcePath, targetPath);
+  });
+};
+
+// Copy skills directory to dist/skills with version injected in markdown files
+copySkillsTree(skillsSourceRoot, skillsDistRoot);
+
+console.log('✓ Copied skills/ to dist/skills/');
 
 // Process fp-pack-agent-addon.md (agent role add-on)
 const addonSource = readFileSync(`${projectRoot}/fp-pack-agent-addon.md`, 'utf8');
