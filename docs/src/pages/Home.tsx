@@ -307,7 +307,7 @@ const result = runPipeResult(
     </h2>
 
     <p class="text-gray-700 dark:text-gray-300 mb-4">
-      fp-pack includes an AI agent skills file that helps AI coding assistants (Claude Code, GitHub Copilot, Cursor, etc.) automatically write fp-pack-style functional code.
+      fp-pack includes an AI agent skills package that helps AI coding assistants (Claude Code, GitHub Copilot, Cursor, etc.) automatically write fp-pack-style functional code.
     </p>
 
     <div class="border-l-4 border-green-500 bg-green-50 dark:bg-green-900/20 p-4 md:p-6 mb-6 rounded-r">
@@ -339,7 +339,7 @@ const result = runPipeResult(
     </h3>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-4">
-      If your AI coding assistant supports skills files, copy <code class="text-xs md:text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">fp-pack.md</code> to the appropriate directory.
+      If your AI coding assistant supports skills packages, copy the <code class="text-xs md:text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">skills/fp-pack</code> folder to the appropriate directory.
     </p>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-4">
@@ -349,15 +349,21 @@ const result = runPipeResult(
     <CodeBlock
       language="bash"
       code={`# Unix/macOS/Linux
-cp node_modules/fp-pack/dist/skills/fp-pack.md .claude/skills/
+mkdir -p .claude/skills/fp-pack
+cp -R node_modules/fp-pack/dist/skills/fp-pack/* .claude/skills/fp-pack/
 
 # Windows (PowerShell)
-Copy-Item node_modules/fp-pack/dist/skills/fp-pack.md .claude/skills/
+New-Item -ItemType Directory -Force -Path .claude/skills/fp-pack
+Copy-Item node_modules/fp-pack/dist/skills/fp-pack/* .claude/skills/fp-pack -Recurse
 
 # Or manually create the directory and copy
-mkdir -p .claude/skills
-cp node_modules/fp-pack/dist/skills/fp-pack.md .claude/skills/`}
+mkdir -p .claude/skills/fp-pack
+cp -R node_modules/fp-pack/dist/skills/fp-pack/* .claude/skills/fp-pack/`}
     />
+
+    <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mt-3 mb-4">
+      If your tool expects a single file, point it to <code class="text-xs md:text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">.claude/skills/fp-pack/SKILL.md</code> or link it as <code class="text-xs md:text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">.claude/skills/fp-pack.md</code>.
+    </p>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-4">
       <strong>For Codex:</strong> Copy to <code class="text-xs md:text-sm bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">~/.codex/skills/fp-pack/</code>
@@ -367,11 +373,11 @@ cp node_modules/fp-pack/dist/skills/fp-pack.md .claude/skills/`}
       language="bash"
       code={`# Unix/macOS/Linux
 mkdir -p ~/.codex/skills/fp-pack
-cp node_modules/fp-pack/dist/skills/fp-pack/SKILL.md ~/.codex/skills/fp-pack/SKILL.md
+cp -R node_modules/fp-pack/dist/skills/fp-pack/* ~/.codex/skills/fp-pack/
 
 # Windows (PowerShell)
 New-Item -ItemType Directory -Force -Path "$HOME/.codex/skills/fp-pack"
-Copy-Item node_modules/fp-pack/dist/skills/fp-pack/SKILL.md $HOME/.codex/skills/fp-pack/SKILL.md`}
+Copy-Item node_modules/fp-pack/dist/skills/fp-pack/* $HOME/.codex/skills/fp-pack -Recurse`}
     />
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mt-4 mb-2">

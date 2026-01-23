@@ -26,11 +26,11 @@ export const AIAgentSkills = () => (
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      fp-pack includes an AI agent skills file that helps AI coding assistants (Claude Code, GitHub Copilot, Cursor, etc.) automatically write fp-pack-style functional code.
+      fp-pack includes an AI agent skills package that helps AI coding assistants (Claude Code, GitHub Copilot, Cursor, etc.) automatically write fp-pack-style functional code.
     </p>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      When you have this skills file in your project, AI assistants will:
+      When you have this skills package in your project, AI assistants will:
     </p>
 
     <ul class="list-disc list-inside space-y-2 text-sm md:text-base text-gray-700 dark:text-gray-300 mb-6">
@@ -50,21 +50,27 @@ export const AIAgentSkills = () => (
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      Copy the skills file to your project's <code class="text-sm">.claude/skills/</code> directory:
+      Copy the skills folder to your project's <code class="text-sm">.claude/skills/</code> directory:
     </p>
 
     <CodeBlock
       language="bash"
       code={`# Unix/macOS/Linux
-cp node_modules/fp-pack/dist/skills/fp-pack.md .claude/skills/
+mkdir -p .claude/skills/fp-pack
+cp -R node_modules/fp-pack/dist/skills/fp-pack/* .claude/skills/fp-pack/
 
 # Windows (PowerShell)
-Copy-Item node_modules/fp-pack/dist/skills/fp-pack.md .claude/skills/
+New-Item -ItemType Directory -Force -Path .claude/skills/fp-pack
+Copy-Item node_modules/fp-pack/dist/skills/fp-pack/* .claude/skills/fp-pack -Recurse
 
 # Or manually create the directory and copy
-mkdir -p .claude/skills
-cp node_modules/fp-pack/dist/skills/fp-pack.md .claude/skills/`}
+mkdir -p .claude/skills/fp-pack
+cp -R node_modules/fp-pack/dist/skills/fp-pack/* .claude/skills/fp-pack/`}
     />
+
+    <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      If your tool expects a single file, point it to <code class="text-sm">.claude/skills/fp-pack/SKILL.md</code> or link that file to <code class="text-sm">.claude/skills/fp-pack.md</code>.
+    </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
@@ -80,11 +86,11 @@ cp node_modules/fp-pack/dist/skills/fp-pack.md .claude/skills/`}
       language="bash"
       code={`# Unix/macOS/Linux
 mkdir -p ~/.codex/skills/fp-pack
-cp node_modules/fp-pack/dist/skills/fp-pack/SKILL.md ~/.codex/skills/fp-pack/SKILL.md
+cp -R node_modules/fp-pack/dist/skills/fp-pack/* ~/.codex/skills/fp-pack/
 
 # Windows (PowerShell)
 New-Item -ItemType Directory -Force -Path "$HOME/.codex/skills/fp-pack"
-Copy-Item node_modules/fp-pack/dist/skills/fp-pack/SKILL.md $HOME/.codex/skills/fp-pack/SKILL.md`}
+Copy-Item node_modules/fp-pack/dist/skills/fp-pack/* $HOME/.codex/skills/fp-pack -Recurse`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -94,7 +100,7 @@ Copy-Item node_modules/fp-pack/dist/skills/fp-pack/SKILL.md $HOME/.codex/skills/
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      For better reliability, create a <code class="text-sm">CLAUDE.md</code> file in your project root. This ensures AI agents read the fp-pack skills file before writing code.
+      For better reliability, create a <code class="text-sm">CLAUDE.md</code> file in your project root. This ensures AI agents read the fp-pack skills package before writing code.
     </p>
 
     <CodeBlock
@@ -105,7 +111,7 @@ Copy-Item node_modules/fp-pack/dist/skills/fp-pack/SKILL.md $HOME/.codex/skills/
 
 **Before writing ANY code, you MUST:**
 
-1. Read \`.claude/skills/fp-pack.md\` **completely**
+1. Read \`.claude/skills/fp-pack/SKILL.md\` **completely**
 2. Follow the anti-patterns section **strictly**
 3. Use the patterns shown in real-world examples
 
@@ -177,13 +183,13 @@ const results = processUsers(users);`}
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      The skills file is located at <code class="text-sm">node_modules/fp-pack/dist/skills/fp-pack.md</code> after installation.
+      The skills package is located at <code class="text-sm">node_modules/fp-pack/dist/skills/fp-pack/</code> after installation (includes <code class="text-sm">SKILL.md</code>, <code class="text-sm">examples/</code>, <code class="text-sm">reference/</code>, and <code class="text-sm">constraints/</code>).
     </p>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
       You can also view it in the{' '}
       <a
-        href="https://github.com/superlucky84/fp-pack/blob/main/fp-pack.md"
+        href="https://github.com/superlucky84/fp-pack/blob/main/skills/fp-pack/SKILL.md"
         target="_blank"
         rel="noopener noreferrer"
         class="text-blue-600 dark:text-blue-400 hover:underline"
@@ -194,7 +200,7 @@ const results = processUsers(users);`}
 
     <div class="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-800 mt-6">
       <p class="text-sm md:text-base text-blue-900 dark:text-blue-200 leading-relaxed">
-        <span class="font-medium">💡 Tip:</span> After setting up the skills file, you can ask your AI assistant questions like "refactor this code using fp-pack" or "write this function using pipe and map", and it will automatically apply the patterns.
+        <span class="font-medium">💡 Tip:</span> After setting up the skills package, you can ask your AI assistant questions like "refactor this code using fp-pack" or "write this function using pipe and map", and it will automatically apply the patterns.
       </p>
     </div>
   </div>

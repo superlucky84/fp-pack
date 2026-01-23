@@ -94,7 +94,7 @@ When existing code could be improved with fp-pack:
 REFERENCE MATERIALS (NOT PART OF BEHAVIORAL RULES):
 
 For detailed guidance on fp-pack patterns and usage, refer to:
-node_modules/fp-pack/dist/skills/fp-pack.md
+node_modules/fp-pack/dist/skills/fp-pack/
 
 This reference material provides comprehensive examples, troubleshooting tips,
 and pattern guidance that complements the behavioral guidelines above.`;
@@ -125,7 +125,7 @@ export const AIAgentAddon_ko = () => (
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      fp-pack Agent Role Add-on은 AI 코딩 에이전트(OpenCode, 커스텀 에이전트, IDE 확장 등)를 위한 복사-붙여넣기 가능한 행동 확장입니다. 프로젝트별 설정인 skills 파일과 달리, 이 add-on은 에이전트의 시스템 프롬프트에 직접 추가되어 모든 프로젝트에서 작동합니다.
+      fp-pack Agent Role Add-on은 AI 코딩 에이전트(OpenCode, 커스텀 에이전트, IDE 확장 등)를 위한 복사-붙여넣기 가능한 행동 확장입니다. 프로젝트별 설정인 skills 패키지와 달리, 이 add-on은 에이전트의 시스템 프롬프트에 직접 추가되어 모든 프로젝트에서 작동합니다.
     </p>
 
     <div class="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-800 mb-6">

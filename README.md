@@ -166,9 +166,9 @@ yarn add fp-pack
 
 ## AI Agent Skills (Optional)
 
-fp-pack includes an AI agent skills file that helps AI coding assistants (Claude Code, GitHub Copilot, Cursor, etc.) automatically write fp-pack-style functional code.
+fp-pack includes an AI agent skills package that helps AI coding assistants (Claude Code, GitHub Copilot, Cursor, etc.) automatically write fp-pack-style functional code.
 
-When you have this skills file in your project, AI assistants will:
+When you have this skills package in your project, AI assistants will:
 - Default to using `pipe`/`pipeAsync` for pure transformations, and `pipeSideEffect`/`pipeAsyncSideEffect` when SideEffect is involved (use strict variants when you need strict effect unions)
 - Use the `SideEffect` pattern instead of try-catch
 - Prefer `stream/*` functions for large datasets
@@ -176,19 +176,23 @@ When you have this skills file in your project, AI assistants will:
 
 ### Setup for Claude Code
 
-Copy the skills file to your project's `.claude/skills/` directory:
+Copy the skills folder to your project's `.claude/skills/` directory:
 
 ```bash
 # Unix/macOS/Linux
-cp node_modules/fp-pack/dist/skills/fp-pack.md .claude/skills/
+mkdir -p .claude/skills/fp-pack
+cp -R node_modules/fp-pack/dist/skills/fp-pack/* .claude/skills/fp-pack/
 
 # Windows (PowerShell)
-Copy-Item node_modules/fp-pack/dist/skills/fp-pack.md .claude/skills/
+New-Item -ItemType Directory -Force -Path .claude/skills/fp-pack
+Copy-Item node_modules/fp-pack/dist/skills/fp-pack/* .claude/skills/fp-pack -Recurse
 
 # Or manually create the directory and copy
-mkdir -p .claude/skills
-cp node_modules/fp-pack/dist/skills/fp-pack.md .claude/skills/
+mkdir -p .claude/skills/fp-pack
+cp -R node_modules/fp-pack/dist/skills/fp-pack/* .claude/skills/fp-pack/
 ```
+
+If your tool expects a single file, point it to `.claude/skills/fp-pack/SKILL.md` or link that file to `.claude/skills/fp-pack.md`.
 
 ### Setup for Codex
 
@@ -197,22 +201,22 @@ Copy the Codex skill to your project's `$CODEX_HOME/skills/` directory (default:
 ```bash
 # Unix/macOS/Linux
 mkdir -p ~/.codex/skills/fp-pack
-cp node_modules/fp-pack/dist/skills/fp-pack/SKILL.md ~/.codex/skills/fp-pack/SKILL.md
+cp -R node_modules/fp-pack/dist/skills/fp-pack/* ~/.codex/skills/fp-pack/
 
 # Windows (PowerShell)
 New-Item -ItemType Directory -Force -Path "$HOME/.codex/skills/fp-pack"
-Copy-Item node_modules/fp-pack/dist/skills/fp-pack/SKILL.md $HOME/.codex/skills/fp-pack/SKILL.md
+Copy-Item node_modules/fp-pack/dist/skills/fp-pack/* $HOME/.codex/skills/fp-pack -Recurse
 ```
 
 Once configured, AI assistants will automatically apply fp-pack coding patterns when helping you write code.
 
-> **Note:** The skills file is located at `node_modules/fp-pack/dist/skills/fp-pack.md` after installation. You can also view it in the [GitHub repository](https://github.com/superlucky84/fp-pack/blob/main/fp-pack.md).
+> **Note:** The skills package is located at `node_modules/fp-pack/dist/skills/fp-pack/` after installation (includes `SKILL.md`, `examples/`, `reference/`, and `constraints/`). You can also view `SKILL.md` in the [GitHub repository](https://github.com/superlucky84/fp-pack/blob/main/skills/fp-pack/SKILL.md).
 
 ### AI Agent Role Add-on (Global)
 
 For agents with system prompt support (OpenCode, custom agents), fp-pack provides a **reusable behavior module** that conditionally enforces fp-pack patterns when fp-pack is detected in the project.
 
-Unlike skills files which are project-specific, this add-on is attached directly to your agent's system prompt, making it work across all your projects. It automatically activates only when fp-pack is installed.
+Unlike skills packages which are project-specific, this add-on is attached directly to your agent's system prompt, making it work across all your projects. It automatically activates only when fp-pack is installed.
 
 📖 **[View AI Agent Role Add-on Documentation](https://superlucky84.github.io/fp-pack/#/ai-agent-addon)**
 

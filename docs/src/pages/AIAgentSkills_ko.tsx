@@ -26,11 +26,11 @@ export const AIAgentSkills_ko = () => (
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      fp-pack에는 AI 코딩 어시스턴트(Claude Code, GitHub Copilot, Cursor 등)가 자동으로 fp-pack 스타일의 함수형 코드를 작성하도록 돕는 AI agent skills 파일이 포함되어 있습니다.
+      fp-pack에는 AI 코딩 어시스턴트(Claude Code, GitHub Copilot, Cursor 등)가 자동으로 fp-pack 스타일의 함수형 코드를 작성하도록 돕는 AI 에이전트 스킬 패키지가 포함되어 있습니다.
     </p>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      프로젝트에 이 skills 파일이 있으면 AI 어시스턴트가:
+      프로젝트에 이 스킬 패키지가 있으면 AI 어시스턴트가:
     </p>
 
     <ul class="list-disc list-inside space-y-2 text-sm md:text-base text-gray-700 dark:text-gray-300 mb-6">
@@ -50,21 +50,27 @@ export const AIAgentSkills_ko = () => (
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      skills 파일을 프로젝트의 <code class="text-sm">.claude/skills/</code> 디렉토리로 복사하세요:
+      skills 폴더를 프로젝트의 <code class="text-sm">.claude/skills/</code> 디렉토리로 복사하세요:
     </p>
 
     <CodeBlock
       language="bash"
       code={`# Unix/macOS/Linux
-cp node_modules/fp-pack/dist/skills/fp-pack.md .claude/skills/
+mkdir -p .claude/skills/fp-pack
+cp -R node_modules/fp-pack/dist/skills/fp-pack/* .claude/skills/fp-pack/
 
 # Windows (PowerShell)
-Copy-Item node_modules/fp-pack/dist/skills/fp-pack.md .claude/skills/
+New-Item -ItemType Directory -Force -Path .claude/skills/fp-pack
+Copy-Item node_modules/fp-pack/dist/skills/fp-pack/* .claude/skills/fp-pack -Recurse
 
 # 또는 수동으로 디렉토리를 만들고 복사
-mkdir -p .claude/skills
-cp node_modules/fp-pack/dist/skills/fp-pack.md .claude/skills/`}
+mkdir -p .claude/skills/fp-pack
+cp -R node_modules/fp-pack/dist/skills/fp-pack/* .claude/skills/fp-pack/`}
     />
+
+    <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      단일 파일만 허용하는 도구라면 <code class="text-sm">.claude/skills/fp-pack/SKILL.md</code>를 가리키거나, 해당 파일을 <code class="text-sm">.claude/skills/fp-pack.md</code>로 링크하세요.
+    </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
@@ -80,11 +86,11 @@ cp node_modules/fp-pack/dist/skills/fp-pack.md .claude/skills/`}
       language="bash"
       code={`# Unix/macOS/Linux
 mkdir -p ~/.codex/skills/fp-pack
-cp node_modules/fp-pack/dist/skills/fp-pack/SKILL.md ~/.codex/skills/fp-pack/SKILL.md
+cp -R node_modules/fp-pack/dist/skills/fp-pack/* ~/.codex/skills/fp-pack/
 
 # Windows (PowerShell)
 New-Item -ItemType Directory -Force -Path "$HOME/.codex/skills/fp-pack"
-Copy-Item node_modules/fp-pack/dist/skills/fp-pack/SKILL.md $HOME/.codex/skills/fp-pack/SKILL.md`}
+Copy-Item node_modules/fp-pack/dist/skills/fp-pack/* $HOME/.codex/skills/fp-pack -Recurse`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -94,7 +100,7 @@ Copy-Item node_modules/fp-pack/dist/skills/fp-pack/SKILL.md $HOME/.codex/skills/
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      더 안정적인 동작을 위해 프로젝트 루트에 <code class="text-sm">CLAUDE.md</code> 파일을 생성하세요. 이렇게 하면 AI 에이전트가 코드를 작성하기 전에 fp-pack skills 파일을 읽도록 보장할 수 있습니다.
+      더 안정적인 동작을 위해 프로젝트 루트에 <code class="text-sm">CLAUDE.md</code> 파일을 생성하세요. 이렇게 하면 AI 에이전트가 코드를 작성하기 전에 fp-pack 스킬 패키지를 읽도록 보장할 수 있습니다.
     </p>
 
     <CodeBlock
@@ -105,7 +111,7 @@ Copy-Item node_modules/fp-pack/dist/skills/fp-pack/SKILL.md $HOME/.codex/skills/
 
 **코드를 작성하기 전에 반드시:**
 
-1. \`.claude/skills/fp-pack.md\` 파일을 **완전히** 읽어야 합니다
+1. \`.claude/skills/fp-pack/SKILL.md\` 파일을 **완전히** 읽어야 합니다
 2. 안티패턴 섹션을 **엄격하게** 따라야 합니다
 3. 실전 예제에 나온 패턴을 사용해야 합니다
 
@@ -177,13 +183,13 @@ const results = processUsers(users);`}
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      설치 후 skills 파일은 <code class="text-sm">node_modules/fp-pack/dist/skills/fp-pack.md</code>에 있습니다.
+      설치 후 스킬 패키지는 <code class="text-sm">node_modules/fp-pack/dist/skills/fp-pack/</code>에 있습니다 (여기에는 <code class="text-sm">SKILL.md</code>, <code class="text-sm">examples/</code>, <code class="text-sm">reference/</code>, <code class="text-sm">constraints/</code>가 포함됩니다).
     </p>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
       {' '}
       <a
-        href="https://github.com/superlucky84/fp-pack/blob/main/fp-pack.md"
+        href="https://github.com/superlucky84/fp-pack/blob/main/skills/fp-pack/SKILL.md"
         target="_blank"
         rel="noopener noreferrer"
         class="text-blue-600 dark:text-blue-400 hover:underline"
@@ -195,7 +201,7 @@ const results = processUsers(users);`}
 
     <div class="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-800 mt-6">
       <p class="text-sm md:text-base text-blue-900 dark:text-blue-200 leading-relaxed">
-        <span class="font-medium">💡 팁:</span> skills 파일을 설정한 후 "이 코드를 fp-pack으로 리팩토링해줘" 또는 "pipe와 map을 사용해서 이 함수를 작성해줘"와 같이 AI 어시스턴트에게 질문하면 자동으로 패턴을 적용해줍니다.
+        <span class="font-medium">💡 팁:</span> 스킬 패키지를 설정한 후 "이 코드를 fp-pack으로 리팩토링해줘" 또는 "pipe와 map을 사용해서 이 함수를 작성해줘"와 같이 AI 어시스턴트에게 질문하면 자동으로 패턴을 적용해줍니다.
       </p>
     </div>
   </div>
