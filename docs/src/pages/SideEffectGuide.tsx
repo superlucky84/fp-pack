@@ -36,18 +36,19 @@ export const SideEffectGuide = () => (
         <li class="flex items-start">
           <span class="text-blue-500 mr-3 mt-1">▸</span>
           <div>
-            <code class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded">pipeSideEffect</code> / <code class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded">pipeAsyncSideEffect</code>:
-            best DX, effect type is widened to <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded">SideEffect&lt;any&gt;</code>.
+            <code class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded">pipeSideEffect</code>: sync pipelines that stop at the first <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded">SideEffect</code>.
           </div>
         </li>
         <li class="flex items-start">
           <span class="text-purple-500 mr-3 mt-1">▸</span>
           <div>
-            <code class="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded">pipeSideEffectStrict</code> / <code class="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded">pipeAsyncSideEffectStrict</code>:
-            precise union of effect types across branches.
+            <code class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded">pipeAsyncSideEffect</code>: the same for async steps (each step receives the awaited value).
           </div>
         </li>
       </ul>
+      <p class="text-sm text-gray-600 dark:text-gray-400 mt-4 mb-0">
+        Both check every step and keep the precise union of effects (e.g. <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded">SideEffect&lt;'NOT_FOUND' | 'INVALID'&gt;</code>). The old <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded">*Strict</code> variants are deprecated aliases.
+      </p>
     </div>
 
     <div class="border-l-4 border-slate-500 bg-slate-50 dark:bg-slate-900/30 p-6 rounded-r-lg mb-10">
@@ -82,7 +83,7 @@ const normalizeUser = pipeSideEffect(
 const result = normalizeUser({ id: 1, name: '' });
 
 if (isSideEffect(result)) {
-  const reason = runPipeResult(result); // any (non-strict pipeline)
+  const reason = runPipeResult(result); // 'MISSING_NAME'
   console.log('Invalid:', reason);
 } else {
   console.log('OK:', result.name);
@@ -117,7 +118,7 @@ const result = await loadUser(123);`}
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      Always handle SideEffect results outside the pipeline. If the result type is widened to <code class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">SideEffect&lt;any&gt;</code>,
+      Always handle SideEffect results outside the pipeline. Pipeline results keep precise types; if you widen a result yourself to <code class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">SideEffect&lt;any&gt;</code>,
       provide generics to recover a safe union.
     </p>
 
@@ -144,17 +145,17 @@ const message = matchSideEffect<User, string, string>(result, {
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
       <code class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">isSideEffect</code> is a runtime guard and a TypeScript type guard. Use it at the
-      boundary (right after the pipeline) to branch safely. In strict pipelines, the effect union stays precise.
+      boundary (right after the pipeline) to branch safely. The effect union stays precise.
     </p>
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
+      code={`import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
 
 const validate = (value: number) =>
   value > 0 ? value : SideEffect.of(() => 'NEGATIVE' as const);
 
-const result = pipeSideEffectStrict(
+const result = pipeSideEffect(
   validate,
   (value) => value + 1
 )(-1);
@@ -170,26 +171,26 @@ if (isSideEffect(result)) {
 
     <div class="border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-900/20 p-6 rounded-r-lg my-8">
       <p class="text-sm md:text-base text-blue-900 dark:text-blue-100 font-semibold mb-2">
-        💡 Non-strict pipelines widen effects
+        💡 Effect types stay precise
       </p>
       <p class="text-sm md:text-base text-blue-800 dark:text-blue-200 m-0">
-        In <code class="px-1 py-0.5 bg-blue-100 dark:bg-blue-900/40 rounded">pipeSideEffect</code>/<code class="px-1 py-0.5 bg-blue-100 dark:bg-blue-900/40 rounded">pipeAsyncSideEffect</code>,
-        the effect type is <code class="px-1 py-0.5 bg-blue-100 dark:bg-blue-900/40 rounded">SideEffect&lt;any&gt;</code>. After <code class="px-1 py-0.5 bg-blue-100 dark:bg-blue-900/40 rounded">isSideEffect</code>,
-        call <code class="px-1 py-0.5 bg-blue-100 dark:bg-blue-900/40 rounded">runPipeResult&lt;T, E&gt;</code> to recover a safe union.
+        <code class="px-1 py-0.5 bg-blue-100 dark:bg-blue-900/40 rounded">pipeSideEffect</code>/<code class="px-1 py-0.5 bg-blue-100 dark:bg-blue-900/40 rounded">pipeAsyncSideEffect</code> return the exact
+        union of effects, so after <code class="px-1 py-0.5 bg-blue-100 dark:bg-blue-900/40 rounded">isSideEffect</code>, <code class="px-1 py-0.5 bg-blue-100 dark:bg-blue-900/40 rounded">runPipeResult</code> returns that union
+        directly. Explicit generics (<code class="px-1 py-0.5 bg-blue-100 dark:bg-blue-900/40 rounded">runPipeResult&lt;T, E&gt;</code>) are only needed for values you widened yourself.
       </p>
     </div>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-6">
-      Strict Union Tracking
+      Effect Union Tracking
     </h2>
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffectStrict, SideEffect } from 'fp-pack';
+      code={`import { pipeSideEffect, SideEffect } from 'fp-pack';
 
-const pipeline = pipeSideEffectStrict(
+const pipeline = pipeSideEffect(
   (n: number) => (n > 0 ? n : SideEffect.of(() => 'NEGATIVE' as const)),
   (n) => (n > 10 ? n : SideEffect.of(() => 0 as const))
 );

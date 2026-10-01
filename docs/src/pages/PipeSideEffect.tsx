@@ -97,27 +97,21 @@ const result = runPipeResult(
 
     <CodeBlock
       language="typescript"
-      code={`function pipeSideEffect<A, R>(
-  a: A,
-  ab: (a: A) => R | SideEffect
-): R | SideEffect;
-
-function pipeSideEffect<A, R>(
-  ab: (a: A) => R | SideEffect
-): (a: A | SideEffect) => R | SideEffect;
-
+      code={`// E1, E2 = effects a step may return. The result carries their exact union;
+// when no step can return a SideEffect, the result is plain R.
 function pipeSideEffect<A, B, R>(
   a: A,
-  ab: (a: A) => B | SideEffect,
-  bc: (b: B) => R | SideEffect
-): R | SideEffect;
+  ab: (a: A) => B | SideEffect<E1>,
+  bc: (b: B) => R | SideEffect<E2>
+): R | SideEffect<E1 | E2>;
 
 function pipeSideEffect<A, B, R>(
-  ab: (a: A) => B | SideEffect,
-  bc: (b: B) => R | SideEffect
-): (a: A | SideEffect) => R | SideEffect;
-
-function pipeSideEffect(...funcs: Array<(input: any) => any>): (input: any) => any;`}
+  ab: (a: A) => B | SideEffect<E1>,
+  bc: (b: B) => R | SideEffect<E2>
+): {
+  (a: A): R | SideEffect<E1 | E2>;
+  <EIn>(a: A | SideEffect<EIn>): R | SideEffect<E1 | E2 | EIn>;
+};`}
     />
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
@@ -126,20 +120,21 @@ function pipeSideEffect(...funcs: Array<(input: any) => any>): (input: any) => a
     </p>
 
     <h3 class="text-xl md:text-2xl font-medium text-gray-900 dark:text-white mb-4">
-      Strict Variant
+      Precise Effect Types
     </h3>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      <code class="text-sm">pipeSideEffectStrict</code> keeps a strict union of all SideEffect result types instead of
-      widening to <code class="text-sm">any</code>. Use it when you want precise type narrowing across branches.
+      <code class="text-sm">pipeSideEffect</code> keeps the exact union of every SideEffect a step can return,
+      so you can narrow precisely across branches. Before 0.15.0 this required{' '}
+      <code class="text-sm">pipeSideEffectStrict</code>, which is now a deprecated alias.
     </p>
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffectStrict, SideEffect } from 'fp-pack';
+      code={`import { pipeSideEffect, SideEffect } from 'fp-pack';
 
 // Result type: number | SideEffect<'NEGATIVE' | 0>
-const result = pipeSideEffectStrict(
+const result = pipeSideEffect(
   5,
   (n: number) => (n > 0 ? n : SideEffect.of(() => 'NEGATIVE' as const)),
   (n) => (n > 10 ? n : SideEffect.of(() => 0 as const))
@@ -156,11 +151,11 @@ const result = pipeSideEffectStrict(
         <br />
         ✅ <strong>If the input type is precise, inference is preserved.</strong>
         <br />
-        ⚠️ <strong>If the input is widened to <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">SideEffect&lt;any&gt;</code> or <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">any</code> (common in <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">pipeSideEffect</code>), the result becomes <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">any</code>.</strong>
+        ⚠️ <strong>If the input is widened to <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">SideEffect&lt;any&gt;</code> or <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">any</code> (for example, a value you annotated as such yourself), the result becomes <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">any</code>.</strong>
         <br />
         ✅ <strong>If the input is narrowed to <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">SideEffect&lt;R&gt;</code>, <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">runPipeResult</code> returns <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">R</code>.</strong>
         <br />
-        <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded text-xs">const result = runPipeResult(pipeline(data)); // result: any (widened input)</code>
+        <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded text-xs">const result = runPipeResult(widenedValue); // result: any (widened input)</code>
         <br />
         <br />
         ✅ <strong>For precise type safety, use <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">isSideEffect</code> type guard:</strong>
@@ -452,21 +447,6 @@ const correctPipeline = pipeSideEffect(
         </p>
       </a>
 
-      <a
-        href="/composition/pipeSideEffectStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/composition/pipeSideEffectStrict');
-        }}
-        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer"
-      >
-        <h3 class="text-lg md:text-xl font-medium text-blue-600 dark:text-blue-400 mb-2">
-          pipeSideEffectStrict →
-        </h3>
-        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          SideEffect pipelines with strict effect unions.
-        </p>
-      </a>
 
       <a
         href="/async/pipeAsyncSideEffect"

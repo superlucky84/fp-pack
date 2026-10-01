@@ -215,20 +215,20 @@ try {
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
+      code={`import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
 
 const divide = (a: number, b: number) =>
   b !== 0 ? a / b : SideEffect.of(() => 'Division by zero');
 
 const result = pipeSideEffect((x: number) => divide(10, x))(2);
 
-// ⚠️ pipeSideEffect widens SideEffect to any, so runPipeResult becomes any
+// ✅ pipeSideEffect keeps the effect type, so runPipeResult returns a precise union
 const value1 = runPipeResult(result);
-// value1: any
+// value1: number | string
 
-// ✅ runPipeResult with explicit types - safer
+// Explicit generics are optional (useful for values you widened yourself)
 const value2 = runPipeResult<number, string>(result);
-// value2: number | string (union type, but not narrowed)
+// value2: number | string
 
 // ✅ isSideEffect for branch narrowing - best
 if (!isSideEffect(result)) {
@@ -236,18 +236,18 @@ if (!isSideEffect(result)) {
   const doubled: number = result * 2;
   console.log(\`Result: \${doubled}\`);
 } else {
-  // result is SideEffect<any> in non-strict pipelines
+  // result is a SideEffect with a precise effect type
   const error = runPipeResult(result);
   console.error(\`Error: \${error}\`);
 }
 
 // ✅ If the SideEffect type is precise, runPipeResult returns that effect type
-const strictResult = pipeSideEffectStrict(
+const literalResult = pipeSideEffect(
   (n: number) => (n > 0 ? n : SideEffect.of(() => 'LOW' as const))
 )(-1);
 
-if (isSideEffect(strictResult)) {
-  const error = runPipeResult(strictResult); // 'LOW'
+if (isSideEffect(literalResult)) {
+  const error = runPipeResult(literalResult); // 'LOW'
 }
 
 // Recommendation: Use isSideEffect for type-safe branching

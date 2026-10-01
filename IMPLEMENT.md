@@ -16,7 +16,7 @@ research/pipe-soundness/reproduce.sh candidate   # once Phase 1 lands: expect 0/
 ## Phase 0 — Decisions (blocking)
 
 - [x] Resolve DC-1 … DC-6 in `DESIGN.md` (check the box and record the chosen option inline).
-- [ ] Mark `next.md` as superseded (header line pointing to `REQUIREMENTS.md`) or delete it.
+- [x] Mark `next.md` as superseded (header line pointing to `REQUIREMENTS.md`) or delete it.
 
 Exit criteria: no `[ ]` left in the DESIGN decision checklist, or the remaining items are explicitly deferred with a target version.
 
@@ -58,7 +58,7 @@ Exit criteria: candidate results equal experiment v13 (0/0/0).
 - [x] (DC-2 = B) Rework `pipeWithDeps` dispatch and `ValidateStep` for the merged SideEffect variants. This covers the 6 `pipeWithDeps` errors in `reproduce.sh se4`.
 - [-] ~~(DC-2 = C, 1.0 only)~~ Rejected (philosophy). Additionally apply `--fnfirst --anyguard` and alias `pipe` / `pipeAsync`. Resolve the "SideEffect into an effect-free pipeline" regression (2 tests) first.
 - [x] Remove the now-dead code from the strict files (the ~570 lines of overloads each).
-- [ ] Docs corpus check: extract code samples from `docs/src/pages/*.tsx`, `README.md`, `fp-pack-full.md`, and `skills/fp-pack/**` and type-check them against the new build (a script or a manual pass). Record any sample that changes from compile to error.
+- [x] Docs corpus check: extract code samples from `docs/src/pages/*.tsx`, `README.md`, `fp-pack-full.md`, and `skills/fp-pack/**` and type-check them against the new build (a script or a manual pass). Record any sample that changes from compile to error.
 
 Baseline tests: all type-tests are green, including the `pipeStrict` `@ts-expect-error` cases now served by the alias (experiment v14).
 Exit criteria: the public export list is unchanged (aliases kept). Bundle size is equal or smaller (`pnpm build` and compare `dist/index.mjs`).
@@ -75,10 +75,10 @@ Exit criteria: the matrix is required in branch protection.
 
 ## Phase 6 — Documentation
 
-- [ ] `DESIGN.md`: move the "Pipe Soundness Revision" content into the main architecture sections. Rewrite the Variants Matrix, the Design Philosophy item 3, and the Completeness Statement. Keep the superseded notes as a short history.
-- [ ] Docs site: `PipeChoiceGuide(_ko)`, `Pipe(_ko)`, `PipeStrict(_ko)`, `PipeAsync(_ko)`, `PipeAsyncStrict(_ko)`, `Guide(_ko)`, `Home(_ko)`, `Sidebar`, `Layout`, `apiData.ts`.
-- [ ] `README.md`, `fp-pack-full.md`, `fp-pack-agent-addon.md`, `skills/fp-pack/SKILL.md`, `skills/fp-pack/constraints/core-rules.md`: change "use pipeStrict for strictness" guidance to "pipe is strict; *SideEffectStrict = precise effect types".
-- [ ] Release notes for 0.15.0 with a migration section (code that silently became `never` / `any` now errors).
+- [~] `DESIGN.md`: the 0.14 architecture sections now carry a banner pointing to the revision; a full rewrite is deferred. Move the "Pipe Soundness Revision" content into the main architecture sections. Rewrite the Variants Matrix, the Design Philosophy item 3, and the Completeness Statement. Keep the superseded notes as a short history.
+- [x] Docs site: `PipeChoiceGuide(_ko)`, `Pipe(_ko)`, `PipeStrict(_ko)`, `PipeAsync(_ko)`, `PipeAsyncStrict(_ko)`, `Guide(_ko)`, `Home(_ko)`, `Sidebar`, `Layout`, `apiData.ts`.
+- [x] `README.md`, `fp-pack-full.md`, `fp-pack-agent-addon.md`, `skills/fp-pack/SKILL.md`, `skills/fp-pack/constraints/core-rules.md`: change "use pipeStrict for strictness" guidance to "pipe is strict; *SideEffectStrict = precise effect types".
+- [x] Release notes for 0.15.0 with a migration section (code that silently became `never` / `any` now errors).
 
 Baseline tests: `pnpm docs:build` and `pnpm docs:lint` pass.
 Exit criteria: `grep -rn "pipeStrict" docs README.md skills` only hits deprecation notes.
@@ -122,3 +122,11 @@ Exit criteria: all manual checks pass and the release is tagged.
 - Next step: Phase 6 docs.
 - Blockers: none.
 - Latest commit: `fe36dc5` (branch changes not yet committed).
+
+### 2026-10-01 — Unified signatures + Phase 6 docs (uncommitted on `feat/pipe-soundness`)
+- Docs corpus check found that function-first pipelines with inline lambdas in generic helpers (`pipe(double, tap((x) => …))`) had never inferred; 0.14 hid it behind the `any` catch-all. A first fix (plain function-first group) broke data-first stream examples (overload pre-typing). Final fix: one signature per arity for both call styles (`research/pipe-soundness/unified.py`); `NoInfer`, `ValidateFn` and the ZeroFn/FromFn groups are gone. `any` input is data (`IsFn`).
+- `pipeWithDeps(pipeSideEffect*)` keeps 0.14 argument handling; deprecated `*SideEffectStrict` aliases dispatch to a checked mode.
+- Docs: site EN/KO (~45 pages), README, fp-pack-full, agent addon, skills updated; CHANGELOG added; ~30 docs examples rewritten (data-first / typed wrappers / real bug fixes).
+- Verified: tsc 0 on TS 5.9 and 6.0 (TS 7.0: pre-existing `runPipeResult` TS6196 only), vitest 386/386, build + dts OK, docs build + lint OK, docs corpus 502 → 357 errors, instantiations 214k → 126k.
+- Next step: commit; then Phase 5 (CI matrix), Phase 7 hardening, Phase 8 `npm pack` consumer test.
+- Blockers: none.

@@ -37,7 +37,7 @@ export const AIAgentSkills_ko = () => (
       <li>타입 추론을 위해 <code class="text-sm">pipe(data, ...)</code>/<code class="text-sm">pipeAsync(data, ...)</code> 형태를 우선 사용</li>
       <li>순수 변환에는 기본적으로 <code class="text-sm">pipe</code>/<code class="text-sm">pipeAsync</code> 사용</li>
       <li>SideEffect가 필요할 때 <code class="text-sm">pipeSideEffect</code>/<code class="text-sm">pipeAsyncSideEffect</code> 사용</li>
-      <li>엄격한 effect 유니온이 필요할 때 strict 변형(<code class="text-sm">pipeSideEffectStrict</code>/<code class="text-sm">pipeAsyncSideEffectStrict</code>) 사용</li>
+      <li>모든 파이프가 각 단계를 검사하고 정확한 effect 유니온을 유지함 (<code class="text-sm">*Strict</code> 변형은 deprecated 별칭)</li>
       <li>try-catch 대신 <code class="text-sm">SideEffect</code> 패턴 사용</li>
       <li>대용량 데이터셋에는 <code class="text-sm">stream/*</code> 함수 선호</li>
       <li>fp-pack 유틸리티를 사용해 선언적이고 함수형인 코드 작성</li>

@@ -10,6 +10,10 @@ import identity from './identity';
 import map from '../array/map';
 import filter from '../array/filter';
 import prop from '../object/prop';
+import streamFilter from '../../stream/filter';
+import streamZip from '../../stream/zip';
+import streamMap from '../../stream/map';
+import streamToArray from '../../stream/toArray';
 
 // Regression suite for issue #5: every step-to-step mismatch must be a compile error,
 // and none may silently resolve to `never` / `any` through a fallback overload.
@@ -87,3 +91,49 @@ export type EffectFreeIsPlain = Expect<Equal<typeof effectFree, string>>;
 
 export const withEffect = pipeSideEffect(1, toLow, numToStr);
 export type WithEffectIsPrecise = Expect<Equal<typeof withEffect, string | SideEffect<'LOW'>>>;
+
+// --- function-first pipelines with inline lambdas inside generic helpers ---
+// Before 0.15.0 these only compiled because a catch-all overload returned `(input: any) => any`.
+
+const double = (n: number) => n * 2;
+const addTen = (n: number) => n + 10;
+
+export const tapInFunctionFirst = pipe(double, tap((x) => x.toFixed()), addTen, tap((x) => x.toFixed()));
+export type TapInFunctionFirstIsStrict = Expect<Equal<typeof tapInFunctionFirst, (a: number) => number>>;
+
+export const curriedThenTap = pipe(filter((n: number) => n > 0), tap((xs) => xs.length));
+export type CurriedThenTapIsStrict = Expect<Equal<typeof curriedThenTap, (a: number[]) => number[]>>;
+
+export const asyncTapInFunctionFirst = pipeAsync(async (n: number) => n * 2, tap((x) => x.toFixed()));
+export type AsyncTapInFunctionFirstIsStrict = Expect<
+  Equal<typeof asyncTapInFunctionFirst, (a: number) => Promise<number>>
+>;
+
+export const effectTapInFunctionFirst = pipeSideEffect(toLow, tap((x) => x.toFixed()));
+export const effectTapValue = effectTapInFunctionFirst(1);
+export type EffectTapValueIsPrecise = Expect<Equal<typeof effectTapValue, number | SideEffect<'LOW'>>>;
+
+// --- data-first and function-first share one signature per arity ---
+// With separate overload groups, whichever group TS tried first fixed the parameter types of
+// lambdas nested in generic helpers for the other style (e.g. `filter(([event]) => ...)` below).
+
+function* clickEvents() {
+  yield { type: 'click', target: 'button' };
+}
+function* timestamps() {
+  yield 1;
+}
+export const destructuredInStream = pipe(
+  streamZip(timestamps(), clickEvents()),
+  streamFilter(([event]) => event.type === 'click'),
+  streamMap(([event, time]) => ({ target: event.target, time })),
+  streamToArray
+);
+export type DestructuredInStreamIsStrict = Expect<
+  Equal<typeof destructuredInStream, Promise<{ target: string; time: number }[]>>
+>;
+
+// `any` input is data, not a function-first step.
+declare const anyInput: any;
+export const anyData = pipe(anyInput, (value) => value.length as number);
+export type AnyDataIsStrict = Expect<Equal<typeof anyData, number>>;

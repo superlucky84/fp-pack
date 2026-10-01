@@ -45,6 +45,8 @@ Research on 2026-10-01 against TypeScript 5.9.3, 6.0.3, and 7.0.2 showed:
 | FR-8 | Mismatch errors name the `PipeError<From, To>` pair for data-first calls | `MT-2` |
 | FR-9 | `pipeWithDeps(variant)` resolves to the correct mode for every variant | `pipeWithDeps.type-test.ts` |
 | FR-10 | Same results under TS 5.9 / 6.0 / 7.0 | CI matrix (IMPLEMENT Phase 5) |
+| FR-11 | Inline lambdas inside generic helpers infer in **both** call styles (`pipe(double, tap((x) => …))`, `pipe(zip(a, b), filter(([e]) => …))`) | `pipe.soundness.type-test.ts` |
+| FR-12 | An `any` input is treated as data, never as a function-first step | `pipe.soundness.type-test.ts` |
 
 ## 5. Constraints
 
@@ -56,6 +58,7 @@ Research on 2026-10-01 against TypeScript 5.9.3, 6.0.3, and 7.0.2 showed:
 
 - Code that previously compiled to `never` or `(input: any) => any` because of a mismatch will now error. This is intended, but the release notes must call it out.
 - Code that previously relied on `A` being inferred from the first step's parameter (rather than the input) may see a different `A`. No existing test depends on this.
+- Function-first pipelines whose first step is generic (`pipe(uniq, …)`, `pipe(pick([...]), …)`) now report errors instead of becoming `(input: any) => any`. Fix with data-first, a typed wrapper or `pipeHint` (CHANGELOG migration, DESIGN DC-7).
 - All four `*Strict` imports must keep working (deprecated aliases, DC-1).
 - `pipeSideEffect*` result types become narrower: `T | SideEffect<any>` turns into `T | SideEffect<E>`, or plain `T` when no step can produce an effect. Every new type is assignable to the old one (guarded by the `…ExpectedLegacy` assertions). Code that relied on `runPipeResult(...)` being `any` will now see the precise union.
 

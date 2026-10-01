@@ -31,7 +31,7 @@ If `fp-pack` is **not** installed, use the project's existing conventions. Do **
 ## Core Rules (Keep In Memory)
 
 - Use `pipe`/`pipeAsync` for 2+ steps; for a single step, call the function directly.
-- Use `pipeStrict`/`pipeAsyncStrict` when you want stricter mismatch detection; otherwise stick to `pipe`/`pipeAsync`.
+- Every pipe checks each step; do not use the deprecated `*Strict` variants (`pipeStrict`, `pipeAsyncStrict`, `pipeSideEffectStrict`, `pipeAsyncSideEffectStrict`).
 - Prefer value-first: `pipe(value, ...)` / `pipeAsync(value, ...)` runs immediately and improves inference (the input anchors types). Use functions-first only when you need a reusable pipeline.
 - If the first arg is a function, it's treated as composition; wrap function values with `from()`.
 - Keep pipeline functions **unary**; prefer data-last, curried helpers.
@@ -39,7 +39,7 @@ If `fp-pack` is **not** installed, use the project's existing conventions. Do **
 - Use `from()` only for constants or 0-arg pipelines (including function values you need to pass as data). Otherwise pass data as the first argument.
 - Use `pipeSideEffect*` only when you need early exit; otherwise use `pipe`/`pipeAsync`.
 - Never call `runPipeResult`/`matchSideEffect` inside pipelines; call at boundaries.
-- Prefer `isSideEffect` for precise narrowing; `runPipeResult` for unwrapping (use generics if widened).
+- Prefer `isSideEffect` for precise narrowing; `runPipeResult` for unwrapping (pipe results are precise; use generics only for values you widened yourself).
 - `SideEffect` is an instance type: use `SideEffect<E>` (not `typeof SideEffect`).
 - If TS inference stalls in data-last generics, use `pipeHint` or a tiny wrapper.
 - Use `fp-pack/stream` for large/lazy iterables; array/object utils for small/eager data.
@@ -243,8 +243,8 @@ Most code should use `pipe` / `pipeAsync`. Use SideEffect-aware pipes only when 
 - branching flows where you want to short-circuit
 
 ### SideEffect-aware pipes
-- `pipeSideEffect` / `pipeAsyncSideEffect`: convenient, but may widen effects to `any`
-- `pipeSideEffectStrict` / `pipeAsyncSideEffectStrict`: preserves strict union effects (recommended)
+- `pipeSideEffect` / `pipeAsyncSideEffect`: stop at the first `SideEffect`; the result carries the precise effect union (plain `T` when no step can return a `SideEffect`)
+- `pipeSideEffectStrict` / `pipeAsyncSideEffectStrict`: deprecated aliases — do not use
 
 ### Key functions
 - `SideEffect.of(effectFn, label?)`
@@ -254,10 +254,10 @@ Most code should use `pipe` / `pipeAsync`. Use SideEffect-aware pipes only when 
 ### Example
 
 ```ts
-import { pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
+import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
 
 const validate = (n: number) => (n > 0 ? n : SideEffect.of(() => 'NEG' as const));
-const result = pipeSideEffectStrict(
+const result = pipeSideEffect(
   -1,
   validate,
   (n) => n + 1
@@ -272,9 +272,8 @@ if (isSideEffect(result)) {
 
 ### Type Safety Notes
 
-- `pipeSideEffect`/`pipeAsyncSideEffect` can widen effects to `any` in complex pipelines.
-- `pipeSideEffectStrict`/`pipeAsyncSideEffectStrict` preserve strict effect unions.
-- `runPipeResult` returns `R` when input is `SideEffect<R>`, but becomes `any` if the input is widened to `SideEffect<any>`/`any`.
+- `pipeSideEffect`/`pipeAsyncSideEffect` preserve precise effect unions.
+- `runPipeResult` returns `T | E` for a pipe result and `E` after narrowing to `SideEffect<E>`; it becomes `any` only if you widen the input yourself to `SideEffect<any>`/`any`.
 - Prefer `isSideEffect` for precise branch narrowing.
 
 ---
@@ -306,8 +305,9 @@ const result = pipe(
 ## Available Functions (Quick Index)
 
 ### Composition
-- `pipe`, `pipeStrict`, `pipeAsync`, `pipeAsyncStrict`
-- SideEffect-aware: `pipeSideEffect`, `pipeSideEffectStrict`, `pipeAsyncSideEffect`, `pipeAsyncSideEffectStrict`
+- `pipe`, `pipeAsync`
+- SideEffect-aware: `pipeSideEffect`, `pipeAsyncSideEffect`
+- Deprecated aliases (do not use): `pipeStrict`, `pipeAsyncStrict`, `pipeSideEffectStrict`, `pipeAsyncSideEffectStrict`
 - Utilities: `from`, `tap`, `tap0`, `once`, `memoize`, `identity`, `constant`, `curry`, `compose`
 - SideEffect helpers: `SideEffect`, `isSideEffect`, `matchSideEffect`, `runPipeResult`
 
@@ -353,7 +353,7 @@ const result = pipe(
 ### Boundary handling
 
 ```ts
-const pipeline = pipeSideEffectStrict(validate, process);
+const pipeline = pipeSideEffect(validate, process);
 
 export const handler = (data) => {
   const result = pipeline(data);
@@ -407,8 +407,7 @@ const updateAccount = pipe(
 
 - Is everything sync and pure? → `pipe`
 - Any step async? → `pipeAsync`
-- Need early-exit + typed effect unions? → `pipeSideEffectStrict` / `pipeAsyncSideEffectStrict`
-- Need early-exit but type precision doesn't matter? → `pipeSideEffect` / `pipeAsyncSideEffect`
+- Need early-exit? → `pipeSideEffect` / `pipeAsyncSideEffect` (effect unions are precise)
 - Only one step? → call the function directly (no `pipe`)
 - Handling result at boundary? → `isSideEffect` for branching, `runPipeResult` to unwrap
 - Large/unbounded/iterable data? → `fp-pack/stream`

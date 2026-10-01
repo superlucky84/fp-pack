@@ -77,7 +77,7 @@ runPipeResult(
     <CodeBlock
       language="typescript"
       code={`// ✅ GOOD: 99% of cases - use pipe (pure transformations)
-import { pipe, map, filter, sort } from 'fp-pack';
+import { pipeSideEffect, pipe, map, filter, sort } from 'fp-pack';
 
 const processData = pipe(
   filter(isValid),
@@ -329,7 +329,7 @@ console.log(output); // "Division by zero"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
+      code={`import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
 
 const processNumbers = pipeSideEffect(
   (nums: number[]) => nums.filter(n => n % 2 === 1),
@@ -347,27 +347,27 @@ if (!isSideEffect(oddsDoubled)) {
   const result: number = oddsDoubled.reduce((a, b) => a + b, 0);
   console.log(\`Sum: \${result}\`);  // result: number (exact type!)
 } else {
-  // TypeScript knows: oddsDoubled is SideEffect<any> in non-strict pipelines
+  // TypeScript knows: oddsDoubled is a SideEffect with a precise effect type
   const error = oddsDoubled.effect();
   console.log(\`Error: \${error}\`);
 }
 
-// ⚠️ Without isSideEffect - types can widen in non-strict pipelines
-const widened = oddsDoubled; // pipeSideEffect widens SideEffect to any
+// ⚠️ Types only widen if you widen them yourself
+const widened: number[] | SideEffect<any> = oddsDoubled;
 const unsafeResult = runPipeResult(widened);
 // unsafeResult: any
 
 const safeResult = runPipeResult<number[], string>(oddsDoubled);
 // safeResult: number[] | string (union type - safe but not narrowed)
 
-// ✅ With strict pipelines, SideEffect types are preserved
-const strictResult = pipeSideEffectStrict(
+// ✅ Literal effect types are preserved
+const literalResult = pipeSideEffect(
   (nums: number[]) => nums.length > 0 ? nums : SideEffect.of(() => 'EMPTY' as const),
   (nums) => nums
 )([]);
 
-if (isSideEffect(strictResult)) {
-  const error = runPipeResult(strictResult); // 'EMPTY'
+if (isSideEffect(literalResult)) {
+  const error = runPipeResult(literalResult); // 'EMPTY'
 }`}
     />
 
@@ -463,33 +463,12 @@ const finalPipeline = pipeSideEffect(
     </div>
 
     <h3 class="text-xl md:text-2xl font-medium text-gray-900 dark:text-white mb-4 mt-6">
-      Strict Variants
+      Precise Effect Types
     </h3>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      If you want precise union types for SideEffect results across branches, use{' '}
-      <a
-        href="/composition/pipeSideEffectStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/composition/pipeSideEffectStrict');
-        }}
-        class="font-semibold text-blue-700 dark:text-blue-300"
-      >
-        pipeSideEffectStrict
-      </a>{' '}
-      or{' '}
-      <a
-        href="/async/pipeAsyncSideEffectStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/async/pipeAsyncSideEffectStrict');
-        }}
-        class="font-semibold text-blue-700 dark:text-blue-300"
-      >
-        pipeAsyncSideEffectStrict
-      </a>
-      .
+      <code class="text-sm">pipeSideEffect</code> and <code class="text-sm">pipeAsyncSideEffect</code> keep the exact
+      union of effects across branches. The former <code class="text-sm">*Strict</code> variants are now deprecated aliases.
     </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -537,21 +516,6 @@ const finalPipeline = pipeSideEffect(
         </p>
       </a>
 
-      <a
-        href="/composition/pipeSideEffectStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/composition/pipeSideEffectStrict');
-        }}
-        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer"
-      >
-        <h3 class="text-lg md:text-xl font-medium text-blue-600 dark:text-blue-400 mb-2">
-          pipeSideEffectStrict →
-        </h3>
-        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          Strict union types for SideEffect results.
-        </p>
-      </a>
 
       <a
         href="/async/pipeAsyncSideEffect"
@@ -569,21 +533,6 @@ const finalPipeline = pipeSideEffect(
         </p>
       </a>
 
-      <a
-        href="/async/pipeAsyncSideEffectStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/async/pipeAsyncSideEffectStrict');
-        }}
-        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-500 transition-colors cursor-pointer"
-      >
-        <h3 class="text-lg md:text-xl font-medium text-purple-600 dark:text-purple-400 mb-2">
-          pipeAsyncSideEffectStrict →
-        </h3>
-        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          Async pipelines with strict SideEffect unions.
-        </p>
-      </a>
 
       <a
         href="/control/tryCatch"

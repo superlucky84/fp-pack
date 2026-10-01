@@ -95,16 +95,12 @@ const double = (n: number) => n * 2;
 const addTen = (n: number) => n + 10;
 
 // identity doesn't affect the pipeline
-pipe(identity, double, addTen)(5);       // 20
-pipe(double, identity, addTen)(5);       // 20
-pipe(double, addTen, identity)(5);       // 20
+pipe(5, identity, double, addTen);       // 20
+pipe(5, double, identity, addTen);       // 20
+pipe(5, double, addTen, identity);       // 20
 
 // Useful when conditionally including transformations
-const transforms = condition
-  ? [double, addTen]
-  : [identity];  // No-op when condition is false
-
-pipe(...transforms)(5);`}
+pipe(5, condition ? double : identity, addTen);`}
     />
 
     <h3 class="text-xl md:text-2xl font-medium text-gray-900 dark:text-white mb-4 mt-6">

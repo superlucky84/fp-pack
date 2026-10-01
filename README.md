@@ -71,7 +71,7 @@ If you want functional composition without a lot of ceremony, `fp-pack` is desig
   Built around `pipe` and `pipeAsync` for clean, left-to-right function composition.
 
 - ⚡ **SideEffect Pattern**
-  Handle errors and side effects declaratively in SideEffect-aware pipelines. Use `pipeSideEffect` / `pipeAsyncSideEffect` to short-circuit on `SideEffect` without breaking composition. Focus on business logic, not error plumbing. For strict effect unions, use `pipeSideEffectStrict` / `pipeAsyncSideEffectStrict`.
+  Handle errors and side effects declaratively in SideEffect-aware pipelines. Use `pipeSideEffect` / `pipeAsyncSideEffect` to short-circuit on `SideEffect` without breaking composition. Focus on business logic, not error plumbing. Effect types stay precise: the result carries the exact union of everything that can short-circuit.
 
 - 📘 **JavaScript & TypeScript**
   Works seamlessly in JavaScript. Written in TypeScript for robust type inference when you need it.
@@ -92,20 +92,20 @@ If you want functional composition without a lot of ceremony, `fp-pack` is desig
 - **Pipe-centric composition**
   `pipe` (sync) and `pipeAsync` (async) are the primary composition tools. All utilities are designed to work seamlessly in pipe chains.
 
-- **DX-optimized type inference**
-  **"Don't let strictness hinder inference."** fp-pack's standard `pipe` prioritizes **global type stability** over local constraints at connection points. The inference chain, designed without `NoInfer`, lets TypeScript derive perfect result types at the end of your pipeline—even without manual annotations. This **"Global Stability"** approach means you write less, TypeScript infers more, and your pipelines just work.
+- **Type-safe by default, without giving up inference**
+  Every pipe checks each connection at compile time: a step whose input does not accept the previous step's output is an error that names the mismatch (`PipeError<number, string>`). Inference still flows end to end, so inline lambdas, pre-defined functions and curried utilities compose without manual annotations.
 
-  Works best in value-first pipelines where the input anchors generics. Function-first or from-start pipelines may need `pipeHint` or a small wrapper.
+  Works best in value-first pipelines where the input anchors generics. Function-first or from-start pipelines whose first step is generic may need `pipeHint` or a typed first step.
 
-  When users inappropriately use explicit type annotations, TypeScript's natural inference benefits are reduced, and in some edge cases intermediate type mismatches may be allowed to keep the pipeline flowing. When you need stricter mismatch detection, use `pipeStrict`/`pipeAsyncStrict`; for maximum inference power with minimal friction, stick to `pipe`/`pipeAsync`. → **[Pipe Choice Guide](https://superlucky84.github.io/fp-pack/#/ko/guide/pipe-choice-guide)**
+  Choosing a pipe comes down to two questions — is it async, and can it exit early? → **[Pipe Choice Guide](https://superlucky84.github.io/fp-pack/#/guide/pipe-choice-guide)**
 
 - **Pragmatic error handling**
   The `SideEffect` pattern handles errors declaratively in `pipeSideEffect`/`pipeAsyncSideEffect` and short-circuits on `SideEffect`, so you can keep normal functions.
-  For strict union typing across branches, use `pipeSideEffectStrict` / `pipeAsyncSideEffectStrict`.
+  The result type is the precise union of the effects your steps can produce (plain `T` when none can).
 
   **Usage notes:**
   - Call `runPipeResult`/`matchSideEffect` **outside** the pipeline.
-  - After `isSideEffect`, `runPipeResult` returns the effect type; if widened (e.g. `SideEffect<any>`), pass generics to recover a safe union.
+  - `runPipeResult` returns the precise union (`T | E`); after `isSideEffect` it returns the effect type `E`. Only values you widen yourself (e.g. to `SideEffect<any>`) need generics.
 
 - **Immutable & Pure by default**
   Core utilities avoid mutations and side effects. Any exception is explicitly named (e.g. `tap`, `log`).
@@ -282,7 +282,7 @@ const fetchUserProfile = pipeAsync(
 const profile = await fetchUserProfile('user-123');
 ```
 
-Need stricter mismatch detection? Use `pipeAsyncStrict`.
+Every step is type-checked: a mismatched step is a compile error, while inline lambdas keep full inference.
 
 ### Object Transformation
 
@@ -355,10 +355,10 @@ export default curriedChunk;
 Functions for composing and transforming other functions.
 
 - **pipe** - Compose functions left to right (f → g → h)
-- **pipeStrict** - Strict typing for pure pipelines
+- **pipeStrict** - *Deprecated* alias of `pipe` (removed in 1.0)
 - **pipeWithDeps** - Bind dependencies once and inject them into pipeline steps
-- **pipeSideEffect** - Compose functions left to right with SideEffect short-circuiting
-- **pipeSideEffectStrict** - SideEffect composition with strict effect unions
+- **pipeSideEffect** - Compose functions left to right with SideEffect short-circuiting and precise effect unions
+- **pipeSideEffectStrict** - *Deprecated* alias of `pipeSideEffect` (removed in 1.0)
 - **compose** - Compose functions right to left (h → g → f)
 - **curry** - Transform a function to support partial application
 - **partial** - Pre-fill function arguments
@@ -374,7 +374,7 @@ Functions for composing and transforming other functions.
 - **SideEffect** - Side effect container for SideEffect-aware pipelines
 - **isSideEffect** - Type guard for runtime checking whether a value is a SideEffect
 - **matchSideEffect** - Pattern match on value or SideEffect
-- **runPipeResult** - Execute SideEffect or return value (call OUTSIDE pipelines). If the input is widened to `SideEffect<any>`/`any`, the result becomes `any`; provide explicit type parameters `runPipeResult<SuccessType, ErrorType>` to recover a safe union. When the input is narrowed to `SideEffect<R>` (e.g. after `isSideEffect`), `runPipeResult` returns `R`. Use `isSideEffect` for precise type narrowing.
+- **runPipeResult** - Execute SideEffect or return value (call OUTSIDE pipelines). Results of `pipeSideEffect`/`pipeAsyncSideEffect` are precise, so it returns `T | E` directly. If you widen an input yourself to `SideEffect<any>`/`any`, the result becomes `any`; provide explicit type parameters `runPipeResult<SuccessType, ErrorType>` to recover a safe union. When the input is narrowed to `SideEffect<R>` (e.g. after `isSideEffect`), `runPipeResult` returns `R`. Use `isSideEffect` for precise type narrowing.
 
 ### Control Flow
 
@@ -502,9 +502,9 @@ Functions for string manipulation. All operations return new strings.
 Functions for asynchronous operations.
 
 - **pipeAsync** - Compose async/sync functions (pure)
-- **pipeAsyncStrict** - Strict typing for async pipelines
-- **pipeAsyncSideEffect** - Async composition with SideEffect short-circuiting
-- **pipeAsyncSideEffectStrict** - Async SideEffect composition with strict effect unions
+- **pipeAsyncStrict** - *Deprecated* alias of `pipeAsync` (removed in 1.0)
+- **pipeAsyncSideEffect** - Async composition with SideEffect short-circuiting and precise effect unions
+- **pipeAsyncSideEffectStrict** - *Deprecated* alias of `pipeAsyncSideEffect` (removed in 1.0)
 - **delay** - Wait for specified milliseconds
 - **timeout** - Execute promise with timeout limit
 - **retry** - Retry failed operations with optional delay
@@ -565,7 +565,7 @@ Functions for debugging and development.
 
 **The JavaScript exception problem:** In functional pipelines, throwing exceptions breaks composition—control jumps out of the pipe. To avoid this, you need `try-catch` (which breaks flow) or wrap every function in `Either`/`Result` (which requires `map`/`chain` everywhere). Both solutions make you think about error plumbing instead of business logic.
 
-**The SideEffect solution:** Write normal functions that compose naturally. When you need to terminate early (validation failure, missing data, errors), return `SideEffect.of(() => ...)`. `pipeSideEffect`/`pipeAsyncSideEffect` pipelines automatically stop—no ceremony, no wrappers, no plumbing. For stricter union typing across branches, use `pipeSideEffectStrict` / `pipeAsyncSideEffectStrict`.
+**The SideEffect solution:** Write normal functions that compose naturally. When you need to terminate early (validation failure, missing data, errors), return `SideEffect.of(() => ...)`. `pipeSideEffect`/`pipeAsyncSideEffect` pipelines automatically stop—no ceremony, no wrappers, no plumbing.
 
 ```typescript
 import { pipeSideEffect, SideEffect, runPipeResult } from 'fp-pack';
@@ -617,45 +617,36 @@ const result = runPipeResult(paymentPipeline(userCard));
 **Type-safe result handling with `isSideEffect`:**
 
 ```typescript
-import { pipeSideEffect, pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
+import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
 
 const processNumbers = pipeSideEffect(
   (nums: number[]) => nums.filter(n => n % 2 === 1),
-  (odds) => odds.length > 0
-    ? odds
-    : SideEffect.of(() => 'No odd numbers found'),
+  (odds) => (odds.length > 0 ? odds : SideEffect.of(() => 'NO_ODDS' as const)),
   (odds) => odds.map(n => n * 2)
 );
 
 const oddsDoubled = processNumbers([1, 2, 3, 4, 5]);
+// oddsDoubled: number[] | SideEffect<'NO_ODDS'>
 
 // ✅ CORRECT: Use isSideEffect for type checking
 if (!isSideEffect(oddsDoubled)) {
   // TypeScript knows: oddsDoubled is number[]
   const sum: number = oddsDoubled.reduce((a, b) => a + b, 0);
-  console.log(`Sum: ${sum}`);  // sum: number
+  console.log(`Sum: ${sum}`);
 } else {
-  // pipeSideEffect widens SideEffect to any, so runPipeResult becomes any here
-  const error = runPipeResult(oddsDoubled);
-  console.log(`Error: ${error}`);  // error: any
+  const reason = runPipeResult(oddsDoubled); // reason: 'NO_ODDS'
+  console.log(`Error: ${reason}`);
 }
 
-// ✅ If you have a precise SideEffect type, runPipeResult returns the effect type
-const strictResult = pipeSideEffectStrict(
-  (n: number) => (n > 0 ? n : SideEffect.of(() => 'LOW' as const))
-)(-1);
+// ✅ Without narrowing, runPipeResult returns the precise union
+const value = runPipeResult(oddsDoubled); // number[] | 'NO_ODDS'
 
-if (isSideEffect(strictResult)) {
-  const error = runPipeResult(strictResult);
-  // error: 'LOW'
-}
-
-// ⚠️ If the result type is widened, inference is lost
+// ⚠️ Inference is lost only if you widen the type yourself
 const widened: number[] | SideEffect<any> = oddsDoubled;
-const unsafeResult = runPipeResult(widened);  // result: any
+const unsafeResult = runPipeResult(widened); // any
 
-// ✅ CORRECT: Provide generics to recover a safe union
-const safeResult = runPipeResult<number[], string>(oddsDoubled);  // result: number[] | string (union type - safe but not narrowed)
+// ✅ Provide generics to recover a safe union
+const safeResult = runPipeResult<number[], 'NO_ODDS'>(widened); // number[] | 'NO_ODDS'
 ```
 
 **⚠️ CRITICAL: runPipeResult Type Safety**
@@ -663,7 +654,7 @@ const safeResult = runPipeResult<number[], string>(oddsDoubled);  // result: num
 `runPipeResult<T, R=any>` has a default type parameter `R=any`. This means:
 
 - ✅ **Precise input types**: `T | SideEffect<'E'>` preserves `T | 'E'` without extra annotations.
-- ⚠️ **Widened inputs**: `T | SideEffect<any>` (or `any`) collapses to `any`.
+- ⚠️ **Widened inputs**: `T | SideEffect<any>` (or `any`) collapses to `any`. Pipe results are never widened; this only happens to values you annotate that way yourself.
 - ✅ **With generics**: `runPipeResult<SuccessType, ErrorType>(result)` restores a safe union when inference is lost.
 - ✅ **After narrowing**: If the input is `SideEffect<'E'>` (e.g. inside `if (isSideEffect(...))`), `runPipeResult` returns `'E'`.
 - ✅ **With isSideEffect**: Use for runtime checking and precise narrowing.
@@ -676,21 +667,18 @@ Provide generics when inference is lost; prefer `isSideEffect` for precise narro
 
 Most data transformations are pure and don't need SideEffect handling. Use `pipe` for sync operations and `pipeAsync` for async operations. **Only switch to SideEffect-aware pipes when you actually need** early termination or error handling with side effects.
 
-**Pure Pipelines:**
-- **`pipe`** - Synchronous, **pure** transformations (99% of cases) - **DX-optimized** for global type inference
-- **`pipeStrict`** - Sync pipe with stricter type checking (catches mismatches earlier at connection points)
-- **`pipeAsync`** - Async, **pure** transformations (99% of cases) - **DX-optimized** for global type inference
-- **`pipeAsyncStrict`** - Async pipe with stricter type checking
+**Pure Pipelines (every step runs):**
+- **`pipe`** - Synchronous, **pure** transformations (99% of cases)
+- **`pipeAsync`** - Async, **pure** transformations (99% of cases)
 
-**SideEffect-Aware Pipelines:**
+**SideEffect-Aware Pipelines (stop at the first `SideEffect`):**
 - **`pipeSideEffect`** - **Only when you need** SideEffect short-circuiting (sync)
-- **`pipeSideEffectStrict`** - Sync SideEffect pipelines with strict effect unions
 - **`pipeAsyncSideEffect`** - **Only when you need** SideEffect short-circuiting (async)
-- **`pipeAsyncSideEffectStrict`** - Async SideEffect pipelines with strict effect unions
+
+All four check every step at compile time and keep TypeScript's inference. The `*Strict` variants (`pipeStrict`, `pipeAsyncStrict`, `pipeSideEffectStrict`, `pipeAsyncSideEffectStrict`) are deprecated aliases since 0.15.0.
 
 **Important:**
 - `pipe` and `pipeAsync` are for **pure** functions only—they don't handle `SideEffect`. If your pipeline can return `SideEffect`, use `pipeSideEffect` or `pipeAsyncSideEffect` instead.
-- **Inference vs Strictness trade-off**: Standard `pipe`/`pipeAsync` prioritize **global type stability** (TypeScript infers the final result perfectly without manual annotations). Strict variants (`pipeStrict`, `pipeAsyncStrict`) catch type mismatches earlier but may require more type hints. Choose based on your needs: maximum inference power (standard) vs early error detection (strict).
 
 ```typescript
 // Pure sync pipe - no SideEffect handling

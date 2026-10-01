@@ -1,16 +1,9 @@
-import type { FromFn } from './from';
-
 type PipeError<From, To> = { __pipe_error: ['pipe', From, '->', To] };
-type NoInfer<T> = [T][T extends any ? 0 : never];
 type UnaryFn<A, R> = (a: A) => R;
-type ZeroFn<R> = () => R;
 type AnyFn = (...args: any[]) => any;
 type NonFunction<T> = T extends AnyFn ? never : T;
 type FnInput<F> = F extends (a: infer A) => any ? A : never;
 type FnOutput<F> = F extends (...args: any[]) => infer R ? R : never;
-type ValidateFn<Fn extends UnaryFn<any, any>, Expected> =
-  (Fn extends (a: NoInfer<Expected>) => any ? Fn : Fn & PipeError<Expected, FnInput<Fn>>) &
-    ((a: NoInfer<Expected>) => any);
 type PipeCheckResult<Fns extends [AnyFn, ...AnyFn[]]> =
   Fns extends [infer F, infer G, ...infer Rest]
     ? F extends AnyFn
@@ -38,490 +31,112 @@ type PipeOutput<Fns extends UnaryFn<any, any>[]> = Fns extends [UnaryFn<any, inf
     : never;
 type Pipe<Fns extends UnaryFn<any, any>[]> = (input: PipeInput<Fns>) => PipeOutput<Fns>;
 
+// Function-first entry: from() and zero-arg first steps keep their own call shapes.
+// Rest-only functions such as `(...args: any[]) => R` are not zero-arg.
+type IsZeroArg<F> = F extends (...args: infer P) => any ? (P extends [] ? true : false) : false;
+type PipeEntry<F1, R> = F1 extends { readonly __from: true }
+  ? (input?: unknown) => R
+  : IsZeroArg<F1> extends true
+    ? () => R
+    : (a: FnInput<F1>) => R;
+// One signature per arity serves both call styles (data-first and function-first),
+// so no overload can pre-type the other style's lambdas. See research/pipe-soundness/unified.py.
+// `any` input is data, not a function-first step.
+type IsFn<I> = 0 extends 1 & I ? false : [I] extends [AnyFn] ? true : false;
+type Last<Rs extends any[], Fallback> = Rs extends [...any[], infer L] ? L : Fallback;
+type Head<I> = IsFn<I> extends true ? FnOutput<I> : I;
+type Result<I, Rs extends any[]> = IsFn<I> extends true
+  ? PipeEntry<I, Last<Rs, FnOutput<I>>>
+  : Last<Rs, I>;
 type PipeCheckFrom<Input, Fns extends [AnyFn, ...AnyFn[]]> =
   Fns & (PipeCheckResult<[() => Input, ...Fns]> extends true ? unknown : PipeCheckResult<[() => Input, ...Fns]>);
 
-function pipe<A>(input: NonFunction<A>): A;
-function pipe<A, B>(
-  input: NonFunction<A>,
-  ab: (value: NoInfer<A>) => B
-): B;
-function pipe<A, B, C>(
-  input: NonFunction<A>,
-  ab: (value: NoInfer<A>) => B,
-  bc: (value: B) => C
-): C;
-function pipe<A, B, C, D>(
-  input: NonFunction<A>,
-  ab: (value: NoInfer<A>) => B,
-  bc: (value: B) => C,
-  cd: (value: C) => D
-): D;
-function pipe<A, B, C, D, E>(
-  input: NonFunction<A>,
-  ab: (value: NoInfer<A>) => B,
-  bc: (value: B) => C,
-  cd: (value: C) => D,
-  de: (value: D) => E
-): E;
-function pipe<A, B, C, D, E, F>(
-  input: NonFunction<A>,
-  ab: (value: NoInfer<A>) => B,
-  bc: (value: B) => C,
-  cd: (value: C) => D,
-  de: (value: D) => E,
-  ef: (value: E) => F
-): F;
-function pipe<A, B, C, D, E, F, G>(
-  input: NonFunction<A>,
-  ab: (value: NoInfer<A>) => B,
-  bc: (value: B) => C,
-  cd: (value: C) => D,
-  de: (value: D) => E,
-  ef: (value: E) => F,
-  fg: (value: F) => G
-): G;
-function pipe<A, B, C, D, E, F, G, H>(
-  input: NonFunction<A>,
-  ab: (value: NoInfer<A>) => B,
-  bc: (value: B) => C,
-  cd: (value: C) => D,
-  de: (value: D) => E,
-  ef: (value: E) => F,
-  fg: (value: F) => G,
-  gh: (value: G) => H
-): H;
-function pipe<A, B, C, D, E, F, G, H, I>(
-  input: NonFunction<A>,
-  ab: (value: NoInfer<A>) => B,
-  bc: (value: B) => C,
-  cd: (value: C) => D,
-  de: (value: D) => E,
-  ef: (value: E) => F,
-  fg: (value: F) => G,
-  gh: (value: G) => H,
-  hi: (value: H) => I
-): I;
-function pipe<A, B, C, D, E, F, G, H, I, J>(
-  input: NonFunction<A>,
-  ab: (value: NoInfer<A>) => B,
-  bc: (value: B) => C,
-  cd: (value: C) => D,
-  de: (value: D) => E,
-  ef: (value: E) => F,
-  fg: (value: F) => G,
-  gh: (value: G) => H,
-  hi: (value: H) => I,
-  ij: (value: I) => J
-): J;
-function pipe<A, B, C, D, E, F, G, H, I, J, K>(
-  input: NonFunction<A>,
-  ab: (value: NoInfer<A>) => B,
-  bc: (value: B) => C,
-  cd: (value: C) => D,
-  de: (value: D) => E,
-  ef: (value: E) => F,
-  fg: (value: F) => G,
-  gh: (value: G) => H,
-  hi: (value: H) => I,
-  ij: (value: I) => J,
-  jk: (value: J) => K
-): K;
-
-function pipe<R>(ab: ZeroFn<R>): () => R;
-function pipe<B, F2 extends UnaryFn<B, any>>(ab: ZeroFn<B>, bc: ValidateFn<F2, B>): () => FnOutput<F2>;
-function pipe<B, F2 extends UnaryFn<B, any>, F3 extends UnaryFn<FnOutput<F2>, any>>(
-  ab: ZeroFn<B>,
-  bc: ValidateFn<F2, B>,
-  cd: ValidateFn<F3, FnOutput<F2>>
-): () => FnOutput<F3>;
-function pipe<
-  B,
-  F2 extends UnaryFn<B, any>,
-  F3 extends UnaryFn<FnOutput<F2>, any>,
-  F4 extends UnaryFn<FnOutput<F3>, any>
->(
-  ab: ZeroFn<B>,
-  bc: ValidateFn<F2, B>,
-  cd: ValidateFn<F3, FnOutput<F2>>,
-  de: ValidateFn<F4, FnOutput<F3>>
-): () => FnOutput<F4>;
-function pipe<
-  B,
-  F2 extends UnaryFn<B, any>,
-  F3 extends UnaryFn<FnOutput<F2>, any>,
-  F4 extends UnaryFn<FnOutput<F3>, any>,
-  F5 extends UnaryFn<FnOutput<F4>, any>
->(
-  ab: ZeroFn<B>,
-  bc: ValidateFn<F2, B>,
-  cd: ValidateFn<F3, FnOutput<F2>>,
-  de: ValidateFn<F4, FnOutput<F3>>,
-  ef: ValidateFn<F5, FnOutput<F4>>
-): () => FnOutput<F5>;
-function pipe<
-  B,
-  F2 extends UnaryFn<B, any>,
-  F3 extends UnaryFn<FnOutput<F2>, any>,
-  F4 extends UnaryFn<FnOutput<F3>, any>,
-  F5 extends UnaryFn<FnOutput<F4>, any>,
-  F6 extends UnaryFn<FnOutput<F5>, any>
->(
-  ab: ZeroFn<B>,
-  bc: ValidateFn<F2, B>,
-  cd: ValidateFn<F3, FnOutput<F2>>,
-  de: ValidateFn<F4, FnOutput<F3>>,
-  ef: ValidateFn<F5, FnOutput<F4>>,
-  fg: ValidateFn<F6, FnOutput<F5>>
-): () => FnOutput<F6>;
-function pipe<
-  B,
-  F2 extends UnaryFn<B, any>,
-  F3 extends UnaryFn<FnOutput<F2>, any>,
-  F4 extends UnaryFn<FnOutput<F3>, any>,
-  F5 extends UnaryFn<FnOutput<F4>, any>,
-  F6 extends UnaryFn<FnOutput<F5>, any>,
-  F7 extends UnaryFn<FnOutput<F6>, any>
->(
-  ab: ZeroFn<B>,
-  bc: ValidateFn<F2, B>,
-  cd: ValidateFn<F3, FnOutput<F2>>,
-  de: ValidateFn<F4, FnOutput<F3>>,
-  ef: ValidateFn<F5, FnOutput<F4>>,
-  fg: ValidateFn<F6, FnOutput<F5>>,
-  gh: ValidateFn<F7, FnOutput<F6>>
-): () => FnOutput<F7>;
-function pipe<
-  B,
-  F2 extends UnaryFn<B, any>,
-  F3 extends UnaryFn<FnOutput<F2>, any>,
-  F4 extends UnaryFn<FnOutput<F3>, any>,
-  F5 extends UnaryFn<FnOutput<F4>, any>,
-  F6 extends UnaryFn<FnOutput<F5>, any>,
-  F7 extends UnaryFn<FnOutput<F6>, any>,
-  F8 extends UnaryFn<FnOutput<F7>, any>
->(
-  ab: ZeroFn<B>,
-  bc: ValidateFn<F2, B>,
-  cd: ValidateFn<F3, FnOutput<F2>>,
-  de: ValidateFn<F4, FnOutput<F3>>,
-  ef: ValidateFn<F5, FnOutput<F4>>,
-  fg: ValidateFn<F6, FnOutput<F5>>,
-  gh: ValidateFn<F7, FnOutput<F6>>,
-  hi: ValidateFn<F8, FnOutput<F7>>
-): () => FnOutput<F8>;
-function pipe<
-  B,
-  F2 extends UnaryFn<B, any>,
-  F3 extends UnaryFn<FnOutput<F2>, any>,
-  F4 extends UnaryFn<FnOutput<F3>, any>,
-  F5 extends UnaryFn<FnOutput<F4>, any>,
-  F6 extends UnaryFn<FnOutput<F5>, any>,
-  F7 extends UnaryFn<FnOutput<F6>, any>,
-  F8 extends UnaryFn<FnOutput<F7>, any>,
-  F9 extends UnaryFn<FnOutput<F8>, any>
->(
-  ab: ZeroFn<B>,
-  bc: ValidateFn<F2, B>,
-  cd: ValidateFn<F3, FnOutput<F2>>,
-  de: ValidateFn<F4, FnOutput<F3>>,
-  ef: ValidateFn<F5, FnOutput<F4>>,
-  fg: ValidateFn<F6, FnOutput<F5>>,
-  gh: ValidateFn<F7, FnOutput<F6>>,
-  hi: ValidateFn<F8, FnOutput<F7>>,
-  ij: ValidateFn<F9, FnOutput<F8>>
-): () => FnOutput<F9>;
-function pipe<
-  B,
-  F2 extends UnaryFn<B, any>,
-  F3 extends UnaryFn<FnOutput<F2>, any>,
-  F4 extends UnaryFn<FnOutput<F3>, any>,
-  F5 extends UnaryFn<FnOutput<F4>, any>,
-  F6 extends UnaryFn<FnOutput<F5>, any>,
-  F7 extends UnaryFn<FnOutput<F6>, any>,
-  F8 extends UnaryFn<FnOutput<F7>, any>,
-  F9 extends UnaryFn<FnOutput<F8>, any>,
-  F10 extends UnaryFn<FnOutput<F9>, any>
->(
-  ab: ZeroFn<B>,
-  bc: ValidateFn<F2, B>,
-  cd: ValidateFn<F3, FnOutput<F2>>,
-  de: ValidateFn<F4, FnOutput<F3>>,
-  ef: ValidateFn<F5, FnOutput<F4>>,
-  fg: ValidateFn<F6, FnOutput<F5>>,
-  gh: ValidateFn<F7, FnOutput<F6>>,
-  hi: ValidateFn<F8, FnOutput<F7>>,
-  ij: ValidateFn<F9, FnOutput<F8>>,
-  jk: ValidateFn<F10, FnOutput<F9>>
-): () => FnOutput<F10>;
-
-function pipe<F1 extends FromFn<any>>(ab: F1): (input?: unknown) => FnOutput<F1>;
-function pipe<F1 extends FromFn<any>, F2 extends UnaryFn<FnOutput<F1>, any>>(
-  ab: F1,
-  bc: ValidateFn<F2, FnOutput<F1>>
-): (input?: unknown) => FnOutput<F2>;
-function pipe<
-  F1 extends FromFn<any>,
-  F2 extends UnaryFn<FnOutput<F1>, any>,
-  F3 extends UnaryFn<FnOutput<F2>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnOutput<F1>>,
-  cd: ValidateFn<F3, FnOutput<F2>>
-): (input?: unknown) => FnOutput<F3>;
-function pipe<
-  F1 extends FromFn<any>,
-  F2 extends UnaryFn<FnOutput<F1>, any>,
-  F3 extends UnaryFn<FnOutput<F2>, any>,
-  F4 extends UnaryFn<FnOutput<F3>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnOutput<F1>>,
-  cd: ValidateFn<F3, FnOutput<F2>>,
-  de: ValidateFn<F4, FnOutput<F3>>
-): (input?: unknown) => FnOutput<F4>;
-function pipe<
-  F1 extends FromFn<any>,
-  F2 extends UnaryFn<FnOutput<F1>, any>,
-  F3 extends UnaryFn<FnOutput<F2>, any>,
-  F4 extends UnaryFn<FnOutput<F3>, any>,
-  F5 extends UnaryFn<FnOutput<F4>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnOutput<F1>>,
-  cd: ValidateFn<F3, FnOutput<F2>>,
-  de: ValidateFn<F4, FnOutput<F3>>,
-  ef: ValidateFn<F5, FnOutput<F4>>
-): (input?: unknown) => FnOutput<F5>;
-function pipe<
-  F1 extends FromFn<any>,
-  F2 extends UnaryFn<FnOutput<F1>, any>,
-  F3 extends UnaryFn<FnOutput<F2>, any>,
-  F4 extends UnaryFn<FnOutput<F3>, any>,
-  F5 extends UnaryFn<FnOutput<F4>, any>,
-  F6 extends UnaryFn<FnOutput<F5>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnOutput<F1>>,
-  cd: ValidateFn<F3, FnOutput<F2>>,
-  de: ValidateFn<F4, FnOutput<F3>>,
-  ef: ValidateFn<F5, FnOutput<F4>>,
-  fg: ValidateFn<F6, FnOutput<F5>>
-): (input?: unknown) => FnOutput<F6>;
-function pipe<
-  F1 extends FromFn<any>,
-  F2 extends UnaryFn<FnOutput<F1>, any>,
-  F3 extends UnaryFn<FnOutput<F2>, any>,
-  F4 extends UnaryFn<FnOutput<F3>, any>,
-  F5 extends UnaryFn<FnOutput<F4>, any>,
-  F6 extends UnaryFn<FnOutput<F5>, any>,
-  F7 extends UnaryFn<FnOutput<F6>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnOutput<F1>>,
-  cd: ValidateFn<F3, FnOutput<F2>>,
-  de: ValidateFn<F4, FnOutput<F3>>,
-  ef: ValidateFn<F5, FnOutput<F4>>,
-  fg: ValidateFn<F6, FnOutput<F5>>,
-  gh: ValidateFn<F7, FnOutput<F6>>
-): (input?: unknown) => FnOutput<F7>;
-function pipe<
-  F1 extends FromFn<any>,
-  F2 extends UnaryFn<FnOutput<F1>, any>,
-  F3 extends UnaryFn<FnOutput<F2>, any>,
-  F4 extends UnaryFn<FnOutput<F3>, any>,
-  F5 extends UnaryFn<FnOutput<F4>, any>,
-  F6 extends UnaryFn<FnOutput<F5>, any>,
-  F7 extends UnaryFn<FnOutput<F6>, any>,
-  F8 extends UnaryFn<FnOutput<F7>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnOutput<F1>>,
-  cd: ValidateFn<F3, FnOutput<F2>>,
-  de: ValidateFn<F4, FnOutput<F3>>,
-  ef: ValidateFn<F5, FnOutput<F4>>,
-  fg: ValidateFn<F6, FnOutput<F5>>,
-  gh: ValidateFn<F7, FnOutput<F6>>,
-  hi: ValidateFn<F8, FnOutput<F7>>
-): (input?: unknown) => FnOutput<F8>;
-function pipe<
-  F1 extends FromFn<any>,
-  F2 extends UnaryFn<FnOutput<F1>, any>,
-  F3 extends UnaryFn<FnOutput<F2>, any>,
-  F4 extends UnaryFn<FnOutput<F3>, any>,
-  F5 extends UnaryFn<FnOutput<F4>, any>,
-  F6 extends UnaryFn<FnOutput<F5>, any>,
-  F7 extends UnaryFn<FnOutput<F6>, any>,
-  F8 extends UnaryFn<FnOutput<F7>, any>,
-  F9 extends UnaryFn<FnOutput<F8>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnOutput<F1>>,
-  cd: ValidateFn<F3, FnOutput<F2>>,
-  de: ValidateFn<F4, FnOutput<F3>>,
-  ef: ValidateFn<F5, FnOutput<F4>>,
-  fg: ValidateFn<F6, FnOutput<F5>>,
-  gh: ValidateFn<F7, FnOutput<F6>>,
-  hi: ValidateFn<F8, FnOutput<F7>>,
-  ij: ValidateFn<F9, FnOutput<F8>>
-): (input?: unknown) => FnOutput<F9>;
-function pipe<
-  F1 extends FromFn<any>,
-  F2 extends UnaryFn<FnOutput<F1>, any>,
-  F3 extends UnaryFn<FnOutput<F2>, any>,
-  F4 extends UnaryFn<FnOutput<F3>, any>,
-  F5 extends UnaryFn<FnOutput<F4>, any>,
-  F6 extends UnaryFn<FnOutput<F5>, any>,
-  F7 extends UnaryFn<FnOutput<F6>, any>,
-  F8 extends UnaryFn<FnOutput<F7>, any>,
-  F9 extends UnaryFn<FnOutput<F8>, any>,
-  F10 extends UnaryFn<FnOutput<F9>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnOutput<F1>>,
-  cd: ValidateFn<F3, FnOutput<F2>>,
-  de: ValidateFn<F4, FnOutput<F3>>,
-  ef: ValidateFn<F5, FnOutput<F4>>,
-  fg: ValidateFn<F6, FnOutput<F5>>,
-  gh: ValidateFn<F7, FnOutput<F6>>,
-  hi: ValidateFn<F8, FnOutput<F7>>,
-  ij: ValidateFn<F9, FnOutput<F8>>,
-  jk: ValidateFn<F10, FnOutput<F9>>
-): (input?: unknown) => FnOutput<F10>;
-
-function pipe<F1 extends UnaryFn<any, any>>(ab: F1): (a: FnInput<F1>) => FnOutput<F1>;
-function pipe<F1 extends UnaryFn<any, any>, F2 extends UnaryFn<FnOutput<F1>, any>>(
-  ab: F1,
-  bc: ValidateFn<F2, FnOutput<F1>>
-): (a: FnInput<F1>) => FnOutput<F2>;
-function pipe<
-  F1 extends UnaryFn<any, any>,
-  F2 extends UnaryFn<FnOutput<F1>, any>,
-  F3 extends UnaryFn<FnOutput<F2>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnOutput<F1>>,
-  cd: ValidateFn<F3, FnOutput<F2>>
-): (a: FnInput<F1>) => FnOutput<F3>;
-function pipe<
-  F1 extends UnaryFn<any, any>,
-  F2 extends UnaryFn<FnOutput<F1>, any>,
-  F3 extends UnaryFn<FnOutput<F2>, any>,
-  F4 extends UnaryFn<FnOutput<F3>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnOutput<F1>>,
-  cd: ValidateFn<F3, FnOutput<F2>>,
-  de: ValidateFn<F4, FnOutput<F3>>
-): (a: FnInput<F1>) => FnOutput<F4>;
-function pipe<
-  F1 extends UnaryFn<any, any>,
-  F2 extends UnaryFn<FnOutput<F1>, any>,
-  F3 extends UnaryFn<FnOutput<F2>, any>,
-  F4 extends UnaryFn<FnOutput<F3>, any>,
-  F5 extends UnaryFn<FnOutput<F4>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnOutput<F1>>,
-  cd: ValidateFn<F3, FnOutput<F2>>,
-  de: ValidateFn<F4, FnOutput<F3>>,
-  ef: ValidateFn<F5, FnOutput<F4>>
-): (a: FnInput<F1>) => FnOutput<F5>;
-function pipe<
-  F1 extends UnaryFn<any, any>,
-  F2 extends UnaryFn<FnOutput<F1>, any>,
-  F3 extends UnaryFn<FnOutput<F2>, any>,
-  F4 extends UnaryFn<FnOutput<F3>, any>,
-  F5 extends UnaryFn<FnOutput<F4>, any>,
-  F6 extends UnaryFn<FnOutput<F5>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnOutput<F1>>,
-  cd: ValidateFn<F3, FnOutput<F2>>,
-  de: ValidateFn<F4, FnOutput<F3>>,
-  ef: ValidateFn<F5, FnOutput<F4>>,
-  fg: ValidateFn<F6, FnOutput<F5>>
-): (a: FnInput<F1>) => FnOutput<F6>;
-function pipe<
-  F1 extends UnaryFn<any, any>,
-  F2 extends UnaryFn<FnOutput<F1>, any>,
-  F3 extends UnaryFn<FnOutput<F2>, any>,
-  F4 extends UnaryFn<FnOutput<F3>, any>,
-  F5 extends UnaryFn<FnOutput<F4>, any>,
-  F6 extends UnaryFn<FnOutput<F5>, any>,
-  F7 extends UnaryFn<FnOutput<F6>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnOutput<F1>>,
-  cd: ValidateFn<F3, FnOutput<F2>>,
-  de: ValidateFn<F4, FnOutput<F3>>,
-  ef: ValidateFn<F5, FnOutput<F4>>,
-  fg: ValidateFn<F6, FnOutput<F5>>,
-  gh: ValidateFn<F7, FnOutput<F6>>
-): (a: FnInput<F1>) => FnOutput<F7>;
-function pipe<
-  F1 extends UnaryFn<any, any>,
-  F2 extends UnaryFn<FnOutput<F1>, any>,
-  F3 extends UnaryFn<FnOutput<F2>, any>,
-  F4 extends UnaryFn<FnOutput<F3>, any>,
-  F5 extends UnaryFn<FnOutput<F4>, any>,
-  F6 extends UnaryFn<FnOutput<F5>, any>,
-  F7 extends UnaryFn<FnOutput<F6>, any>,
-  F8 extends UnaryFn<FnOutput<F7>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnOutput<F1>>,
-  cd: ValidateFn<F3, FnOutput<F2>>,
-  de: ValidateFn<F4, FnOutput<F3>>,
-  ef: ValidateFn<F5, FnOutput<F4>>,
-  fg: ValidateFn<F6, FnOutput<F5>>,
-  gh: ValidateFn<F7, FnOutput<F6>>,
-  hi: ValidateFn<F8, FnOutput<F7>>
-): (a: FnInput<F1>) => FnOutput<F8>;
-function pipe<
-  F1 extends UnaryFn<any, any>,
-  F2 extends UnaryFn<FnOutput<F1>, any>,
-  F3 extends UnaryFn<FnOutput<F2>, any>,
-  F4 extends UnaryFn<FnOutput<F3>, any>,
-  F5 extends UnaryFn<FnOutput<F4>, any>,
-  F6 extends UnaryFn<FnOutput<F5>, any>,
-  F7 extends UnaryFn<FnOutput<F6>, any>,
-  F8 extends UnaryFn<FnOutput<F7>, any>,
-  F9 extends UnaryFn<FnOutput<F8>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnOutput<F1>>,
-  cd: ValidateFn<F3, FnOutput<F2>>,
-  de: ValidateFn<F4, FnOutput<F3>>,
-  ef: ValidateFn<F5, FnOutput<F4>>,
-  fg: ValidateFn<F6, FnOutput<F5>>,
-  gh: ValidateFn<F7, FnOutput<F6>>,
-  hi: ValidateFn<F8, FnOutput<F7>>,
-  ij: ValidateFn<F9, FnOutput<F8>>
-): (a: FnInput<F1>) => FnOutput<F9>;
-function pipe<
-  F1 extends UnaryFn<any, any>,
-  F2 extends UnaryFn<FnOutput<F1>, any>,
-  F3 extends UnaryFn<FnOutput<F2>, any>,
-  F4 extends UnaryFn<FnOutput<F3>, any>,
-  F5 extends UnaryFn<FnOutput<F4>, any>,
-  F6 extends UnaryFn<FnOutput<F5>, any>,
-  F7 extends UnaryFn<FnOutput<F6>, any>,
-  F8 extends UnaryFn<FnOutput<F7>, any>,
-  F9 extends UnaryFn<FnOutput<F8>, any>,
-  F10 extends UnaryFn<FnOutput<F9>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnOutput<F1>>,
-  cd: ValidateFn<F3, FnOutput<F2>>,
-  de: ValidateFn<F4, FnOutput<F3>>,
-  ef: ValidateFn<F5, FnOutput<F4>>,
-  fg: ValidateFn<F6, FnOutput<F5>>,
-  gh: ValidateFn<F7, FnOutput<F6>>,
-  hi: ValidateFn<F8, FnOutput<F7>>,
-  ij: ValidateFn<F9, FnOutput<F8>>,
-  jk: ValidateFn<F10, FnOutput<F9>>
-): (a: FnInput<F1>) => FnOutput<F10>;
+function pipe<I>(first: I): Result<I, []>;
+function pipe<I, R1>(
+  first: I,
+  s1: (value: Head<I>) => R1
+): Result<I, [R1]>;
+function pipe<I, R1, R2>(
+  first: I,
+  s1: (value: Head<I>) => R1,
+  s2: (value: R1) => R2
+): Result<I, [R1, R2]>;
+function pipe<I, R1, R2, R3>(
+  first: I,
+  s1: (value: Head<I>) => R1,
+  s2: (value: R1) => R2,
+  s3: (value: R2) => R3
+): Result<I, [R1, R2, R3]>;
+function pipe<I, R1, R2, R3, R4>(
+  first: I,
+  s1: (value: Head<I>) => R1,
+  s2: (value: R1) => R2,
+  s3: (value: R2) => R3,
+  s4: (value: R3) => R4
+): Result<I, [R1, R2, R3, R4]>;
+function pipe<I, R1, R2, R3, R4, R5>(
+  first: I,
+  s1: (value: Head<I>) => R1,
+  s2: (value: R1) => R2,
+  s3: (value: R2) => R3,
+  s4: (value: R3) => R4,
+  s5: (value: R4) => R5
+): Result<I, [R1, R2, R3, R4, R5]>;
+function pipe<I, R1, R2, R3, R4, R5, R6>(
+  first: I,
+  s1: (value: Head<I>) => R1,
+  s2: (value: R1) => R2,
+  s3: (value: R2) => R3,
+  s4: (value: R3) => R4,
+  s5: (value: R4) => R5,
+  s6: (value: R5) => R6
+): Result<I, [R1, R2, R3, R4, R5, R6]>;
+function pipe<I, R1, R2, R3, R4, R5, R6, R7>(
+  first: I,
+  s1: (value: Head<I>) => R1,
+  s2: (value: R1) => R2,
+  s3: (value: R2) => R3,
+  s4: (value: R3) => R4,
+  s5: (value: R4) => R5,
+  s6: (value: R5) => R6,
+  s7: (value: R6) => R7
+): Result<I, [R1, R2, R3, R4, R5, R6, R7]>;
+function pipe<I, R1, R2, R3, R4, R5, R6, R7, R8>(
+  first: I,
+  s1: (value: Head<I>) => R1,
+  s2: (value: R1) => R2,
+  s3: (value: R2) => R3,
+  s4: (value: R3) => R4,
+  s5: (value: R4) => R5,
+  s6: (value: R5) => R6,
+  s7: (value: R6) => R7,
+  s8: (value: R7) => R8
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8]>;
+function pipe<I, R1, R2, R3, R4, R5, R6, R7, R8, R9>(
+  first: I,
+  s1: (value: Head<I>) => R1,
+  s2: (value: R1) => R2,
+  s3: (value: R2) => R3,
+  s4: (value: R3) => R4,
+  s5: (value: R4) => R5,
+  s6: (value: R5) => R6,
+  s7: (value: R6) => R7,
+  s8: (value: R7) => R8,
+  s9: (value: R8) => R9
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9]>;
+function pipe<I, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10>(
+  first: I,
+  s1: (value: Head<I>) => R1,
+  s2: (value: R1) => R2,
+  s3: (value: R2) => R3,
+  s4: (value: R3) => R4,
+  s5: (value: R4) => R5,
+  s6: (value: R5) => R6,
+  s7: (value: R6) => R7,
+  s8: (value: R7) => R8,
+  s9: (value: R8) => R9,
+  s10: (value: R9) => R10
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10]>;
 
 function pipe<Fns extends [UnaryFn<any, any>, ...UnaryFn<any, any>[]]>(...funcs: PipeCheck<Fns>): Pipe<Fns>;
 function pipe<A, Fns extends [UnaryFn<any, any>, ...UnaryFn<any, any>[]]>(

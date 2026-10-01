@@ -1,3 +1,5 @@
+> **Superseded (2026-10-01)** by `REQUIREMENTS.md` / `DESIGN.md` § Pipe Soundness Revision. Kept for history.
+
 # Next: pipe type refinement (targeted validation)
 
 ## Goal

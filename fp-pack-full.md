@@ -24,7 +24,7 @@ fp-pack is a TypeScript functional programming library focused on:
 1. **Function Composition**: Use `pipe` and `pipeAsync` as the primary tools for combining operations
 2. **Declarative Code**: Prefer function composition over imperative loops and mutations
 3. **No Monad Pattern**: Traditional FP monads (Option, Either, etc.) are NOT used - they don't compose well with `pipe`
-4. **SideEffect Pattern**: Handle errors and side effects using `SideEffect` with `pipeSideEffect` / `pipeAsyncSideEffect` pipelines (use `pipeSideEffectStrict` / `pipeAsyncSideEffectStrict` for strict unions)
+4. **SideEffect Pattern**: Handle errors and side effects using `SideEffect` with `pipeSideEffect` / `pipeAsyncSideEffect` pipelines (effect unions are precise)
 5. **Lazy Evaluation**: Use `stream/*` functions for efficient iterable processing
 
 ## Core Composition Functions
@@ -58,7 +58,7 @@ const processUsers = (users: User[]) => {
 };
 ```
 
-> For SideEffect-based early exits, use `pipeSideEffect` (or `pipeSideEffectStrict` when you want strict unions).
+> For SideEffect-based early exits, use `pipeSideEffect`. Its effect union is precise.
 
 ### Value-first vs Function-first Execution
 
@@ -108,7 +108,7 @@ const fetchUserData = async (userId: string) => {
 };
 ```
 
-> For SideEffect-aware async pipelines, use `pipeAsyncSideEffect` (or `pipeAsyncSideEffectStrict` for strict unions).
+> For SideEffect-aware async pipelines, use `pipeAsyncSideEffect`. Its effect union is precise.
 
 ## Data-last Generic Inference Caveats
 
@@ -158,7 +158,7 @@ const withPipeHint = pipe(
 - Optional chaining patterns
 
 For regular error handling, standard try-catch or error propagation is perfectly fine.
-If you want precise SideEffect unions across branches, use `pipeSideEffectStrict` / `pipeAsyncSideEffectStrict`.
+`pipeSideEffect` / `pipeAsyncSideEffect` keep precise SideEffect unions across branches.
 
 **Type note:** `SideEffect` is an instance type — use `SideEffect<E>` (not `typeof SideEffect`).
 
@@ -206,42 +206,41 @@ const finalValue = runPipeResult(
 **Key SideEffect functions:**
 - `SideEffect.of(fn, label?)` - Create a side effect container
 - `isSideEffect(value)` - Type guard for **runtime checking** whether a value is a SideEffect
-- `runPipeResult<T, R>(result)` - Execute SideEffect or return value (call **OUTSIDE** pipelines). If the input is narrowed to `SideEffect<R>` (e.g. after `isSideEffect`), it returns `R`. If the input is widened to `SideEffect<any>` or `any`, the result becomes `any` unless you provide generics.
+- `runPipeResult<T, R>(result)` - Execute SideEffect or return value (call **OUTSIDE** pipelines). If the input is narrowed to `SideEffect<R>` (e.g. after `isSideEffect`), it returns `R`. Pipe results are precise; if you widen an input yourself to `SideEffect<any>` or `any`, the result becomes `any` unless you provide generics.
 - `matchSideEffect(result, { value, effect })` - Pattern match on result
 
 **Type-safe result handling:**
 
 ```typescript
-import { pipeSideEffect, pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
+import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
 
-const processNumbers = pipeSideEffectStrict(
+const processNumbers = pipeSideEffect(
   (nums: number[]) => nums.filter(n => n % 2 === 1),
-  (odds) => odds.length > 0
-    ? odds
-    : SideEffect.of(() => 'No odd numbers'),
+  (odds) => (odds.length > 0 ? odds : SideEffect.of(() => 'NO_ODDS' as const)),
   (odds) => odds.map(n => n * 2)
 );
 
 const result = processNumbers([1, 2, 3, 4, 5]);
+// result: number[] | SideEffect<'NO_ODDS'>
 
 // ✅ CORRECT: Use isSideEffect for runtime checking
 if (!isSideEffect(result)) {
   // TypeScript knows: result is number[]
   const sum: number = result.reduce((a, b) => a + b, 0);
 } else {
-  // TypeScript knows: result is SideEffect<'No odd numbers'>
-  const error = runPipeResult(result);  // 'No odd numbers'
+  // TypeScript knows: result is SideEffect<'NO_ODDS'>
+  const error = runPipeResult(result); // 'NO_ODDS'
 }
 
-// ⚠️ Non-strict pipeSideEffect widens SideEffect to any
-const widened: number[] | SideEffect<any> = pipeSideEffect(
-  (nums: number[]) => nums,
-  (nums) => nums.length > 0 ? nums : SideEffect.of(() => 'EMPTY')
-)([]);
-const unsafeValue = runPipeResult(widened);  // any
+// ✅ Without narrowing, runPipeResult returns the precise union
+const value = runPipeResult(result); // number[] | 'NO_ODDS'
 
-// ✅ CORRECT: Provide generics to recover a safe union
-const safeValue = runPipeResult<number[], string>(result);  // result: number[] | string (union type - safe but not narrowed)
+// ⚠️ Inference is lost only if you widen the type yourself
+const widened: number[] | SideEffect<any> = result;
+const unsafeValue = runPipeResult(widened); // any
+
+// ✅ Provide generics to recover a safe union
+const safeValue = runPipeResult<number[], 'NO_ODDS'>(widened); // number[] | 'NO_ODDS'
 ```
 
 **⚠️ CRITICAL: runPipeResult Type Safety**
@@ -249,7 +248,7 @@ const safeValue = runPipeResult<number[], string>(result);  // result: number[] 
 `runPipeResult<T, R=any>` has a default type parameter `R=any`. This means:
 
 - ✅ **Precise input types**: `T | SideEffect<'E'>` preserves `T | 'E'` without extra annotations.
-- ⚠️ **Widened inputs**: `T | SideEffect<any>` (or `any`) collapses to `any`.
+- ⚠️ **Widened inputs**: `T | SideEffect<any>` (or `any`) collapses to `any`. Pipe results are never widened; this only happens to values you annotate that way yourself.
 - ✅ **With generics**: `runPipeResult<SuccessType, ErrorType>(result)` restores a safe union when inference is lost.
 - ✅ **After narrowing**: If the input is `SideEffect<'E'>`, `runPipeResult` returns `'E'`.
 - ✅ **With isSideEffect**: Prefer for runtime narrowing when you need branch-specific types.
@@ -290,9 +289,9 @@ const result = Array.from({ length: 1000000 }, (_, i) => i + 1)
 
 ### Composition
 - `pipe` - Left-to-right function composition (sync)
-- `pipeStrict` - Left-to-right composition with stricter type checks
+- `pipeStrict` - Deprecated alias of `pipe`
 - `pipeSideEffect` - Left-to-right composition with SideEffect short-circuiting
-- `pipeSideEffectStrict` - SideEffect composition with strict effect unions
+- `pipeSideEffectStrict` - Deprecated alias of `pipeSideEffect`
 - `compose` - Right-to-left function composition
 - `curry` - Curry a function
 - `partial` - Partial application
@@ -312,9 +311,9 @@ const result = Array.from({ length: 1000000 }, (_, i) => i + 1)
 
 ### Async
 - `pipeAsync` - Async function composition
-- `pipeAsyncStrict` - Async composition with stricter type checks
+- `pipeAsyncStrict` - Deprecated alias of `pipeAsync`
 - `pipeAsyncSideEffect` - Async composition with SideEffect short-circuiting
-- `pipeAsyncSideEffectStrict` - Async SideEffect composition with strict effect unions
+- `pipeAsyncSideEffectStrict` - Deprecated alias of `pipeAsyncSideEffect`
 - `delay` - Delay execution
 - `timeout` - Add timeout to promise
 - `retry` - Retry failed operations
@@ -482,10 +481,8 @@ Most data transformations are pure and don't need SideEffect handling. Use `pipe
 - **`pipeAsync`** - Async, **pure** transformations (99% of cases)
 - **`pipeSideEffect`** - **Only when you need** SideEffect short-circuiting (sync)
 - **`pipeAsyncSideEffect`** - **Only when you need** SideEffect short-circuiting (async)
-- **`pipeSideEffectStrict`** - Sync SideEffect pipelines with strict effect unions
-- **`pipeAsyncSideEffectStrict`** - Async SideEffect pipelines with strict effect unions
 
-**Important:** `pipe` and `pipeAsync` are for **pure** functions only—they don't handle `SideEffect`. If your pipeline can return `SideEffect`, use `pipeSideEffect` or `pipeAsyncSideEffect` instead. Choose the strict variants when you need precise unions for SideEffect results.
+**Important:** `pipe` and `pipeAsync` are for **pure** functions only—they don't handle `SideEffect`. If your pipeline can return `SideEffect`, use `pipeSideEffect` or `pipeAsyncSideEffect` instead. All four pipes check every step; SideEffect pipes keep precise effect unions.
 
 ```typescript
 // Sync: use pipe
@@ -622,10 +619,11 @@ import { pipe, propOr, append, assoc, ifElse, cond, from, filter, map } from 'fp
 // propOr keeps the type strict for array ops
 const addTodo = (text: string, state: AppState) =>
   pipe(
+    state,
     propOr([], 'todos'),
     append(createTodo(text)),
     (todos) => assoc('todos', todos, state)
-  )(state);
+  );
 
 // ifElse expects functions, not values
 const toggleTodo = (id: string) => ifElse(
@@ -670,11 +668,16 @@ const grade = (score: number) =>
 import { pipe, pick, mapValues, merge } from 'fp-pack';
 
 // GOOD: Declarative object operations
-const processUser = pipe(
-  pick(['name', 'email', 'age']),
-  mapValues((value) => typeof value === 'string' ? value.trim() : value),
-  merge({ verified: false })
-);
+// Value-first lets the input type anchor generic helpers like pick/mapValues.
+type User = { name: string; email: string; age: number; password: string };
+
+const processUser = (user: User) =>
+  pipe(
+    user,
+    pick(['name', 'email', 'age']),
+    mapValues((value) => (typeof value === 'string' ? value.trim() : value)),
+    merge({ verified: false })
+  );
 ```
 
 ## Anti-Patterns to Avoid
@@ -762,19 +765,17 @@ const updateUser = assoc('lastLogin', new Date());
 ## Quick Reference
 
 ### Import Paths
-- Main functions: `import { pipe, pipeStrict, map, filter } from 'fp-pack'`
-- Async: `import { pipeAsync, pipeAsyncStrict, delay, retry } from 'fp-pack'`
-- SideEffect: `import { pipeSideEffect, pipeSideEffectStrict, pipeAsyncSideEffect, pipeAsyncSideEffectStrict, SideEffect } from 'fp-pack'`
+- Main functions: `import { pipe, map, filter } from 'fp-pack'`
+- Async: `import { pipeAsync, delay, retry } from 'fp-pack'`
+- SideEffect: `import { pipeSideEffect, pipeAsyncSideEffect, SideEffect } from 'fp-pack'`
 - Stream: `import { map, filter, toArray } from 'fp-pack/stream'`
 
 ### When to Use What
 - **Pure sync transformations**: `pipe` + array/object functions
 - **Pure async operations**: `pipeAsync`
-- **Stricter mismatch checks**: `pipeStrict` (sync) / `pipeAsyncStrict` (async)
 - **Error handling with SideEffect**: `pipeSideEffect` (sync) / `pipeAsyncSideEffect` (async)
-- **Strict SideEffect unions**: `pipeSideEffectStrict` (sync) / `pipeAsyncSideEffectStrict` (async)
 - **Type-safe result handling**: `isSideEffect` for precise type narrowing (prefer this when you need branch-specific types)
-- **Execute SideEffect**: `runPipeResult` (call OUTSIDE pipelines). If the input is narrowed to `SideEffect<R>`, it returns `R`. If the input is widened to `SideEffect<any>`/`any`, the result becomes `any`; provide generics to recover
+- **Execute SideEffect**: `runPipeResult` (call OUTSIDE pipelines). If the input is narrowed to `SideEffect<R>`, it returns `R`. If you widen an input yourself to `SideEffect<any>`/`any`, the result becomes `any`; provide generics to recover
 - **Large datasets**: `stream/*` functions
 - **Conditionals**: `ifElse`, `when`, `unless`, `cond`
 - **Object access**: `prop`, `propStrict`, `path`, `pick`, `omit`
@@ -793,15 +794,17 @@ fp-pack works seamlessly with UI frameworks. Here are common patterns organized 
 import { pipe, pipeAsyncSideEffect, trim, prop, assoc, tap, SideEffect, runPipeResult } from 'fp-pack';
 
 // GOOD: Process form input declaratively
-const handleNameChange = pipe(
-  prop('currentTarget'),           // Safer than target in most UI libs
-  (el) => (el as HTMLInputElement).value,
-  trim,
-  tap((value) => {
-    // Prefer updater form to avoid stale state in React-like frameworks
-    setFormState(prev => assoc('name', value, prev));
-  })
-);
+const handleNameChange = (event: Event) =>
+  pipe(
+    event,
+    prop('currentTarget'),           // Safer than target in most UI libs
+    (el) => (el as HTMLInputElement).value,
+    trim,
+    tap((value) => {
+      // Prefer updater form to avoid stale state in React-like frameworks
+      setFormState(prev => assoc('name', value, prev));
+    })
+  );
 
 // Use in any framework:
 // React: <input onChange={handleNameChange} />
@@ -972,10 +975,13 @@ const groupProductsByCategory = pipe(
 import { pipe, pipeSideEffect, assoc, pick, mapValues, SideEffect, runPipeResult } from 'fp-pack';
 
 // GOOD: Update nested form state immutably
-const updateField = (fieldName: string, value: any) =>
+type FormState = { touched: Record<string, boolean> } & Record<string, unknown>;
+
+const updateField = (state: FormState, fieldName: string, value: unknown) =>
   pipe(
+    state,
     assoc(fieldName, value),
-    (state) => assoc('touched', { ...state.touched, [fieldName]: true }, state)
+    (next) => assoc('touched', { ...state.touched, [fieldName]: true }, next)
   );
 
 // GOOD: Form submission with validation
@@ -1197,11 +1203,14 @@ const parseQueryParams = pipe(
 );
 
 // GOOD: Convert state to query params
-const stateToQueryParams = pipe(
+type SearchState = { page: number; query: string; category: string; sort: string; loading: boolean };
+
+const stateToQueryParams = (state: SearchState) => pipe(
+  state,
   pick(['page', 'query', 'category', 'sort']),
-  (state) => {
+  (picked) => {
     const params = new URLSearchParams();
-    Object.entries(state).forEach(([key, value]) => {
+    Object.entries(picked).forEach(([key, value]) => {
       if (value) params.set(key, String(value));
     });
     return params.toString();
@@ -1567,7 +1576,10 @@ import { useForm } from 'react-hook-form';
 import { pipe, pipeSideEffect, pipeAsyncSideEffect, pick, mapValues, trim, when, tap, SideEffect, runPipeResult } from 'fp-pack';
 
 // GOOD: Validation with pipeSideEffect
-const validateFormDataPipeline = pipeSideEffect(
+type FormValues = { email: string; password: string; name: string; remember?: boolean };
+
+const validateFormDataPipeline = (values: FormValues) => pipeSideEffect(
+  values,
   pick(['email', 'password', 'name']),
   mapValues((v) => typeof v === 'string' ? trim(v) : v),
   (data) => {
@@ -1580,7 +1592,7 @@ const validateFormDataPipeline = pipeSideEffect(
   }
 );
 
-const validateFormData = (values: any) => runPipeResult(validateFormDataPipeline(values));
+const validateFormData = (values: FormValues) => runPipeResult(validateFormDataPipeline(values));
 
 const { register, handleSubmit } = useForm({
   resolver: (values) => validateFormData(values)
@@ -1617,28 +1629,31 @@ export const useUserStore = defineStore('user', {
   actions: {
     addUser(user: User) {
       this.users = pipe(
+        this.users,
         append(user),
         sortBy((u: User) => u.name),
         when(
           (users) => users.length > 100,
           tap(() => this.showWarning('Many users'))
         )
-      )(this.users);
+      );
     },
 
     updateUser(id: string, updates: Partial<User>) {
       this.users = pipe(
+        this.users,
         map((u: User) => u.id === id ? merge(u, updates) : u)
-      )(this.users);
+      );
     },
 
     deleteUser(id: string) {
       this.users = pipe(
+        this.users,
         filter((u: User) => u.id !== id),
         tap((users) => {
           if (users.length === 0) this.showEmptyState = true;
         })
-      )(this.users);
+      );
     }
   }
 });

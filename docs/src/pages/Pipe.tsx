@@ -74,7 +74,8 @@ function pipe<A, B, R>(
   bc: (b: B) => R
 ): (a: A) => R;
 
-function pipe(...funcs: Array<(input: any) => any>): (input: any) => any;`}
+// 11+ steps: every connection is still checked (mismatch → PipeError<From, To>)
+function pipe<A, Fns extends UnaryFn[]>(input: A, ...funcs: Fns): Output<Fns>;`}
     />
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
@@ -394,18 +395,7 @@ result;  // 5
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
       <strong>pipe</strong> is a pure composition tool. If you need pipelines that can
       short-circuit on <strong class="font-semibold">SideEffect</strong>, use{' '}
-      <strong>pipeSideEffect</strong> instead. For strict union typing, use{' '}
-      <a
-        href="/composition/pipeSideEffectStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/composition/pipeSideEffectStrict');
-        }}
-        class="font-semibold text-blue-700 dark:text-blue-300"
-      >
-        pipeSideEffectStrict
-      </a>
-      .
+      <strong>pipeSideEffect</strong> instead. Its result type is the precise union of the effects its steps can produce.
     </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -437,21 +427,6 @@ result;  // 5
     </h2>
 
     <div class="grid gap-6 mt-6">
-      <a
-        href="/composition/pipeStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/composition/pipeStrict');
-        }}
-        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-emerald-500 dark:hover:border-emerald-500 transition-colors cursor-pointer"
-      >
-        <h3 class="text-lg md:text-xl font-medium text-emerald-600 dark:text-emerald-400 mb-2">
-          pipeStrict →
-        </h3>
-        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          Stricter type checks for pure pipelines.
-        </p>
-      </a>
 
       <a
         href="/composition/pipeSideEffect"
@@ -469,21 +444,6 @@ result;  // 5
         </p>
       </a>
 
-      <a
-        href="/composition/pipeSideEffectStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/composition/pipeSideEffectStrict');
-        }}
-        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer"
-      >
-        <h3 class="text-lg md:text-xl font-medium text-blue-600 dark:text-blue-400 mb-2">
-          pipeSideEffectStrict →
-        </h3>
-        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          SideEffect pipelines with strict effect unions.
-        </p>
-      </a>
 
       <a
         href="/composition/compose"

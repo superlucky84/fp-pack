@@ -44,16 +44,16 @@ import { range, toArray } from 'fp-pack/stream';
 
 // Ascending range
 const ascending = pipe(
-  range,
+  range(0, 5),
   toArray
-)(0, 5);
+);
 // [0, 1, 2, 3, 4]
 
 // Descending range (automatically detected)
 const descending = pipe(
-  range,
+  range(5, 0),
   toArray
-)(5, 0);
+);
 // [5, 4, 3, 2, 1]`}
     />
 
@@ -93,18 +93,18 @@ import { range, map, toArray } from 'fp-pack/stream';
 
 // Create numbered labels
 const labels = pipe(
-  range,
+  range(1, 6),
   map((n: number) => \`Item #\${n}\`),
   toArray
-)(1, 6);
+);
 // ['Item #1', 'Item #2', 'Item #3', 'Item #4', 'Item #5']
 
 // Generate placeholder objects
 const placeholders = pipe(
-  range,
+  range(1, 4),
   map((id: number) => ({ id, name: \`User \${id}\`, active: false })),
   toArray
-)(1, 4);
+);
 // [
 //   { id: 1, name: 'User 1', active: false },
 //   { id: 2, name: 'User 2', active: false },
@@ -124,19 +124,19 @@ import { range, take, map, toArray } from 'fp-pack/stream';
 // Generate page numbers lazily
 // Only computes the first 3 pages, not all 1000
 const pageNumbers = pipe(
-  range,
+  range(1, 1000),
   take(3),
   toArray
-)(1, 1000);
+);
 // [1, 2, 3]
 
 // Generate API endpoint URLs for pages
 const apiUrls = pipe(
-  range,
+  range(1, Infinity),
   take(5),
   map((page: number) => \`https://api.example.com/data?page=\${page}\`),
   toArray
-)(1, Infinity);
+);
 // [
 //   'https://api.example.com/data?page=1',
 //   'https://api.example.com/data?page=2',
@@ -157,15 +157,15 @@ import { range, flatMap, map, toArray } from 'fp-pack/stream';
 
 // Generate 2D grid coordinates
 const grid = pipe(
-  range,
+  range(0, 3),
   flatMap((x: number) =>
     pipe(
-      range,
+      range(0, 3),
       map((y: number) => ({ x, y }))
-    )(0, 3)
+    )
   ),
   toArray
-)(0, 3);
+);
 // [
 //   { x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: 2 },
 //   { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 1, y: 2 },
@@ -184,10 +184,10 @@ import { range, map, toArray } from 'fp-pack/stream';
 
 // Create descending countdown
 const countdown = pipe(
-  range,
+  range(10, 0),
   map((n: number) => \`T-minus \${n} seconds\`),
   toArray
-)(10, 0);
+);
 // [
 //   'T-minus 10 seconds',
 //   'T-minus 9 seconds',
@@ -207,19 +207,19 @@ import { range, filter, map, toArray } from 'fp-pack/stream';
 
 // Get only even numbers and square them
 const evenSquares = pipe(
-  range,
+  range(0, 10),
   filter((n: number) => n % 2 === 0),
   map((n: number) => n * n),
   toArray
-)(0, 10);
+);
 // [0, 4, 16, 36, 64]
 
 // Find multiples of 3
 const multiplesOf3 = pipe(
-  range,
+  range(1, 20),
   filter((n: number) => n % 3 === 0),
   toArray
-)(1, 20);
+);
 // [3, 6, 9, 12, 15, 18]`}
     />
 
@@ -247,10 +247,10 @@ import { range, take, toArray } from 'fp-pack/stream';
 
 // Efficient: Only generates 5 numbers, not 1 million
 const first5 = pipe(
-  range,
+  range(0, 1000000),
   take(5),
   toArray
-)(0, 1000000);
+);
 // [0, 1, 2, 3, 4]
 
 // Compare with array approach (creates entire array in memory)
@@ -258,7 +258,7 @@ const first5 = pipe(
 const inefficient = Array.from({ length: 1000000 }, (_, i) => i).slice(0, 5);
 
 // ✅ Efficient: Only generates what's needed
-const efficient = pipe(range, take(5), toArray)(0, 1000000);`}
+const efficient = pipe(range(0, 1000000), take(5), toArray);`}
     />
 
     <div class="bg-green-50 dark:bg-green-900/20 p-4 mb-6 rounded border border-green-200 dark:border-green-800 mt-6">

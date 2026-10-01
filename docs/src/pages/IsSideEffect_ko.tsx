@@ -46,7 +46,7 @@ if (!isSideEffect(result)) {
   const sum: number = result.reduce((a, b) => a + b, 0);
   console.log(\`합계: \${sum}\`);
 } else {
-  // TypeScript가 인식: 비엄격 파이프라인에서 result는 SideEffect<any>
+  // TypeScript가 인식: result는 정확한 effect 타입을 가진 SideEffect
   const error = result.effect();
   console.log(\`에러: \${error}\`);
 }`}
@@ -126,7 +126,7 @@ if (!isSideEffect(userOrError)) {
   console.log(\`사용자 발견: \${userOrError.email}\`);
   sendWelcomeEmail(userOrError);
 } else {
-  // userOrError는 비엄격 파이프라인에서 SideEffect<any>
+  // userOrError는 정확한 effect 타입을 가진 SideEffect
   const errorMessage = userOrError.effect();
   console.error(\`에러: \${errorMessage}\`);
   showErrorToast(errorMessage);
@@ -139,7 +139,7 @@ if (!isSideEffect(userOrError)) {
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
+      code={`import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
 
 const divide = (a: number, b: number) =>
   b !== 0
@@ -153,9 +153,9 @@ const calculatePipeline = pipeSideEffect(
 
 const result = calculatePipeline(0);
 
-// ❌ isSideEffect 없이 - 덜 정확한 타입
+// isSideEffect 없이 - 여전히 분기해야 하는 유니온
 const value1 = runPipeResult(result);
-// value1: any (pipeSideEffect에서 타입이 넓어짐)
+// value1: number | string (정확한 유니온)
 
 const value2 = runPipeResult<number, string>(result);
 // value2: number | string (유니온 타입 - 안전하지만 좁혀지지 않음)
@@ -166,18 +166,18 @@ if (!isSideEffect(result)) {
   const doubled: number = result * 2;
   console.log(\`결과: \${doubled}\`);
 } else {
-  // result는 비엄격 파이프라인에서 SideEffect<any>
+  // result는 정확한 effect 타입을 가진 SideEffect
   const error = result.effect();
   console.error(\`에러: \${error}\`);
 }
 
 // ✅ 엄격 파이프라인에서는 SideEffect 타입이 보존됨
-const strictResult = pipeSideEffectStrict(
+const literalResult = pipeSideEffect(
   (n: number) => (n > 0 ? n : SideEffect.of(() => 'LOW' as const))
 )(-1);
 
-if (isSideEffect(strictResult)) {
-  const error = runPipeResult(strictResult); // 'LOW'
+if (isSideEffect(literalResult)) {
+  const error = runPipeResult(literalResult); // 'LOW'
 }`}
     />
 
@@ -206,7 +206,7 @@ if (!isSideEffect(endpoint)) {
   // endpoint는 string
   fetch(endpoint).then(/* ... */);
 } else {
-  // endpoint는 비엄격 파이프라인에서 SideEffect<any>
+  // endpoint는 정확한 effect 타입을 가진 SideEffect
   console.warn('엔드포인트가 설정되지 않았습니다. 기본값 사용');
   fetch(DEFAULT_ENDPOINT).then(/* ... */);
 }`}
@@ -242,7 +242,7 @@ if (!isSideEffect(result)) {
   showSuccessMessage(\`폼 제출 완료: \${result.id}\`);
   redirectToDashboard();
 } else {
-  // result는 비엄격 파이프라인에서 SideEffect<any>
+  // result는 정확한 effect 타입을 가진 SideEffect
   const errors: ValidationError[] = result.effect();
 
   errors.forEach(error => {

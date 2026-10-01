@@ -134,20 +134,20 @@ import { range, take, map, toArray } from 'fp-pack/stream';
 
 // 무한 시퀀스를 생성하지만 5개만 가져오기
 const first5Squares = pipe(
-  range,
+  range(0, Infinity),
   map((n: number) => n * n),
   take(5),
   toArray
-)(0, Infinity);
+);
 // [0, 1, 4, 9, 16]
 
 // 필요한 개수를 미리 알 수 없을 때 ID 생성
 const generateIds = () => pipe(
-  range,
+  range(1, Infinity),
   map((n: number) => \`id-\${n}\`),
   take(3),
   toArray
-)(1, Infinity);
+);
 
 generateIds();
 // ['id-1', 'id-2', 'id-3']`}
@@ -203,16 +203,17 @@ const fetchPage = async (pageNumber: number, pageSize: number) => {
   const allData = await fetchAllData(); // 잠재적으로 거대한 데이터셋
 
   return pipe(
+    allData,
     // 올바른 페이지로 건너뛰기
     (data) => data.slice(pageNumber * pageSize),
     take(pageSize),
     toArray
-  )(allData);
+  );
 };
 
 // 더 나은 방법: 지연 연산과 결합
 const generatePageNumbers = (totalPages: number) => pipe(
-  range,
+  range(0, Infinity),
   take(totalPages),
   map((page: number) => ({
     page,
@@ -220,7 +221,7 @@ const generatePageNumbers = (totalPages: number) => pipe(
     url: \`/items?page=\${page}\`
   })),
   toArray
-)(0, Infinity);
+);
 
 generatePageNumbers(3);
 // [
@@ -356,12 +357,12 @@ import { range, take, map, filter, toArray } from 'fp-pack/stream';
 
 // 100만 개가 아닌 100개만 처리
 const efficientExample = pipe(
-  range,
+  range(0, 1000000),
   filter((n: number) => n % 2 === 0),
   map((n: number) => n * n),
   take(100),
   toArray
-)(0, 1000000);
+);
 
 // vs 배열 방식 (모든 100만 개 아이템 처리)
 const inefficientExample = Array.from({ length: 1000000 }, (_, i) => i)

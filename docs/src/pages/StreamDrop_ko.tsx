@@ -185,7 +185,8 @@ const csvLines = [
   'Charlie,35,Chicago'
 ];
 
-const parseData = pipe(
+const parseData = (lines: string[]) => pipe(
+  lines,
   drop(1),                    // 헤더 건너뛰기
   map((line: string) => {
     const [name, age, city] = line.split(',');
@@ -212,9 +213,10 @@ const dataWithMetadata = [
 ];
 
 const skipMetadata = pipe(
+  dataWithMetadata,
   drop(3),                    // 모든 메타데이터 건너뛰기
   toArray
-)(dataWithMetadata);
+);
 // ['Name,Age', 'Alice,30', 'Bob,25']`}
     />
 
@@ -288,19 +290,21 @@ const sensorReadings: Reading[] = [
 
 // 처음 3개 워밍업 읽기 건너뛰기
 const actualData = pipe(
+  sensorReadings,
   drop(3),
   map((r: Reading) => r.value),
   toArray
-)(sensorReadings);
+);
 // [10, 12, 11]
 
 // 벤치마크 결과 (워밍업 실행 건너뛰기)
 const benchmarkTimes = [150, 145, 140, 100, 98, 102, 99];
 
 const stableResults = pipe(
+  benchmarkTimes,
   drop(3),                   // 처음 3개 워밍업 실행 건너뛰기
   toArray
-)(benchmarkTimes);
+);
 // [100, 98, 102, 99]`}
     />
 
@@ -466,12 +470,12 @@ import { range, drop, take, map, toArray } from 'fp-pack/stream';
 
 // 효율적: 건너뛴 후의 아이템만 처리
 const efficientExample = pipe(
-  range,
+  range(0, Infinity),
   drop(1000),                // 처음 1000개 건너뛰기
   take(10),                  // 다음 10개 가져오기
   map((n: number) => n * n),
   toArray
-)(0, Infinity);
+);
 // [1000000, 1002001, 1004004, ..., 1018081]
 
 // vs 배열 방식 (100만 개 아이템 배열 생성)
@@ -481,7 +485,7 @@ const inefficientExample = Array.from({ length: 1000000 }, (_, i) => i)
   .map(n => n * n);
 
 // ✅ 효율적: 필요한 것만 생성
-const efficient = pipe(range, drop(1000), take(10), toArray)(0, Infinity);`}
+const efficient = pipe(range(0, Infinity), drop(1000), take(10), toArray);`}
     />
 
     <div class="bg-green-50 dark:bg-green-900/20 p-4 mb-6 rounded border border-green-200 dark:border-green-800 mt-6">

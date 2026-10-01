@@ -135,20 +135,20 @@ import { range, take, map, toArray } from 'fp-pack/stream';
 
 // Create infinite sequence, but only take 5
 const first5Squares = pipe(
-  range,
+  range(0, Infinity),
   map((n: number) => n * n),
   take(5),
   toArray
-)(0, Infinity);
+);
 // [0, 1, 4, 9, 16]
 
 // Generate IDs without knowing how many you need upfront
 const generateIds = () => pipe(
-  range,
+  range(1, Infinity),
   map((n: number) => \`id-\${n}\`),
   take(3),
   toArray
-)(1, Infinity);
+);
 
 generateIds();
 // ['id-1', 'id-2', 'id-3']`}
@@ -204,16 +204,17 @@ const fetchPage = async (pageNumber: number, pageSize: number) => {
   const allData = await fetchAllData(); // Potentially huge dataset
 
   return pipe(
+    allData,
     // Skip to the right page
     (data) => data.slice(pageNumber * pageSize),
     take(pageSize),
     toArray
-  )(allData);
+  );
 };
 
 // Better: combine with lazy operations
 const generatePageNumbers = (totalPages: number) => pipe(
-  range,
+  range(0, Infinity),
   take(totalPages),
   map((page: number) => ({
     page,
@@ -221,7 +222,7 @@ const generatePageNumbers = (totalPages: number) => pipe(
     url: \`/items?page=\${page}\`
   })),
   toArray
-)(0, Infinity);
+);
 
 generatePageNumbers(3);
 // [
@@ -357,12 +358,12 @@ import { range, take, map, filter, toArray } from 'fp-pack/stream';
 
 // Only processes 100 items, not 1 million
 const efficientExample = pipe(
-  range,
+  range(0, 1000000),
   filter((n: number) => n % 2 === 0),
   map((n: number) => n * n),
   take(100),
   toArray
-)(0, 1000000);
+);
 
 // vs Array approach (processes all 1M items)
 const inefficientExample = Array.from({ length: 1000000 }, (_, i) => i)

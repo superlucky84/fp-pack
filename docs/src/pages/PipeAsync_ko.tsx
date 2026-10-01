@@ -37,18 +37,7 @@ const result = await pipeAsync(
     />
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6 mt-6">
-      더 엄격한 타입 검사가 필요하면{' '}
-      <a
-        href="/async/pipeAsyncStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/async/pipeAsyncStrict');
-        }}
-        class="font-semibold text-blue-700 dark:text-blue-300"
-      >
-        pipeAsyncStrict
-      </a>
-      를 사용하세요.
+      모든 단계가 타입 검사됩니다. 이전 단계의 await된 출력을 받을 수 없는 단계는 컴파일 에러이고, 인라인 람다의 추론은 그대로 유지됩니다.
     </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -101,18 +90,7 @@ const result = await pipeAsync('42', fetchUser, getName); // 'Ada'`}
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
       <strong>pipeAsync</strong>는 순수 비동기 합성에 집중합니다. <strong class="font-semibold">SideEffect</strong>
-      조기 종료가 필요하다면 <strong>pipeAsyncSideEffect</strong>를 사용하세요. 엄격한 유니온이 필요하면{' '}
-      <a
-        href="/async/pipeAsyncSideEffectStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/async/pipeAsyncSideEffectStrict');
-        }}
-        class="font-semibold text-blue-700 dark:text-blue-300"
-      >
-        pipeAsyncSideEffectStrict
-      </a>
-      를 사용하세요.
+      조기 종료가 필요하다면 <strong>pipeAsyncSideEffect</strong>를 사용하세요. 결과 타입에는 각 단계가 만들 수 있는 effect의 정확한 유니온이 담깁니다.
     </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -144,21 +122,6 @@ const result = await pipeAsync('42', fetchUser, getName); // 'Ada'`}
     </h2>
 
     <div class="grid gap-6 mt-6">
-      <a
-        href="/async/pipeAsyncStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/async/pipeAsyncStrict');
-        }}
-        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer"
-      >
-        <h3 class="text-lg md:text-xl font-medium text-blue-600 dark:text-blue-400 mb-2">
-          pipeAsyncStrict →
-        </h3>
-        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          명시적 타입 검증으로 더 엄격한 비동기 파이프라인 타입 체킹을 제공합니다.
-        </p>
-      </a>
 
       <a
         href="/async/pipeAsyncSideEffect"

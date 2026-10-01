@@ -97,27 +97,21 @@ const result = runPipeResult(
 
     <CodeBlock
       language="typescript"
-      code={`function pipeSideEffect<A, R>(
-  a: A,
-  ab: (a: A) => R | SideEffect
-): R | SideEffect;
-
-function pipeSideEffect<A, R>(
-  ab: (a: A) => R | SideEffect
-): (a: A | SideEffect) => R | SideEffect;
-
+      code={`// E1, E2 = 각 단계가 반환할 수 있는 effect. 결과에는 그 정확한 유니온이 담기고,
+// 어떤 단계도 SideEffect를 반환하지 않으면 결과는 그냥 R입니다.
 function pipeSideEffect<A, B, R>(
   a: A,
-  ab: (a: A) => B | SideEffect,
-  bc: (b: B) => R | SideEffect
-): R | SideEffect;
+  ab: (a: A) => B | SideEffect<E1>,
+  bc: (b: B) => R | SideEffect<E2>
+): R | SideEffect<E1 | E2>;
 
 function pipeSideEffect<A, B, R>(
-  ab: (a: A) => B | SideEffect,
-  bc: (b: B) => R | SideEffect
-): (a: A | SideEffect) => R | SideEffect;
-
-function pipeSideEffect(...funcs: Array<(input: any) => any>): (input: any) => any;`}
+  ab: (a: A) => B | SideEffect<E1>,
+  bc: (b: B) => R | SideEffect<E2>
+): {
+  (a: A): R | SideEffect<E1 | E2>;
+  <EIn>(a: A | SideEffect<EIn>): R | SideEffect<E1 | E2 | EIn>;
+};`}
     />
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
@@ -125,20 +119,21 @@ function pipeSideEffect(...funcs: Array<(input: any) => any>): (input: any) => a
     </p>
 
     <h3 class="text-xl md:text-2xl font-medium text-gray-900 dark:text-white mb-4">
-      엄격 버전
+      정확한 effect 타입
     </h3>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      <code class="text-sm">pipeSideEffectStrict</code>는 파이프라인에서 발생 가능한 SideEffect 결과 타입을
-      유니온으로 엄격하게 유지합니다. 분기 타입을 더 정확히 추론하고 싶을 때 사용하세요.
+      <code class="text-sm">pipeSideEffect</code>는 각 단계가 반환할 수 있는 SideEffect의 정확한 유니온을
+      유지하므로 분기별로 타입을 정확히 좁힐 수 있습니다. 0.15.0 이전에는{' '}
+      <code class="text-sm">pipeSideEffectStrict</code>가 필요했지만, 이제는 deprecated 별칭입니다.
     </p>
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffectStrict, SideEffect } from 'fp-pack';
+      code={`import { pipeSideEffect, SideEffect } from 'fp-pack';
 
 // 결과 타입: number | SideEffect<'NEGATIVE' | 0>
-const result = pipeSideEffectStrict(
+const result = pipeSideEffect(
   5,
   (n: number) => (n > 0 ? n : SideEffect.of(() => 'NEGATIVE' as const)),
   (n) => (n > 10 ? n : SideEffect.of(() => 0 as const))
@@ -155,11 +150,11 @@ const result = pipeSideEffectStrict(
         <br />
         ✅ <strong>입력 타입이 정확하면 추론이 유지됩니다.</strong>
         <br />
-        ⚠️ <strong>입력이 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">SideEffect&lt;any&gt;</code> 또는 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">any</code>로 넓어지면(<code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">pipeSideEffect</code>에서 흔함) 결과가 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">any</code>가 됩니다.</strong>
+        ⚠️ <strong>입력이 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">SideEffect&lt;any&gt;</code> 또는 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">any</code>로 넓어지면(직접 넓은 타입으로 지정한 값 등) 결과가 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">any</code>가 됩니다.</strong>
         <br />
         ✅ <strong>입력이 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">SideEffect&lt;R&gt;</code>로 좁혀지면 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">runPipeResult</code>는 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">R</code>을 반환합니다.</strong>
         <br />
-        <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded text-xs">const result = runPipeResult(pipeline(data)); // result: any (입력이 넓어짐)</code>
+        <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded text-xs">const result = runPipeResult(widenedValue); // result: any (입력이 넓어짐)</code>
         <br />
         <br />
         ✅ <strong>정확한 타입 안전성을 위해서는 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">isSideEffect</code> 타입 가드를 사용하세요:</strong>
@@ -451,21 +446,6 @@ const correctPipeline = pipeSideEffect(
         </p>
       </a>
 
-      <a
-        href="/composition/pipeSideEffectStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/composition/pipeSideEffectStrict');
-        }}
-        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer"
-      >
-        <h3 class="text-lg md:text-xl font-medium text-blue-600 dark:text-blue-400 mb-2">
-          pipeSideEffectStrict →
-        </h3>
-        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          SideEffect 결과 타입을 엄격 유니온으로 유지합니다.
-        </p>
-      </a>
 
       <a
         href="/async/pipeAsyncSideEffect"

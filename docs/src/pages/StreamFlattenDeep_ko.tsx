@@ -216,12 +216,13 @@ const nestedNumbers = [
 ];
 
 const result = pipe(
+  nestedNumbers,
   flattenDeep,
   filter((n: number) => n % 2 === 0),  // 짝수만
   map((n: number) => n * 2),            // 2배로
   take(3),                               // 처음 3개
   toArray
-)(nestedNumbers);
+);
 // [4, 8, 12]`}
     />
 
@@ -255,10 +256,11 @@ const hugeNested = deepNesting(1000);
 
 // 필요한 만큼만 처리 - 5개 항목 후 중단
 const first5 = pipe(
+  hugeNested,
   flattenDeep,
   take(5),
   toArray
-)(hugeNested);
+);
 // [2, 2, 2, 2, 2]`}
     />
 

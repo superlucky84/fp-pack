@@ -215,20 +215,20 @@ try {
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
+      code={`import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
 
 const divide = (a: number, b: number) =>
   b !== 0 ? a / b : SideEffect.of(() => '0으로 나눌 수 없습니다');
 
 const result = pipeSideEffect((x: number) => divide(10, x))(2);
 
-// ⚠️ pipeSideEffect는 SideEffect를 any로 넓혀서 runPipeResult가 any가 됨
+// ✅ pipeSideEffect가 effect 타입을 유지하므로 runPipeResult는 정확한 유니온을 반환
 const value1 = runPipeResult(result);
-// value1: any
+// value1: number | string
 
-// ✅ 명시적 타입이 있는 runPipeResult - 더 안전
+// 명시적 제네릭은 선택 사항 (직접 넓힌 값에 유용)
 const value2 = runPipeResult<number, string>(result);
-// value2: number | string (유니온 타입이지만 좁혀지지 않음)
+// value2: number | string
 
 // ✅ 분기별 타입 좁히기를 위한 isSideEffect - 최고
 if (!isSideEffect(result)) {
@@ -236,18 +236,18 @@ if (!isSideEffect(result)) {
   const doubled: number = result * 2;
   console.log(\`결과: \${doubled}\`);
 } else {
-  // 비엄격 파이프라인에서는 SideEffect<any>
+  // 정확한 effect 타입을 가진 SideEffect
   const error = runPipeResult(result);
   console.error(\`에러: \${error}\`);
 }
 
 // ✅ SideEffect 타입이 정확하면 runPipeResult도 그 타입으로 반환
-const strictResult = pipeSideEffectStrict(
+const literalResult = pipeSideEffect(
   (n: number) => (n > 0 ? n : SideEffect.of(() => 'LOW' as const))
 )(-1);
 
-if (isSideEffect(strictResult)) {
-  const error = runPipeResult(strictResult); // 'LOW'
+if (isSideEffect(literalResult)) {
+  const error = runPipeResult(literalResult); // 'LOW'
 }
 
 // 권장: 타입 안전 분기를 위해 isSideEffect 사용

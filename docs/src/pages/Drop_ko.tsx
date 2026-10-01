@@ -219,7 +219,7 @@ const sensorReadings = [12, 15, 18, 100, 102, 98, 101, 99, 103];
 const WARMUP_SAMPLES = 3;
 
 const processReadings = pipe(
-  (readings) => drop(WARMUP_SAMPLES, readings),
+  (readings: number[]) => drop(WARMUP_SAMPLES, readings),
   (readings) => readings.reduce((a, b) => a + b, 0) / readings.length
 );
 
@@ -273,10 +273,11 @@ console.log(buildBreadcrumb(fullPath, 2));
 const data = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 const result = pipe(
+  data,
   (arr) => drop(3, arr),                  // 첫 3개 건너뛰기
   (arr) => arr.filter(x => x % 2 === 0),  // 짝수만 유지
   (arr) => arr.map(x => x * 2)            // 2배로 만들기
-)(data);
+);
 
 // [6, 8, 10, 12, 14, 16, 18]`}
     />

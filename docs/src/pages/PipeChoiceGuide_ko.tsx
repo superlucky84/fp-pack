@@ -1,32 +1,21 @@
+import { CodeBlock } from '@/components/CodeBlock';
+
 export const PipeChoiceGuide_ko = () => (
   <div class="prose prose-lg dark:prose-invert max-w-none">
     <div class="mb-10">
       <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-        파이프 선택하기
+        파이프 선택 가이드
       </h1>
       <p class="text-xl text-gray-600 dark:text-gray-400 leading-relaxed">
-        유연성과 엄격성에 대한 심층 분석
+        두 가지 질문, 네 가지 파이프 — 타입 안전성은 기본입니다
       </p>
     </div>
 
     <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border-l-4 border-blue-500 dark:border-blue-400 rounded-lg p-6 mb-8">
       <p class="text-gray-700 dark:text-gray-300 leading-relaxed m-0">
-        fp-pack의 핵심 설계 철학은 <strong>개발 경험(DX)</strong>과 <strong>타입 안정성</strong> 사이의 균형을 맞추는 도구를 제공하는 것입니다. 이 철학은 다양한 <code class="text-sm">pipe</code> 변형에서 가장 명확하게 드러납니다. 이 트레이드오프를 이해하는 것이 라이브러리를 효과적으로 사용하는 열쇠입니다.
-      </p>
-    </div>
-
-    {/* Design Philosophy Section */}
-    <div class="bg-blue-50 dark:bg-blue-950/30 border-l-4 border-blue-500 dark:border-blue-400 rounded-r-lg p-5 mb-8">
-      <p class="text-gray-800 dark:text-gray-200 text-sm leading-relaxed mb-2">
-        💡 <strong>더 깊이 알아보고 싶으신가요?</strong>
-      </p>
-      <p class="text-gray-700 dark:text-gray-300 text-sm m-0">
-        fp-pack이 이러한 설계 방식을 선택한 이유에 대한 자세한 논의를 읽어보세요. <strong>"An aside: some design considerations I explored"</strong> 섹션을 참고하세요:{' '}
-        <a href="https://github.com/superlucky84/fp-pack/issues/5#issuecomment-3734373986"
-           class="text-blue-600 dark:text-blue-400 hover:underline"
-           target="_blank" rel="noopener noreferrer">
-          타입 안전성 vs 추론 트레이드오프
-        </a>
+        <strong>0.15.0</strong>부터 모든 파이프가 각 단계를 컴파일 타임에 검사하면서도 TypeScript의 자연스러운 추론을
+        그대로 유지합니다. 이제 추론과 안전성 중 하나를 고를 필요가 없으므로, 파이프 선택은 두 가지 질문으로
+        정리됩니다. <strong>비동기인가?</strong> 그리고 <strong>중간에 조기 종료할 수 있는가?</strong>
       </p>
     </div>
 
@@ -39,44 +28,52 @@ export const PipeChoiceGuide_ko = () => (
           </div>
           <div class="flex-1">
             <h3 class="text-2xl font-medium text-gray-900 dark:text-white mb-4 mt-0">
-              관점: 왜 `pipe`는 유연한 추론을 우선시하는가?
+              파이프라인이 중간에 끝날 수 있나요?
             </h3>
           </div>
         </div>
 
         <div class="ml-14 space-y-4">
           <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
-            기본 <code class="text-sm">pipe</code>와 <code class="text-sm">pipeAsync</code>는 의도적으로 &quot;추론 친화적&quot;으로 설계되었습니다. 이들의 주요 목표는 중간 단계가 복잡하거나 제네릭하더라도 TypeScript가 파이프라인의 최종 출력 타입을 잘 추론할 수 있게 하여 부드러운 개발 경험을 제공하는 것입니다.
+            fp-pack에서 조기 종료는 명시적으로 선택하는 것입니다. 일반 <code class="text-sm">pipe</code>는 절대 중간에
+            멈추지 않습니다. 모든 단계가 실행되고, <code class="text-sm">SideEffect</code>를 포함한 모든 값이 데이터로
+            다음 단계에 전달됩니다. 반면 <code class="text-sm">pipeSideEffect</code>는 어떤 단계가{' '}
+            <code class="text-sm">SideEffect</code>를 반환하면 그 자리에서 멈추고, 그 effect는 파이프라인 바깥 경계에서{' '}
+            <code class="text-sm">runPipeResult</code> / <code class="text-sm">matchSideEffect</code>로 한 번만
+            처리합니다.
           </p>
-          <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
-            즉, 제네릭 함수가 도입되는 순간 수동으로 타입 주석을 달도록 강요하기보다, 파이프라인이 끝까지 흘러가도록 하는 데 초점을 둡니다. 대신 기본 <code class="text-sm">pipe</code>는 모든 중간 단계의 타입 불일치를 항상 거부하는 것을 보장하지 않습니다.
-          </p>
+
+          <CodeBlock
+            language="typescript"
+            code={`import { pipe, pipeSideEffect, SideEffect, runPipeResult } from 'fp-pack';
+
+// 조기 종료 없음: 모든 단계가 항상 실행됨
+const toLabel = pipe(
+  (user: User) => user.name,
+  (name) => name.trim(),
+  (name) => \`@\${name}\`
+);
+
+// 조기 종료: 첫 SideEffect에서 멈추고, 경계에서 한 번만 처리
+const findEmail = pipeSideEffect(
+  (id: string) => users.get(id) ?? SideEffect.of(() => 'NOT_FOUND' as const),
+  (user) => user.email ?? SideEffect.of(() => 'NO_EMAIL' as const),
+  (email) => email.toLowerCase()
+);
+
+const result = findEmail('u1'); // string | SideEffect<'NOT_FOUND' | 'NO_EMAIL'>
+const value = runPipeResult(result); // string | 'NOT_FOUND' | 'NO_EMAIL'`}
+          />
 
           <div class="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900 rounded-lg p-5">
             <div class="flex items-start gap-3">
               <span class="flex-shrink-0 text-green-600 dark:text-green-400 text-xl">✓</span>
               <div>
-                <p class="font-medium text-green-900 dark:text-green-100 mb-2">장점</p>
+                <p class="font-medium text-green-900 dark:text-green-100 mb-2">정확한 effect 타입</p>
                 <p class="text-green-800 dark:text-green-200 text-sm m-0">
-                  최소한의 마찰로 복잡한 제네릭 함수를 조합할 수 있습니다. 추론 엔진의 "마법"이 그냥 작동합니다.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded-lg p-5">
-            <div class="flex items-start gap-3">
-              <span class="flex-shrink-0 text-amber-600 dark:text-amber-400 text-xl">⚖️</span>
-              <div>
-                <p class="font-medium text-amber-900 dark:text-amber-100 mb-2">절충점</p>
-                <p class="text-amber-800 dark:text-amber-200 text-sm mb-3">
-                  실제로 TypeScript의 자연스러운 추론에 맡기면 기본 <code class="text-sm">pipe</code>는 많은 타입 불일치를 잘 잡아냅니다.
-                </p>
-                <p class="text-amber-800 dark:text-amber-200 text-sm mb-3">
-                  하지만 사용자가 명시적 타입 어노테이션을 부적절하게 사용하는 경우, 일부 엣지 케이스(특히 역추론이 개입되는 경우)에서는 <code class="text-sm">never</code>로 무너지는 것을 피하고 파이프라인을 끝까지 흘려보내기 위해 중간 타입 불일치를 허용할 수 있습니다.
-                </p>
-                <p class="text-amber-800 dark:text-amber-200 text-sm m-0">
-                  이런 불일치는 비교적 명확한 형태(<code class="text-sm">number</code> &rarr; <code class="text-sm">string</code> 등)로 드러나지만, 항상 그렇다고 보장할 수는 없습니다. TypeScript의 자연스러운 추론 이점을 포기하고, 복잡한 명시적 어노테이션을 직접 작성하면서까지 단계별 타입을 엄격하게 검증하고 싶다면 <code class="text-sm">Strict</code> 변형을 사용하세요.
+                  <code class="text-sm">pipeSideEffect</code>는 각 단계가 만들 수 있는 effect의 정확한 유니온을
+                  추적합니다. 어떤 단계도 <code class="text-sm">SideEffect</code>를 반환하지 않는 파이프라인은 결과
+                  타입에 <code class="text-sm">| SideEffect</code>가 아예 붙지 않습니다.
                 </p>
               </div>
             </div>
@@ -92,48 +89,17 @@ export const PipeChoiceGuide_ko = () => (
           </div>
           <div class="flex-1">
             <h3 class="text-2xl font-medium text-gray-900 dark:text-white mb-4 mt-0">
-              안전성이 필요할 때: `Strict` 변형
+              비동기인가요?
             </h3>
           </div>
         </div>
 
         <div class="ml-14 space-y-4">
           <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
-            <code class="text-sm">pipeStrict</code>와 <code class="text-sm">pipeAsyncStrict</code>는 반대 철학을 채택합니다. 이들은 <strong>모든 단계에서의 타입 안정성</strong>을 우선시합니다.
+            어느 단계라도 <code class="text-sm">Promise</code>를 반환하면 비동기 버전인{' '}
+            <code class="text-sm">pipeAsync</code> 또는 <code class="text-sm">pipeAsyncSideEffect</code>를 사용하세요. 각
+            단계는 이전 단계의 await된 값을 받고, 파이프라인은 항상 <code class="text-sm">Promise</code>를 반환합니다.
           </p>
-
-          <div class="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900 rounded-lg p-5">
-            <div class="flex items-start gap-3">
-              <span class="flex-shrink-0 text-green-600 dark:text-green-400 text-xl">✓</span>
-              <div>
-                <p class="font-medium text-green-900 dark:text-green-100 mb-2">장점</p>
-                <p class="text-green-800 dark:text-green-200 text-sm m-0">
-                  한 함수의 출력과 다음 함수의 입력 간의 모든 타입 불일치를 즉시 알려주어, 컴파일 타임에 전체 버그 클래스를 예방합니다.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded-lg p-5">
-            <div class="flex items-start gap-3">
-              <span class="flex-shrink-0 text-amber-600 dark:text-amber-400 text-xl">⚖️</span>
-              <div>
-                <p class="font-medium text-amber-900 dark:text-amber-100 mb-2">절충점</p>
-                <p class="text-amber-800 dark:text-amber-200 text-sm mb-3">
-                  이 엄격함은 때때로 TypeScript가 복잡한 제네릭 파이프라인에서 타입을 추론하는 능력을 방해하여, 기본 <code class="text-sm">pipe</code>가 필요하지 않았을 명시적 타입 힌트를 추가하도록 강요할 수 있습니다. (또한 <code class="text-sm">any</code>는 어떤 타입 검사도 우회할 수 있습니다.)
-                </p>
-                <p class="text-amber-700 dark:text-amber-300 text-xs italic m-0">
-                  참고: (명시적 어노테이션 없이) 추론에 의존하는 것이 대부분의 사용자에게 더 자연스럽고 더 나은 DX를 제공합니다. 하지만 잘못되었거나 불필요한 명시적 타입 어노테이션은 TypeScript의 자연스러운 추론을 덮어쓸 수 있으며, 일부 중간 불일치가 파이프라인 경계에서만 감지될 수 있습니다.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-blue-50 dark:bg-blue-950/30 border-l-4 border-blue-500 dark:border-blue-400 rounded-r-lg p-5 mt-6">
-            <p class="text-gray-800 dark:text-gray-200 leading-relaxed m-0">
-              <strong class="text-blue-900 dark:text-blue-100">💡 추천 워크플로우:</strong> 초기에는 <code class="text-sm">pipe</code>로 빠르게 프로토타이핑하고(추론도 더 부드럽게), 도메인 상 더 엄격한 보장이 필요해지거나 파이프라인이 복잡해져 판단이 어려워질 때 타입 형태가 안정화된 부분부터 <code class="text-sm">pipeStrict</code> / <code class="text-sm">pipeAsyncStrict</code>로 단계적으로 옮기는 전략이 좋습니다.
-            </p>
-          </div>
         </div>
       </section>
 
@@ -145,41 +111,55 @@ export const PipeChoiceGuide_ko = () => (
           </div>
           <div class="flex-1">
             <h3 class="text-2xl font-medium text-gray-900 dark:text-white mb-4 mt-0">
-              `SideEffect` 파이프의 동일한 트레이드오프
+              타입 안전성은 모든 파이프에 기본으로 들어 있습니다
             </h3>
           </div>
         </div>
 
         <div class="ml-14 space-y-4">
           <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
-            이 동일한 철학은 SideEffect 파이프라인에도 확장되며, 최종 <code class="text-sm">SideEffect</code> 타입의 정밀도라는 차원이 추가됩니다.
+            이전 단계의 출력을 받을 수 없는 입력 타입을 가진 단계는 컴파일 에러입니다. 인라인 람다, 미리 정의한 함수,
+            커리된 유틸리티, 파이프라인 길이와 상관없이 모두 해당합니다. 추론은 끝까지 그대로 흐르므로 인라인 람다에
+            타입을 적을 필요가 없습니다.
           </p>
 
-          <div class="grid md:grid-cols-2 gap-4">
-            <div class="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900 rounded-lg p-5">
-              <div class="flex items-start gap-2 mb-3">
-                <span class="text-purple-600 dark:text-purple-400 text-lg">🔄</span>
-                <p class="font-semibold text-purple-900 dark:text-purple-100 m-0">유연함</p>
-              </div>
-              <p class="text-sm text-purple-900 dark:text-purple-100 mb-2">
-                <code class="text-xs bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded">pipeSideEffect</code> / <code class="text-xs bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded">pipeAsyncSideEffect</code>
-              </p>
-              <p class="text-sm text-purple-800 dark:text-purple-200 m-0">
-                부드러운 개발자 경험을 우선시합니다. 모든 실패를 일반적인 방식으로(예: 로깅 후 null 반환) 처리하려는 경우 완벽합니다. 이 변형은 효과 타입을 의도적으로 <code class="text-xs">SideEffect&lt;any&gt;</code>로 넓히므로, 실패 케이스의 엄격한 유니온 타입을 얻을 수 없습니다.
-              </p>
-            </div>
+          <CodeBlock
+            language="typescript"
+            code={`const toId = (id: number) => id;
+const toUpper = (s: string) => s.toUpperCase();
 
-            <div class="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900 rounded-lg p-5">
-              <div class="flex items-start gap-2 mb-3">
-                <span class="text-green-600 dark:text-green-400 text-lg">🔒</span>
-                <p class="font-semibold text-green-900 dark:text-green-100 m-0">안전함</p>
+pipe(1, toId, toUpper);
+// ❌ 에러: PipeError<number, string>
+
+pipe(1, (x) => x.toString(), toUpper); // ✅ string — 인라인 → 미리 정의한 함수도 그대로 동작`}
+          />
+
+          <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+            0.15.0 이전에는 기본 파이프가 이런 불일치를 통과시키는 경우가 있어서 별도의{' '}
+            <code class="text-sm">*Strict</code> 버전이 있었습니다. 이 문제(
+            <a
+              href="https://github.com/superlucky84/fp-pack/issues/5"
+              class="text-blue-600 dark:text-blue-400 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              issue #5
+            </a>
+            )는 TypeScript의 한계가 아니라 대체(fallback) 오버로드 때문이었고, 이제 기본 파이프에서 해결되었습니다.
+          </p>
+
+          <div class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded-lg p-5">
+            <div class="flex items-start gap-3">
+              <span class="flex-shrink-0 text-amber-600 dark:text-amber-400 text-xl">⚠️</span>
+              <div>
+                <p class="font-medium text-amber-900 dark:text-amber-100 mb-2">Strict 버전은 deprecated 되었습니다</p>
+                <p class="text-amber-800 dark:text-amber-200 text-sm m-0">
+                  <code class="text-sm">pipeStrict</code>, <code class="text-sm">pipeAsyncStrict</code>,{' '}
+                  <code class="text-sm">pipeSideEffectStrict</code>, <code class="text-sm">pipeAsyncSideEffectStrict</code>는
+                  이제 각 기본 파이프의 별칭입니다. 기존 코드는 그대로 컴파일되며, 편할 때 기본 파이프로 바꾸면 됩니다.
+                  1.0에서 제거될 예정입니다.
+                </p>
               </div>
-              <p class="text-sm text-green-900 dark:text-green-100 mb-2">
-                <code class="text-xs bg-green-100 dark:bg-green-900 px-2 py-1 rounded">pipeSideEffectStrict</code> / <code class="text-xs bg-green-100 dark:bg-green-900 px-2 py-1 rounded">pipeAsyncSideEffectStrict</code>
-              </p>
-              <p class="text-sm text-green-800 dark:text-green-200 m-0">
-                타입 안정성을 우선시합니다. 최종 SideEffect 타입이 파이프라인의 모든 가능한 효과의 정확한 유니온(예: <code class="text-xs">SideEffect&lt;'NO_USER' | 'INSUFFICIENT_FUNDS'&gt;</code>)임을 보장합니다. 이는 다양한 실패 유형을 프로그래매틱하게 구별하고 완전한 타입 안전성으로 처리해야 할 때 필수적입니다.
-              </p>
             </div>
           </div>
         </div>
@@ -196,64 +176,51 @@ export const PipeChoiceGuide_ko = () => (
             <thead class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-850">
               <tr>
                 <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-700">
-                  파이프 변형
+                  &nbsp;
                 </th>
                 <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-700">
-                  주요 목표
+                  동기
                 </th>
                 <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-700">
-                  추천 사용처
+                  비동기
                 </th>
               </tr>
             </thead>
             <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
               <tr class="hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-colors">
+                <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
+                  <strong>조기 종료 없음</strong>
+                  <br />
+                  모든 단계 실행
+                </td>
                 <td class="px-6 py-4 text-sm">
-                  <code class="text-xs bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">pipe</code> / <code class="text-xs bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">pipeAsync</code>
+                  <code class="text-xs bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">pipe</code>
                 </td>
-                <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
-                  추론 및 DX
-                </td>
-                <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
-                  대부분의 경우, 특히 복잡한 제네릭과 함께 사용할 때.
-                </td>
-              </tr>
-              <tr class="hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition-colors">
                 <td class="px-6 py-4 text-sm">
-                  <code class="text-xs bg-emerald-100 dark:bg-emerald-900 px-2 py-1 rounded">pipeStrict</code> / <code class="text-xs bg-emerald-100 dark:bg-emerald-900 px-2 py-1 rounded">pipeAsyncStrict</code>
-                </td>
-                <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
-                  타입 안정성
-                </td>
-                <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
-                  중간 타입의 정확성이 보장되어야 하는 중요한 코드 경로.
+                  <code class="text-xs bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">pipeAsync</code>
                 </td>
               </tr>
               <tr class="hover:bg-purple-50 dark:hover:bg-purple-950/20 transition-colors">
+                <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
+                  <strong>조기 종료</strong>
+                  <br />
+                  첫 SideEffect에서 멈춤
+                </td>
                 <td class="px-6 py-4 text-sm">
-                  <code class="text-xs bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded">pipeSideEffect</code> / <code class="text-xs bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded">pipeAsyncSideEffect</code>
+                  <code class="text-xs bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded">pipeSideEffect</code>
                 </td>
-                <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
-                  일반적인 실패 처리
-                </td>
-                <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
-                  모든 실패를 균일한 방식으로 처리할 때(예: 로깅, 일반 오류 표시).
-                </td>
-              </tr>
-              <tr class="hover:bg-green-50 dark:hover:bg-green-950/20 transition-colors">
                 <td class="px-6 py-4 text-sm">
-                  <code class="text-xs bg-green-100 dark:bg-green-900 px-2 py-1 rounded">pipeSideEffectStrict</code> / <code class="text-xs bg-green-100 dark:bg-green-900 px-2 py-1 rounded">pipeAsyncSideEffectStrict</code>
-                </td>
-                <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
-                  정확한 실패 처리
-                </td>
-                <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
-                  다양한 오류 유형을 프로그래밍 방식으로 구별해야 할 때.
+                  <code class="text-xs bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded">pipeAsyncSideEffect</code>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
+
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-4">
+          네 가지 모두 각 단계를 검사하고 추론을 유지합니다. 의존성 주입이 필요하면 어느 것이든{' '}
+          <code class="text-sm">pipeWithDeps</code>로 감싸면 됩니다.
+        </p>
       </section>
     </div>
   </div>

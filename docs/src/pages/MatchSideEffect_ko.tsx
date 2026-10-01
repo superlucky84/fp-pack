@@ -265,7 +265,7 @@ if (!isSideEffect(result)) {
   // result는 number - 성공 케이스 처리
   processResult(result);
 } else {
-  // result는 비엄격 파이프라인에서 SideEffect<any> - 에러 케이스 처리
+  // result는 정확한 effect 타입을 가진 SideEffect - 에러 케이스 처리
   logError(result.effect());
 }
 

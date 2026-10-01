@@ -95,7 +95,8 @@ uniq(data);
 // Compare with sorted unique
 import { pipe, sort } from 'fp-pack';
 
-const sortedUnique = pipe(
+const sortedUnique = (values: string[]) => pipe(
+  values,
   uniq,
   sort((a: string, b: string) => a.localeCompare(b))
 );

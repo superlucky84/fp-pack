@@ -46,7 +46,7 @@ if (!isSideEffect(result)) {
   const sum: number = result.reduce((a, b) => a + b, 0);
   console.log(\`Sum: \${sum}\`);
 } else {
-  // TypeScript knows: result is SideEffect<any> in non-strict pipelines
+  // TypeScript knows: result is a SideEffect with a precise effect type
   const error = result.effect();
   console.log(\`Error: \${error}\`);
 }`}
@@ -126,7 +126,7 @@ if (!isSideEffect(userOrError)) {
   console.log(\`Found user: \${userOrError.email}\`);
   sendWelcomeEmail(userOrError);
 } else {
-  // userOrError is SideEffect<any> in non-strict pipelines
+  // userOrError is a SideEffect with a precise effect type
   const errorMessage = userOrError.effect();
   console.error(\`Error: \${errorMessage}\`);
   showErrorToast(errorMessage);
@@ -139,7 +139,7 @@ if (!isSideEffect(userOrError)) {
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
+      code={`import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
 
 const divide = (a: number, b: number) =>
   b !== 0
@@ -153,9 +153,9 @@ const calculatePipeline = pipeSideEffect(
 
 const result = calculatePipeline(0);
 
-// ❌ WITHOUT isSideEffect - less precise types
+// WITHOUT isSideEffect - a union you still have to branch on
 const value1 = runPipeResult(result);
-// value1: any (result widened by pipeSideEffect)
+// value1: number | string (precise union)
 
 const value2 = runPipeResult<number, string>(result);
 // value2: number | string (union type - safe but not narrowed)
@@ -166,18 +166,18 @@ if (!isSideEffect(result)) {
   const doubled: number = result * 2;
   console.log(\`Result: \${doubled}\`);
 } else {
-  // result is SideEffect<any> in non-strict pipelines
+  // result is a SideEffect with a precise effect type
   const error = result.effect();
   console.error(\`Error: \${error}\`);
 }
 
-// ✅ Strict pipelines preserve effect types
-const strictResult = pipeSideEffectStrict(
+// ✅ Literal effect types are preserved
+const literalResult = pipeSideEffect(
   (n: number) => (n > 0 ? n : SideEffect.of(() => 'LOW' as const))
 )(-1);
 
-if (isSideEffect(strictResult)) {
-  const error = runPipeResult(strictResult); // 'LOW'
+if (isSideEffect(literalResult)) {
+  const error = runPipeResult(literalResult); // 'LOW'
 }`}
     />
 
@@ -206,7 +206,7 @@ if (!isSideEffect(endpoint)) {
   // endpoint is string
   fetch(endpoint).then(/* ... */);
 } else {
-  // endpoint is SideEffect<any> in non-strict pipelines
+  // endpoint is a SideEffect with a precise effect type
   console.warn('No endpoint configured, using default');
   fetch(DEFAULT_ENDPOINT).then(/* ... */);
 }`}
@@ -242,7 +242,7 @@ if (!isSideEffect(result)) {
   showSuccessMessage(\`Form submitted: \${result.id}\`);
   redirectToDashboard();
 } else {
-  // result is SideEffect<any> in non-strict pipelines
+  // result is a SideEffect with a precise effect type
   const errors: ValidationError[] = result.effect();
 
   errors.forEach(error => {

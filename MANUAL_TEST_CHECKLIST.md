@@ -13,12 +13,14 @@ Pass = every row behaves as described. Any deviation fails the release.
 | MT-6 | Subtype input (former bug) | `pipe({ a: 1, b: 2 }, (o: { a: number }) => o.a)` | No error. The result is `number` (it was `never` in 0.14) |
 | MT-7 | Curried utils | `pipe([1, 2, 3], map(x => x * 2), filter(x => x > 2), sortBy(x => -x))` | No error. `x` hovers show `number`. The result is `number[]` |
 | MT-8 | 11+ steps | An 11-step valid chain, then the same chain with one mismatched step | Valid: correct result type. Mismatched: error |
-| MT-9 | Deprecated aliases (if DC-1 = alias) | `pipeStrict(1, fn1, fn2)`, and `pipeStrict` on a valid chain | Same behavior as `pipe`. The IDE shows strikethrough with the `@deprecated` note |
-| MT-10 | SideEffect precision | `pipeSideEffectStrict` with two steps returning different `SideEffect.of(() => 'A' as const)` / `'B'` | The result hover shows `SideEffect<'A' \| 'B'>`. `pipeSideEffect` shows `SideEffect<any>` (unless DC-2 = B) |
+| MT-9 | Deprecated aliases | `pipeStrict(1, fn1, fn2)`, and `pipeStrict` on a valid chain | Same behavior as `pipe`. The IDE shows strikethrough with the `@deprecated` note |
+| MT-10 | SideEffect precision | `pipeSideEffect` with two steps returning different `SideEffect.of(() => 'A' as const)` / `'B'`, and one with no effect-returning step | The first hover shows `T \| SideEffect<'A' \| 'B'>`; the effect-free one shows plain `T` |
 | MT-11 | `pipeWithDeps` | `pipeWithDeps(pipe)`, `pipeWithDeps(pipeSideEffect)`, `pipeWithDeps(pipeAsyncSideEffectStrict)` with a deps-using step | Each returns the documented curried `(deps) => …` shape. Deps are intersected |
 | MT-12 | Runtime unchanged | Run the README examples in Node (ESM and the UMD build) | Same outputs as 0.14.0. `Object.keys(pipe)` is empty (brands are non-enumerable) |
 | MT-13 | `fp-pack/stream` entry | Import from `fp-pack/stream` and type-check a pipe using stream utils | No new errors |
 | MT-14 | Docs site | `pnpm docs:dev`. Open the Pipe Choice Guide, pipe, pipeStrict, and pipeAsync pages (EN/KO) | The guidance matches the new model. No dead links |
-| MT-15 | Min TS version | Consumer project on TS 5.4 | MT-1, MT-4, MT-6 pass. On TS 5.3 a clear `NoInfer` error is expected, and the README says so |
+| MT-15 | Function-first + generic helper | `pipe(double, tap((x) => x.toFixed()), addTen)` and `pipe(zip(timestamps(), events()), filter(([e]) => e.type === 'click'), toArray)` | No error. `x` hovers as `number`, `e` as the event type |
+| MT-16 | `any` input | `pipe(anyValue, (v) => v.length as number)` | Result is `number`, not a function type |
+| MT-17 | Generic-first function-first (migration) | `pipe(uniq, sort(...))` | Reports an error. The CHANGELOG fix (`(values: string[]) => pipe(values, uniq, …)`) compiles |
 
 Sign-off: ______ (date / TS versions tested / commit SHA)

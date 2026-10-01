@@ -63,12 +63,12 @@ await toArray(asyncIter);
       code={`import { chunk, toArray, toAsync } from 'fp-pack/stream';
 import { pipeAsync } from 'fp-pack';
 
-await pipeAsync(toAsync, chunk(2), toArray<number[]>)([
+await pipeAsync([
   Promise.resolve(1),
   Promise.resolve(2),
   Promise.resolve(3),
   Promise.resolve(4),
-]);
+],toAsync, chunk(2), toArray<number[]>);
 // [[1, 2], [3, 4]]`}
     />
 

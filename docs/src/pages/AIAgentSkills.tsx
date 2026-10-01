@@ -37,7 +37,7 @@ export const AIAgentSkills = () => (
       <li>Prefer value-first <code class="text-sm">pipe(data, ...)</code>/<code class="text-sm">pipeAsync(data, ...)</code> for inference</li>
       <li>Default to using <code class="text-sm">pipe</code>/<code class="text-sm">pipeAsync</code> for pure transformations</li>
       <li>Use <code class="text-sm">pipeSideEffect</code>/<code class="text-sm">pipeAsyncSideEffect</code> when SideEffect is involved</li>
-      <li>Use strict variants (<code class="text-sm">pipeSideEffectStrict</code>/<code class="text-sm">pipeAsyncSideEffectStrict</code>) when you need strict effect unions</li>
+      <li>All pipes check every step and keep precise effect unions; the <code class="text-sm">*Strict</code> variants are deprecated aliases</li>
       <li>Use the <code class="text-sm">SideEffect</code> pattern instead of try-catch</li>
       <li>Prefer <code class="text-sm">stream/*</code> functions for large datasets</li>
       <li>Write declarative, functional code using fp-pack utilities</li>

@@ -93,27 +93,21 @@ const result = runPipeResult(
 
     <CodeBlock
       language="typescript"
-      code={`function pipeAsyncSideEffect<A, R>(
-  a: A,
-  ab: (a: A) => R | SideEffect | Promise<R | SideEffect>
-): Promise<R | SideEffect>;
-
-function pipeAsyncSideEffect<A, R>(
-  ab: (a: A) => R | SideEffect | Promise<R | SideEffect>
-): (a: A | SideEffect) => Promise<R | SideEffect>;
-
+      code={`// E1, E2 = effects a step may return. The result carries their exact union;
+// when no step can return a SideEffect, the result is plain Promise<R>.
 function pipeAsyncSideEffect<A, B, R>(
   a: A,
-  ab: (a: A) => B | SideEffect | Promise<B | SideEffect>,
-  bc: (b: B) => R | SideEffect | Promise<R | SideEffect>
-): Promise<R | SideEffect>;
+  ab: (a: A) => B | SideEffect<E1> | Promise<B | SideEffect<E1>>,
+  bc: (b: B) => R | SideEffect<E2> | Promise<R | SideEffect<E2>>
+): Promise<R | SideEffect<E1 | E2>>;
 
 function pipeAsyncSideEffect<A, B, R>(
-  ab: (a: A) => B | SideEffect | Promise<B | SideEffect>,
-  bc: (b: B) => R | SideEffect | Promise<R | SideEffect>
-): (a: A | SideEffect) => Promise<R | SideEffect>;
-
-function pipeAsyncSideEffect(...funcs: Array<(input: any) => any>): (input: any) => Promise<any>;`}
+  ab: (a: A) => B | SideEffect<E1> | Promise<B | SideEffect<E1>>,
+  bc: (b: B) => R | SideEffect<E2> | Promise<R | SideEffect<E2>>
+): {
+  (a: A): Promise<R | SideEffect<E1 | E2>>;
+  <EIn>(a: A | SideEffect<EIn>): Promise<R | SideEffect<E1 | E2 | EIn>>;
+};`}
     />
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
@@ -122,20 +116,21 @@ function pipeAsyncSideEffect(...funcs: Array<(input: any) => any>): (input: any)
     </p>
 
     <h3 class="text-xl md:text-2xl font-medium text-gray-900 dark:text-white mb-4">
-      Strict Variant
+      Precise Effect Types
     </h3>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      <code class="text-sm">pipeAsyncSideEffectStrict</code> keeps a strict union of SideEffect result types across the
-      pipeline. It is useful when you want tighter type narrowing for async early exits.
+      <code class="text-sm">pipeAsyncSideEffect</code> keeps the exact union of every SideEffect a step can
+      return, so you can narrow precisely across branches. Before 0.15.0 this required{' '}
+      <code class="text-sm">pipeAsyncSideEffectStrict</code>, which is now a deprecated alias.
     </p>
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeAsyncSideEffectStrict, SideEffect } from 'fp-pack';
+      code={`import { pipeAsyncSideEffect, SideEffect } from 'fp-pack';
 
 // Result type: Promise<number | SideEffect<'NEGATIVE' | 0>>
-const result = await pipeAsyncSideEffectStrict(
+const result = await pipeAsyncSideEffect(
   5,
   async (n: number) => (n > 0 ? n : SideEffect.of(() => 'NEGATIVE' as const)),
   (n) => (n > 10 ? n : SideEffect.of(() => 0 as const))
@@ -152,11 +147,11 @@ const result = await pipeAsyncSideEffectStrict(
         <br />
         ✅ <strong>If the input type is precise, inference is preserved.</strong>
         <br />
-        ⚠️ <strong>If the input is widened to <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">SideEffect&lt;any&gt;</code> or <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">any</code> (common in <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">pipeAsyncSideEffect</code>), the result becomes <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">any</code>.</strong>
+        ⚠️ <strong>If the input is widened to <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">SideEffect&lt;any&gt;</code> or <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">any</code> (for example, a value you annotated as such yourself), the result becomes <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">any</code>.</strong>
         <br />
         ✅ <strong>If the input is narrowed to <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">SideEffect&lt;R&gt;</code>, <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">runPipeResult</code> returns <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">R</code>.</strong>
         <br />
-        <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded text-xs">const result = runPipeResult(pipeline(data)); // result: any (widened input)</code>
+        <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded text-xs">const result = runPipeResult(widenedValue); // result: any (widened input)</code>
         <br />
         <br />
         ✅ <strong>For precise type safety, use <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">isSideEffect</code> type guard:</strong>
@@ -467,21 +462,6 @@ const correctPipeline = pipeAsyncSideEffect(
         </p>
       </a>
 
-      <a
-        href="/async/pipeAsyncSideEffectStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/async/pipeAsyncSideEffectStrict');
-        }}
-        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer"
-      >
-        <h3 class="text-lg md:text-xl font-medium text-blue-600 dark:text-blue-400 mb-2">
-          pipeAsyncSideEffectStrict →
-        </h3>
-        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          Async SideEffect pipelines with strict effect unions.
-        </p>
-      </a>
 
       <a
         href="/composition/pipeSideEffect"

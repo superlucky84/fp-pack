@@ -237,13 +237,13 @@ const result2 = calculate(999);  // Still 13`}
 
     <CodeBlock
       language="typescript"
-      code={`import { from, pipeSideEffectStrict, SideEffect } from 'fp-pack';
+      code={`import { from, pipeSideEffect, SideEffect } from 'fp-pack';
 import type { FromFn } from 'fp-pack';
 
 // Start with a fixed configuration value
 const defaultConfig: FromFn<{ threshold: number }> = from({ threshold: 10 });
 
-const validateAndProcess = pipeSideEffectStrict(
+const validateAndProcess = pipeSideEffect(
   defaultConfig,
   (config) => config.threshold,
   (threshold) => threshold * 2,
