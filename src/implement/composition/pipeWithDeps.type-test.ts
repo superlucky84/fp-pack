@@ -81,10 +81,12 @@ const pipeSideEffectDepsFrom = pipeWithDeps(pipeSideEffect)(
     value > 3 ? `${deps.label}:${value}` : SideEffect.of(() => 'LOW' as const)
 );
 
-type PipeSideEffectDepsFromExpected = (input?: unknown | SideEffect<any>) => (deps: { label: string }) => string | SideEffect<any>;
+type PipeSideEffectDepsFromExpectedLegacy = (input?: unknown | SideEffect<any>) => (deps: { label: string }) => string | SideEffect<any>;
+type PipeSideEffectDepsFromExpected = (input?: unknown) => (deps: { label: string }) => string | SideEffect<'LOW'>;
 export type PipeSideEffectDepsFromIsStrict = Expect<
   Equal<typeof pipeSideEffectDepsFrom, PipeSideEffectDepsFromExpected>
 >;
+export type PipeSideEffectDepsFromExpectedLegacyCompatible = Expect<Extends<typeof pipeSideEffectDepsFrom, PipeSideEffectDepsFromExpectedLegacy>>;
 
 const pipeAsyncDeps = pipeWithDeps(pipeAsyncSideEffect)(
   1,
@@ -96,8 +98,10 @@ const pipeAsyncDeps = pipeWithDeps(pipeAsyncSideEffect)(
   }
 );
 
-type PipeAsyncDepsExpected = (deps: Db & Logger) => Promise<number | SideEffect<any>>;
+type PipeAsyncDepsExpectedLegacy = (deps: Db & Logger) => Promise<number | SideEffect<any>>;
+type PipeAsyncDepsExpected = (deps: Db & Logger) => Promise<number>;
 export type PipeAsyncDepsIsStrict = Expect<Equal<typeof pipeAsyncDeps, PipeAsyncDepsExpected>>;
+export type PipeAsyncDepsExpectedLegacyCompatible = Expect<Extends<typeof pipeAsyncDeps, PipeAsyncDepsExpectedLegacy>>;
 
 const pipeAsyncDepsFrom = pipeWithDeps(pipeAsyncSideEffect)(
   from(5),
@@ -106,10 +110,12 @@ const pipeAsyncDepsFrom = pipeWithDeps(pipeAsyncSideEffect)(
     value > 3 ? `${deps.label}:${value}` : SideEffect.of(() => 'LOW' as const)
 );
 
-type PipeAsyncDepsFromExpected = (input?: unknown | SideEffect<any>) => (deps: { label: string }) => Promise<
+type PipeAsyncDepsFromExpectedLegacy = (input?: unknown | SideEffect<any>) => (deps: { label: string }) => Promise<
   string | SideEffect<any>
 >;
+type PipeAsyncDepsFromExpected = (input?: unknown) => (deps: { label: string }) => Promise<string | SideEffect<'LOW'>>;
 export type PipeAsyncDepsFromIsStrict = Expect<Equal<typeof pipeAsyncDepsFrom, PipeAsyncDepsFromExpected>>;
+export type PipeAsyncDepsFromExpectedLegacyCompatible = Expect<Extends<typeof pipeAsyncDepsFrom, PipeAsyncDepsFromExpectedLegacy>>;
 
 const pipeAsyncStrictDeps = pipeWithDeps(pipeAsyncStrict)(
   1,

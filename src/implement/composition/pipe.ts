@@ -38,41 +38,35 @@ type PipeOutput<Fns extends UnaryFn<any, any>[]> = Fns extends [UnaryFn<any, inf
     : never;
 type Pipe<Fns extends UnaryFn<any, any>[]> = (input: PipeInput<Fns>) => PipeOutput<Fns>;
 
-type PipeCheckWithInput<Input, Fns extends [AnyFn, ...AnyFn[]]> =
-  Fns extends [infer F, ...infer Rest]
-    ? F extends UnaryFn<any, any>
-      ? Rest extends AnyFn[]
-        ? PipeCheck<[ValidateFn<F, Input>, ...Rest]>
-        : PipeCheck<[ValidateFn<F, Input>]>
-      : PipeError<Input, unknown>
-    : PipeError<unknown, unknown>;
+type PipeCheckFrom<Input, Fns extends [AnyFn, ...AnyFn[]]> =
+  Fns & (PipeCheckResult<[() => Input, ...Fns]> extends true ? unknown : PipeCheckResult<[() => Input, ...Fns]>);
 
 function pipe<A>(input: NonFunction<A>): A;
 function pipe<A, B>(
   input: NonFunction<A>,
-  ab: (value: A) => B
+  ab: (value: NoInfer<A>) => B
 ): B;
 function pipe<A, B, C>(
   input: NonFunction<A>,
-  ab: (value: A) => B,
+  ab: (value: NoInfer<A>) => B,
   bc: (value: B) => C
 ): C;
 function pipe<A, B, C, D>(
   input: NonFunction<A>,
-  ab: (value: A) => B,
+  ab: (value: NoInfer<A>) => B,
   bc: (value: B) => C,
   cd: (value: C) => D
 ): D;
 function pipe<A, B, C, D, E>(
   input: NonFunction<A>,
-  ab: (value: A) => B,
+  ab: (value: NoInfer<A>) => B,
   bc: (value: B) => C,
   cd: (value: C) => D,
   de: (value: D) => E
 ): E;
 function pipe<A, B, C, D, E, F>(
   input: NonFunction<A>,
-  ab: (value: A) => B,
+  ab: (value: NoInfer<A>) => B,
   bc: (value: B) => C,
   cd: (value: C) => D,
   de: (value: D) => E,
@@ -80,7 +74,7 @@ function pipe<A, B, C, D, E, F>(
 ): F;
 function pipe<A, B, C, D, E, F, G>(
   input: NonFunction<A>,
-  ab: (value: A) => B,
+  ab: (value: NoInfer<A>) => B,
   bc: (value: B) => C,
   cd: (value: C) => D,
   de: (value: D) => E,
@@ -89,7 +83,7 @@ function pipe<A, B, C, D, E, F, G>(
 ): G;
 function pipe<A, B, C, D, E, F, G, H>(
   input: NonFunction<A>,
-  ab: (value: A) => B,
+  ab: (value: NoInfer<A>) => B,
   bc: (value: B) => C,
   cd: (value: C) => D,
   de: (value: D) => E,
@@ -99,7 +93,7 @@ function pipe<A, B, C, D, E, F, G, H>(
 ): H;
 function pipe<A, B, C, D, E, F, G, H, I>(
   input: NonFunction<A>,
-  ab: (value: A) => B,
+  ab: (value: NoInfer<A>) => B,
   bc: (value: B) => C,
   cd: (value: C) => D,
   de: (value: D) => E,
@@ -110,7 +104,7 @@ function pipe<A, B, C, D, E, F, G, H, I>(
 ): I;
 function pipe<A, B, C, D, E, F, G, H, I, J>(
   input: NonFunction<A>,
-  ab: (value: A) => B,
+  ab: (value: NoInfer<A>) => B,
   bc: (value: B) => C,
   cd: (value: C) => D,
   de: (value: D) => E,
@@ -122,7 +116,7 @@ function pipe<A, B, C, D, E, F, G, H, I, J>(
 ): J;
 function pipe<A, B, C, D, E, F, G, H, I, J, K>(
   input: NonFunction<A>,
-  ab: (value: A) => B,
+  ab: (value: NoInfer<A>) => B,
   bc: (value: B) => C,
   cd: (value: C) => D,
   de: (value: D) => E,
@@ -133,10 +127,6 @@ function pipe<A, B, C, D, E, F, G, H, I, J, K>(
   ij: (value: I) => J,
   jk: (value: J) => K
 ): K;
-function pipe<A, Fns extends [UnaryFn<any, any>, ...UnaryFn<any, any>[]]>(
-  input: NonFunction<A>,
-  ...funcs: PipeCheckWithInput<A, Fns>
-): PipeOutput<Fns>;
 
 function pipe<R>(ab: ZeroFn<R>): () => R;
 function pipe<B, F2 extends UnaryFn<B, any>>(ab: ZeroFn<B>, bc: ValidateFn<F2, B>): () => FnOutput<F2>;
@@ -534,7 +524,10 @@ function pipe<
 ): (a: FnInput<F1>) => FnOutput<F10>;
 
 function pipe<Fns extends [UnaryFn<any, any>, ...UnaryFn<any, any>[]]>(...funcs: PipeCheck<Fns>): Pipe<Fns>;
-function pipe(...funcs: Array<UnaryFn<any, any>>): (input: any) => any;
+function pipe<A, Fns extends [UnaryFn<any, any>, ...UnaryFn<any, any>[]]>(
+  input: NonFunction<A>,
+  ...funcs: PipeCheckFrom<A, Fns>
+): PipeOutput<Fns>;
 function pipe(...args: Array<any>) {
   if (args.length === 0) {
     return undefined;
@@ -547,4 +540,7 @@ function pipe(...args: Array<any>) {
   return rest.reduce((acc, fn) => fn(acc), input);
 }
 
-export default pipe;
+const pipeWithBrand = pipe as typeof pipe & { readonly __pipe: true };
+Object.defineProperty(pipeWithBrand, '__pipe', { value: true });
+
+export default pipeWithBrand;

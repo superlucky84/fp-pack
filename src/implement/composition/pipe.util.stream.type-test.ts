@@ -22,7 +22,12 @@ type Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B 
   ? true
   : false;
 type Expect<T extends true> = T;
-type EffectUnion<T> = Extract<T, SideEffect<any>> extends SideEffect<infer E> ? E : never;
+type Extends<A, B> = A extends B ? true : false;
+type EffectUnion<T> = [Extract<T, SideEffect<any>>] extends [never]
+  ? never
+  : Extract<T, SideEffect<any>> extends SideEffect<infer E>
+    ? E
+    : never;
 type ValueUnion<T> = Exclude<T, SideEffect<any>>;
 
 const streamScanSum = scan((acc: number, value: number) => acc + value, 0) as (
@@ -156,10 +161,12 @@ export const pipeSideEffectStream = pipeSideEffect(
   (iterable: IterableIterator<number>) => (iterable ? iterable : SideEffect.of(() => 'EMPTY' as const))
 );
 
-type PipeSideEffectStreamExpected = (input: number | SideEffect<any>) => IterableIterator<number> | SideEffect<any>;
+type PipeSideEffectStreamExpectedLegacy = (input: number | SideEffect<any>) => IterableIterator<number> | SideEffect<any>;
+type PipeSideEffectStreamExpected = { (input: number): IterableIterator<number> | SideEffect<"EMPTY">; <EIn>(input: number | SideEffect<EIn>): IterableIterator<number> | SideEffect<"EMPTY" | EIn>; };
 export type PipeSideEffectStreamIsStrict = Expect<
   Equal<typeof pipeSideEffectStream, PipeSideEffectStreamExpected>
 >;
+export type PipeSideEffectStreamExpectedLegacyCompatible = Expect<Extends<typeof pipeSideEffectStream, PipeSideEffectStreamExpectedLegacy>>;
 
 export const pipeSideEffectStrictStream = pipeSideEffectStrict(
   (end: number) => range(0, end),
@@ -202,10 +209,12 @@ export const pipeAsyncSideEffectStream = pipeAsyncSideEffect(
   async (values: number[]) => (values.length > 0 ? values : SideEffect.of(() => 'EMPTY' as const))
 );
 
-type PipeAsyncSideEffectStreamExpected = (input: number | SideEffect<any>) => Promise<number[] | SideEffect<any>>;
+type PipeAsyncSideEffectStreamExpectedLegacy = (input: number | SideEffect<any>) => Promise<number[] | SideEffect<any>>;
+type PipeAsyncSideEffectStreamExpected = { (input: number): Promise<SideEffect<"EMPTY"> | number[]>; <EIn>(input: number | SideEffect<EIn>): Promise<number[] | SideEffect<"EMPTY" | EIn>>; };
 export type PipeAsyncSideEffectStreamIsStrict = Expect<
   Equal<typeof pipeAsyncSideEffectStream, PipeAsyncSideEffectStreamExpected>
 >;
+export type PipeAsyncSideEffectStreamExpectedLegacyCompatible = Expect<Extends<typeof pipeAsyncSideEffectStream, PipeAsyncSideEffectStreamExpectedLegacy>>;
 
 export const pipeAsyncSideEffectStrictStream = pipeAsyncSideEffectStrict(
   (end: number) => range(0, end),

@@ -15,7 +15,12 @@ type Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B 
   ? true
   : false;
 type Expect<T extends true> = T;
-type EffectUnion<T> = Extract<T, SideEffect<any>> extends SideEffect<infer E> ? E : never;
+type Extends<A, B> = A extends B ? true : false;
+type EffectUnion<T> = [Extract<T, SideEffect<any>>] extends [never]
+  ? never
+  : Extract<T, SideEffect<any>> extends SideEffect<infer E>
+    ? E
+    : never;
 type ValueUnion<T> = Exclude<T, SideEffect<any>>;
 
 const toUpper = (value: string) => value.toUpperCase();
@@ -91,10 +96,12 @@ export const pipeSideEffectDebounce = pipeSideEffect(
   (fn: (value: string) => string) => (fn.length > 0 ? fn : SideEffect.of(() => 'NO_FN' as const))
 );
 
-type PipeSideEffectDebounceExpected = (input: number | SideEffect<any>) => ((value: string) => string) | SideEffect<any>;
+type PipeSideEffectDebounceExpectedLegacy = (input: number | SideEffect<any>) => ((value: string) => string) | SideEffect<any>;
+type PipeSideEffectDebounceExpected = { (input: number): ((value: string) => string) | SideEffect<"NO_FN">; <EIn>(input: number | SideEffect<EIn>): ((value: string) => string) | SideEffect<"NO_FN" | EIn>; };
 export type PipeSideEffectDebounceIsStrict = Expect<
   Equal<typeof pipeSideEffectDebounce, PipeSideEffectDebounceExpected>
 >;
+export type PipeSideEffectDebounceExpectedLegacyCompatible = Expect<Extends<typeof pipeSideEffectDebounce, PipeSideEffectDebounceExpectedLegacy>>;
 
 export const pipeSideEffectStrictThrottle = pipeSideEffectStrict(
   throttle(toLength),
@@ -140,10 +147,12 @@ export const pipeAsyncSideEffectTimeout = pipeAsyncSideEffect(
   async (value: number) => (value > 0 ? value : SideEffect.of(() => 'NON_POSITIVE' as const))
 );
 
-type PipeAsyncSideEffectTimeoutExpected = (input: Promise<number> | SideEffect<any>) => Promise<number | SideEffect<any>>;
+type PipeAsyncSideEffectTimeoutExpectedLegacy = (input: Promise<number> | SideEffect<any>) => Promise<number | SideEffect<any>>;
+type PipeAsyncSideEffectTimeoutExpected = { (input: Promise<number>): Promise<number | SideEffect<"NON_POSITIVE">>; <EIn>(input: Promise<number> | SideEffect<EIn>): Promise<number | SideEffect<"NON_POSITIVE" | EIn>>; };
 export type PipeAsyncSideEffectTimeoutIsStrict = Expect<
   Equal<typeof pipeAsyncSideEffectTimeout, PipeAsyncSideEffectTimeoutExpected>
 >;
+export type PipeAsyncSideEffectTimeoutExpectedLegacyCompatible = Expect<Extends<typeof pipeAsyncSideEffectTimeout, PipeAsyncSideEffectTimeoutExpectedLegacy>>;
 
 export const pipeAsyncSideEffectStrictRetry = pipeAsyncSideEffectStrict(
   pipeHint<() => Promise<number>, Promise<number>>(retry(1)),

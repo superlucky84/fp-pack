@@ -2,12 +2,10 @@ import type pipe from './pipe';
 import type pipeStrict from './pipeStrict';
 import type { FromFn } from './from';
 import type pipeSideEffect from './pipeSideEffect';
-import type pipeSideEffectStrict from './pipeSideEffectStrict';
 import type SideEffect from './sideEffect';
 import type pipeAsync from '../async/pipeAsync';
 import type pipeAsyncStrict from '../async/pipeAsyncStrict';
 import type pipeAsyncSideEffect from '../async/pipeAsyncSideEffect';
-import type pipeAsyncSideEffectStrict from '../async/pipeAsyncSideEffectStrict';
 
 type PipeError<From, To> = { __pipe_with_deps_error: ['pipeWithDeps', From, '->', To] };
 type NoInfer<T> = [T][T extends any ? 0 : never];
@@ -29,17 +27,17 @@ type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
 type DepsOf<Steps extends readonly AnyFn[]> = UnionToIntersection<DepOf<Steps[number]>>;
 type DepsFor<Steps extends readonly AnyFn[]> = [DepsOf<Steps>] extends [never] ? unknown : DepsOf<Steps>;
 
-type MaybeSideEffect<T> = T | SideEffect<any>;
+type MaybeSideEffect<T, E> = [E] extends [never] ? T : T | SideEffect<E>;
 type NonSideEffect<T> = Exclude<T, SideEffect<any>>;
 type EffectOfReturn<R> = R extends SideEffect<infer E> ? E : never;
 type EffectsOfSteps<Steps extends readonly AnyFn[]> = EffectOfReturn<StepOutput<Steps[number]>>;
 type EffectsOfStepsAsync<Steps extends readonly AnyFn[]> = EffectOfReturn<Awaited<StepOutput<Steps[number]>>>;
 
-type PipeMode = 'sync' | 'async' | 'sideEffect' | 'asyncSideEffect' | 'sideEffectStrict' | 'asyncSideEffectStrict';
+type PipeMode = 'sync' | 'async' | 'sideEffect' | 'asyncSideEffect';
 
-type NextInput<Mode extends PipeMode, R> = Mode extends 'asyncSideEffect' | 'asyncSideEffectStrict'
+type NextInput<Mode extends PipeMode, R> = Mode extends 'asyncSideEffect'
   ? NonSideEffect<Awaited<R>>
-  : Mode extends 'sideEffect' | 'sideEffectStrict'
+  : Mode extends 'sideEffect'
     ? NonSideEffect<R>
     : Mode extends 'async'
       ? Awaited<R>
@@ -69,19 +67,14 @@ type FinalValue<Mode extends PipeMode, R, Steps extends readonly AnyFn[], EIn = 
   : Mode extends 'async'
     ? Awaited<R>
     : Mode extends 'sideEffect'
-      ? MaybeSideEffect<NonSideEffect<R>>
+      ? MaybeSideEffect<NonSideEffect<R>, EffectsOfSteps<Steps> | EIn>
       : Mode extends 'asyncSideEffect'
-        ? MaybeSideEffect<NonSideEffect<Awaited<R>>>
-        : Mode extends 'sideEffectStrict'
-          ? NonSideEffect<R> | SideEffect<EffectsOfSteps<Steps> | EIn>
-          : Mode extends 'asyncSideEffectStrict'
-            ? NonSideEffect<Awaited<R>> | SideEffect<EffectsOfStepsAsync<Steps> | EIn>
-            : never;
+        ? MaybeSideEffect<NonSideEffect<Awaited<R>>, EffectsOfStepsAsync<Steps> | EIn>
+        : never;
 
 type PipeResult<Mode extends PipeMode, Input, Steps extends readonly AnyFn[], EIn = never> = Mode extends
   | 'async'
   | 'asyncSideEffect'
-  | 'asyncSideEffectStrict'
   ? Promise<FinalValue<Mode, Input, Steps, EIn>>
   : FinalValue<Mode, Input, Steps, EIn>;
 
@@ -148,33 +141,7 @@ type PipeWithDepsPureStrict<Mode extends 'sync' | 'async'> = {
   >;
 };
 
-type PipeWithDepsAny<Mode extends 'sideEffect' | 'asyncSideEffect'> = {
-  <Input>(input: NonFunction<Input> | SideEffect<any>): (deps: unknown) => PipeResult<Mode, Input, []>;
-  <Input, Steps extends readonly [AnyFn, ...AnyFn[]]>(
-    input: NonFunction<Input> | SideEffect<any>,
-    ...steps: Steps
-  ): (deps: DepsFor<Steps>) => PipeResult<
-    Mode,
-    LastReturn<CheckedSteps<Mode, Steps, Input>, Input>,
-    CheckedSteps<Mode, Steps, Input>
-  >;
-  <Steps extends readonly [FromFn<any>, ...AnyFn[]]>(
-    ...steps: Steps
-  ): (input?: unknown | SideEffect<any>) => (deps: DepsFor<Steps>) => PipeResult<
-    Mode,
-    LastReturn<CheckedSteps<Mode, Steps, FirstStepInput<Steps>>, FirstStepInput<Steps>>,
-    CheckedSteps<Mode, Steps, FirstStepInput<Steps>>
-  >;
-  <Steps extends readonly [AnyFn, ...AnyFn[]]>(
-    ...steps: Steps
-  ): (input: NonFunction<FirstStepInput<Steps>> | SideEffect<any>) => (deps: DepsFor<Steps>) => PipeResult<
-    Mode,
-    LastReturn<CheckedSteps<Mode, Steps, FirstStepInput<Steps>>, FirstStepInput<Steps>>,
-    CheckedSteps<Mode, Steps, FirstStepInput<Steps>>
-  >;
-};
-
-type PipeWithDepsStrict<Mode extends 'sideEffectStrict' | 'asyncSideEffectStrict'> = {
+type PipeWithDepsSideEffect<Mode extends 'sideEffect' | 'asyncSideEffect'> = {
   <Input, EIn = never>(input: NonFunction<Input> | SideEffect<EIn>): (deps: unknown) => PipeResult<Mode, Input, [], EIn>;
   <Input, Steps extends readonly [AnyFn, ...AnyFn[]], EIn = never>(
     input: NonFunction<Input> | SideEffect<EIn>,
@@ -185,13 +152,12 @@ type PipeWithDepsStrict<Mode extends 'sideEffectStrict' | 'asyncSideEffectStrict
     CheckedSteps<Mode, Steps, Input>,
     EIn
   >;
-  <Steps extends readonly [FromFn<any>, ...AnyFn[]]>(...steps: CheckedSteps<Mode, Steps, FirstStepInput<Steps>>): <EIn = never>(
-    input?: unknown | SideEffect<EIn>
-  ) => (deps: DepsFor<Steps>) => PipeResult<
+  <Steps extends readonly [FromFn<any>, ...AnyFn[]]>(
+    ...steps: Steps
+  ): (input?: unknown) => (deps: DepsFor<Steps>) => PipeResult<
     Mode,
     LastReturn<CheckedSteps<Mode, Steps, FirstStepInput<Steps>>, FirstStepInput<Steps>>,
-    CheckedSteps<Mode, Steps, FirstStepInput<Steps>>,
-    EIn
+    CheckedSteps<Mode, Steps, FirstStepInput<Steps>>
   >;
   <Steps extends readonly [AnyFn, ...AnyFn[]]>(...steps: CheckedSteps<Mode, Steps, FirstStepInput<Steps>>): <EIn = never>(
     input: NonFunction<FirstStepInput<Steps>> | SideEffect<EIn>
@@ -203,21 +169,17 @@ type PipeWithDepsStrict<Mode extends 'sideEffectStrict' | 'asyncSideEffectStrict
   >;
 };
 
-type PipeWithDepsFn<Mode extends PipeMode> = Mode extends 'sideEffectStrict' | 'asyncSideEffectStrict'
-  ? PipeWithDepsStrict<Mode>
-  : Mode extends 'sideEffect' | 'asyncSideEffect'
-    ? PipeWithDepsAny<Mode>
-    : PipeWithDepsPure<Extract<Mode, 'sync' | 'async'>>;
+type PipeWithDepsFn<Mode extends PipeMode> = Mode extends 'sideEffect' | 'asyncSideEffect'
+  ? PipeWithDepsSideEffect<Mode>
+  : PipeWithDepsPure<Extract<Mode, 'sync' | 'async'>>;
 
 type WrappedSteps<Steps extends readonly AnyFn[]> = {
   [Index in keyof Steps]: (value: StepInput<Steps[Index]>) => StepOutput<Steps[Index]>;
 };
 
-function pipeWithDeps(pipeFn: typeof pipeAsyncSideEffectStrict): PipeWithDepsFn<'asyncSideEffectStrict'>;
 function pipeWithDeps(pipeFn: typeof pipeAsyncSideEffect): PipeWithDepsFn<'asyncSideEffect'>;
 function pipeWithDeps(pipeFn: typeof pipeAsyncStrict): PipeWithDepsPureStrict<'async'>;
 function pipeWithDeps(pipeFn: typeof pipeAsync): PipeWithDepsFn<'async'>;
-function pipeWithDeps(pipeFn: typeof pipeSideEffectStrict): PipeWithDepsFn<'sideEffectStrict'>;
 function pipeWithDeps(pipeFn: typeof pipeSideEffect): PipeWithDepsFn<'sideEffect'>;
 function pipeWithDeps(pipeFn: typeof pipeStrict): PipeWithDepsPureStrict<'sync'>;
 function pipeWithDeps(pipeFn: typeof pipe): PipeWithDepsFn<'sync'>;

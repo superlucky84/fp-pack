@@ -22,7 +22,12 @@ type Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B 
   ? true
   : false;
 type Expect<T extends true> = T;
-type EffectUnion<T> = Extract<T, SideEffect<any>> extends SideEffect<infer E> ? E : never;
+type Extends<A, B> = A extends B ? true : false;
+type EffectUnion<T> = [Extract<T, SideEffect<any>>] extends [never]
+  ? never
+  : Extract<T, SideEffect<any>> extends SideEffect<infer E>
+    ? E
+    : never;
 type ValueUnion<T> = Exclude<T, SideEffect<any>>;
 
 type User = {
@@ -130,8 +135,10 @@ export const pipeSideEffectArray = pipeSideEffect(
   (user: User | undefined) => (user ? user : SideEffect.of(() => 'NOT_FOUND' as const))
 );
 
-type PipeSideEffectArrayExpected = (input: User[] | SideEffect<any>) => User | SideEffect<any>;
+type PipeSideEffectArrayExpectedLegacy = (input: User[] | SideEffect<any>) => User | SideEffect<any>;
+type PipeSideEffectArrayExpected = { (input: User[]): User | SideEffect<"NOT_FOUND">; <EIn>(input: User[] | SideEffect<EIn>): User | SideEffect<"NOT_FOUND" | EIn>; };
 export type PipeSideEffectArrayIsStrict = Expect<Equal<typeof pipeSideEffectArray, PipeSideEffectArrayExpected>>;
+export type PipeSideEffectArrayExpectedLegacyCompatible = Expect<Extends<typeof pipeSideEffectArray, PipeSideEffectArrayExpectedLegacy>>;
 
 export const pipeSideEffectStrictArray = pipeSideEffectStrict(
   pipeHint<number[], Array<[number, number]>>(zip([1, 2, 3])),
@@ -169,10 +176,12 @@ export const pipeAsyncSideEffectArray = pipeAsyncSideEffect(
   async (hasLarge) => (hasLarge ? Boolean(hasLarge) : SideEffect.of(() => 'NO_LARGE' as const))
 );
 
-type PipeAsyncSideEffectArrayExpected = (input: number[] | SideEffect<any>) => Promise<boolean | SideEffect<any>>;
+type PipeAsyncSideEffectArrayExpectedLegacy = (input: number[] | SideEffect<any>) => Promise<boolean | SideEffect<any>>;
+type PipeAsyncSideEffectArrayExpected = { (input: number[]): Promise<boolean | SideEffect<"NO_LARGE">>; <EIn>(input: number[] | SideEffect<EIn>): Promise<boolean | SideEffect<"NO_LARGE" | EIn>>; };
 export type PipeAsyncSideEffectArrayIsStrict = Expect<
   Equal<typeof pipeAsyncSideEffectArray, PipeAsyncSideEffectArrayExpected>
 >;
+export type PipeAsyncSideEffectArrayExpectedLegacyCompatible = Expect<Extends<typeof pipeAsyncSideEffectArray, PipeAsyncSideEffectArrayExpectedLegacy>>;
 
 export const pipeAsyncSideEffectStrictArray = pipeAsyncSideEffectStrict(
   groupBy((user: User) => (user.active ? 'active' : 'inactive')),

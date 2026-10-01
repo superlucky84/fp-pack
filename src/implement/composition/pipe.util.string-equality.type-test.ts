@@ -14,7 +14,12 @@ type Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B 
   ? true
   : false;
 type Expect<T extends true> = T;
-type EffectUnion<T> = Extract<T, SideEffect<any>> extends SideEffect<infer E> ? E : never;
+type Extends<A, B> = A extends B ? true : false;
+type EffectUnion<T> = [Extract<T, SideEffect<any>>] extends [never]
+  ? never
+  : Extract<T, SideEffect<any>> extends SideEffect<infer E>
+    ? E
+    : never;
 type ValueUnion<T> = Exclude<T, SideEffect<any>>;
 
 export const pipeStringReplaceMatch = pipe(
@@ -94,10 +99,12 @@ export const pipeSideEffectString = pipeSideEffect(
   (value: string) => (value.length > 0 ? value : SideEffect.of(() => 'EMPTY' as const))
 );
 
-type PipeSideEffectStringExpected = (input: string | SideEffect<any>) => string | SideEffect<any>;
+type PipeSideEffectStringExpectedLegacy = (input: string | SideEffect<any>) => string | SideEffect<any>;
+type PipeSideEffectStringExpected = { (input: string): string | SideEffect<"EMPTY">; <EIn>(input: string | SideEffect<EIn>): string | SideEffect<"EMPTY" | EIn>; };
 export type PipeSideEffectStringIsStrict = Expect<
   Equal<typeof pipeSideEffectString, PipeSideEffectStringExpected>
 >;
+export type PipeSideEffectStringExpectedLegacyCompatible = Expect<Extends<typeof pipeSideEffectString, PipeSideEffectStringExpectedLegacy>>;
 
 export const pipeSideEffectStrictString = pipeSideEffectStrict(
   match(/a/g),
@@ -137,10 +144,12 @@ export const pipeAsyncSideEffectString = pipeAsyncSideEffect(
   async (isMatch: boolean) => (isMatch ? Boolean(isMatch) : SideEffect.of(() => 'NO_MATCH' as const))
 );
 
-type PipeAsyncSideEffectStringExpected = (input: string | SideEffect<any>) => Promise<boolean | SideEffect<any>>;
+type PipeAsyncSideEffectStringExpectedLegacy = (input: string | SideEffect<any>) => Promise<boolean | SideEffect<any>>;
+type PipeAsyncSideEffectStringExpected = { (input: string): Promise<boolean | SideEffect<"NO_MATCH">>; <EIn>(input: string | SideEffect<EIn>): Promise<boolean | SideEffect<"NO_MATCH" | EIn>>; };
 export type PipeAsyncSideEffectStringIsStrict = Expect<
   Equal<typeof pipeAsyncSideEffectString, PipeAsyncSideEffectStringExpected>
 >;
+export type PipeAsyncSideEffectStringExpectedLegacyCompatible = Expect<Extends<typeof pipeAsyncSideEffectString, PipeAsyncSideEffectStringExpectedLegacy>>;
 
 export const pipeAsyncSideEffectStrictString = pipeAsyncSideEffectStrict(
   match(/a/g),

@@ -51,41 +51,35 @@ type PipeAsyncFrom<Fns extends [FromFn<any>, ...AsyncOrSync<any, any>[]]> = (
   input?: PipeInput<Fns>
 ) => Promise<PipeOutput<Fns>>;
 
-type PipeCheckWithInput<Input, Fns extends [AnyFn, ...AnyFn[]]> =
-  Fns extends [infer F, ...infer Rest]
-    ? F extends AsyncOrSync<any, any>
-      ? Rest extends AnyFn[]
-        ? PipeCheck<[ValidateFn<F, Input>, ...Rest]>
-        : PipeCheck<[ValidateFn<F, Input>]>
-      : PipeError<Input, unknown>
-    : PipeError<unknown, unknown>;
+type PipeCheckFrom<Input, Fns extends [AnyFn, ...AnyFn[]]> =
+  Fns & (PipeCheckResult<[() => Input, ...Fns]> extends true ? unknown : PipeCheckResult<[() => Input, ...Fns]>);
 
 function pipeAsync<A>(input: NonFunction<A>): Promise<A>;
 function pipeAsync<A, B>(
   input: NonFunction<A>,
-  ab: AsyncOrSync<A, B>
+  ab: AsyncOrSync<NoInfer<A>, B>
 ): Promise<B>;
 function pipeAsync<A, B, C>(
   input: NonFunction<A>,
-  ab: AsyncOrSync<A, B>,
+  ab: AsyncOrSync<NoInfer<A>, B>,
   bc: AsyncOrSync<B, C>
 ): Promise<C>;
 function pipeAsync<A, B, C, D>(
   input: NonFunction<A>,
-  ab: AsyncOrSync<A, B>,
+  ab: AsyncOrSync<NoInfer<A>, B>,
   bc: AsyncOrSync<B, C>,
   cd: AsyncOrSync<C, D>
 ): Promise<D>;
 function pipeAsync<A, B, C, D, E>(
   input: NonFunction<A>,
-  ab: AsyncOrSync<A, B>,
+  ab: AsyncOrSync<NoInfer<A>, B>,
   bc: AsyncOrSync<B, C>,
   cd: AsyncOrSync<C, D>,
   de: AsyncOrSync<D, E>
 ): Promise<E>;
 function pipeAsync<A, B, C, D, E, F>(
   input: NonFunction<A>,
-  ab: AsyncOrSync<A, B>,
+  ab: AsyncOrSync<NoInfer<A>, B>,
   bc: AsyncOrSync<B, C>,
   cd: AsyncOrSync<C, D>,
   de: AsyncOrSync<D, E>,
@@ -93,7 +87,7 @@ function pipeAsync<A, B, C, D, E, F>(
 ): Promise<F>;
 function pipeAsync<A, B, C, D, E, F, G>(
   input: NonFunction<A>,
-  ab: AsyncOrSync<A, B>,
+  ab: AsyncOrSync<NoInfer<A>, B>,
   bc: AsyncOrSync<B, C>,
   cd: AsyncOrSync<C, D>,
   de: AsyncOrSync<D, E>,
@@ -102,7 +96,7 @@ function pipeAsync<A, B, C, D, E, F, G>(
 ): Promise<G>;
 function pipeAsync<A, B, C, D, E, F, G, H>(
   input: NonFunction<A>,
-  ab: AsyncOrSync<A, B>,
+  ab: AsyncOrSync<NoInfer<A>, B>,
   bc: AsyncOrSync<B, C>,
   cd: AsyncOrSync<C, D>,
   de: AsyncOrSync<D, E>,
@@ -112,7 +106,7 @@ function pipeAsync<A, B, C, D, E, F, G, H>(
 ): Promise<H>;
 function pipeAsync<A, B, C, D, E, F, G, H, I>(
   input: NonFunction<A>,
-  ab: AsyncOrSync<A, B>,
+  ab: AsyncOrSync<NoInfer<A>, B>,
   bc: AsyncOrSync<B, C>,
   cd: AsyncOrSync<C, D>,
   de: AsyncOrSync<D, E>,
@@ -123,7 +117,7 @@ function pipeAsync<A, B, C, D, E, F, G, H, I>(
 ): Promise<I>;
 function pipeAsync<A, B, C, D, E, F, G, H, I, J>(
   input: NonFunction<A>,
-  ab: AsyncOrSync<A, B>,
+  ab: AsyncOrSync<NoInfer<A>, B>,
   bc: AsyncOrSync<B, C>,
   cd: AsyncOrSync<C, D>,
   de: AsyncOrSync<D, E>,
@@ -135,7 +129,7 @@ function pipeAsync<A, B, C, D, E, F, G, H, I, J>(
 ): Promise<J>;
 function pipeAsync<A, B, C, D, E, F, G, H, I, J, K>(
   input: NonFunction<A>,
-  ab: AsyncOrSync<A, B>,
+  ab: AsyncOrSync<NoInfer<A>, B>,
   bc: AsyncOrSync<B, C>,
   cd: AsyncOrSync<C, D>,
   de: AsyncOrSync<D, E>,
@@ -146,10 +140,6 @@ function pipeAsync<A, B, C, D, E, F, G, H, I, J, K>(
   ij: AsyncOrSync<I, J>,
   jk: AsyncOrSync<J, K>
 ): Promise<K>;
-function pipeAsync<A, Fns extends [AsyncOrSync<any, any>, ...AsyncOrSync<any, any>[]]>(
-  input: NonFunction<A>,
-  ...funcs: PipeCheckWithInput<A, Fns>
-): Promise<PipeOutput<Fns>>;
 
 function pipeAsync<R>(ab: ZeroFn<R>): () => Promise<FnValue<ZeroFn<R>>>;
 function pipeAsync<B, F2 extends AsyncOrSync<FnValue<ZeroFn<B>>, any>>(
@@ -555,7 +545,10 @@ function pipeAsync<
 
 function pipeAsync<Fns extends [FromFn<any>, ...AsyncOrSync<any, any>[]]>(...funcs: PipeCheck<Fns>): PipeAsyncFrom<Fns>;
 function pipeAsync<Fns extends [AsyncOrSync<any, any>, ...AsyncOrSync<any, any>[]]>(...funcs: PipeCheck<Fns>): PipeAsync<Fns>;
-function pipeAsync(...funcs: Array<AsyncOrSync<any, any>>): (value: any) => Promise<any>;
+function pipeAsync<A, Fns extends [AsyncOrSync<any, any>, ...AsyncOrSync<any, any>[]]>(
+  input: NonFunction<A>,
+  ...funcs: PipeCheckFrom<A, Fns>
+): Promise<PipeOutput<Fns>>;
 function pipeAsync(...args: Array<any>) {
   const run = async (value: any, funcs: Array<(arg: any) => any>) => {
     let acc = value;
@@ -577,4 +570,7 @@ function pipeAsync(...args: Array<any>) {
   return run(input, rest);
 }
 
-export default pipeAsync;
+const pipeAsyncWithBrand = pipeAsync as typeof pipeAsync & { readonly __pipe_async: true };
+Object.defineProperty(pipeAsyncWithBrand, '__pipe_async', { value: true });
+
+export default pipeAsyncWithBrand;

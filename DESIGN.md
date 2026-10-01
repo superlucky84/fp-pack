@@ -15,6 +15,7 @@ This document describes the internal design decisions and architectural choices 
   - [pipeWithDeps Wrapper](#pipewithdeps-wrapper)
   - [Design Trade-offs](#design-trade-offs)
   - [Completeness Statement](#completeness-statement)
+- [Pipe Soundness Revision (0.15.0)](#pipe-soundness-revision-0150)
 
 ---
 
@@ -272,6 +273,8 @@ The mixed case (`pipe(1, x => x.toString(), strToStr)`) causes the second functi
 
 This is a fundamental limitation of TypeScript's type system, not a solvable problem.
 
+> **Superseded (2026-10-01):** The `SmartValidateFn` conclusion still holds, but it was not the reason `pipe` missed mismatches. The leak came from the variadic fallback overloads. See [Pipe Soundness Revision](#pipe-soundness-revision-0150).
+
 #### The Chosen Solution: Separation
 
 | Approach | Inference | Validation | Use Case |
@@ -286,6 +289,8 @@ This separation provides:
 - Clear mental model for users
 
 ### Completeness Statement
+
+> **Superseded (2026-10-01):** The statements below were disproved by experiment. See [Pipe Soundness Revision](#pipe-soundness-revision-0150).
 
 **As of TypeScript 5.9.3, the pipe architecture represents a complete and optimal implementation within the constraints of TypeScript's type system.**
 
@@ -331,3 +336,143 @@ myPipe(data, step1, step2)(deps);
 *Last reviewed: 2026-02-05*
 *TypeScript version: 5.9.3*
 *fp-pack version: 0.14.0*
+
+---
+
+## Pipe Soundness Revision (0.15.0)
+
+Status: **Implemented on `feat/pipe-soundness`** with the **4-pipe model** (DC-2 = B). Every change was first validated in a scratch copy of `src` (see [Evidence](#evidence)). Requirements: `REQUIREMENTS.md`. Plan and progress: `IMPLEMENT.md`.
+
+### Root Cause
+
+TypeScript 7 does not change inference (it claims 6.0 parity), and the baseline probes behave identically on 5.9.3, 6.0.3, and 7.0.2. The missed mismatches come from **overload fall-through**:
+
+| Call | Typed overload | Falls through to | Result today |
+|------|----------------|------------------|--------------|
+| `pipe(1, numId, strId)` | rejects (correct) | data-first `...funcs: PipeCheckWithInput<A, Fns>` | `never`, no error |
+| `pipe(numId, strId)` | rejects (correct) | catch-all `(...funcs: Array<UnaryFn<any, any>>)` | `(input: any) => any` |
+| `pipe(1 as number \| string, numId, …)` | rejects | data-first fallback | `string`, no error |
+| `pipe({ a: 1, b: 2 }, (o: { a: number }) => o.a)` | rejects (**wrongly**: `A` inferred from the step param, so excess-property error) | data-first fallback | `never` |
+
+`PipeCheckWithInput` is a conditional type over `Fns`, so TypeScript cannot infer `Fns` through it and the validation never fires. `PipeCheck<Fns> = Fns & (…)` (a naked intersection) does infer correctly. The function-first fallback already uses it.
+
+### Changes
+
+Apply the following to the four permissive variants: `pipe`, `pipeAsync`, `pipeSideEffect`, `pipeAsyncSideEffect`.
+
+1. **Keep the local `NoInfer` shim** (`[T][T extends any ? 0 : never]`). The experiments used the intrinsic `NoInfer`, but in the implementation the shim gives the same results, and the intrinsic one leaks into hovers (`pipe(state, tap(f))` showed `NoInfer<State>`). Keeping the shim also means no minimum-TypeScript bump.
+2. **The first data-first step uses `NoInfer<A>`** so `A` is inferred from the input only:
+   ```ts
+   function pipe<A, B, C>(
+     input: NonFunction<A>,
+     ab: (value: NoInfer<A>) => B,
+     bc: (value: B) => C
+   ): C;
+   ```
+   This fixes the subtype-input bug and the union-input leak. Later steps stay plain `(value: B) => C`, because putting `NoInfer` on them breaks inline→predefined inference (that was the `pipeStrict` trade-off).
+3. **Replace the data-first variadic fallback with a sound diagnostic overload, placed last:**
+   ```ts
+   type PipeCheckFrom<Input, Fns extends [AnyFn, ...AnyFn[]]> =
+     Fns & (PipeCheckResult<[() => Input, ...Fns]> extends true
+       ? unknown
+       : PipeCheckResult<[() => Input, ...Fns]>);
+
+   function pipe<A, Fns extends [UnaryFn<any, any>, ...UnaryFn<any, any>[]]>(
+     input: NonFunction<A>,
+     ...funcs: PipeCheckFrom<A, Fns>
+   ): PipeOutput<Fns>;
+   ```
+   It handles 11+ steps and, because TS reports the **last** overload's error, it turns mismatch messages into `Property '__pipe_error' is missing … PipeError<number, string>`.
+4. **Delete the untyped catch-all overload** (`(...funcs: Array<…>) => (input: any) => any`).
+5. **Give every variant a unique brand** (`__pipe_brand`, `__pipeAsync_brand`, …, plus the existing `__pipe_strict` and a new `__pipe_side_effect_strict`). After steps 1–4, `typeof pipeSideEffect` is structurally assignable to `typeof pipeSideEffectStrict` and the async variants, so `pipeWithDeps`'s `typeof`-based overload dispatch picks the wrong mode without brands.
+
+### Implementation Notes (4-pipe model)
+
+- `pipeSideEffect` / `pipeAsyncSideEffect` now hold the former `*SideEffectStrict` implementation with S1 + S2 applied. Internal `Strict*` type names were renamed to `Effect*`.
+- Function-first SideEffect pipelines return `EffectUnarySignatures<A, R, E>`, a conditional on `E` that TS resolves eagerly. Hovers therefore show the call signatures (`{ (input: number): string | SideEffect<'LOW'>; <EIn>(input: number | SideEffect<EIn>): … }`) instead of an internal alias.
+- `pipeWithDeps` has 4 modes (`sync`, `async`, `sideEffect`, `asyncSideEffect`). The SideEffect modes use the precise wrapper, and its `from()`-first overload no longer validates arguments through `CheckedSteps`, so that `FromFn` steps still type-check.
+- Brands: `__pipe`, `__pipe_async`, `__pipe_side_effect`, `__pipe_async_side_effect` on the core pipes. The aliases keep or add `__pipe_strict`, `__pipe_async_strict`, `__pipe_side_effect_strict`, and `__pipe_async_side_effect_strict`.
+- Test helper fix: `EffectUnion<T>` in the type-tests returned `unknown` for effect-free results (an `Extract` that is `never` is not distributive). It now returns `never`.
+- Changed expectations keep the old type as `…ExpectedLegacy` with an `Extends<typeof x, …ExpectedLegacy>` guard. Every new type is assignable to what 0.14 promised.
+
+### Variant Consolidation
+
+| Variant | After revision | Evidence |
+|---------|----------------|----------|
+| `pipeStrict` | Redundant. Can be an alias of `pipe` (+ `__pipe_strict` brand) | v14: 0 errors, including all `pipeStrict` `@ts-expect-error` tests |
+| `pipeAsyncStrict` | Redundant. Alias of `pipeAsync` | v14: 0 errors |
+| `pipeSideEffectStrict` | **Not redundant.** It returns precise effect unions (`MaybeSideEffect<T, E1 \| E2>`), while `pipeSideEffect` returns `SideEffect<any>` | v15: 60 effect-type assertions fail when aliased |
+| `pipeAsyncSideEffectStrict` | Not redundant (same reason) | v15 |
+
+So the core pipe surface goes from **8 to 6** functions with no loss of capability. It can go to **4** only if DC-2 is accepted.
+
+### SideEffect Consolidation Experiments (DC-2)
+
+All of these start from the 6-pipe candidate. `research/pipe-soundness/reproduce.sh se4|se2` reproduces them.
+
+**Step S1 — sound precise SideEffect pipe.** Apply the soundness recipe to `*SideEffectStrict`:
+- intrinsic `NoInfer`, only on the first data-first step;
+- remove `NoInfer` from the later steps (`UnaryFn<NonSideEffect<B>, C>`);
+- use `PipeCheckFrom` as the diagnostic fallback.
+
+Then alias `pipeSideEffect` / `pipeAsyncSideEffect` to it. Result: **no inference failures at all.** No implicit `any`, no lost lambda contexts, and every `pipeSideEffect` and probe case still compiles or errors as before. Every remaining failure is an `Equal<…>` assertion whose expected type changed. Runtime is unchanged (both implementations are identical).
+
+**Step S2 — collapse `SideEffect<never>`.** `MaybeSideEffect<T, E> = [E] extends [never] ? T : T | SideEffect<E>`. A pipeline with no SideEffect-returning step now returns plain `T` instead of `T | SideEffect<never>` (or the old `T | SideEffect<any>`).
+
+**Steps S4 + S5 — also absorb `pipe` / `pipeAsync`.** Two more changes:
+- an effect-free function-first pipeline returns a plain `(input: A) => R` instead of the overloaded callable;
+- a step returning `any` contributes no effect.
+
+Then alias `pipe` / `pipeAsync` to the precise SideEffect pipes.
+
+| Mode | Public pipes | Type-test errors (TS 5.9 / 6.0 / 7.0) | Runtime tests |
+|------|-------------|------------------------------------------|---------------|
+| `candidate` | 6 | 0 / 0 / 0 | 386/386 |
+| `se4` (S1+S2) | **4**: `pipe`, `pipeAsync`, `pipeSideEffect`, `pipeAsyncSideEffect` | 57 / 57 / 57 | 386/386 |
+| `se2` (S1+S2+S4+S5) | **2**: `pipe`, `pipeAsync` | 67 / 67 / 67 | 386/386 |
+
+What the errors are:
+
+| Category | se4 | se2 | Nature |
+|----------|-----|-----|--------|
+| `pipeSideEffect*` results: `T \| SideEffect<any>` → `T \| SideEffect<E>` (precise) or `T` (no effects) | ✔ | ✔ | **Intended type change.** Test expectations must be rewritten |
+| `pipeSideEffect*` function-first: `(a) => R` → overloaded callable `{ (input: A): …; <EIn>(input: A \| SideEffect<EIn>): … }` | ✔ | only when effects exist | Intended change. Hover gets more verbose |
+| `*SideEffectStrict` results: `T \| SideEffect<never>` → `T` | ✔ | ✔ | Intended (S2) |
+| `runPipeResult` expectations (2) | ✔ | ✔ | Follows from the precise effect types |
+| `pipeWithDeps` (6 in se4, 13 in se2) | ✔ | ✔ | **Real work item.** Its mode dispatch and `ValidateStep` assume the old signatures and must be rewritten for the merged variants |
+| Pure `pipe` / `pipeAsync` / `pipeStrict` type tests | — | **all pass** (including the 12 probes) | — |
+| Feeding a `SideEffect` into an **effect-free** function-first pipeline (`pipeSideEffect(f, g)(SideEffect.of(…))`) | — | 2 errors | **Capability regression in se2.** Making it generic (`<EIn = never>(input: A \| SideEffect<EIn>) => …`, experiment S6) fixes it but changes the hover of *every* pure function-first pipeline (123 errors). Not recommended |
+
+Runtime note for se2: `pipe` would short-circuit when a step returns a `SideEffect` (today it passes the object through). The existing runtime suite passes unchanged, but this is a behavior change for any user who returns `SideEffect` from a plain `pipe`.
+
+### Decision Checklist
+
+- [x] **DC-1** → all four `*Strict` variants are `@deprecated` branded aliases in 0.15.x, to be removed in 1.0.
+- [x] **DC-2** → **Option B (4 pipes).** Option C is rejected because it conflicts with the SideEffect philosophy. `pipeSideEffect*` is the explicit opt-in for early exit, and the effect is handled once at the boundary (`core-rules.md`: "Use `pipeSideEffect*` only when you need early exit"). If plain `pipe` short-circuits too, a pure outer pipeline can no longer receive a SideEffect as a value and handle it. In `pipe(input, validatePipeline, (r) => isSideEffect(r) ? fallback(r) : r)` the handler step would never run. Original options, for the record — how far to consolidate the SideEffect family (see [SideEffect Consolidation Experiments](#sideeffect-consolidation-experiments-dc-2)).
+  - Option A (6 pipes): keep `*SideEffectStrict` separate. No type changes for anyone.
+  - Option B (**4 pipes, recommended**): `pipeSideEffect` becomes precise (S1+S2) and `*SideEffectStrict` become deprecated aliases. Inference is unaffected. Result types become *narrower* (`SideEffect<any>` → `SideEffect<E>` or plain `T`). That is assignable to the old types in almost all user code, but it is a visible type change and needs a release note. It also requires the `pipeWithDeps` rework.
+  - Option C (2 pipes): additionally make `pipe` / `pipeAsync` the SideEffect-aware pipes. All pure type tests and runtime tests pass. Costs: the runtime short-circuit behavior change, the "SideEffect into an effect-free pipeline" regression, and `pipeWithDeps` rework. **Recommended as a 1.0 follow-up, not in 0.15.**
+- [x] **DC-3** → Option A for 0.15 (accept it; it is still an error). Function-first mismatch message. Today it is `… not assignable to parameter of type 'never'` (the last overload is data-first, so `NonFunction<fn>` = `never`). Option A: accept it for now. Option B: add a function-first diagnostic overload, which needs ordering experiments.
+- [x] **DC-4** → no change. The shim is kept (Change 1), so the minimum supported TypeScript stays where it was.
+- [x] **DC-5** → deferred. Add the CI matrix first. Known TS 7 blocker: `sideEffect.ts` `runPipeResult<T, R>(result: SideEffect<R>): R` declares an unused `T`, which TS 7 reports as TS6196 (5.9/6.0 do not). This is pre-existing and needs an API-compatible fix before switching. Upgrade the dev toolchain to TS 7 (`typescript@7.0.2`). Measured type-check time is about 5× faster than 5.9. Also needs a `vite-plugin-dts` compatibility check (it uses the TS API, which TS 7 changes). **Recommended:** add a CI matrix for 5.9 / 6.0 / 7.0 first, then switch the default later.
+- [x] **DC-6** → 0.15.0 with a migration note (version bump happens at release time). Release version. **Recommended:** 0.15.0 (pre-1.0 minor) with a "stricter types" migration note.
+
+### Evidence
+
+Reproduce with `research/pipe-soundness/` (probe file + transform script + README). Results:
+
+| Variant (scratch copy) | Repo type-tests + 12 probes, errors on TS 5.9 / 6.0 / 7.0 |
+|---|---|
+| v0 baseline | 5 / 5 / 5 (P1, P2, P3, P8, P12 not caught; P7 → `never`) |
+| v1/v2 `pipe` := `pipeStrict` (shim / intrinsic `NoInfer`) | 10 / 10 / 10 (breaks inline→predefined, subtype input, `pipeWithDeps`) |
+| v5 remove fallbacks only | 6 / 6 / 6 (11+ steps unsupported, P7 still broken) |
+| v6/v7 per-step `F extends …` generics | 12 / 12 / 12 (curried generic utils lose inference) |
+| **v13 Changes 1–5 on all four permissive pipes** | **0 / 0 / 0** |
+| v14 = v13 + `pipeStrict` / `pipeAsyncStrict` as aliases | **0 / 0 / 0** |
+| v15 = v14 + SideEffectStrict as aliases of the *old* `pipeSideEffect` | 60 / 60 / 60 |
+| S0 = v14 + `pipeSideEffect` as alias of the *original* `pipeSideEffectStrict` | 48 / 48 / 48 (all are `Equal` expectation changes) |
+| `se4` (S1+S2), 4 pipes | 57 / 57 / 57 (expectation changes + `pipeWithDeps`) |
+| `se2` (S1+S2+S4+S5), 2 pipes | 67 / 67 / 67 (as above + 2 SideEffect-input regressions) |
+| S6 = se2 + generic SideEffect input on effect-free pipelines | 123 / 123 / 123 (every pure function-first hover changes) |
+
+*Recorded: 2026-10-01 · TypeScript 5.9.3 / 6.0.3 / 7.0.2 · fp-pack 0.14.0 @ fe36dc5*
