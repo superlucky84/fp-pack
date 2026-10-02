@@ -1,26 +1,20 @@
 import type { FromFn } from '../composition/from';
 import SideEffect, { isSideEffect } from '../composition/sideEffect';
 
-/** pipeAsyncSideEffect - SideEffect를 허용하는 비동기 함수 합성 */
 type PipeError<From, To> = { __pipe_async_side_effect_error: ['pipeAsyncSideEffect', From, '->', To] };
-type NoInfer<T> = [T][T extends any ? 0 : never];
-
-type MaybeSideEffect<T> = T | SideEffect<any>;
-type NonSideEffect<T> = Exclude<T, SideEffect<any>>;
-type AsyncOrSync<A, R> = (a: A) => MaybeSideEffect<R> | Promise<MaybeSideEffect<R>>;
-type FirstAsyncOrSync<A, R> = AsyncOrSync<A, R> & { __from?: never };
-type ZeroFn<R> = () => MaybeSideEffect<R> | Promise<MaybeSideEffect<R>>;
 type AnyFn = (...args: any[]) => any;
+// No contextual any beyond the generated inference signatures.
+type FallbackFn = (value: never) => unknown;
 type NonFunction<T> = T extends AnyFn ? never : T;
+
+type MaybeSideEffect<T, E> = [E] extends [never] ? T : T | SideEffect<E>;
+type NonSideEffect<T> = Exclude<T, SideEffect<any>>;
+type AsyncOrSync<A, R> = (a: A) => R | Promise<R>;
 
 type FnInput<F> = F extends (a: infer A) => any ? A : never;
 type FnReturn<F> = F extends (...args: any[]) => infer R ? R : never;
 type FnValue<F> = NonSideEffect<Awaited<FnReturn<F>>>;
-type PipeResult<F> = MaybeSideEffect<FnValue<F>>;
 
-type ValidateFn<Fn extends AsyncOrSync<any, any>, Expected> =
-  (Fn extends (a: NoInfer<Expected>) => any ? Fn : Fn & PipeError<Expected, FnInput<Fn>>) &
-    ((a: NoInfer<Expected>) => any);
 type PipeCheckResult<Fns extends [AnyFn, ...AnyFn[]]> =
   Fns extends [infer F, infer G, ...infer Rest]
     ? F extends AnyFn
@@ -36,545 +30,699 @@ type PipeCheckResult<Fns extends [AnyFn, ...AnyFn[]]> =
 type PipeCheck<Fns extends [AnyFn, ...AnyFn[]]> =
   Fns & (PipeCheckResult<Fns> extends true ? unknown : PipeCheckResult<Fns>);
 
-type PipeInput<Fns extends AsyncOrSync<any, any>[]> = Fns extends [
-  AsyncOrSync<infer A, any>,
-  ...AsyncOrSync<any, any>[]
-]
-  ? A
-  : never;
-type PipeOutput<Fns extends AsyncOrSync<any, any>[]> = Fns extends [infer F]
-  ? F extends AsyncOrSync<any, any>
-    ? PipeResult<F>
-    : never
-  : Fns extends [infer F, ...infer Rest]
-    ? F extends AsyncOrSync<any, any>
-      ? Rest extends [AsyncOrSync<FnValue<F>, any>, ...AsyncOrSync<any, any>[]]
-        ? PipeOutput<Rest>
-        : never
-      : never
-    : never;
+type EffectOfReturn<R> = R extends SideEffect<infer E> ? E : never;
+type EffectOfFn<F> = EffectOfReturn<Awaited<FnReturn<F>>>;
+type EffectsOf<Fns extends AnyFn[]> = EffectOfFn<Fns[number]>;
+type EffectOfValue<T> = T extends SideEffect<infer E> ? E : never;
+type EffectsOfValues<Values extends any[]> = EffectOfValue<Values[number]>;
 
-type PipeAsyncSideEffect<Fns extends AsyncOrSync<any, any>[]> = (
-  input: PipeInput<Fns> | SideEffect<any>
-) => Promise<PipeOutput<Fns>>;
-type PipeAsyncSideEffectFrom<Fns extends [FromFn<any>, ...AsyncOrSync<any, any>[]]> = (
-  input?: PipeInput<Fns> | SideEffect<any>
-) => Promise<PipeOutput<Fns>>;
+type EffectResultWithInput<FLast, Fns extends AnyFn[], EIn> = MaybeSideEffect<FnValue<FLast>, EffectsOf<Fns> | EIn>;
+// Resolved eagerly (conditional on E) so hovers show the call signatures instead of an alias.
+type EffectUnarySignatures<A, R, E> = [E] extends [never]
+  ? { (input: A): Promise<R>; <EIn>(input: A | SideEffect<EIn>): Promise<R | SideEffect<EIn>> }
+  : { (input: A): Promise<R | SideEffect<E>>; <EIn>(input: A | SideEffect<EIn>): Promise<R | SideEffect<E | EIn>> };
+type EffectUnarySignaturesOptional<A, R, E> = [E] extends [never]
+  ? { (input?: A): Promise<R>; <EIn>(input?: A | SideEffect<EIn>): Promise<R | SideEffect<EIn>> }
+  : { (input?: A): Promise<R | SideEffect<E>>; <EIn>(input?: A | SideEffect<EIn>): Promise<R | SideEffect<E | EIn>> };
+type EffectUnaryReturnOptional<A, FLast, Fns extends AnyFn[]> = EffectUnarySignaturesOptional<A, FnValue<FLast>, EffectsOf<Fns>>;
 
-type PipeCheckWithInput<Input, Fns extends [AnyFn, ...AnyFn[]]> =
-  Fns extends [infer F, ...infer Rest]
-    ? F extends AsyncOrSync<any, any>
-      ? Rest extends AnyFn[]
-        ? PipeCheck<[ValidateFn<F, Input>, ...Rest]>
-        : PipeCheck<[ValidateFn<F, Input>]>
-      : PipeError<Input, unknown>
-    : PipeError<unknown, unknown>;
+type LastFn<Fns extends AnyFn[]> = Fns extends [...any[], infer L] ? L : never;
 
-function pipeAsyncSideEffect<A>(input: NonFunction<A> | SideEffect<any>): Promise<A | SideEffect<any>>;
-function pipeAsyncSideEffect<A, B>(
-  input: NonFunction<A> | SideEffect<any>,
-  ab: AsyncOrSync<A, B>
-): Promise<MaybeSideEffect<B>>;
-function pipeAsyncSideEffect<A, B, C>(
-  input: NonFunction<A> | SideEffect<any>,
-  ab: AsyncOrSync<A, B>,
-  bc: AsyncOrSync<B, C>
-): Promise<MaybeSideEffect<C>>;
-function pipeAsyncSideEffect<A, B, C, D>(
-  input: NonFunction<A> | SideEffect<any>,
-  ab: AsyncOrSync<A, B>,
-  bc: AsyncOrSync<B, C>,
-  cd: AsyncOrSync<C, D>
-): Promise<MaybeSideEffect<D>>;
-function pipeAsyncSideEffect<A, B, C, D, E>(
-  input: NonFunction<A> | SideEffect<any>,
-  ab: AsyncOrSync<A, B>,
-  bc: AsyncOrSync<B, C>,
-  cd: AsyncOrSync<C, D>,
-  de: AsyncOrSync<D, E>
-): Promise<MaybeSideEffect<E>>;
-function pipeAsyncSideEffect<A, B, C, D, E, F>(
-  input: NonFunction<A> | SideEffect<any>,
-  ab: AsyncOrSync<A, B>,
-  bc: AsyncOrSync<B, C>,
-  cd: AsyncOrSync<C, D>,
-  de: AsyncOrSync<D, E>,
-  ef: AsyncOrSync<E, F>
-): Promise<MaybeSideEffect<F>>;
-function pipeAsyncSideEffect<A, B, C, D, E, F, G>(
-  input: NonFunction<A> | SideEffect<any>,
-  ab: AsyncOrSync<A, B>,
-  bc: AsyncOrSync<B, C>,
-  cd: AsyncOrSync<C, D>,
-  de: AsyncOrSync<D, E>,
-  ef: AsyncOrSync<E, F>,
-  fg: AsyncOrSync<F, G>
-): Promise<MaybeSideEffect<G>>;
-function pipeAsyncSideEffect<A, B, C, D, E, F, G, H>(
-  input: NonFunction<A> | SideEffect<any>,
-  ab: AsyncOrSync<A, B>,
-  bc: AsyncOrSync<B, C>,
-  cd: AsyncOrSync<C, D>,
-  de: AsyncOrSync<D, E>,
-  ef: AsyncOrSync<E, F>,
-  fg: AsyncOrSync<F, G>,
-  gh: AsyncOrSync<G, H>
-): Promise<MaybeSideEffect<H>>;
-function pipeAsyncSideEffect<A, B, C, D, E, F, G, H, I>(
-  input: NonFunction<A> | SideEffect<any>,
-  ab: AsyncOrSync<A, B>,
-  bc: AsyncOrSync<B, C>,
-  cd: AsyncOrSync<C, D>,
-  de: AsyncOrSync<D, E>,
-  ef: AsyncOrSync<E, F>,
-  fg: AsyncOrSync<F, G>,
-  gh: AsyncOrSync<G, H>,
-  hi: AsyncOrSync<H, I>
-): Promise<MaybeSideEffect<I>>;
-function pipeAsyncSideEffect<A, B, C, D, E, F, G, H, I, J>(
-  input: NonFunction<A> | SideEffect<any>,
-  ab: AsyncOrSync<A, B>,
-  bc: AsyncOrSync<B, C>,
-  cd: AsyncOrSync<C, D>,
-  de: AsyncOrSync<D, E>,
-  ef: AsyncOrSync<E, F>,
-  fg: AsyncOrSync<F, G>,
-  gh: AsyncOrSync<G, H>,
-  hi: AsyncOrSync<H, I>,
-  ij: AsyncOrSync<I, J>
-): Promise<MaybeSideEffect<J>>;
-function pipeAsyncSideEffect<A, B, C, D, E, F, G, H, I, J, K>(
-  input: NonFunction<A> | SideEffect<any>,
-  ab: AsyncOrSync<A, B>,
-  bc: AsyncOrSync<B, C>,
-  cd: AsyncOrSync<C, D>,
-  de: AsyncOrSync<D, E>,
-  ef: AsyncOrSync<E, F>,
-  fg: AsyncOrSync<F, G>,
-  gh: AsyncOrSync<G, H>,
-  hi: AsyncOrSync<H, I>,
-  ij: AsyncOrSync<I, J>,
-  jk: AsyncOrSync<J, K>
-): Promise<MaybeSideEffect<K>>;
-function pipeAsyncSideEffect<A, Fns extends [AsyncOrSync<any, any>, ...AsyncOrSync<any, any>[]]>(
-  input: NonFunction<A> | SideEffect<any>,
-  ...funcs: PipeCheckWithInput<A, Fns>
-): Promise<PipeOutput<Fns>>;
+type PipeAsyncSideEffect<Fns extends [FallbackFn, ...FallbackFn[]]> = EffectEntry<Fns[0], FnValue<LastFn<Fns>>, { [K in keyof Fns]: Awaited<FnReturn<Fns[K]>> }>;
+type PipeAsyncSideEffectFrom<Fns extends [FromFn<any>, ...AnyFn[]]> = EffectUnaryReturnOptional<
+  unknown,
+  LastFn<Fns>,
+  Fns
+>;
 
-function pipeAsyncSideEffect<R>(ab: ZeroFn<R>): () => Promise<PipeResult<ZeroFn<R>>>;
-function pipeAsyncSideEffect<B, F2 extends AsyncOrSync<FnValue<ZeroFn<B>>, any>>(
-  ab: ZeroFn<B>,
-  bc: ValidateFn<F2, FnValue<ZeroFn<B>>>
-): () => Promise<PipeResult<F2>>;
-function pipeAsyncSideEffect<
-  B,
-  F2 extends AsyncOrSync<FnValue<ZeroFn<B>>, any>,
-  F3 extends AsyncOrSync<FnValue<F2>, any>
->(
-  ab: ZeroFn<B>,
-  bc: ValidateFn<F2, FnValue<ZeroFn<B>>>,
-  cd: ValidateFn<F3, FnValue<F2>>
-): () => Promise<PipeResult<F3>>;
-function pipeAsyncSideEffect<
-  B,
-  F2 extends AsyncOrSync<FnValue<ZeroFn<B>>, any>,
-  F3 extends AsyncOrSync<FnValue<F2>, any>,
-  F4 extends AsyncOrSync<FnValue<F3>, any>
->(
-  ab: ZeroFn<B>,
-  bc: ValidateFn<F2, FnValue<ZeroFn<B>>>,
-  cd: ValidateFn<F3, FnValue<F2>>,
-  de: ValidateFn<F4, FnValue<F3>>
-): () => Promise<PipeResult<F4>>;
-function pipeAsyncSideEffect<
-  B,
-  F2 extends AsyncOrSync<FnValue<ZeroFn<B>>, any>,
-  F3 extends AsyncOrSync<FnValue<F2>, any>,
-  F4 extends AsyncOrSync<FnValue<F3>, any>,
-  F5 extends AsyncOrSync<FnValue<F4>, any>
->(
-  ab: ZeroFn<B>,
-  bc: ValidateFn<F2, FnValue<ZeroFn<B>>>,
-  cd: ValidateFn<F3, FnValue<F2>>,
-  de: ValidateFn<F4, FnValue<F3>>,
-  ef: ValidateFn<F5, FnValue<F4>>
-): () => Promise<PipeResult<F5>>;
-function pipeAsyncSideEffect<
-  B,
-  F2 extends AsyncOrSync<FnValue<ZeroFn<B>>, any>,
-  F3 extends AsyncOrSync<FnValue<F2>, any>,
-  F4 extends AsyncOrSync<FnValue<F3>, any>,
-  F5 extends AsyncOrSync<FnValue<F4>, any>,
-  F6 extends AsyncOrSync<FnValue<F5>, any>
->(
-  ab: ZeroFn<B>,
-  bc: ValidateFn<F2, FnValue<ZeroFn<B>>>,
-  cd: ValidateFn<F3, FnValue<F2>>,
-  de: ValidateFn<F4, FnValue<F3>>,
-  ef: ValidateFn<F5, FnValue<F4>>,
-  fg: ValidateFn<F6, FnValue<F5>>
-): () => Promise<PipeResult<F6>>;
-function pipeAsyncSideEffect<
-  B,
-  F2 extends AsyncOrSync<FnValue<ZeroFn<B>>, any>,
-  F3 extends AsyncOrSync<FnValue<F2>, any>,
-  F4 extends AsyncOrSync<FnValue<F3>, any>,
-  F5 extends AsyncOrSync<FnValue<F4>, any>,
-  F6 extends AsyncOrSync<FnValue<F5>, any>,
-  F7 extends AsyncOrSync<FnValue<F6>, any>
->(
-  ab: ZeroFn<B>,
-  bc: ValidateFn<F2, FnValue<ZeroFn<B>>>,
-  cd: ValidateFn<F3, FnValue<F2>>,
-  de: ValidateFn<F4, FnValue<F3>>,
-  ef: ValidateFn<F5, FnValue<F4>>,
-  fg: ValidateFn<F6, FnValue<F5>>,
-  gh: ValidateFn<F7, FnValue<F6>>
-): () => Promise<PipeResult<F7>>;
-function pipeAsyncSideEffect<
-  B,
-  F2 extends AsyncOrSync<FnValue<ZeroFn<B>>, any>,
-  F3 extends AsyncOrSync<FnValue<F2>, any>,
-  F4 extends AsyncOrSync<FnValue<F3>, any>,
-  F5 extends AsyncOrSync<FnValue<F4>, any>,
-  F6 extends AsyncOrSync<FnValue<F5>, any>,
-  F7 extends AsyncOrSync<FnValue<F6>, any>,
-  F8 extends AsyncOrSync<FnValue<F7>, any>
->(
-  ab: ZeroFn<B>,
-  bc: ValidateFn<F2, FnValue<ZeroFn<B>>>,
-  cd: ValidateFn<F3, FnValue<F2>>,
-  de: ValidateFn<F4, FnValue<F3>>,
-  ef: ValidateFn<F5, FnValue<F4>>,
-  fg: ValidateFn<F6, FnValue<F5>>,
-  gh: ValidateFn<F7, FnValue<F6>>,
-  hi: ValidateFn<F8, FnValue<F7>>
-): () => Promise<PipeResult<F8>>;
-function pipeAsyncSideEffect<
-  B,
-  F2 extends AsyncOrSync<FnValue<ZeroFn<B>>, any>,
-  F3 extends AsyncOrSync<FnValue<F2>, any>,
-  F4 extends AsyncOrSync<FnValue<F3>, any>,
-  F5 extends AsyncOrSync<FnValue<F4>, any>,
-  F6 extends AsyncOrSync<FnValue<F5>, any>,
-  F7 extends AsyncOrSync<FnValue<F6>, any>,
-  F8 extends AsyncOrSync<FnValue<F7>, any>,
-  F9 extends AsyncOrSync<FnValue<F8>, any>
->(
-  ab: ZeroFn<B>,
-  bc: ValidateFn<F2, FnValue<ZeroFn<B>>>,
-  cd: ValidateFn<F3, FnValue<F2>>,
-  de: ValidateFn<F4, FnValue<F3>>,
-  ef: ValidateFn<F5, FnValue<F4>>,
-  fg: ValidateFn<F6, FnValue<F5>>,
-  gh: ValidateFn<F7, FnValue<F6>>,
-  hi: ValidateFn<F8, FnValue<F7>>,
-  ij: ValidateFn<F9, FnValue<F8>>
-): () => Promise<PipeResult<F9>>;
-function pipeAsyncSideEffect<
-  B,
-  F2 extends AsyncOrSync<FnValue<ZeroFn<B>>, any>,
-  F3 extends AsyncOrSync<FnValue<F2>, any>,
-  F4 extends AsyncOrSync<FnValue<F3>, any>,
-  F5 extends AsyncOrSync<FnValue<F4>, any>,
-  F6 extends AsyncOrSync<FnValue<F5>, any>,
-  F7 extends AsyncOrSync<FnValue<F6>, any>,
-  F8 extends AsyncOrSync<FnValue<F7>, any>,
-  F9 extends AsyncOrSync<FnValue<F8>, any>,
-  F10 extends AsyncOrSync<FnValue<F9>, any>
->(
-  ab: ZeroFn<B>,
-  bc: ValidateFn<F2, FnValue<ZeroFn<B>>>,
-  cd: ValidateFn<F3, FnValue<F2>>,
-  de: ValidateFn<F4, FnValue<F3>>,
-  ef: ValidateFn<F5, FnValue<F4>>,
-  fg: ValidateFn<F6, FnValue<F5>>,
-  gh: ValidateFn<F7, FnValue<F6>>,
-  hi: ValidateFn<F8, FnValue<F7>>,
-  ij: ValidateFn<F9, FnValue<F8>>,
-  jk: ValidateFn<F10, FnValue<F9>>
-): () => Promise<PipeResult<F10>>;
+// Function-first entry: from() and zero-arg first steps keep their own call shapes.
+// Rest-only functions such as `(...args: any[]) => R` are not zero-arg.
+type IsZeroArg<F> = F extends (...args: infer P) => any ? (P extends [] ? true : false) : false;
+type IsOptionalArg<F> = F extends (...args: infer P) => any
+  ? number extends P["length"] ? false : [] extends P ? true : false
+  : false;
+type EffectEntry<F1, R, Values extends any[]> = F1 extends { readonly __from: true }
+  ? EffectUnarySignaturesOptional<unknown, NonSideEffect<R>, EffectsOfValues<Values>>
+  : IsZeroArg<F1> extends true
+    ? () => Promise<MaybeSideEffect<NonSideEffect<R>, EffectsOfValues<Values>>>
+    : IsOptionalArg<F1> extends true
+      ? EffectUnarySignaturesOptional<FnInput<F1>, NonSideEffect<R>, EffectsOfValues<Values>>
+      : EffectUnarySignatures<FnInput<F1>, NonSideEffect<R>, EffectsOfValues<Values>>;
+// One signature per arity serves both call styles (data-first and function-first),
+// so no overload can pre-type the other style's lambdas. Regenerate with scripts/generate-pipe-overloads.mjs.
+// `any` input is data, not a function-first step.
+type IsFn<I> = 0 extends 1 & I ? false : [I] extends [AnyFn] ? true : false;
+type Last<Rs extends any[], Fallback> = Rs extends [...any[], infer L] ? L : Fallback;
+type Head<I> = IsFn<I> extends true ? NonSideEffect<Awaited<FnReturn<I>>> : NonSideEffect<I>;
+type Result<I, Rs extends any[]> = IsFn<I> extends true
+  ? EffectEntry<I, Awaited<Last<Rs, FnReturn<I>>>, [Awaited<FnReturn<I>>, ...Rs]>
+  : Promise<MaybeSideEffect<NonSideEffect<Awaited<Last<Rs, I>>>, EffectsOfValues<[I, ...Rs]>>>;
+type PipeCheckFrom<Input, Fns extends [AnyFn, ...AnyFn[]]> =
+  Fns & (PipeCheckResult<[() => Input, ...Fns]> extends true ? unknown : PipeCheckResult<[() => Input, ...Fns]>);
 
-function pipeAsyncSideEffect<F1 extends FromFn<any>>(ab: F1): (input?: unknown) => Promise<PipeResult<F1>>;
-function pipeAsyncSideEffect<F1 extends FromFn<any>, F2 extends AsyncOrSync<FnValue<F1>, any>>(
-  ab: F1,
-  bc: ValidateFn<F2, FnValue<F1>>
-): (input?: unknown) => Promise<PipeResult<F2>>;
-function pipeAsyncSideEffect<
-  F1 extends FromFn<any>,
-  F2 extends AsyncOrSync<FnValue<F1>, any>,
-  F3 extends AsyncOrSync<FnValue<F2>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnValue<F1>>,
-  cd: ValidateFn<F3, FnValue<F2>>
-): (input?: unknown) => Promise<PipeResult<F3>>;
-function pipeAsyncSideEffect<
-  F1 extends FromFn<any>,
-  F2 extends AsyncOrSync<FnValue<F1>, any>,
-  F3 extends AsyncOrSync<FnValue<F2>, any>,
-  F4 extends AsyncOrSync<FnValue<F3>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnValue<F1>>,
-  cd: ValidateFn<F3, FnValue<F2>>,
-  de: ValidateFn<F4, FnValue<F3>>
-): (input?: unknown) => Promise<PipeResult<F4>>;
-function pipeAsyncSideEffect<
-  F1 extends FromFn<any>,
-  F2 extends AsyncOrSync<FnValue<F1>, any>,
-  F3 extends AsyncOrSync<FnValue<F2>, any>,
-  F4 extends AsyncOrSync<FnValue<F3>, any>,
-  F5 extends AsyncOrSync<FnValue<F4>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnValue<F1>>,
-  cd: ValidateFn<F3, FnValue<F2>>,
-  de: ValidateFn<F4, FnValue<F3>>,
-  ef: ValidateFn<F5, FnValue<F4>>
-): (input?: unknown) => Promise<PipeResult<F5>>;
-function pipeAsyncSideEffect<
-  F1 extends FromFn<any>,
-  F2 extends AsyncOrSync<FnValue<F1>, any>,
-  F3 extends AsyncOrSync<FnValue<F2>, any>,
-  F4 extends AsyncOrSync<FnValue<F3>, any>,
-  F5 extends AsyncOrSync<FnValue<F4>, any>,
-  F6 extends AsyncOrSync<FnValue<F5>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnValue<F1>>,
-  cd: ValidateFn<F3, FnValue<F2>>,
-  de: ValidateFn<F4, FnValue<F3>>,
-  ef: ValidateFn<F5, FnValue<F4>>,
-  fg: ValidateFn<F6, FnValue<F5>>
-): (input?: unknown) => Promise<PipeResult<F6>>;
-function pipeAsyncSideEffect<
-  F1 extends FromFn<any>,
-  F2 extends AsyncOrSync<FnValue<F1>, any>,
-  F3 extends AsyncOrSync<FnValue<F2>, any>,
-  F4 extends AsyncOrSync<FnValue<F3>, any>,
-  F5 extends AsyncOrSync<FnValue<F4>, any>,
-  F6 extends AsyncOrSync<FnValue<F5>, any>,
-  F7 extends AsyncOrSync<FnValue<F6>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnValue<F1>>,
-  cd: ValidateFn<F3, FnValue<F2>>,
-  de: ValidateFn<F4, FnValue<F3>>,
-  ef: ValidateFn<F5, FnValue<F4>>,
-  fg: ValidateFn<F6, FnValue<F5>>,
-  gh: ValidateFn<F7, FnValue<F6>>
-): (input?: unknown) => Promise<PipeResult<F7>>;
-function pipeAsyncSideEffect<
-  F1 extends FromFn<any>,
-  F2 extends AsyncOrSync<FnValue<F1>, any>,
-  F3 extends AsyncOrSync<FnValue<F2>, any>,
-  F4 extends AsyncOrSync<FnValue<F3>, any>,
-  F5 extends AsyncOrSync<FnValue<F4>, any>,
-  F6 extends AsyncOrSync<FnValue<F5>, any>,
-  F7 extends AsyncOrSync<FnValue<F6>, any>,
-  F8 extends AsyncOrSync<FnValue<F7>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnValue<F1>>,
-  cd: ValidateFn<F3, FnValue<F2>>,
-  de: ValidateFn<F4, FnValue<F3>>,
-  ef: ValidateFn<F5, FnValue<F4>>,
-  fg: ValidateFn<F6, FnValue<F5>>,
-  gh: ValidateFn<F7, FnValue<F6>>,
-  hi: ValidateFn<F8, FnValue<F7>>
-): (input?: unknown) => Promise<PipeResult<F8>>;
-function pipeAsyncSideEffect<
-  F1 extends FromFn<any>,
-  F2 extends AsyncOrSync<FnValue<F1>, any>,
-  F3 extends AsyncOrSync<FnValue<F2>, any>,
-  F4 extends AsyncOrSync<FnValue<F3>, any>,
-  F5 extends AsyncOrSync<FnValue<F4>, any>,
-  F6 extends AsyncOrSync<FnValue<F5>, any>,
-  F7 extends AsyncOrSync<FnValue<F6>, any>,
-  F8 extends AsyncOrSync<FnValue<F7>, any>,
-  F9 extends AsyncOrSync<FnValue<F8>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnValue<F1>>,
-  cd: ValidateFn<F3, FnValue<F2>>,
-  de: ValidateFn<F4, FnValue<F3>>,
-  ef: ValidateFn<F5, FnValue<F4>>,
-  fg: ValidateFn<F6, FnValue<F5>>,
-  gh: ValidateFn<F7, FnValue<F6>>,
-  hi: ValidateFn<F8, FnValue<F7>>,
-  ij: ValidateFn<F9, FnValue<F8>>
-): (input?: unknown) => Promise<PipeResult<F9>>;
-function pipeAsyncSideEffect<
-  F1 extends FromFn<any>,
-  F2 extends AsyncOrSync<FnValue<F1>, any>,
-  F3 extends AsyncOrSync<FnValue<F2>, any>,
-  F4 extends AsyncOrSync<FnValue<F3>, any>,
-  F5 extends AsyncOrSync<FnValue<F4>, any>,
-  F6 extends AsyncOrSync<FnValue<F5>, any>,
-  F7 extends AsyncOrSync<FnValue<F6>, any>,
-  F8 extends AsyncOrSync<FnValue<F7>, any>,
-  F9 extends AsyncOrSync<FnValue<F8>, any>,
-  F10 extends AsyncOrSync<FnValue<F9>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnValue<F1>>,
-  cd: ValidateFn<F3, FnValue<F2>>,
-  de: ValidateFn<F4, FnValue<F3>>,
-  ef: ValidateFn<F5, FnValue<F4>>,
-  fg: ValidateFn<F6, FnValue<F5>>,
-  gh: ValidateFn<F7, FnValue<F6>>,
-  hi: ValidateFn<F8, FnValue<F7>>,
-  ij: ValidateFn<F9, FnValue<F8>>,
-  jk: ValidateFn<F10, FnValue<F9>>
-): (input?: unknown) => Promise<PipeResult<F10>>;
+function pipeAsyncSideEffect<I>(first: I): Result<I, []>;
+function pipeAsyncSideEffect<I, R1>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>
+): Result<I, [R1]>;
+function pipeAsyncSideEffect<I, R1, R2>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>
+): Result<I, [R1, R2]>;
+function pipeAsyncSideEffect<I, R1, R2, R3>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>
+): Result<I, [R1, R2, R3]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>
+): Result<I, [R1, R2, R3, R4]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>
+): Result<I, [R1, R2, R3, R4, R5]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>
+): Result<I, [R1, R2, R3, R4, R5, R6]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8, R9>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>,
+  s9: AsyncOrSync<NonSideEffect<Awaited<R8>>, R9>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>,
+  s9: AsyncOrSync<NonSideEffect<Awaited<R8>>, R9>,
+  s10: AsyncOrSync<NonSideEffect<Awaited<R9>>, R10>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>,
+  s9: AsyncOrSync<NonSideEffect<Awaited<R8>>, R9>,
+  s10: AsyncOrSync<NonSideEffect<Awaited<R9>>, R10>,
+  s11: AsyncOrSync<NonSideEffect<Awaited<R10>>, R11>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>,
+  s9: AsyncOrSync<NonSideEffect<Awaited<R8>>, R9>,
+  s10: AsyncOrSync<NonSideEffect<Awaited<R9>>, R10>,
+  s11: AsyncOrSync<NonSideEffect<Awaited<R10>>, R11>,
+  s12: AsyncOrSync<NonSideEffect<Awaited<R11>>, R12>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>,
+  s9: AsyncOrSync<NonSideEffect<Awaited<R8>>, R9>,
+  s10: AsyncOrSync<NonSideEffect<Awaited<R9>>, R10>,
+  s11: AsyncOrSync<NonSideEffect<Awaited<R10>>, R11>,
+  s12: AsyncOrSync<NonSideEffect<Awaited<R11>>, R12>,
+  s13: AsyncOrSync<NonSideEffect<Awaited<R12>>, R13>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>,
+  s9: AsyncOrSync<NonSideEffect<Awaited<R8>>, R9>,
+  s10: AsyncOrSync<NonSideEffect<Awaited<R9>>, R10>,
+  s11: AsyncOrSync<NonSideEffect<Awaited<R10>>, R11>,
+  s12: AsyncOrSync<NonSideEffect<Awaited<R11>>, R12>,
+  s13: AsyncOrSync<NonSideEffect<Awaited<R12>>, R13>,
+  s14: AsyncOrSync<NonSideEffect<Awaited<R13>>, R14>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>,
+  s9: AsyncOrSync<NonSideEffect<Awaited<R8>>, R9>,
+  s10: AsyncOrSync<NonSideEffect<Awaited<R9>>, R10>,
+  s11: AsyncOrSync<NonSideEffect<Awaited<R10>>, R11>,
+  s12: AsyncOrSync<NonSideEffect<Awaited<R11>>, R12>,
+  s13: AsyncOrSync<NonSideEffect<Awaited<R12>>, R13>,
+  s14: AsyncOrSync<NonSideEffect<Awaited<R13>>, R14>,
+  s15: AsyncOrSync<NonSideEffect<Awaited<R14>>, R15>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>,
+  s9: AsyncOrSync<NonSideEffect<Awaited<R8>>, R9>,
+  s10: AsyncOrSync<NonSideEffect<Awaited<R9>>, R10>,
+  s11: AsyncOrSync<NonSideEffect<Awaited<R10>>, R11>,
+  s12: AsyncOrSync<NonSideEffect<Awaited<R11>>, R12>,
+  s13: AsyncOrSync<NonSideEffect<Awaited<R12>>, R13>,
+  s14: AsyncOrSync<NonSideEffect<Awaited<R13>>, R14>,
+  s15: AsyncOrSync<NonSideEffect<Awaited<R14>>, R15>,
+  s16: AsyncOrSync<NonSideEffect<Awaited<R15>>, R16>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>,
+  s9: AsyncOrSync<NonSideEffect<Awaited<R8>>, R9>,
+  s10: AsyncOrSync<NonSideEffect<Awaited<R9>>, R10>,
+  s11: AsyncOrSync<NonSideEffect<Awaited<R10>>, R11>,
+  s12: AsyncOrSync<NonSideEffect<Awaited<R11>>, R12>,
+  s13: AsyncOrSync<NonSideEffect<Awaited<R12>>, R13>,
+  s14: AsyncOrSync<NonSideEffect<Awaited<R13>>, R14>,
+  s15: AsyncOrSync<NonSideEffect<Awaited<R14>>, R15>,
+  s16: AsyncOrSync<NonSideEffect<Awaited<R15>>, R16>,
+  s17: AsyncOrSync<NonSideEffect<Awaited<R16>>, R17>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>,
+  s9: AsyncOrSync<NonSideEffect<Awaited<R8>>, R9>,
+  s10: AsyncOrSync<NonSideEffect<Awaited<R9>>, R10>,
+  s11: AsyncOrSync<NonSideEffect<Awaited<R10>>, R11>,
+  s12: AsyncOrSync<NonSideEffect<Awaited<R11>>, R12>,
+  s13: AsyncOrSync<NonSideEffect<Awaited<R12>>, R13>,
+  s14: AsyncOrSync<NonSideEffect<Awaited<R13>>, R14>,
+  s15: AsyncOrSync<NonSideEffect<Awaited<R14>>, R15>,
+  s16: AsyncOrSync<NonSideEffect<Awaited<R15>>, R16>,
+  s17: AsyncOrSync<NonSideEffect<Awaited<R16>>, R17>,
+  s18: AsyncOrSync<NonSideEffect<Awaited<R17>>, R18>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>,
+  s9: AsyncOrSync<NonSideEffect<Awaited<R8>>, R9>,
+  s10: AsyncOrSync<NonSideEffect<Awaited<R9>>, R10>,
+  s11: AsyncOrSync<NonSideEffect<Awaited<R10>>, R11>,
+  s12: AsyncOrSync<NonSideEffect<Awaited<R11>>, R12>,
+  s13: AsyncOrSync<NonSideEffect<Awaited<R12>>, R13>,
+  s14: AsyncOrSync<NonSideEffect<Awaited<R13>>, R14>,
+  s15: AsyncOrSync<NonSideEffect<Awaited<R14>>, R15>,
+  s16: AsyncOrSync<NonSideEffect<Awaited<R15>>, R16>,
+  s17: AsyncOrSync<NonSideEffect<Awaited<R16>>, R17>,
+  s18: AsyncOrSync<NonSideEffect<Awaited<R17>>, R18>,
+  s19: AsyncOrSync<NonSideEffect<Awaited<R18>>, R19>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>,
+  s9: AsyncOrSync<NonSideEffect<Awaited<R8>>, R9>,
+  s10: AsyncOrSync<NonSideEffect<Awaited<R9>>, R10>,
+  s11: AsyncOrSync<NonSideEffect<Awaited<R10>>, R11>,
+  s12: AsyncOrSync<NonSideEffect<Awaited<R11>>, R12>,
+  s13: AsyncOrSync<NonSideEffect<Awaited<R12>>, R13>,
+  s14: AsyncOrSync<NonSideEffect<Awaited<R13>>, R14>,
+  s15: AsyncOrSync<NonSideEffect<Awaited<R14>>, R15>,
+  s16: AsyncOrSync<NonSideEffect<Awaited<R15>>, R16>,
+  s17: AsyncOrSync<NonSideEffect<Awaited<R16>>, R17>,
+  s18: AsyncOrSync<NonSideEffect<Awaited<R17>>, R18>,
+  s19: AsyncOrSync<NonSideEffect<Awaited<R18>>, R19>,
+  s20: AsyncOrSync<NonSideEffect<Awaited<R19>>, R20>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>,
+  s9: AsyncOrSync<NonSideEffect<Awaited<R8>>, R9>,
+  s10: AsyncOrSync<NonSideEffect<Awaited<R9>>, R10>,
+  s11: AsyncOrSync<NonSideEffect<Awaited<R10>>, R11>,
+  s12: AsyncOrSync<NonSideEffect<Awaited<R11>>, R12>,
+  s13: AsyncOrSync<NonSideEffect<Awaited<R12>>, R13>,
+  s14: AsyncOrSync<NonSideEffect<Awaited<R13>>, R14>,
+  s15: AsyncOrSync<NonSideEffect<Awaited<R14>>, R15>,
+  s16: AsyncOrSync<NonSideEffect<Awaited<R15>>, R16>,
+  s17: AsyncOrSync<NonSideEffect<Awaited<R16>>, R17>,
+  s18: AsyncOrSync<NonSideEffect<Awaited<R17>>, R18>,
+  s19: AsyncOrSync<NonSideEffect<Awaited<R18>>, R19>,
+  s20: AsyncOrSync<NonSideEffect<Awaited<R19>>, R20>,
+  s21: AsyncOrSync<NonSideEffect<Awaited<R20>>, R21>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>,
+  s9: AsyncOrSync<NonSideEffect<Awaited<R8>>, R9>,
+  s10: AsyncOrSync<NonSideEffect<Awaited<R9>>, R10>,
+  s11: AsyncOrSync<NonSideEffect<Awaited<R10>>, R11>,
+  s12: AsyncOrSync<NonSideEffect<Awaited<R11>>, R12>,
+  s13: AsyncOrSync<NonSideEffect<Awaited<R12>>, R13>,
+  s14: AsyncOrSync<NonSideEffect<Awaited<R13>>, R14>,
+  s15: AsyncOrSync<NonSideEffect<Awaited<R14>>, R15>,
+  s16: AsyncOrSync<NonSideEffect<Awaited<R15>>, R16>,
+  s17: AsyncOrSync<NonSideEffect<Awaited<R16>>, R17>,
+  s18: AsyncOrSync<NonSideEffect<Awaited<R17>>, R18>,
+  s19: AsyncOrSync<NonSideEffect<Awaited<R18>>, R19>,
+  s20: AsyncOrSync<NonSideEffect<Awaited<R19>>, R20>,
+  s21: AsyncOrSync<NonSideEffect<Awaited<R20>>, R21>,
+  s22: AsyncOrSync<NonSideEffect<Awaited<R21>>, R22>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22, R23>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>,
+  s9: AsyncOrSync<NonSideEffect<Awaited<R8>>, R9>,
+  s10: AsyncOrSync<NonSideEffect<Awaited<R9>>, R10>,
+  s11: AsyncOrSync<NonSideEffect<Awaited<R10>>, R11>,
+  s12: AsyncOrSync<NonSideEffect<Awaited<R11>>, R12>,
+  s13: AsyncOrSync<NonSideEffect<Awaited<R12>>, R13>,
+  s14: AsyncOrSync<NonSideEffect<Awaited<R13>>, R14>,
+  s15: AsyncOrSync<NonSideEffect<Awaited<R14>>, R15>,
+  s16: AsyncOrSync<NonSideEffect<Awaited<R15>>, R16>,
+  s17: AsyncOrSync<NonSideEffect<Awaited<R16>>, R17>,
+  s18: AsyncOrSync<NonSideEffect<Awaited<R17>>, R18>,
+  s19: AsyncOrSync<NonSideEffect<Awaited<R18>>, R19>,
+  s20: AsyncOrSync<NonSideEffect<Awaited<R19>>, R20>,
+  s21: AsyncOrSync<NonSideEffect<Awaited<R20>>, R21>,
+  s22: AsyncOrSync<NonSideEffect<Awaited<R21>>, R22>,
+  s23: AsyncOrSync<NonSideEffect<Awaited<R22>>, R23>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22, R23]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22, R23, R24>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>,
+  s9: AsyncOrSync<NonSideEffect<Awaited<R8>>, R9>,
+  s10: AsyncOrSync<NonSideEffect<Awaited<R9>>, R10>,
+  s11: AsyncOrSync<NonSideEffect<Awaited<R10>>, R11>,
+  s12: AsyncOrSync<NonSideEffect<Awaited<R11>>, R12>,
+  s13: AsyncOrSync<NonSideEffect<Awaited<R12>>, R13>,
+  s14: AsyncOrSync<NonSideEffect<Awaited<R13>>, R14>,
+  s15: AsyncOrSync<NonSideEffect<Awaited<R14>>, R15>,
+  s16: AsyncOrSync<NonSideEffect<Awaited<R15>>, R16>,
+  s17: AsyncOrSync<NonSideEffect<Awaited<R16>>, R17>,
+  s18: AsyncOrSync<NonSideEffect<Awaited<R17>>, R18>,
+  s19: AsyncOrSync<NonSideEffect<Awaited<R18>>, R19>,
+  s20: AsyncOrSync<NonSideEffect<Awaited<R19>>, R20>,
+  s21: AsyncOrSync<NonSideEffect<Awaited<R20>>, R21>,
+  s22: AsyncOrSync<NonSideEffect<Awaited<R21>>, R22>,
+  s23: AsyncOrSync<NonSideEffect<Awaited<R22>>, R23>,
+  s24: AsyncOrSync<NonSideEffect<Awaited<R23>>, R24>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22, R23, R24]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22, R23, R24, R25>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>,
+  s9: AsyncOrSync<NonSideEffect<Awaited<R8>>, R9>,
+  s10: AsyncOrSync<NonSideEffect<Awaited<R9>>, R10>,
+  s11: AsyncOrSync<NonSideEffect<Awaited<R10>>, R11>,
+  s12: AsyncOrSync<NonSideEffect<Awaited<R11>>, R12>,
+  s13: AsyncOrSync<NonSideEffect<Awaited<R12>>, R13>,
+  s14: AsyncOrSync<NonSideEffect<Awaited<R13>>, R14>,
+  s15: AsyncOrSync<NonSideEffect<Awaited<R14>>, R15>,
+  s16: AsyncOrSync<NonSideEffect<Awaited<R15>>, R16>,
+  s17: AsyncOrSync<NonSideEffect<Awaited<R16>>, R17>,
+  s18: AsyncOrSync<NonSideEffect<Awaited<R17>>, R18>,
+  s19: AsyncOrSync<NonSideEffect<Awaited<R18>>, R19>,
+  s20: AsyncOrSync<NonSideEffect<Awaited<R19>>, R20>,
+  s21: AsyncOrSync<NonSideEffect<Awaited<R20>>, R21>,
+  s22: AsyncOrSync<NonSideEffect<Awaited<R21>>, R22>,
+  s23: AsyncOrSync<NonSideEffect<Awaited<R22>>, R23>,
+  s24: AsyncOrSync<NonSideEffect<Awaited<R23>>, R24>,
+  s25: AsyncOrSync<NonSideEffect<Awaited<R24>>, R25>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22, R23, R24, R25]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22, R23, R24, R25, R26>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>,
+  s9: AsyncOrSync<NonSideEffect<Awaited<R8>>, R9>,
+  s10: AsyncOrSync<NonSideEffect<Awaited<R9>>, R10>,
+  s11: AsyncOrSync<NonSideEffect<Awaited<R10>>, R11>,
+  s12: AsyncOrSync<NonSideEffect<Awaited<R11>>, R12>,
+  s13: AsyncOrSync<NonSideEffect<Awaited<R12>>, R13>,
+  s14: AsyncOrSync<NonSideEffect<Awaited<R13>>, R14>,
+  s15: AsyncOrSync<NonSideEffect<Awaited<R14>>, R15>,
+  s16: AsyncOrSync<NonSideEffect<Awaited<R15>>, R16>,
+  s17: AsyncOrSync<NonSideEffect<Awaited<R16>>, R17>,
+  s18: AsyncOrSync<NonSideEffect<Awaited<R17>>, R18>,
+  s19: AsyncOrSync<NonSideEffect<Awaited<R18>>, R19>,
+  s20: AsyncOrSync<NonSideEffect<Awaited<R19>>, R20>,
+  s21: AsyncOrSync<NonSideEffect<Awaited<R20>>, R21>,
+  s22: AsyncOrSync<NonSideEffect<Awaited<R21>>, R22>,
+  s23: AsyncOrSync<NonSideEffect<Awaited<R22>>, R23>,
+  s24: AsyncOrSync<NonSideEffect<Awaited<R23>>, R24>,
+  s25: AsyncOrSync<NonSideEffect<Awaited<R24>>, R25>,
+  s26: AsyncOrSync<NonSideEffect<Awaited<R25>>, R26>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22, R23, R24, R25, R26]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22, R23, R24, R25, R26, R27>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>,
+  s9: AsyncOrSync<NonSideEffect<Awaited<R8>>, R9>,
+  s10: AsyncOrSync<NonSideEffect<Awaited<R9>>, R10>,
+  s11: AsyncOrSync<NonSideEffect<Awaited<R10>>, R11>,
+  s12: AsyncOrSync<NonSideEffect<Awaited<R11>>, R12>,
+  s13: AsyncOrSync<NonSideEffect<Awaited<R12>>, R13>,
+  s14: AsyncOrSync<NonSideEffect<Awaited<R13>>, R14>,
+  s15: AsyncOrSync<NonSideEffect<Awaited<R14>>, R15>,
+  s16: AsyncOrSync<NonSideEffect<Awaited<R15>>, R16>,
+  s17: AsyncOrSync<NonSideEffect<Awaited<R16>>, R17>,
+  s18: AsyncOrSync<NonSideEffect<Awaited<R17>>, R18>,
+  s19: AsyncOrSync<NonSideEffect<Awaited<R18>>, R19>,
+  s20: AsyncOrSync<NonSideEffect<Awaited<R19>>, R20>,
+  s21: AsyncOrSync<NonSideEffect<Awaited<R20>>, R21>,
+  s22: AsyncOrSync<NonSideEffect<Awaited<R21>>, R22>,
+  s23: AsyncOrSync<NonSideEffect<Awaited<R22>>, R23>,
+  s24: AsyncOrSync<NonSideEffect<Awaited<R23>>, R24>,
+  s25: AsyncOrSync<NonSideEffect<Awaited<R24>>, R25>,
+  s26: AsyncOrSync<NonSideEffect<Awaited<R25>>, R26>,
+  s27: AsyncOrSync<NonSideEffect<Awaited<R26>>, R27>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22, R23, R24, R25, R26, R27]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22, R23, R24, R25, R26, R27, R28>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>,
+  s9: AsyncOrSync<NonSideEffect<Awaited<R8>>, R9>,
+  s10: AsyncOrSync<NonSideEffect<Awaited<R9>>, R10>,
+  s11: AsyncOrSync<NonSideEffect<Awaited<R10>>, R11>,
+  s12: AsyncOrSync<NonSideEffect<Awaited<R11>>, R12>,
+  s13: AsyncOrSync<NonSideEffect<Awaited<R12>>, R13>,
+  s14: AsyncOrSync<NonSideEffect<Awaited<R13>>, R14>,
+  s15: AsyncOrSync<NonSideEffect<Awaited<R14>>, R15>,
+  s16: AsyncOrSync<NonSideEffect<Awaited<R15>>, R16>,
+  s17: AsyncOrSync<NonSideEffect<Awaited<R16>>, R17>,
+  s18: AsyncOrSync<NonSideEffect<Awaited<R17>>, R18>,
+  s19: AsyncOrSync<NonSideEffect<Awaited<R18>>, R19>,
+  s20: AsyncOrSync<NonSideEffect<Awaited<R19>>, R20>,
+  s21: AsyncOrSync<NonSideEffect<Awaited<R20>>, R21>,
+  s22: AsyncOrSync<NonSideEffect<Awaited<R21>>, R22>,
+  s23: AsyncOrSync<NonSideEffect<Awaited<R22>>, R23>,
+  s24: AsyncOrSync<NonSideEffect<Awaited<R23>>, R24>,
+  s25: AsyncOrSync<NonSideEffect<Awaited<R24>>, R25>,
+  s26: AsyncOrSync<NonSideEffect<Awaited<R25>>, R26>,
+  s27: AsyncOrSync<NonSideEffect<Awaited<R26>>, R27>,
+  s28: AsyncOrSync<NonSideEffect<Awaited<R27>>, R28>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22, R23, R24, R25, R26, R27, R28]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22, R23, R24, R25, R26, R27, R28, R29>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>,
+  s9: AsyncOrSync<NonSideEffect<Awaited<R8>>, R9>,
+  s10: AsyncOrSync<NonSideEffect<Awaited<R9>>, R10>,
+  s11: AsyncOrSync<NonSideEffect<Awaited<R10>>, R11>,
+  s12: AsyncOrSync<NonSideEffect<Awaited<R11>>, R12>,
+  s13: AsyncOrSync<NonSideEffect<Awaited<R12>>, R13>,
+  s14: AsyncOrSync<NonSideEffect<Awaited<R13>>, R14>,
+  s15: AsyncOrSync<NonSideEffect<Awaited<R14>>, R15>,
+  s16: AsyncOrSync<NonSideEffect<Awaited<R15>>, R16>,
+  s17: AsyncOrSync<NonSideEffect<Awaited<R16>>, R17>,
+  s18: AsyncOrSync<NonSideEffect<Awaited<R17>>, R18>,
+  s19: AsyncOrSync<NonSideEffect<Awaited<R18>>, R19>,
+  s20: AsyncOrSync<NonSideEffect<Awaited<R19>>, R20>,
+  s21: AsyncOrSync<NonSideEffect<Awaited<R20>>, R21>,
+  s22: AsyncOrSync<NonSideEffect<Awaited<R21>>, R22>,
+  s23: AsyncOrSync<NonSideEffect<Awaited<R22>>, R23>,
+  s24: AsyncOrSync<NonSideEffect<Awaited<R23>>, R24>,
+  s25: AsyncOrSync<NonSideEffect<Awaited<R24>>, R25>,
+  s26: AsyncOrSync<NonSideEffect<Awaited<R25>>, R26>,
+  s27: AsyncOrSync<NonSideEffect<Awaited<R26>>, R27>,
+  s28: AsyncOrSync<NonSideEffect<Awaited<R27>>, R28>,
+  s29: AsyncOrSync<NonSideEffect<Awaited<R28>>, R29>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22, R23, R24, R25, R26, R27, R28, R29]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22, R23, R24, R25, R26, R27, R28, R29, R30>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>,
+  s9: AsyncOrSync<NonSideEffect<Awaited<R8>>, R9>,
+  s10: AsyncOrSync<NonSideEffect<Awaited<R9>>, R10>,
+  s11: AsyncOrSync<NonSideEffect<Awaited<R10>>, R11>,
+  s12: AsyncOrSync<NonSideEffect<Awaited<R11>>, R12>,
+  s13: AsyncOrSync<NonSideEffect<Awaited<R12>>, R13>,
+  s14: AsyncOrSync<NonSideEffect<Awaited<R13>>, R14>,
+  s15: AsyncOrSync<NonSideEffect<Awaited<R14>>, R15>,
+  s16: AsyncOrSync<NonSideEffect<Awaited<R15>>, R16>,
+  s17: AsyncOrSync<NonSideEffect<Awaited<R16>>, R17>,
+  s18: AsyncOrSync<NonSideEffect<Awaited<R17>>, R18>,
+  s19: AsyncOrSync<NonSideEffect<Awaited<R18>>, R19>,
+  s20: AsyncOrSync<NonSideEffect<Awaited<R19>>, R20>,
+  s21: AsyncOrSync<NonSideEffect<Awaited<R20>>, R21>,
+  s22: AsyncOrSync<NonSideEffect<Awaited<R21>>, R22>,
+  s23: AsyncOrSync<NonSideEffect<Awaited<R22>>, R23>,
+  s24: AsyncOrSync<NonSideEffect<Awaited<R23>>, R24>,
+  s25: AsyncOrSync<NonSideEffect<Awaited<R24>>, R25>,
+  s26: AsyncOrSync<NonSideEffect<Awaited<R25>>, R26>,
+  s27: AsyncOrSync<NonSideEffect<Awaited<R26>>, R27>,
+  s28: AsyncOrSync<NonSideEffect<Awaited<R27>>, R28>,
+  s29: AsyncOrSync<NonSideEffect<Awaited<R28>>, R29>,
+  s30: AsyncOrSync<NonSideEffect<Awaited<R29>>, R30>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22, R23, R24, R25, R26, R27, R28, R29, R30]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22, R23, R24, R25, R26, R27, R28, R29, R30, R31>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>,
+  s9: AsyncOrSync<NonSideEffect<Awaited<R8>>, R9>,
+  s10: AsyncOrSync<NonSideEffect<Awaited<R9>>, R10>,
+  s11: AsyncOrSync<NonSideEffect<Awaited<R10>>, R11>,
+  s12: AsyncOrSync<NonSideEffect<Awaited<R11>>, R12>,
+  s13: AsyncOrSync<NonSideEffect<Awaited<R12>>, R13>,
+  s14: AsyncOrSync<NonSideEffect<Awaited<R13>>, R14>,
+  s15: AsyncOrSync<NonSideEffect<Awaited<R14>>, R15>,
+  s16: AsyncOrSync<NonSideEffect<Awaited<R15>>, R16>,
+  s17: AsyncOrSync<NonSideEffect<Awaited<R16>>, R17>,
+  s18: AsyncOrSync<NonSideEffect<Awaited<R17>>, R18>,
+  s19: AsyncOrSync<NonSideEffect<Awaited<R18>>, R19>,
+  s20: AsyncOrSync<NonSideEffect<Awaited<R19>>, R20>,
+  s21: AsyncOrSync<NonSideEffect<Awaited<R20>>, R21>,
+  s22: AsyncOrSync<NonSideEffect<Awaited<R21>>, R22>,
+  s23: AsyncOrSync<NonSideEffect<Awaited<R22>>, R23>,
+  s24: AsyncOrSync<NonSideEffect<Awaited<R23>>, R24>,
+  s25: AsyncOrSync<NonSideEffect<Awaited<R24>>, R25>,
+  s26: AsyncOrSync<NonSideEffect<Awaited<R25>>, R26>,
+  s27: AsyncOrSync<NonSideEffect<Awaited<R26>>, R27>,
+  s28: AsyncOrSync<NonSideEffect<Awaited<R27>>, R28>,
+  s29: AsyncOrSync<NonSideEffect<Awaited<R28>>, R29>,
+  s30: AsyncOrSync<NonSideEffect<Awaited<R29>>, R30>,
+  s31: AsyncOrSync<NonSideEffect<Awaited<R30>>, R31>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22, R23, R24, R25, R26, R27, R28, R29, R30, R31]>;
+function pipeAsyncSideEffect<I, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22, R23, R24, R25, R26, R27, R28, R29, R30, R31, R32>(
+  first: I,
+  s1: AsyncOrSync<Head<I>, R1>,
+  s2: AsyncOrSync<NonSideEffect<Awaited<R1>>, R2>,
+  s3: AsyncOrSync<NonSideEffect<Awaited<R2>>, R3>,
+  s4: AsyncOrSync<NonSideEffect<Awaited<R3>>, R4>,
+  s5: AsyncOrSync<NonSideEffect<Awaited<R4>>, R5>,
+  s6: AsyncOrSync<NonSideEffect<Awaited<R5>>, R6>,
+  s7: AsyncOrSync<NonSideEffect<Awaited<R6>>, R7>,
+  s8: AsyncOrSync<NonSideEffect<Awaited<R7>>, R8>,
+  s9: AsyncOrSync<NonSideEffect<Awaited<R8>>, R9>,
+  s10: AsyncOrSync<NonSideEffect<Awaited<R9>>, R10>,
+  s11: AsyncOrSync<NonSideEffect<Awaited<R10>>, R11>,
+  s12: AsyncOrSync<NonSideEffect<Awaited<R11>>, R12>,
+  s13: AsyncOrSync<NonSideEffect<Awaited<R12>>, R13>,
+  s14: AsyncOrSync<NonSideEffect<Awaited<R13>>, R14>,
+  s15: AsyncOrSync<NonSideEffect<Awaited<R14>>, R15>,
+  s16: AsyncOrSync<NonSideEffect<Awaited<R15>>, R16>,
+  s17: AsyncOrSync<NonSideEffect<Awaited<R16>>, R17>,
+  s18: AsyncOrSync<NonSideEffect<Awaited<R17>>, R18>,
+  s19: AsyncOrSync<NonSideEffect<Awaited<R18>>, R19>,
+  s20: AsyncOrSync<NonSideEffect<Awaited<R19>>, R20>,
+  s21: AsyncOrSync<NonSideEffect<Awaited<R20>>, R21>,
+  s22: AsyncOrSync<NonSideEffect<Awaited<R21>>, R22>,
+  s23: AsyncOrSync<NonSideEffect<Awaited<R22>>, R23>,
+  s24: AsyncOrSync<NonSideEffect<Awaited<R23>>, R24>,
+  s25: AsyncOrSync<NonSideEffect<Awaited<R24>>, R25>,
+  s26: AsyncOrSync<NonSideEffect<Awaited<R25>>, R26>,
+  s27: AsyncOrSync<NonSideEffect<Awaited<R26>>, R27>,
+  s28: AsyncOrSync<NonSideEffect<Awaited<R27>>, R28>,
+  s29: AsyncOrSync<NonSideEffect<Awaited<R28>>, R29>,
+  s30: AsyncOrSync<NonSideEffect<Awaited<R29>>, R30>,
+  s31: AsyncOrSync<NonSideEffect<Awaited<R30>>, R31>,
+  s32: AsyncOrSync<NonSideEffect<Awaited<R31>>, R32>
+): Result<I, [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14, R15, R16, R17, R18, R19, R20, R21, R22, R23, R24, R25, R26, R27, R28, R29, R30, R31, R32]>;
 
-function pipeAsyncSideEffect<F1 extends FirstAsyncOrSync<any, any>>(
-  ab: F1
-): (a: FnInput<F1> | SideEffect<any>) => Promise<PipeResult<F1>>;
-function pipeAsyncSideEffect<F1 extends FirstAsyncOrSync<any, any>, F2 extends AsyncOrSync<FnValue<F1>, any>>(
-  ab: F1,
-  bc: ValidateFn<F2, FnValue<F1>>
-): (a: FnInput<F1> | SideEffect<any>) => Promise<PipeResult<F2>>;
-function pipeAsyncSideEffect<
-  F1 extends FirstAsyncOrSync<any, any>,
-  F2 extends AsyncOrSync<FnValue<F1>, any>,
-  F3 extends AsyncOrSync<FnValue<F2>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnValue<F1>>,
-  cd: ValidateFn<F3, FnValue<F2>>
-): (a: FnInput<F1> | SideEffect<any>) => Promise<PipeResult<F3>>;
-function pipeAsyncSideEffect<
-  F1 extends FirstAsyncOrSync<any, any>,
-  F2 extends AsyncOrSync<FnValue<F1>, any>,
-  F3 extends AsyncOrSync<FnValue<F2>, any>,
-  F4 extends AsyncOrSync<FnValue<F3>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnValue<F1>>,
-  cd: ValidateFn<F3, FnValue<F2>>,
-  de: ValidateFn<F4, FnValue<F3>>
-): (a: FnInput<F1> | SideEffect<any>) => Promise<PipeResult<F4>>;
-function pipeAsyncSideEffect<
-  F1 extends FirstAsyncOrSync<any, any>,
-  F2 extends AsyncOrSync<FnValue<F1>, any>,
-  F3 extends AsyncOrSync<FnValue<F2>, any>,
-  F4 extends AsyncOrSync<FnValue<F3>, any>,
-  F5 extends AsyncOrSync<FnValue<F4>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnValue<F1>>,
-  cd: ValidateFn<F3, FnValue<F2>>,
-  de: ValidateFn<F4, FnValue<F3>>,
-  ef: ValidateFn<F5, FnValue<F4>>
-): (a: FnInput<F1> | SideEffect<any>) => Promise<PipeResult<F5>>;
-function pipeAsyncSideEffect<
-  F1 extends FirstAsyncOrSync<any, any>,
-  F2 extends AsyncOrSync<FnValue<F1>, any>,
-  F3 extends AsyncOrSync<FnValue<F2>, any>,
-  F4 extends AsyncOrSync<FnValue<F3>, any>,
-  F5 extends AsyncOrSync<FnValue<F4>, any>,
-  F6 extends AsyncOrSync<FnValue<F5>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnValue<F1>>,
-  cd: ValidateFn<F3, FnValue<F2>>,
-  de: ValidateFn<F4, FnValue<F3>>,
-  ef: ValidateFn<F5, FnValue<F4>>,
-  fg: ValidateFn<F6, FnValue<F5>>
-): (a: FnInput<F1> | SideEffect<any>) => Promise<PipeResult<F6>>;
-function pipeAsyncSideEffect<
-  F1 extends FirstAsyncOrSync<any, any>,
-  F2 extends AsyncOrSync<FnValue<F1>, any>,
-  F3 extends AsyncOrSync<FnValue<F2>, any>,
-  F4 extends AsyncOrSync<FnValue<F3>, any>,
-  F5 extends AsyncOrSync<FnValue<F4>, any>,
-  F6 extends AsyncOrSync<FnValue<F5>, any>,
-  F7 extends AsyncOrSync<FnValue<F6>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnValue<F1>>,
-  cd: ValidateFn<F3, FnValue<F2>>,
-  de: ValidateFn<F4, FnValue<F3>>,
-  ef: ValidateFn<F5, FnValue<F4>>,
-  fg: ValidateFn<F6, FnValue<F5>>,
-  gh: ValidateFn<F7, FnValue<F6>>
-): (a: FnInput<F1> | SideEffect<any>) => Promise<PipeResult<F7>>;
-function pipeAsyncSideEffect<
-  F1 extends FirstAsyncOrSync<any, any>,
-  F2 extends AsyncOrSync<FnValue<F1>, any>,
-  F3 extends AsyncOrSync<FnValue<F2>, any>,
-  F4 extends AsyncOrSync<FnValue<F3>, any>,
-  F5 extends AsyncOrSync<FnValue<F4>, any>,
-  F6 extends AsyncOrSync<FnValue<F5>, any>,
-  F7 extends AsyncOrSync<FnValue<F6>, any>,
-  F8 extends AsyncOrSync<FnValue<F7>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnValue<F1>>,
-  cd: ValidateFn<F3, FnValue<F2>>,
-  de: ValidateFn<F4, FnValue<F3>>,
-  ef: ValidateFn<F5, FnValue<F4>>,
-  fg: ValidateFn<F6, FnValue<F5>>,
-  gh: ValidateFn<F7, FnValue<F6>>,
-  hi: ValidateFn<F8, FnValue<F7>>
-): (a: FnInput<F1> | SideEffect<any>) => Promise<PipeResult<F8>>;
-function pipeAsyncSideEffect<
-  F1 extends FirstAsyncOrSync<any, any>,
-  F2 extends AsyncOrSync<FnValue<F1>, any>,
-  F3 extends AsyncOrSync<FnValue<F2>, any>,
-  F4 extends AsyncOrSync<FnValue<F3>, any>,
-  F5 extends AsyncOrSync<FnValue<F4>, any>,
-  F6 extends AsyncOrSync<FnValue<F5>, any>,
-  F7 extends AsyncOrSync<FnValue<F6>, any>,
-  F8 extends AsyncOrSync<FnValue<F7>, any>,
-  F9 extends AsyncOrSync<FnValue<F8>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnValue<F1>>,
-  cd: ValidateFn<F3, FnValue<F2>>,
-  de: ValidateFn<F4, FnValue<F3>>,
-  ef: ValidateFn<F5, FnValue<F4>>,
-  fg: ValidateFn<F6, FnValue<F5>>,
-  gh: ValidateFn<F7, FnValue<F6>>,
-  hi: ValidateFn<F8, FnValue<F7>>,
-  ij: ValidateFn<F9, FnValue<F8>>
-): (a: FnInput<F1> | SideEffect<any>) => Promise<PipeResult<F9>>;
-function pipeAsyncSideEffect<
-  F1 extends FirstAsyncOrSync<any, any>,
-  F2 extends AsyncOrSync<FnValue<F1>, any>,
-  F3 extends AsyncOrSync<FnValue<F2>, any>,
-  F4 extends AsyncOrSync<FnValue<F3>, any>,
-  F5 extends AsyncOrSync<FnValue<F4>, any>,
-  F6 extends AsyncOrSync<FnValue<F5>, any>,
-  F7 extends AsyncOrSync<FnValue<F6>, any>,
-  F8 extends AsyncOrSync<FnValue<F7>, any>,
-  F9 extends AsyncOrSync<FnValue<F8>, any>,
-  F10 extends AsyncOrSync<FnValue<F9>, any>
->(
-  ab: F1,
-  bc: ValidateFn<F2, FnValue<F1>>,
-  cd: ValidateFn<F3, FnValue<F2>>,
-  de: ValidateFn<F4, FnValue<F3>>,
-  ef: ValidateFn<F5, FnValue<F4>>,
-  fg: ValidateFn<F6, FnValue<F5>>,
-  gh: ValidateFn<F7, FnValue<F6>>,
-  hi: ValidateFn<F8, FnValue<F7>>,
-  ij: ValidateFn<F9, FnValue<F8>>,
-  jk: ValidateFn<F10, FnValue<F9>>
-): (a: FnInput<F1> | SideEffect<any>) => Promise<PipeResult<F10>>;
-
-function pipeAsyncSideEffect<Fns extends [FromFn<any>, ...AsyncOrSync<any, any>[]]>(
+function pipeAsyncSideEffect<Fns extends [FromFn<any>, ...FallbackFn[]]>(
   ...funcs: PipeCheck<Fns>
 ): PipeAsyncSideEffectFrom<Fns>;
-function pipeAsyncSideEffect<Fns extends [FirstAsyncOrSync<any, any>, ...AsyncOrSync<any, any>[]]>(
+function pipeAsyncSideEffect<Fns extends [FallbackFn, ...FallbackFn[]]>(
   ...funcs: PipeCheck<Fns>
 ): PipeAsyncSideEffect<Fns>;
-function pipeAsyncSideEffect(...funcs: Array<AsyncOrSync<any, any>>): (value: any) => Promise<any>;
+function pipeAsyncSideEffect<A, Fns extends [FallbackFn, ...FallbackFn[]]>(
+  input: NonFunction<A>,
+  ...funcs: PipeCheckFrom<A, Fns>
+): Promise<EffectResultWithInput<LastFn<Fns>, Fns, EffectOfValue<A>>>;
+function pipeAsyncSideEffect<A, EIn, Fns extends [FallbackFn, ...FallbackFn[]]>(
+  input: NonFunction<A> | SideEffect<EIn>,
+  ...funcs: PipeCheckFrom<A, Fns>
+): Promise<EffectResultWithInput<LastFn<Fns>, Fns, EIn>>;
 function pipeAsyncSideEffect(...args: Array<any>) {
-  const run = async (value: any, funcs: Array<(arg: any) => any>) => {
-    let acc = value;
+  const run = async (init: any, funcs: Array<(input: any) => any>) => {
+    let acc = init;
     for (const fn of funcs) {
       if (isSideEffect(acc)) {
         return acc;
@@ -587,13 +735,16 @@ function pipeAsyncSideEffect(...args: Array<any>) {
   if (args.length === 0) {
     return Promise.resolve(undefined);
   }
-  const [input, ...rest] = args as [any, ...Array<(arg: any) => any>];
+  const [input, ...rest] = args as [any, ...Array<(input: any) => any>];
   if (typeof input === 'function') {
     const funcs = [input, ...rest];
-    return (value: any) => run(value, funcs);
+    return (init?: any) => run(init, funcs);
   }
 
   return run(input, rest);
 }
 
-export default pipeAsyncSideEffect;
+const pipeAsyncSideEffectWithBrand = pipeAsyncSideEffect as typeof pipeAsyncSideEffect & { readonly __pipe_async_side_effect: true };
+Object.defineProperty(pipeAsyncSideEffectWithBrand, '__pipe_async_side_effect', { value: true });
+
+export default pipeAsyncSideEffectWithBrand;

@@ -186,7 +186,8 @@ const csvLines = [
   'Charlie,35,Chicago'
 ];
 
-const parseData = pipe(
+const parseData = (lines: string[]) => pipe(
+  lines,
   drop(1),                    // Skip header
   map((line: string) => {
     const [name, age, city] = line.split(',');
@@ -213,9 +214,10 @@ const dataWithMetadata = [
 ];
 
 const skipMetadata = pipe(
+  dataWithMetadata,
   drop(3),                    // Skip all metadata
   toArray
-)(dataWithMetadata);
+);
 // ['Name,Age', 'Alice,30', 'Bob,25']`}
     />
 
@@ -289,19 +291,21 @@ const sensorReadings: Reading[] = [
 
 // Skip first 3 warmup readings
 const actualData = pipe(
+  sensorReadings,
   drop(3),
   map((r: Reading) => r.value),
   toArray
-)(sensorReadings);
+);
 // [10, 12, 11]
 
 // Benchmark results (skip warmup runs)
 const benchmarkTimes = [150, 145, 140, 100, 98, 102, 99];
 
 const stableResults = pipe(
+  benchmarkTimes,
   drop(3),                   // Skip first 3 warmup runs
   toArray
-)(benchmarkTimes);
+);
 // [100, 98, 102, 99]`}
     />
 
@@ -467,12 +471,12 @@ import { range, drop, take, map, toArray } from 'fp-pack/stream';
 
 // Efficient: Only processes items after skip
 const efficientExample = pipe(
-  range,
+  range(0, Infinity),
   drop(1000),                // Skip first 1000
   take(10),                  // Take next 10
   map((n: number) => n * n),
   toArray
-)(0, Infinity);
+);
 // [1000000, 1002001, 1004004, ..., 1018081]
 
 // vs Array approach (creates array of 1M items)
@@ -482,7 +486,7 @@ const inefficientExample = Array.from({ length: 1000000 }, (_, i) => i)
   .map(n => n * n);
 
 // ✅ Efficient: Only generates what's needed
-const efficient = pipe(range, drop(1000), take(10), toArray)(0, Infinity);`}
+const efficient = pipe(range(0, Infinity), drop(1000), take(10), toArray);`}
     />
 
     <div class="bg-green-50 dark:bg-green-900/20 p-4 mb-6 rounded border border-green-200 dark:border-green-800 mt-6">

@@ -98,7 +98,8 @@ flippedConcat('a', 'b', 1, 2);  // "2-1-b-a"`}
 const appendTo = (suffix: string, text: string) => text + suffix;
 
 // Flip makes it easier to compose
-const addExclamation = flip(appendTo)('!');
+const appendToFlipped = flip(appendTo); // (text, suffix) => string
+const addExclamation = (text: string) => appendToFlipped(text, '!');
 
 const shout = pipe(
   (text: string) => text.toUpperCase(),

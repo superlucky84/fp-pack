@@ -4,95 +4,80 @@ import { navigateTo } from '@/store';
 export const PipeAsyncSideEffectStrict = () => (
   <div class="prose prose-lg dark:prose-invert max-w-none">
     <h1 class="text-3xl md:text-4xl font-semibold text-gray-900 dark:text-white mb-6">
-      pipeAsyncSideEffectStrict
+      pipeAsyncSideEffectStrict <span class="text-base align-middle px-2 py-1 rounded bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-200">deprecated</span>
     </h1>
 
     <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
-      Strict SideEffect unions for async pipelines
+      Deprecated since 0.15.0 — use pipeAsyncSideEffect instead
     </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      What is pipeAsyncSideEffectStrict?
+      Why is it deprecated?
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      <strong class="font-semibold text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/20 px-2 py-1 rounded">
-        pipeAsyncSideEffectStrict
-      </strong>{' '}
-      is the async strict variant of <strong>pipeAsyncSideEffect</strong>. It preserves a precise union of SideEffect
-      result types while still short-circuiting the pipeline. Prefer value-first
-      <code class="text-sm">pipeAsyncSideEffectStrict(data, ...)</code> for inference.
+      Since 0.15.0, <code class="text-sm">pipeAsyncSideEffect</code> checks every step at compile time and tracks the precise effect union (for example <code class="text-sm">SideEffect&lt;'NOT_FOUND' | 'INVALID'&gt;</code>) — exactly what <code class="text-sm">pipeAsyncSideEffectStrict</code> provided. The early-exit runtime behavior is unchanged.
     </p>
 
-    <CodeBlock
-      language="typescript"
-      code={`import { pipeAsyncSideEffectStrict, SideEffect } from 'fp-pack';
-
-// Result type: Promise<number | SideEffect<'NEGATIVE' | 0>>
-const result = await pipeAsyncSideEffectStrict(
-  5,
-  async (n: number) => (n > 0 ? n : SideEffect.of(() => 'NEGATIVE' as const)),
-  (n) => (n > 10 ? n : SideEffect.of(() => 0 as const))
-);`}
-    />
-
-    <div class="bg-amber-50 dark:bg-amber-900/20 p-4 mb-6 rounded border border-amber-200 dark:border-amber-800 mt-6">
+    <div class="bg-amber-50 dark:bg-amber-900/20 p-4 mb-6 rounded border border-amber-200 dark:border-amber-800">
       <p class="text-sm md:text-base text-amber-900 dark:text-amber-200 leading-relaxed">
-        <span class="font-medium">✅ When to use pipeAsyncSideEffectStrict?</span>
-        <br />
-        <br />
-        Use <code class="bg-amber-100 dark:bg-amber-900/40 px-1 py-0.5 rounded">pipeAsyncSideEffectStrict</code> when
-        you want exact SideEffect unions for async pipelines. Otherwise use{' '}
-        <code class="bg-amber-100 dark:bg-amber-900/40 px-1 py-0.5 rounded">pipeAsyncSideEffect</code>.
+        <code class="text-sm">pipeAsyncSideEffectStrict</code> remains an exported alias of <code class="text-sm">pipeAsyncSideEffect</code> until 1.0. Existing imports remain available, but mismatches or missing inference context that older overloads hid may now produce errors.
       </p>
     </div>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Choosing Your Pipe
+      Migration
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      fp-pack offers several pipe variants, each with its own trade-offs between inference
-      flexibility and type safety. To understand which one is right for your use case, please
-      read our detailed guide.
+      Replace the import and call with the base name. Both names use the same inference and checks,
+      including pipeWithDeps. Prefer value-first for generic helpers without input context;
+      see the Pipe Choice Guide for the 0.15.0 migration.
     </p>
-
-    <a
-      href="/guide/pipe-choice-guide"
-      onClick={(e: Event) => {
-        e.preventDefault();
-        navigateTo('/guide/pipe-choice-guide');
-      }}
-      class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-    >
-      Read the Pipe Selection Guide
-    </a>
-
-    <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
-
-    <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Type Signature
-    </h2>
 
     <CodeBlock
       language="typescript"
-      code={`function pipeAsyncSideEffectStrict<A, R>(
-  a: A,
-  ab: (a: A) => R | SideEffect | Promise<R | SideEffect>
-): Promise<R | SideEffect<UnionOfAllEffects>>;
+      code={`// before
+import { pipeAsyncSideEffectStrict, SideEffect } from 'fp-pack';
+const check = pipeAsyncSideEffectStrict(
+  async (n: number) => (n > 0 ? n : SideEffect.of(() => 'NON_POSITIVE' as const)),
+  (n: number) => n * 2
+);
 
-function pipeAsyncSideEffectStrict<A, R>(
-  ab: (a: A) => R | SideEffect | Promise<R | SideEffect>
-): (a: A | SideEffect) => Promise<R | SideEffect<UnionOfAllEffects>>;`}
+// after — same precise effect type: number | SideEffect<'NON_POSITIVE'>
+import { pipeAsyncSideEffect, SideEffect } from 'fp-pack';
+const check = pipeAsyncSideEffect(
+  async (n: number) => (n > 0 ? n : SideEffect.of(() => 'NON_POSITIVE' as const)),
+  (n: number) => n * 2
+);`}
     />
 
-    <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      The output SideEffect type is the union of every SideEffect produced by the pipeline.
-    </p>
+    <div class="flex flex-wrap gap-4 mt-8">
+      <a
+        href="/async/pipeAsyncSideEffect"
+        onClick={(e: Event) => {
+          e.preventDefault();
+          navigateTo('/async/pipeAsyncSideEffect');
+        }}
+        class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+      >
+        Go to pipeAsyncSideEffect
+      </a>
+      <a
+        href="/guide/pipe-choice-guide"
+        onClick={(e: Event) => {
+          e.preventDefault();
+          navigateTo('/guide/pipe-choice-guide');
+        }}
+        class="inline-block px-6 py-3 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+      >
+        Read the Pipe Selection Guide
+      </a>
+    </div>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
@@ -101,8 +86,7 @@ function pipeAsyncSideEffectStrict<A, R>(
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      View the implementation of <code class="text-sm">pipeAsyncSideEffectStrict</code> on GitHub to see how it works
-      internally.
+      The alias is a one-line wrapper around pipeAsyncSideEffect.
     </p>
 
     <a
@@ -116,61 +100,5 @@ function pipeAsyncSideEffectStrict<A, R>(
       </svg>
       View on GitHub
     </a>
-
-    <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
-
-    <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Related Functions
-    </h2>
-
-    <div class="grid gap-6 mt-6">
-      <a
-        href="/async/pipeAsyncSideEffect"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/async/pipeAsyncSideEffect');
-        }}
-        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer"
-      >
-        <h3 class="text-lg md:text-xl font-medium text-blue-600 dark:text-blue-400 mb-2">
-          pipeAsyncSideEffect →
-        </h3>
-        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          Async SideEffect pipelines with a simpler any-based union.
-        </p>
-      </a>
-
-      <a
-        href="/async/pipeAsync"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/async/pipeAsync');
-        }}
-        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-emerald-500 dark:hover:border-emerald-500 transition-colors cursor-pointer"
-      >
-        <h3 class="text-lg md:text-xl font-medium text-emerald-600 dark:text-emerald-400 mb-2">
-          pipeAsync →
-        </h3>
-        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          Pure async pipelines without SideEffect handling.
-        </p>
-      </a>
-
-      <a
-        href="/composition/sideEffect"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/composition/sideEffect');
-        }}
-        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-500 transition-colors cursor-pointer"
-      >
-        <h3 class="text-lg md:text-xl font-medium text-purple-600 dark:text-purple-400 mb-2">
-          SideEffect →
-        </h3>
-        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          The SideEffect container used for early exits.
-        </p>
-      </a>
-    </div>
   </div>
 );

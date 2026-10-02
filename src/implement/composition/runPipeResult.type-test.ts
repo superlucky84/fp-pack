@@ -5,6 +5,7 @@ type Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B 
   ? true
   : false;
 type Expect<T extends true> = T;
+type Extends<A, B> = A extends B ? true : false;
 type IsAny<T> = 0 extends (1 & T) ? true : false;
 type IsUnknown<T> = unknown extends T ? (T extends unknown ? (IsAny<T> extends true ? false : true) : false) : false;
 
@@ -15,11 +16,15 @@ export const runPipeResultPipeline = pipeSideEffect((x: number) => divide(10, x)
 
 export const runPipeResultValue = runPipeResultPipeline(2);
 
-type RunPipeResultValueExpected = number | SideEffect<any>;
+type RunPipeResultValueExpectedLegacy = number | SideEffect<any>;
+type RunPipeResultValueExpected = number | SideEffect<string>;
 export type RunPipeResultValueIsStrict = Expect<Equal<typeof runPipeResultValue, RunPipeResultValueExpected>>;
+export type RunPipeResultValueExpectedLegacyCompatible = Expect<Extends<typeof runPipeResultValue, RunPipeResultValueExpectedLegacy>>;
 
-export const runPipeResultAny = runPipeResult(runPipeResultValue);
-export type RunPipeResultAnyIsAny = Expect<IsAny<typeof runPipeResultAny>>;
+// pipeSideEffect keeps the precise effect type, so runPipeResult no longer widens to any
+export const runPipeResultInferred = runPipeResult(runPipeResultValue);
+type RunPipeResultInferredExpected = number | string;
+export type RunPipeResultInferredIsStrict = Expect<Equal<typeof runPipeResultInferred, RunPipeResultInferredExpected>>;
 
 export const runPipeResultExplicit = runPipeResult<number, string>(runPipeResultValue);
 type RunPipeResultExplicitExpected = number | string;

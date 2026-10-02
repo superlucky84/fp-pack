@@ -22,8 +22,12 @@ type Equal<A, B> =
     ? true
     : false;
 type Expect<T extends true> = T;
-type EffectUnion<T> =
-  Extract<T, SideEffect<any>> extends SideEffect<infer E> ? E : never;
+type Extends<A, B> = A extends B ? true : false;
+type EffectUnion<T> = [Extract<T, SideEffect<any>>] extends [never]
+  ? never
+  : Extract<T, SideEffect<any>> extends SideEffect<infer E>
+    ? E
+    : never;
 type ValueUnion<T> = Exclude<T, SideEffect<any>>;
 
 type Meta = {
@@ -142,12 +146,14 @@ export const pipeSideEffectObject = pipeSideEffect(
   getNameMaybe
 );
 
-type PipeSideEffectObjectExpected = (
+type PipeSideEffectObjectExpectedLegacy = (
   input: MaybeUser | SideEffect<any>
 ) => string | undefined | SideEffect<any>;
+type PipeSideEffectObjectExpected = { (input: MaybeUser): string | SideEffect<"NO_NAME"> | undefined; <EIn>(input: MaybeUser | SideEffect<EIn>): string | SideEffect<"NO_NAME" | EIn> | undefined; };
 export type PipeSideEffectObjectIsStrict = Expect<
   Equal<typeof pipeSideEffectObject, PipeSideEffectObjectExpected>
 >;
+export type PipeSideEffectObjectExpectedLegacyCompatible = Expect<Extends<typeof pipeSideEffectObject, PipeSideEffectObjectExpectedLegacy>>;
 
 type Account = {
   id?: string;
@@ -252,12 +258,14 @@ export const pipeAsyncSideEffectObject = pipeAsyncSideEffect(
       : SideEffect.of(() => "INVALID_AMOUNT" as const)
 );
 
-type PipeAsyncSideEffectObjectExpected = (
+type PipeAsyncSideEffectObjectExpectedLegacy = (
   input: Payment | SideEffect<any>
 ) => Promise<number | SideEffect<any>>;
+type PipeAsyncSideEffectObjectExpected = { (input: Payment): Promise<number | SideEffect<"INVALID_AMOUNT">>; <EIn>(input: Payment | SideEffect<EIn>): Promise<number | SideEffect<"INVALID_AMOUNT" | EIn>>; };
 export type PipeAsyncSideEffectObjectIsStrict = Expect<
   Equal<typeof pipeAsyncSideEffectObject, PipeAsyncSideEffectObjectExpected>
 >;
+export type PipeAsyncSideEffectObjectExpectedLegacyCompatible = Expect<Extends<typeof pipeAsyncSideEffectObject, PipeAsyncSideEffectObjectExpectedLegacy>>;
 
 type Payload = {
   id?: string;

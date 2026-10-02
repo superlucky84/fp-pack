@@ -16,7 +16,12 @@ type Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B 
   ? true
   : false;
 type Expect<T extends true> = T;
-type EffectUnion<T> = Extract<T, SideEffect<any>> extends SideEffect<infer E> ? E : never;
+type Extends<A, B> = A extends B ? true : false;
+type EffectUnion<T> = [Extract<T, SideEffect<any>>] extends [never]
+  ? never
+  : Extract<T, SideEffect<any>> extends SideEffect<infer E>
+    ? E
+    : never;
 type ValueUnion<T> = Exclude<T, SideEffect<any>>;
 
 export const sideEffectInput = SideEffect.of(() => 0);
@@ -303,27 +308,35 @@ export const pipeWithSideEffectInput = pipeSideEffect(
 
 export const pipeWithSideEffectValue = pipeWithSideEffectInput(sideEffectInput);
 
-type PipeExpected = (input: number | SideEffect<any>) => string | SideEffect<any>;
+type PipeExpectedLegacy = (input: number | SideEffect<any>) => string | SideEffect<any>;
+type PipeExpected = { (input: number): string; <EIn>(input: number | SideEffect<EIn>): string | SideEffect<EIn>; };
 export type PipeAcceptsSideEffectInput = Expect<Equal<typeof pipeWithSideEffectInput, PipeExpected>>;
+export type PipeExpectedLegacyCompatible = Expect<Extends<typeof pipeWithSideEffectInput, PipeExpectedLegacy>>;
 
 export const pipeSideEffectZero = pipeSideEffect(() => 1, (value: number) => value + 1);
 
-type PipeSideEffectZeroExpected = () => number | SideEffect<any>;
+type PipeSideEffectZeroExpectedLegacy = () => number | SideEffect<any>;
+type PipeSideEffectZeroExpected = () => number;
 export type PipeSideEffectZeroIsStrict = Expect<Equal<typeof pipeSideEffectZero, PipeSideEffectZeroExpected>>;
+export type PipeSideEffectZeroExpectedLegacyCompatible = Expect<Extends<typeof pipeSideEffectZero, PipeSideEffectZeroExpectedLegacy>>;
 
 export const pipeSideEffectZeroValue = pipeSideEffectZero();
 
-type PipeSideEffectZeroValueExpected = number | SideEffect<any>;
+type PipeSideEffectZeroValueExpectedLegacy = number | SideEffect<any>;
+type PipeSideEffectZeroValueExpected = number;
 export type PipeSideEffectZeroValueIsStrict = Expect<
   Equal<typeof pipeSideEffectZeroValue, PipeSideEffectZeroValueExpected>
 >;
+export type PipeSideEffectZeroValueExpectedLegacyCompatible = Expect<Extends<typeof pipeSideEffectZeroValue, PipeSideEffectZeroValueExpectedLegacy>>;
 
 export const pipeWithSideEffectValueInput = pipeWithSideEffectInput(1);
 
-type PipeWithSideEffectValueInputExpected = string | SideEffect<any>;
+type PipeWithSideEffectValueInputExpectedLegacy = string | SideEffect<any>;
+type PipeWithSideEffectValueInputExpected = string;
 export type PipeSideEffectValueInputIsStrict = Expect<
   Equal<typeof pipeWithSideEffectValueInput, PipeWithSideEffectValueInputExpected>
 >;
+export type PipeWithSideEffectValueInputExpectedLegacyCompatible = Expect<Extends<typeof pipeWithSideEffectValueInput, PipeWithSideEffectValueInputExpectedLegacy>>;
 
 export const pipeSideEffectSix = pipeSideEffect(
   (value: number) => value + 1,
@@ -334,8 +347,10 @@ export const pipeSideEffectSix = pipeSideEffect(
   (value: number) => `n:${value}`
 );
 
-type PipeSideEffectSixExpected = (input: number | SideEffect<any>) => string | SideEffect<any>;
+type PipeSideEffectSixExpectedLegacy = (input: number | SideEffect<any>) => string | SideEffect<any>;
+type PipeSideEffectSixExpected = { (input: number): string; <EIn>(input: number | SideEffect<EIn>): string | SideEffect<EIn>; };
 export type PipeSideEffectSixIsStrict = Expect<Equal<typeof pipeSideEffectSix, PipeSideEffectSixExpected>>;
+export type PipeSideEffectSixExpectedLegacyCompatible = Expect<Extends<typeof pipeSideEffectSix, PipeSideEffectSixExpectedLegacy>>;
 
 export const pipeSideEffectTen = pipeSideEffect(
   (value: number) => value + 1,
@@ -350,8 +365,10 @@ export const pipeSideEffectTen = pipeSideEffect(
   (value: number) => `n:${value}`
 );
 
-type PipeSideEffectTenExpected = (input: number | SideEffect<any>) => string | SideEffect<any>;
+type PipeSideEffectTenExpectedLegacy = (input: number | SideEffect<any>) => string | SideEffect<any>;
+type PipeSideEffectTenExpected = { (input: number): string; <EIn>(input: number | SideEffect<EIn>): string | SideEffect<EIn>; };
 export type PipeSideEffectTenIsStrict = Expect<Equal<typeof pipeSideEffectTen, PipeSideEffectTenExpected>>;
+export type PipeSideEffectTenExpectedLegacyCompatible = Expect<Extends<typeof pipeSideEffectTen, PipeSideEffectTenExpectedLegacy>>;
 
 export const pipeSideEffectEleven = pipeSideEffect(
   (value: number) => value + 1,
@@ -367,20 +384,24 @@ export const pipeSideEffectEleven = pipeSideEffect(
   (value: number) => `n:${value}`
 );
 
-type PipeSideEffectElevenExpected = (input: number | SideEffect<any>) => string | SideEffect<any>;
+type PipeSideEffectElevenExpectedLegacy = (input: number | SideEffect<any>) => string | SideEffect<any>;
+type PipeSideEffectElevenExpected = { (input: number): string; <EIn>(input: number | SideEffect<EIn>): string | SideEffect<EIn>; };
 export type PipeSideEffectElevenIsStrict = Expect<
   Equal<typeof pipeSideEffectEleven, PipeSideEffectElevenExpected>
 >;
+export type PipeSideEffectElevenExpectedLegacyCompatible = Expect<Extends<typeof pipeSideEffectEleven, PipeSideEffectElevenExpectedLegacy>>;
 
 export const pipeSideEffectElevenValueHinted = pipeSideEffect<number, typeof pipeElevenFnsHinted>(
   1,
   ...pipeElevenFnsHinted
 );
 
-type PipeSideEffectElevenValueHintedExpected = string | SideEffect<any>;
+type PipeSideEffectElevenValueHintedExpectedLegacy = string | SideEffect<any>;
+type PipeSideEffectElevenValueHintedExpected = string;
 export type PipeSideEffectElevenValueHintedIsStrict = Expect<
   Equal<typeof pipeSideEffectElevenValueHinted, PipeSideEffectElevenValueHintedExpected>
 >;
+export type PipeSideEffectElevenValueHintedExpectedLegacyCompatible = Expect<Extends<typeof pipeSideEffectElevenValueHinted, PipeSideEffectElevenValueHintedExpectedLegacy>>;
 
 export const pipeSideEffectFromTen = pipeSideEffect(
   from(1),
@@ -397,31 +418,39 @@ export const pipeSideEffectFromTen = pipeSideEffect(
 
 export const pipeSideEffectFromTenValue = pipeSideEffectFromTen('input');
 
-type PipeSideEffectFromTenValueExpected = string | SideEffect<any>;
+type PipeSideEffectFromTenValueExpectedLegacy = string | SideEffect<any>;
+type PipeSideEffectFromTenValueExpected = string;
 export type PipeSideEffectFromTenValueIsStrict = Expect<
   Equal<typeof pipeSideEffectFromTenValue, PipeSideEffectFromTenValueExpected>
 >;
+export type PipeSideEffectFromTenValueExpectedLegacyCompatible = Expect<Extends<typeof pipeSideEffectFromTenValue, PipeSideEffectFromTenValueExpectedLegacy>>;
 
 export const pipeSideEffectFromTenValueNoInput = pipeSideEffectFromTen();
 
-type PipeSideEffectFromTenValueNoInputExpected = string | SideEffect<any>;
+type PipeSideEffectFromTenValueNoInputExpectedLegacy = string | SideEffect<any>;
+type PipeSideEffectFromTenValueNoInputExpected = string;
 export type PipeSideEffectFromTenValueNoInputIsStrict = Expect<
   Equal<typeof pipeSideEffectFromTenValueNoInput, PipeSideEffectFromTenValueNoInputExpected>
 >;
+export type PipeSideEffectFromTenValueNoInputExpectedLegacyCompatible = Expect<Extends<typeof pipeSideEffectFromTenValueNoInput, PipeSideEffectFromTenValueNoInputExpectedLegacy>>;
 
 export const pipeSideEffectFromNoInput = pipeSideEffect(from(1));
 
-type PipeSideEffectFromNoInputExpected = (input?: unknown) => number | SideEffect<any>;
+type PipeSideEffectFromNoInputExpectedLegacy = (input?: unknown) => number | SideEffect<any>;
+type PipeSideEffectFromNoInputExpected = { (input?: unknown): number; <EIn>(input?: unknown): number | SideEffect<EIn>; };
 export type PipeSideEffectFromNoInputIsStrict = Expect<
   Equal<typeof pipeSideEffectFromNoInput, PipeSideEffectFromNoInputExpected>
 >;
+export type PipeSideEffectFromNoInputExpectedLegacyCompatible = Expect<Extends<typeof pipeSideEffectFromNoInput, PipeSideEffectFromNoInputExpectedLegacy>>;
 
 export const pipeSideEffectFromNoInputValue = pipeSideEffectFromNoInput();
 
-type PipeSideEffectFromNoInputValueExpected = number | SideEffect<any>;
+type PipeSideEffectFromNoInputValueExpectedLegacy = number | SideEffect<any>;
+type PipeSideEffectFromNoInputValueExpected = number;
 export type PipeSideEffectFromNoInputValueIsStrict = Expect<
   Equal<typeof pipeSideEffectFromNoInputValue, PipeSideEffectFromNoInputValueExpected>
 >;
+export type PipeSideEffectFromNoInputValueExpectedLegacyCompatible = Expect<Extends<typeof pipeSideEffectFromNoInputValue, PipeSideEffectFromNoInputValueExpectedLegacy>>;
 
 export const purePipeAsync = pipeAsync(
   (value: number) => value + 1,
@@ -718,31 +747,39 @@ export const pipeAsyncWithSideEffectInput = pipeAsyncSideEffect(
 
 export const pipeAsyncWithSideEffectValue = pipeAsyncWithSideEffectInput(sideEffectInput);
 
-type PipeAsyncExpected = (input: number | SideEffect<any>) => Promise<string | SideEffect<any>>;
+type PipeAsyncExpectedLegacy = (input: number | SideEffect<any>) => Promise<string | SideEffect<any>>;
+type PipeAsyncExpected = { (input: number): Promise<string>; <EIn>(input: number | SideEffect<EIn>): Promise<string | SideEffect<EIn>>; };
 export type PipeAsyncAcceptsSideEffectInput = Expect<
   Equal<typeof pipeAsyncWithSideEffectInput, PipeAsyncExpected>
 >;
+export type PipeAsyncExpectedLegacyCompatible = Expect<Extends<typeof pipeAsyncWithSideEffectInput, PipeAsyncExpectedLegacy>>;
 
 export const pipeAsyncSideEffectZero = pipeAsyncSideEffect(() => 1, async (value: number) => value + 1);
 
-type PipeAsyncSideEffectZeroExpected = () => Promise<number | SideEffect<any>>;
+type PipeAsyncSideEffectZeroExpectedLegacy = () => Promise<number | SideEffect<any>>;
+type PipeAsyncSideEffectZeroExpected = () => Promise<number>;
 export type PipeAsyncSideEffectZeroIsStrict = Expect<
   Equal<typeof pipeAsyncSideEffectZero, PipeAsyncSideEffectZeroExpected>
 >;
+export type PipeAsyncSideEffectZeroExpectedLegacyCompatible = Expect<Extends<typeof pipeAsyncSideEffectZero, PipeAsyncSideEffectZeroExpectedLegacy>>;
 
 export const pipeAsyncSideEffectZeroValue = pipeAsyncSideEffectZero();
 
-type PipeAsyncSideEffectZeroValueExpected = Promise<number | SideEffect<any>>;
+type PipeAsyncSideEffectZeroValueExpectedLegacy = Promise<number | SideEffect<any>>;
+type PipeAsyncSideEffectZeroValueExpected = Promise<number>;
 export type PipeAsyncSideEffectZeroValueIsStrict = Expect<
   Equal<typeof pipeAsyncSideEffectZeroValue, PipeAsyncSideEffectZeroValueExpected>
 >;
+export type PipeAsyncSideEffectZeroValueExpectedLegacyCompatible = Expect<Extends<typeof pipeAsyncSideEffectZeroValue, PipeAsyncSideEffectZeroValueExpectedLegacy>>;
 
 export const pipeAsyncWithSideEffectValueInput = pipeAsyncWithSideEffectInput(1);
 
-type PipeAsyncWithSideEffectValueInputExpected = Promise<string | SideEffect<any>>;
+type PipeAsyncWithSideEffectValueInputExpectedLegacy = Promise<string | SideEffect<any>>;
+type PipeAsyncWithSideEffectValueInputExpected = Promise<string>;
 export type PipeAsyncSideEffectValueInputIsStrict = Expect<
   Equal<typeof pipeAsyncWithSideEffectValueInput, PipeAsyncWithSideEffectValueInputExpected>
 >;
+export type PipeAsyncWithSideEffectValueInputExpectedLegacyCompatible = Expect<Extends<typeof pipeAsyncWithSideEffectValueInput, PipeAsyncWithSideEffectValueInputExpectedLegacy>>;
 
 export const pipeAsyncSideEffectSix = pipeAsyncSideEffect(
   (value: number) => value + 1,
@@ -753,10 +790,12 @@ export const pipeAsyncSideEffectSix = pipeAsyncSideEffect(
   async (value: number) => `n:${value}`
 );
 
-type PipeAsyncSideEffectSixExpected = (input: number | SideEffect<any>) => Promise<string | SideEffect<any>>;
+type PipeAsyncSideEffectSixExpectedLegacy = (input: number | SideEffect<any>) => Promise<string | SideEffect<any>>;
+type PipeAsyncSideEffectSixExpected = { (input: number): Promise<string>; <EIn>(input: number | SideEffect<EIn>): Promise<string | SideEffect<EIn>>; };
 export type PipeAsyncSideEffectSixIsStrict = Expect<
   Equal<typeof pipeAsyncSideEffectSix, PipeAsyncSideEffectSixExpected>
 >;
+export type PipeAsyncSideEffectSixExpectedLegacyCompatible = Expect<Extends<typeof pipeAsyncSideEffectSix, PipeAsyncSideEffectSixExpectedLegacy>>;
 
 export const pipeAsyncSideEffectTen = pipeAsyncSideEffect(
   (value: number) => value + 1,
@@ -771,10 +810,12 @@ export const pipeAsyncSideEffectTen = pipeAsyncSideEffect(
   async (value: number) => `n:${value}`
 );
 
-type PipeAsyncSideEffectTenExpected = (input: number | SideEffect<any>) => Promise<string | SideEffect<any>>;
+type PipeAsyncSideEffectTenExpectedLegacy = (input: number | SideEffect<any>) => Promise<string | SideEffect<any>>;
+type PipeAsyncSideEffectTenExpected = { (input: number): Promise<string>; <EIn>(input: number | SideEffect<EIn>): Promise<string | SideEffect<EIn>>; };
 export type PipeAsyncSideEffectTenIsStrict = Expect<
   Equal<typeof pipeAsyncSideEffectTen, PipeAsyncSideEffectTenExpected>
 >;
+export type PipeAsyncSideEffectTenExpectedLegacyCompatible = Expect<Extends<typeof pipeAsyncSideEffectTen, PipeAsyncSideEffectTenExpectedLegacy>>;
 
 export const pipeAsyncSideEffectEleven = pipeAsyncSideEffect(
   (value: number) => value + 1,
@@ -790,20 +831,24 @@ export const pipeAsyncSideEffectEleven = pipeAsyncSideEffect(
   (value: number) => `n:${value}`
 );
 
-type PipeAsyncSideEffectElevenExpected = (input: number | SideEffect<any>) => Promise<string | SideEffect<any>>;
+type PipeAsyncSideEffectElevenExpectedLegacy = (input: number | SideEffect<any>) => Promise<string | SideEffect<any>>;
+type PipeAsyncSideEffectElevenExpected = { (input: number): Promise<string>; <EIn>(input: number | SideEffect<EIn>): Promise<string | SideEffect<EIn>>; };
 export type PipeAsyncSideEffectElevenIsStrict = Expect<
   Equal<typeof pipeAsyncSideEffectEleven, PipeAsyncSideEffectElevenExpected>
 >;
+export type PipeAsyncSideEffectElevenExpectedLegacyCompatible = Expect<Extends<typeof pipeAsyncSideEffectEleven, PipeAsyncSideEffectElevenExpectedLegacy>>;
 
 export const pipeAsyncSideEffectElevenValueHinted = pipeAsyncSideEffect<number, typeof pipeAsyncElevenFnsHinted>(
   1,
   ...pipeAsyncElevenFnsHinted
 );
 
-type PipeAsyncSideEffectElevenValueHintedExpected = Promise<string | SideEffect<any>>;
+type PipeAsyncSideEffectElevenValueHintedExpectedLegacy = Promise<string | SideEffect<any>>;
+type PipeAsyncSideEffectElevenValueHintedExpected = Promise<string>;
 export type PipeAsyncSideEffectElevenValueHintedIsStrict = Expect<
   Equal<typeof pipeAsyncSideEffectElevenValueHinted, PipeAsyncSideEffectElevenValueHintedExpected>
 >;
+export type PipeAsyncSideEffectElevenValueHintedExpectedLegacyCompatible = Expect<Extends<typeof pipeAsyncSideEffectElevenValueHinted, PipeAsyncSideEffectElevenValueHintedExpectedLegacy>>;
 
 export const pipeAsyncSideEffectFromTen = pipeAsyncSideEffect(
   from(1),
@@ -820,31 +865,39 @@ export const pipeAsyncSideEffectFromTen = pipeAsyncSideEffect(
 
 export const pipeAsyncSideEffectFromTenValue = pipeAsyncSideEffectFromTen('input');
 
-type PipeAsyncSideEffectFromTenValueExpected = Promise<string | SideEffect<any>>;
+type PipeAsyncSideEffectFromTenValueExpectedLegacy = Promise<string | SideEffect<any>>;
+type PipeAsyncSideEffectFromTenValueExpected = Promise<string>;
 export type PipeAsyncSideEffectFromTenValueIsStrict = Expect<
   Equal<typeof pipeAsyncSideEffectFromTenValue, PipeAsyncSideEffectFromTenValueExpected>
 >;
+export type PipeAsyncSideEffectFromTenValueExpectedLegacyCompatible = Expect<Extends<typeof pipeAsyncSideEffectFromTenValue, PipeAsyncSideEffectFromTenValueExpectedLegacy>>;
 
 export const pipeAsyncSideEffectFromTenValueNoInput = pipeAsyncSideEffectFromTen();
 
-type PipeAsyncSideEffectFromTenValueNoInputExpected = Promise<string | SideEffect<any>>;
+type PipeAsyncSideEffectFromTenValueNoInputExpectedLegacy = Promise<string | SideEffect<any>>;
+type PipeAsyncSideEffectFromTenValueNoInputExpected = Promise<string>;
 export type PipeAsyncSideEffectFromTenValueNoInputIsStrict = Expect<
   Equal<typeof pipeAsyncSideEffectFromTenValueNoInput, PipeAsyncSideEffectFromTenValueNoInputExpected>
 >;
+export type PipeAsyncSideEffectFromTenValueNoInputExpectedLegacyCompatible = Expect<Extends<typeof pipeAsyncSideEffectFromTenValueNoInput, PipeAsyncSideEffectFromTenValueNoInputExpectedLegacy>>;
 
 export const pipeAsyncSideEffectFromNoInput = pipeAsyncSideEffect(from(1));
 
-type PipeAsyncSideEffectFromNoInputExpected = (input?: unknown) => Promise<number | SideEffect<any>>;
+type PipeAsyncSideEffectFromNoInputExpectedLegacy = (input?: unknown) => Promise<number | SideEffect<any>>;
+type PipeAsyncSideEffectFromNoInputExpected = { (input?: unknown): Promise<number>; <EIn>(input?: unknown): Promise<number | SideEffect<EIn>>; };
 export type PipeAsyncSideEffectFromNoInputIsStrict = Expect<
   Equal<typeof pipeAsyncSideEffectFromNoInput, PipeAsyncSideEffectFromNoInputExpected>
 >;
+export type PipeAsyncSideEffectFromNoInputExpectedLegacyCompatible = Expect<Extends<typeof pipeAsyncSideEffectFromNoInput, PipeAsyncSideEffectFromNoInputExpectedLegacy>>;
 
 export const pipeAsyncSideEffectFromNoInputValue = pipeAsyncSideEffectFromNoInput();
 
-type PipeAsyncSideEffectFromNoInputValueExpected = Promise<number | SideEffect<any>>;
+type PipeAsyncSideEffectFromNoInputValueExpectedLegacy = Promise<number | SideEffect<any>>;
+type PipeAsyncSideEffectFromNoInputValueExpected = Promise<number>;
 export type PipeAsyncSideEffectFromNoInputValueIsStrict = Expect<
   Equal<typeof pipeAsyncSideEffectFromNoInputValue, PipeAsyncSideEffectFromNoInputValueExpected>
 >;
+export type PipeAsyncSideEffectFromNoInputValueExpectedLegacyCompatible = Expect<Extends<typeof pipeAsyncSideEffectFromNoInputValue, PipeAsyncSideEffectFromNoInputValueExpectedLegacy>>;
 
 export const strictPipeSideEffect = pipeSideEffectStrict(
   (value: number) => value + 1,
@@ -979,10 +1032,12 @@ export const strictPipeSideEffectElevenValueHinted = pipeSideEffectStrict<number
   ...pipeStrictElevenFnsHinted
 );
 
-type StrictPipeSideEffectElevenValueHintedExpected = string | SideEffect<never>;
+type StrictPipeSideEffectElevenValueHintedExpectedLegacy = string | SideEffect<never>;
+type StrictPipeSideEffectElevenValueHintedExpected = string;
 export type PipeSideEffectStrictElevenValueHintedIsStrict = Expect<
   Equal<typeof strictPipeSideEffectElevenValueHinted, StrictPipeSideEffectElevenValueHintedExpected>
 >;
+export type StrictPipeSideEffectElevenValueHintedExpectedLegacyCompatible = Expect<Extends<typeof strictPipeSideEffectElevenValueHinted, StrictPipeSideEffectElevenValueHintedExpectedLegacy>>;
 
 export const strictPipeSideEffectFromTen = pipeSideEffectStrict(
   from(1),
@@ -1035,20 +1090,24 @@ export type PipeSideEffectStrictFromTenNoInputValue = Expect<
 
 export const strictPipeSideEffectFromNoInput = pipeSideEffectStrict(from(1));
 
-type StrictPipeSideEffectFromNoInputExpected = {
+type StrictPipeSideEffectFromNoInputExpectedLegacy = {
   (input?: unknown): number | SideEffect<never>;
   <EIn>(input?: unknown | SideEffect<EIn>): number | SideEffect<EIn>;
 };
+type StrictPipeSideEffectFromNoInputExpected = { (input?: unknown): number; <EIn>(input?: unknown): number | SideEffect<EIn>; };
 export type PipeSideEffectStrictFromNoInputIsStrict = Expect<
   Equal<typeof strictPipeSideEffectFromNoInput, StrictPipeSideEffectFromNoInputExpected>
 >;
+export type StrictPipeSideEffectFromNoInputExpectedLegacyCompatible = Expect<Extends<typeof strictPipeSideEffectFromNoInput, StrictPipeSideEffectFromNoInputExpectedLegacy>>;
 
 export const strictPipeSideEffectFromNoInputValue = strictPipeSideEffectFromNoInput();
 
-type StrictPipeSideEffectFromNoInputValueExpected = number | SideEffect<never>;
+type StrictPipeSideEffectFromNoInputValueExpectedLegacy = number | SideEffect<never>;
+type StrictPipeSideEffectFromNoInputValueExpected = number;
 export type PipeSideEffectStrictFromNoInputValueIsStrict = Expect<
   Equal<typeof strictPipeSideEffectFromNoInputValue, StrictPipeSideEffectFromNoInputValueExpected>
 >;
+export type StrictPipeSideEffectFromNoInputValueExpectedLegacyCompatible = Expect<Extends<typeof strictPipeSideEffectFromNoInputValue, StrictPipeSideEffectFromNoInputValueExpectedLegacy>>;
 
 export const strictPipeAsyncSideEffect = pipeAsyncSideEffectStrict(
   (value: number) => value + 1,
@@ -1154,10 +1213,12 @@ export const pipeAsyncSideEffectMixed = pipeAsyncSideEffect(
   async (value: number) => `n:${value}`
 );
 
-type PipeAsyncSideEffectMixedExpected = (input: number | SideEffect<any>) => Promise<string | SideEffect<any>>;
+type PipeAsyncSideEffectMixedExpectedLegacy = (input: number | SideEffect<any>) => Promise<string | SideEffect<any>>;
+type PipeAsyncSideEffectMixedExpected = { (input: number): Promise<string | SideEffect<"LOW" | "MID">>; <EIn>(input: number | SideEffect<EIn>): Promise<string | SideEffect<"LOW" | "MID" | EIn>>; };
 export type PipeAsyncSideEffectMixedIsStrict = Expect<
   Equal<typeof pipeAsyncSideEffectMixed, PipeAsyncSideEffectMixedExpected>
 >;
+export type PipeAsyncSideEffectMixedExpectedLegacyCompatible = Expect<Extends<typeof pipeAsyncSideEffectMixed, PipeAsyncSideEffectMixedExpectedLegacy>>;
 
 export const strictPipeAsyncSideEffectMixed = pipeAsyncSideEffectStrict(
   (value: number) => value + 1,
@@ -1220,10 +1281,12 @@ export const strictPipeAsyncSideEffectElevenValueHinted = pipeAsyncSideEffectStr
   ...pipeAsyncStrictElevenFnsHinted
 );
 
-type StrictPipeAsyncSideEffectElevenValueHintedExpected = Promise<string | SideEffect<never>>;
+type StrictPipeAsyncSideEffectElevenValueHintedExpectedLegacy = Promise<string | SideEffect<never>>;
+type StrictPipeAsyncSideEffectElevenValueHintedExpected = Promise<string>;
 export type PipeAsyncSideEffectStrictElevenValueHintedIsStrict = Expect<
   Equal<typeof strictPipeAsyncSideEffectElevenValueHinted, StrictPipeAsyncSideEffectElevenValueHintedExpected>
 >;
+export type StrictPipeAsyncSideEffectElevenValueHintedExpectedLegacyCompatible = Expect<Extends<typeof strictPipeAsyncSideEffectElevenValueHinted, StrictPipeAsyncSideEffectElevenValueHintedExpectedLegacy>>;
 
 export const strictPipeAsyncSideEffectFromTen = pipeAsyncSideEffectStrict(
   from(1),
@@ -1280,20 +1343,24 @@ export type PipeAsyncSideEffectStrictFromTenNoInputValue = Expect<
 
 export const strictPipeAsyncSideEffectFromNoInput = pipeAsyncSideEffectStrict(from(1));
 
-type StrictAsyncSideEffectFromNoInputExpected = {
+type StrictAsyncSideEffectFromNoInputExpectedLegacy = {
   (input?: unknown): Promise<number | SideEffect<never>>;
   <EIn>(input?: unknown | SideEffect<EIn>): Promise<number | SideEffect<EIn>>;
 };
+type StrictAsyncSideEffectFromNoInputExpected = { (input?: unknown): Promise<number>; <EIn>(input?: unknown): Promise<number | SideEffect<EIn>>; };
 export type PipeAsyncSideEffectStrictFromNoInputIsStrict = Expect<
   Equal<typeof strictPipeAsyncSideEffectFromNoInput, StrictAsyncSideEffectFromNoInputExpected>
 >;
+export type StrictAsyncSideEffectFromNoInputExpectedLegacyCompatible = Expect<Extends<typeof strictPipeAsyncSideEffectFromNoInput, StrictAsyncSideEffectFromNoInputExpectedLegacy>>;
 
 export const strictPipeAsyncSideEffectFromNoInputValue = strictPipeAsyncSideEffectFromNoInput();
 
-type StrictAsyncSideEffectFromNoInputValueExpected = Promise<number | SideEffect<never>>;
+type StrictAsyncSideEffectFromNoInputValueExpectedLegacy = Promise<number | SideEffect<never>>;
+type StrictAsyncSideEffectFromNoInputValueExpected = Promise<number>;
 export type PipeAsyncSideEffectStrictFromNoInputValueIsStrict = Expect<
   Equal<typeof strictPipeAsyncSideEffectFromNoInputValue, StrictAsyncSideEffectFromNoInputValueExpected>
 >;
+export type StrictAsyncSideEffectFromNoInputValueExpectedLegacyCompatible = Expect<Extends<typeof strictPipeAsyncSideEffectFromNoInputValue, StrictAsyncSideEffectFromNoInputValueExpectedLegacy>>;
 
 // Negative cases: input required when not using from/zero-arity.
 // @ts-expect-error input required for unary pipe
@@ -1391,10 +1458,12 @@ export const pipeSideEffectValueFirstTap = pipeSideEffect(
   tap((state) => state.todos.length)
 );
 
-type PipeSideEffectValueFirstTapExpected = AppState | SideEffect<any>;
+type PipeSideEffectValueFirstTapExpectedLegacy = AppState | SideEffect<any>;
+type PipeSideEffectValueFirstTapExpected = AppState;
 export type PipeSideEffectValueFirstTapIsStrict = Expect<
   Equal<typeof pipeSideEffectValueFirstTap, PipeSideEffectValueFirstTapExpected>
 >;
+export type PipeSideEffectValueFirstTapExpectedLegacyCompatible = Expect<Extends<typeof pipeSideEffectValueFirstTap, PipeSideEffectValueFirstTapExpectedLegacy>>;
 
 export const pipeAsyncValueFirst = pipeAsync(
   1,
@@ -1410,20 +1479,24 @@ export const pipeAsyncSideEffectValueFirstTap = pipeAsyncSideEffect(
   tap((state) => state.todos.length)
 );
 
-type PipeAsyncSideEffectValueFirstTapExpected = Promise<AppState | SideEffect<any>>;
+type PipeAsyncSideEffectValueFirstTapExpectedLegacy = Promise<AppState | SideEffect<any>>;
+type PipeAsyncSideEffectValueFirstTapExpected = Promise<AppState>;
 export type PipeAsyncSideEffectValueFirstTapIsStrict = Expect<
   Equal<typeof pipeAsyncSideEffectValueFirstTap, PipeAsyncSideEffectValueFirstTapExpected>
 >;
+export type PipeAsyncSideEffectValueFirstTapExpectedLegacyCompatible = Expect<Extends<typeof pipeAsyncSideEffectValueFirstTap, PipeAsyncSideEffectValueFirstTapExpectedLegacy>>;
 
 export const pipeSideEffectStrictValueFirstTap = pipeSideEffectStrict(
   appState,
   tap((state) => state.todos.length)
 );
 
-type PipeSideEffectStrictValueFirstTapExpected = AppState | SideEffect<never>;
+type PipeSideEffectStrictValueFirstTapExpectedLegacy = AppState | SideEffect<never>;
+type PipeSideEffectStrictValueFirstTapExpected = AppState;
 export type PipeSideEffectStrictValueFirstTapIsStrict = Expect<
   Equal<typeof pipeSideEffectStrictValueFirstTap, PipeSideEffectStrictValueFirstTapExpected>
 >;
+export type PipeSideEffectStrictValueFirstTapExpectedLegacyCompatible = Expect<Extends<typeof pipeSideEffectStrictValueFirstTap, PipeSideEffectStrictValueFirstTapExpectedLegacy>>;
 
 type PipeSideEffectStrictValueFirstTapEffects = EffectUnion<typeof pipeSideEffectStrictValueFirstTap>;
 type PipeSideEffectStrictValueFirstTapEffectsExpected = never;
@@ -1436,7 +1509,9 @@ export const pipeAsyncSideEffectStrictValueFirstTap = pipeAsyncSideEffectStrict(
   tap((state) => state.todos.length)
 );
 
-type PipeAsyncSideEffectStrictValueFirstTapExpected = Promise<AppState | SideEffect<never>>;
+type PipeAsyncSideEffectStrictValueFirstTapExpectedLegacy = Promise<AppState | SideEffect<never>>;
+type PipeAsyncSideEffectStrictValueFirstTapExpected = Promise<AppState>;
 export type PipeAsyncSideEffectStrictValueFirstTapIsStrict = Expect<
   Equal<typeof pipeAsyncSideEffectStrictValueFirstTap, PipeAsyncSideEffectStrictValueFirstTapExpected>
 >;
+export type PipeAsyncSideEffectStrictValueFirstTapExpectedLegacyCompatible = Expect<Extends<typeof pipeAsyncSideEffectStrictValueFirstTap, PipeAsyncSideEffectStrictValueFirstTapExpectedLegacy>>;

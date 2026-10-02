@@ -38,18 +38,7 @@ const result = await pipeAsync(
     />
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6 mt-6">
-      Need stricter mismatch detection? Use{' '}
-      <a
-        href="/async/pipeAsyncStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/async/pipeAsyncStrict');
-        }}
-        class="font-semibold text-blue-700 dark:text-blue-300"
-      >
-        pipeAsyncStrict
-      </a>
-      .
+      Each step must accept the previous step's awaited output. Inline callbacks receive contextual types through 32 steps after the first argument; compose smaller pipelines for longer inline chains.
     </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -79,9 +68,9 @@ const result = await pipeAsync('42', fetchUser, getName); // 'Ada'`}
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      fp-pack offers several pipe variants, each with its own trade-offs between inference
-      flexibility and type safety. To understand which one is right for your use case, please
-      read our detailed guide.
+      Choose by async work and SideEffect early exits. All four pipes check step compatibility
+      and infer callbacks through 32 steps after the first argument. Compose smaller pipelines
+      for longer inline chains. The guide covers these boundaries and the 0.15.0 migration.
     </p>
 
     <a
@@ -103,18 +92,7 @@ const result = await pipeAsync('42', fetchUser, getName); // 'Ada'`}
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
       <strong>pipeAsync</strong> focuses on pure async composition. If you need early exits via{' '}
-      <strong class="font-semibold">SideEffect</strong>, use <strong>pipeAsyncSideEffect</strong>. For strict unions, use{' '}
-      <a
-        href="/async/pipeAsyncSideEffectStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/async/pipeAsyncSideEffectStrict');
-        }}
-        class="font-semibold text-blue-700 dark:text-blue-300"
-      >
-        pipeAsyncSideEffectStrict
-      </a>
-      .
+      <strong class="font-semibold">SideEffect</strong>, use <strong>pipeAsyncSideEffect</strong>. Its result type is the precise union of the effects its steps can produce.
     </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -146,21 +124,6 @@ const result = await pipeAsync('42', fetchUser, getName); // 'Ada'`}
     </h2>
 
     <div class="grid gap-6 mt-6">
-      <a
-        href="/async/pipeAsyncStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/async/pipeAsyncStrict');
-        }}
-        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer"
-      >
-        <h3 class="text-lg md:text-xl font-medium text-blue-600 dark:text-blue-400 mb-2">
-          pipeAsyncStrict →
-        </h3>
-        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          Stricter type checking for async pipelines with explicit type validation.
-        </p>
-      </a>
 
       <a
         href="/async/pipeAsyncSideEffect"

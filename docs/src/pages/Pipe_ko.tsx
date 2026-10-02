@@ -249,8 +249,9 @@ result;  // 5
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      fp-pack은 추론 유연성과 타입 안전성 사이의 다양한 트레이드오프를 가진 여러 파이프 변형을
-      제공합니다. 당신의 사용 사례에 어떤 것이 적합한지 이해하려면 상세 가이드를 읽어보세요.
+      비동기 작업 여부와 SideEffect 조기 종료 여부로 선택하세요. 네 파이프 모두 단계 간 타입을 검사하고,
+      첫 번째 인자 이후 32단계까지 콜백 타입을 추론합니다. 더 긴 인라인 체인은 작은 파이프로 나누세요.
+      가이드에서 추론 범위와 0.15.0 마이그레이션 방법을 확인할 수 있습니다.
     </p>
 
     <a
@@ -272,18 +273,7 @@ result;  // 5
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
       <strong>pipe</strong>는 순수 합성 도구입니다. <strong class="font-semibold">SideEffect</strong>로
-      조기 종료가 필요한 파이프라인은 <strong>pipeSideEffect</strong>를 사용하세요. 엄격한 유니온 타입이 필요하면{' '}
-      <a
-        href="/composition/pipeSideEffectStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/composition/pipeSideEffectStrict');
-        }}
-        class="font-semibold text-blue-700 dark:text-blue-300"
-      >
-        pipeSideEffectStrict
-      </a>
-      를 사용하세요.
+      조기 종료가 필요한 파이프라인은 <strong>pipeSideEffect</strong>를 사용하세요. 결과 타입에는 각 단계가 만들 수 있는 effect의 정확한 유니온이 담깁니다.
     </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -315,21 +305,6 @@ result;  // 5
     </h2>
 
     <div class="grid gap-6 mt-6">
-      <a
-        href="/composition/pipeStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/composition/pipeStrict');
-        }}
-        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-emerald-500 dark:hover:border-emerald-500 transition-colors cursor-pointer"
-      >
-        <h3 class="text-lg md:text-xl font-medium text-emerald-600 dark:text-emerald-400 mb-2">
-          pipeStrict →
-        </h3>
-        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          순수 파이프라인에서 더 엄격한 타입 검사.
-        </p>
-      </a>
 
       <a
         href="/composition/pipeSideEffect"
@@ -347,21 +322,6 @@ result;  // 5
         </p>
       </a>
 
-      <a
-        href="/composition/pipeSideEffectStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/composition/pipeSideEffectStrict');
-        }}
-        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer"
-      >
-        <h3 class="text-lg md:text-xl font-medium text-blue-600 dark:text-blue-400 mb-2">
-          pipeSideEffectStrict →
-        </h3>
-        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          SideEffect 결과 타입을 엄격 유니온으로 유지하는 합성.
-        </p>
-      </a>
 
       <a
         href="/composition/compose"

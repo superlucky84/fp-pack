@@ -1,6 +1,6 @@
 {
   "name": "fp-pack",
-  "version": "0.14.0",
+  "version": "0.15.0",
   "type": "module",
   "description": "Functional programming utilities library for TypeScript",
   "keywords": [
@@ -22,23 +22,26 @@
   ],
   "license": "MIT",
   "homepage": "https://superlucky84.github.io/fp-pack/",
-  "repository": "https://github.com/superlucky84/fp-pack",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/superlucky84/fp-pack.git"
+  },
   "bugs": {
     "url": "https://github.com/superlucky84/fp-pack/issues"
   },
-  "main": "./dist/fp-pack.umd.js",
+  "main": "./dist/fp-pack.umd.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/fp-pack.umd.js"
+      "require": "./dist/fp-pack.umd.cjs"
     },
     "./stream": {
       "types": "./dist/stream/index.d.ts",
       "import": "./dist/stream/index.mjs",
-      "require": "./dist/fp-pack-stream.umd.js"
+      "require": "./dist/fp-pack-stream.umd.cjs"
     }
   },
   "typesVersions": {
@@ -55,6 +58,7 @@
     "dist",
     "src",
     "README.md",
+    "CHANGELOG.md",
     "LICENSE",
     "dist/ai-addons",
     "dist/skills"
@@ -67,7 +71,10 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "pnpm test:types && vitest run",
-    "test:types": "tsc --noEmit",
+    "test:types": "node scripts/generate-pipe-overloads.mjs --check && tsc --noEmit",
+    "test:package": "node scripts/check-packed-pipe.mjs",
+    "release:check": "pnpm test:run && pnpm build && pnpm test:package && pnpm docs:lint && pnpm docs:build",
+    "prepublishOnly": "pnpm release:check",
     "clean": "pnpm clean:dist && pnpm clean:module",
     "clean:dist": "rm -rf dist docs/dist",
     "clean:module": "rm -rf dist docs/dist node_modules",

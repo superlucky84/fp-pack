@@ -36,6 +36,7 @@ type Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B 
   : false;
 type IsAssignable<A, B> = A extends B ? true : false;
 type Expect<T extends true> = T;
+type Extends<A, B> = A extends B ? true : false;
 
 type User = {
   name?: string;
@@ -232,8 +233,10 @@ export const pipeSideEffectTags = pipeSideEffect(
   (value: string) => (isEmpty(value) ? SideEffect.of(() => 'EMPTY' as const) : value)
 );
 
-type PipeSideEffectTagsExpected = (input: TagOwner | SideEffect<any>) => string | SideEffect<any>;
+type PipeSideEffectTagsExpectedLegacy = (input: TagOwner | SideEffect<any>) => string | SideEffect<any>;
+type PipeSideEffectTagsExpected = { (input: TagOwner): string | SideEffect<"EMPTY">; <EIn>(input: TagOwner | SideEffect<EIn>): string | SideEffect<"EMPTY" | EIn>; };
 export type PipeSideEffectTagsIsStrict = Expect<Equal<typeof pipeSideEffectTags, PipeSideEffectTagsExpected>>;
+export type PipeSideEffectTagsExpectedLegacyCompatible = Expect<Extends<typeof pipeSideEffectTags, PipeSideEffectTagsExpectedLegacy>>;
 
 export const pipeSideEffectTagsStrict = pipeSideEffectStrict(
   getTags,
@@ -399,10 +402,12 @@ export const pipeAsyncSideEffectTags = pipeAsyncSideEffect(
   (value: string) => (isEmpty(value) ? SideEffect.of(() => 'EMPTY' as const) : value)
 );
 
-type PipeAsyncSideEffectTagsExpected = (input: TagOwner | SideEffect<any>) => Promise<string | SideEffect<any>>;
+type PipeAsyncSideEffectTagsExpectedLegacy = (input: TagOwner | SideEffect<any>) => Promise<string | SideEffect<any>>;
+type PipeAsyncSideEffectTagsExpected = { (input: TagOwner): Promise<string | SideEffect<"EMPTY">>; <EIn>(input: TagOwner | SideEffect<EIn>): Promise<string | SideEffect<"EMPTY" | EIn>>; };
 export type PipeAsyncSideEffectTagsIsStrict = Expect<
   Equal<typeof pipeAsyncSideEffectTags, PipeAsyncSideEffectTagsExpected>
 >;
+export type PipeAsyncSideEffectTagsExpectedLegacyCompatible = Expect<Extends<typeof pipeAsyncSideEffectTags, PipeAsyncSideEffectTagsExpectedLegacy>>;
 
 export const pipeAsyncSideEffectTagsStrict = pipeAsyncSideEffectStrict(
   getTags,
@@ -460,8 +465,10 @@ export const pipeSideEffectStream = pipeSideEffect(
   (value: number) => (value > 0 ? value : SideEffect.of(() => 'EMPTY' as const))
 );
 
-type PipeSideEffectStreamExpected = (input: number | SideEffect<any>) => number | SideEffect<any>;
+type PipeSideEffectStreamExpectedLegacy = (input: number | SideEffect<any>) => number | SideEffect<any>;
+type PipeSideEffectStreamExpected = { (input: number): number | SideEffect<"EMPTY">; <EIn>(input: number | SideEffect<EIn>): number | SideEffect<"EMPTY" | EIn>; };
 export type PipeSideEffectStreamIsStrict = Expect<Equal<typeof pipeSideEffectStream, PipeSideEffectStreamExpected>>;
+export type PipeSideEffectStreamExpectedLegacyCompatible = Expect<Extends<typeof pipeSideEffectStream, PipeSideEffectStreamExpectedLegacy>>;
 
 export const pipeSideEffectStrictStream = pipeSideEffectStrict(
   (end: number) => streamRange(0, end),
@@ -494,10 +501,12 @@ export const pipeAsyncSideEffectStream = pipeAsyncSideEffect(
   (value: number[]) => (value.length > 0 ? value : SideEffect.of(() => 'EMPTY' as const))
 );
 
-type PipeAsyncSideEffectStreamExpected = (input: number | SideEffect<any>) => Promise<number[] | SideEffect<any>>;
+type PipeAsyncSideEffectStreamExpectedLegacy = (input: number | SideEffect<any>) => Promise<number[] | SideEffect<any>>;
+type PipeAsyncSideEffectStreamExpected = { (input: number): Promise<SideEffect<"EMPTY"> | number[]>; <EIn>(input: number | SideEffect<EIn>): Promise<number[] | SideEffect<"EMPTY" | EIn>>; };
 export type PipeAsyncSideEffectStreamIsStrict = Expect<
   Equal<typeof pipeAsyncSideEffectStream, PipeAsyncSideEffectStreamExpected>
 >;
+export type PipeAsyncSideEffectStreamExpectedLegacyCompatible = Expect<Extends<typeof pipeAsyncSideEffectStream, PipeAsyncSideEffectStreamExpectedLegacy>>;
 
 export const pipeAsyncSideEffectStrictStream = pipeAsyncSideEffectStrict(
   (end: number) => streamRange(0, end),

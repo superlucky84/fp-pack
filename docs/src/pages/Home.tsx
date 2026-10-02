@@ -29,7 +29,7 @@ export const Home = () => (
         <span class="text-purple-500 font-bold mr-3 text-2xl">⚡</span>
         <div>
           <strong class="text-lg">SideEffect Pattern</strong>
-          <p class="mt-1">Handle errors and side effects declaratively in SideEffect-aware pipelines. Use <code class="text-sm">pipeSideEffect</code> / <code class="text-sm">pipeAsyncSideEffect</code> to short-circuit on <code class="text-sm">SideEffect</code> without breaking composition. Focus on business logic, not error plumbing. For stricter unions, use <code class="text-sm">pipeSideEffectStrict</code> / <code class="text-sm">pipeAsyncSideEffectStrict</code>.</p>
+          <p class="mt-1">Handle errors and side effects declaratively in SideEffect-aware pipelines. Use <code class="text-sm">pipeSideEffect</code> / <code class="text-sm">pipeAsyncSideEffect</code> to short-circuit on <code class="text-sm">SideEffect</code> without breaking composition. Focus on business logic, not error plumbing. Effect types stay precise: you get the exact union of everything that can short-circuit.</p>
         </div>
       </li>
       <li class="flex items-start">
@@ -101,7 +101,7 @@ export const Home = () => (
         </h3>
         <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-3">
           <code class="text-xs md:text-sm">pipe</code> / <code class="text-xs md:text-sm">pipeAsync</code> are pure function composition tools. Prefer value-first
-          <code class="text-xs md:text-sm">pipe(data, ...)</code> for inference. Use <code class="text-xs md:text-sm">pipeStrict</code> / <code class="text-xs md:text-sm">pipeAsyncStrict</code> for stricter type checking when you need to catch mismatches earlier.
+          <code class="text-xs md:text-sm">pipe(data, ...)</code> for inference. Every step is type-checked, so a mismatched step is a compile error.
         </p>
         <CodeBlock
           language="typescript"
@@ -127,7 +127,7 @@ process(); // [2, 4]`}
           SideEffect for Error Handling
         </h3>
         <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 mb-3">
-          Monadic composition without the wrapper overhead. <code class="text-xs md:text-sm">SideEffect</code> enables clean error handling in <code class="text-xs md:text-sm">pipeSideEffect</code>/<code class="text-xs md:text-sm">pipeAsyncSideEffect</code> pipelines—just business logic, no infrastructure code. Use <code class="text-xs md:text-sm">pipeSideEffectStrict</code>/<code class="text-xs md:text-sm">pipeAsyncSideEffectStrict</code> for tighter TypeScript unions.
+          Monadic composition without the wrapper overhead. <code class="text-xs md:text-sm">SideEffect</code> enables clean error handling in <code class="text-xs md:text-sm">pipeSideEffect</code>/<code class="text-xs md:text-sm">pipeAsyncSideEffect</code> pipelines—just business logic, no infrastructure code. Effect unions are tracked precisely.
         </p>
         <CodeBlock
           language="typescript"

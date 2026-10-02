@@ -69,6 +69,8 @@ CODING GUIDELINES:
    - Use `pipe` / `pipeAsync` for 2+ step transformations
    - For single steps, call the function directly (no pipe needed)
    - Prefer value-first: `pipe(value, ...)` for better type inference
+- Let pipe infer intermediate parameters; do not add assertions to silence a broken chain. Contextual inference covers 32 steps after the first argument. Compose smaller pipelines beyond that limit; longer already typed chains remain checked.
+- `pipeWithDeps` infers intermediate values and intersects dependency contracts. Default and deprecated variants have identical checks. Annotate the dependency contract where needed, not every value parameter.
    - Use function-first only for reusable pipelines
    - For trivial one-liners, native JS is acceptable when it's clearer
 
@@ -86,7 +88,7 @@ CODING GUIDELINES:
 
 4. SIDE EFFECT HANDLING
    - Use `pipeSideEffect*` / `pipeAsyncSideEffect*` for early termination
-   - Prefer `pipeSideEffectStrict` / `pipeAsyncSideEffectStrict` for strict unions
+   - Effect unions are precise; do not use the deprecated `*Strict` variants
    - Wrap side effects in `SideEffect.of()`
    - Call `runPipeResult` OUTSIDE pipelines
    - Use `isSideEffect` for precise type narrowing
@@ -118,7 +120,7 @@ CODING GUIDELINES:
 IMPORT PATHS:
 - Core functions: `import { pipe, map, filter } from 'fp-pack'`
 - Async functions: `import { pipeAsync, delay } from 'fp-pack'`
-- SideEffect pattern: `import { pipeSideEffect, pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack'`
+- SideEffect pattern: `import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack'`
 - Stream functions: `import { map, filter, toArray } from 'fp-pack/stream'`
 
 GUIDANCE APPROACH:
@@ -146,14 +148,11 @@ and pattern guidance that complements the behavioral guidelines above.
 This section provides minimal context to help agents locate and use fp-pack functions without becoming an API reference.
 
 ### Core Composition
-- **pipe** - Left-to-right synchronous composition (use for 2+ steps)
-- **pipeStrict** - Stricter type checking between steps
+- **pipe** - Left-to-right synchronous composition (use for 2+ steps; every step is type-checked)
 - **pipeAsync** - Left-to-right asynchronous composition
-- **pipeAsyncStrict** - Async with stricter type checking
-- **pipeSideEffect** - Composition with early termination (non-strict unions)
-- **pipeSideEffectStrict** - Composition with early termination (strict unions)
-- **pipeAsyncSideEffect** - Async composition with early termination (non-strict unions)
-- **pipeAsyncSideEffectStrict** - Async composition with early termination (strict unions)
+- **pipeSideEffect** - Composition with early termination (precise effect unions)
+- **pipeAsyncSideEffect** - Async composition with early termination (precise effect unions)
+- *Deprecated aliases, do not use:* `pipeStrict`, `pipeAsyncStrict`, `pipeSideEffectStrict`, `pipeAsyncSideEffectStrict`
 
 ### Data Transformation
 Available in `fp-pack`:

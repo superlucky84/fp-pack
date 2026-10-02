@@ -36,18 +36,19 @@ export const SideEffectGuide_ko = () => (
         <li class="flex items-start">
           <span class="text-blue-500 mr-3 mt-1">▸</span>
           <div>
-            <code class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded">pipeSideEffect</code> / <code class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded">pipeAsyncSideEffect</code>:
-            DX 우선, 효과 타입이 <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded">SideEffect&lt;any&gt;</code>로 넓어집니다.
+            <code class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded">pipeSideEffect</code>: 첫 <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded">SideEffect</code>에서 멈추는 동기 파이프라인.
           </div>
         </li>
         <li class="flex items-start">
           <span class="text-purple-500 mr-3 mt-1">▸</span>
           <div>
-            <code class="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded">pipeSideEffectStrict</code> / <code class="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded">pipeAsyncSideEffectStrict</code>:
-            분기별 SideEffect 타입을 정밀하게 유니온으로 추적합니다.
+            <code class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded">pipeAsyncSideEffect</code>: 비동기 단계를 위한 같은 파이프라인 (각 단계는 await된 값을 받음).
           </div>
         </li>
       </ul>
+      <p class="text-sm text-gray-600 dark:text-gray-400 mt-4 mb-0">
+        둘 다 각 단계를 검사하고 effect의 정확한 유니온(예: <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded">SideEffect&lt;'NOT_FOUND' | 'INVALID'&gt;</code>)을 유지합니다. 예전 <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded">*Strict</code> 변형은 deprecated 별칭입니다.
+      </p>
     </div>
 
     <div class="border-l-4 border-slate-500 bg-slate-50 dark:bg-slate-900/30 p-6 rounded-r-lg mb-10">
@@ -83,7 +84,7 @@ const normalizeUser = pipeSideEffect(
 const result = normalizeUser({ id: 1, name: '' });
 
 if (isSideEffect(result)) {
-  const reason = runPipeResult(result); // any (non-strict pipeline)
+  const reason = runPipeResult(result); // 'MISSING_NAME'
   console.log('Invalid:', reason);
 } else {
   console.log('OK:', result.name);
@@ -118,8 +119,8 @@ const result = await loadUser(123);`}
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      SideEffect 결과는 반드시 파이프라인 바깥에서 처리하세요. 결과 타입이 <code class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">SideEffect&lt;any&gt;</code>로
-      넓어졌다면 제네릭으로 안전한 유니온을 복구하세요.
+      SideEffect 결과는 반드시 파이프라인 바깥에서 처리하세요. 파이프라인 결과는 정확한 타입을 유지하며, 직접 결과 타입을 <code class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">SideEffect&lt;any&gt;</code>로
+      넓혔다면 제네릭으로 안전한 유니온을 복구하세요.
     </p>
 
     <CodeBlock
@@ -145,17 +146,17 @@ const message = matchSideEffect<User, string, string>(result, {
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
       <code class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">isSideEffect</code>는 런타임 가드이면서 동시에 TypeScript 타입 가드입니다.
-      파이프라인 바로 뒤 경계에서 분기 처리하면 안전합니다. strict 파이프라인에서는 효과 유니온이 그대로 유지됩니다.
+      파이프라인 바로 뒤 경계에서 분기 처리하면 안전합니다. 효과 유니온은 정확하게 유지됩니다.
     </p>
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
+      code={`import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
 
 const validate = (value: number) =>
   value > 0 ? value : SideEffect.of(() => 'NEGATIVE' as const);
 
-const result = pipeSideEffectStrict(
+const result = pipeSideEffect(
   validate,
   (value) => value + 1
 )(-1);
@@ -171,26 +172,26 @@ if (isSideEffect(result)) {
 
     <div class="border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-900/20 p-6 rounded-r-lg my-8">
       <p class="text-sm md:text-base text-blue-900 dark:text-blue-100 font-semibold mb-2">
-        💡 non-strict 파이프는 효과 타입이 넓어집니다
+        💡 효과 타입은 정확하게 유지됩니다
       </p>
       <p class="text-sm md:text-base text-blue-800 dark:text-blue-200 m-0">
-        <code class="px-1 py-0.5 bg-blue-100 dark:bg-blue-900/40 rounded">pipeSideEffect</code>/<code class="px-1 py-0.5 bg-blue-100 dark:bg-blue-900/40 rounded">pipeAsyncSideEffect</code>에서는
-        효과 타입이 <code class="px-1 py-0.5 bg-blue-100 dark:bg-blue-900/40 rounded">SideEffect&lt;any&gt;</code>입니다. <code class="px-1 py-0.5 bg-blue-100 dark:bg-blue-900/40 rounded">isSideEffect</code> 이후에는
-        <code class="px-1 py-0.5 bg-blue-100 dark:bg-blue-900/40 rounded">runPipeResult&lt;T, E&gt;</code>로 안전한 유니온을 복구하세요.
+        <code class="px-1 py-0.5 bg-blue-100 dark:bg-blue-900/40 rounded">pipeSideEffect</code>/<code class="px-1 py-0.5 bg-blue-100 dark:bg-blue-900/40 rounded">pipeAsyncSideEffect</code>는 effect의 정확한
+        유니온을 반환하므로, <code class="px-1 py-0.5 bg-blue-100 dark:bg-blue-900/40 rounded">isSideEffect</code> 이후 <code class="px-1 py-0.5 bg-blue-100 dark:bg-blue-900/40 rounded">runPipeResult</code>가 그 유니온을
+        바로 반환합니다. 명시적 제네릭(<code class="px-1 py-0.5 bg-blue-100 dark:bg-blue-900/40 rounded">runPipeResult&lt;T, E&gt;</code>)은 직접 넓힌 값에만 필요합니다.
       </p>
     </div>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-6">
-      Strict 유니온 추적
+      효과 유니온 추적
     </h2>
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffectStrict, SideEffect } from 'fp-pack';
+      code={`import { pipeSideEffect, SideEffect } from 'fp-pack';
 
-const pipeline = pipeSideEffectStrict(
+const pipeline = pipeSideEffect(
   (n: number) => (n > 0 ? n : SideEffect.of(() => 'NEGATIVE' as const)),
   (n) => (n > 10 ? n : SideEffect.of(() => 0 as const))
 );

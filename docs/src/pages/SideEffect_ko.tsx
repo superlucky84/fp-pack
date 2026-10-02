@@ -77,7 +77,7 @@ runPipeResult(
     <CodeBlock
       language="typescript"
       code={`// ✅ 좋음: 99%의 경우 - pipe 사용 (순수 변환)
-import { pipe, map, filter, sort } from 'fp-pack';
+import { pipeSideEffect, pipe, map, filter, sort } from 'fp-pack';
 
 const processData = pipe(
   filter(isValid),
@@ -140,11 +140,11 @@ function runPipeResult<T, R = any>(result: T | SideEffect<R>): T | R;`}
         <br />
         ✅ <strong>입력 타입이 정확하면 추론이 유지됩니다.</strong>
         <br />
-        ⚠️ <strong>입력이 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">SideEffect&lt;any&gt;</code> 또는 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">any</code>로 넓어지면(비엄격 파이프라인에서 흔함) 결과가 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">any</code>가 됩니다.</strong>
+        ⚠️ <strong>입력이 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">SideEffect&lt;any&gt;</code> 또는 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">any</code>로 넓어지면(직접 넓은 타입으로 지정한 값 등) 결과가 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">any</code>가 됩니다.</strong>
         <br />
         ✅ <strong>입력이 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">SideEffect&lt;R&gt;</code>로 좁혀지면(예: <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">isSideEffect</code> 이후), <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">runPipeResult</code>는 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">R</code>을 반환합니다.</strong>
         <br />
-        <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded text-xs">const result = runPipeResult(pipeline(data)); // result: any (입력이 넓어짐)</code>
+        <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded text-xs">const result = runPipeResult(widenedValue); // result: any (입력이 넓어짐)</code>
         <br />
         <br />
         ✅ <strong>정확한 타입 안전성을 위해서는 <code class="bg-red-100 dark:bg-red-900/40 px-1 py-0.5 rounded">isSideEffect</code> 타입 가드를 사용하세요:</strong>
@@ -331,7 +331,7 @@ console.log(output); // "0으로 나눔"`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
+      code={`import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
 
 const processNumbers = pipeSideEffect(
   (nums: number[]) => nums.filter(n => n % 2 === 1),
@@ -349,13 +349,13 @@ if (!isSideEffect(oddsDoubled)) {
   const result: number = oddsDoubled.reduce((a, b) => a + b, 0);
   console.log(\`합계: \${result}\`);  // result: number (정확한 타입!)
 } else {
-  // TypeScript가 인식: oddsDoubled는 비엄격 파이프라인에서 SideEffect<any>
+  // TypeScript가 인식: oddsDoubled는 정확한 effect 타입을 가진 SideEffect
   const error = oddsDoubled.effect();
   console.log(\`에러: \${error}\`);
 }
 
-// ⚠️ isSideEffect 없이 - 비엄격 파이프라인에서 타입이 넓어질 수 있음
-const widened = oddsDoubled; // pipeSideEffect는 SideEffect를 any로 넓힘
+// ⚠️ 직접 타입을 넓힐 때만 타입이 넓어짐
+const widened: number[] | SideEffect<any> = oddsDoubled;
 const unsafeResult = runPipeResult(widened);
 // unsafeResult: any
 
@@ -363,13 +363,13 @@ const safeResult = runPipeResult<number[], string>(oddsDoubled);
 // safeResult: number[] | string (유니온 타입 - 안전하지만 좁혀지지 않음)
 
 // ✅ 엄격 파이프라인에서는 SideEffect 타입이 보존됨
-const strictResult = pipeSideEffectStrict(
+const literalResult = pipeSideEffect(
   (nums: number[]) => nums.length > 0 ? nums : SideEffect.of(() => 'EMPTY' as const),
   (nums) => nums
 )([]);
 
-if (isSideEffect(strictResult)) {
-  const error = runPipeResult(strictResult); // 'EMPTY'
+if (isSideEffect(literalResult)) {
+  const error = runPipeResult(literalResult); // 'EMPTY'
 }`}
     />
 
@@ -405,13 +405,13 @@ if (isSideEffect(strictResult)) {
         <span class="font-medium">🔄 핵심 규칙: SideEffect의 전염성</span>
         <br />
         <br />
-        한번 <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipeSideEffect</code> 또는{' '}
-        <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipeAsyncSideEffect</code>를 사용하면, 그 결과는 <strong>항상 <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">T | SideEffect</code></strong>입니다.
+        입력이나 단계에서 effect가 발생할 수 있으면 <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipeSideEffect</code>는{' '}
+        <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">T | SideEffect&lt;E&gt;</code>를 반환합니다. 비동기는 이 타입을 Promise로 감쌉니다. effect가 발생할 수 없으면 일반 T(비동기는 Promise&lt;T&gt;)를 반환합니다.
         <br />
         <br />
-        이 결과를 계속 합성하려면, <strong>반드시</strong> SideEffect-aware 파이프를 계속 사용해야 합니다.
-        <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipe</code>나{' '}
-        <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipeAsync</code>로 <strong>돌아갈 수 없습니다</strong>. 이들은 SideEffect를 처리할 수 없기 때문입니다.
+        결과에 SideEffect가 남아 있을 수 있다면 SideEffect-aware 파이프로 합성하세요.
+        경계에서 effect를 처리하거나 타입 가드로 제외한 뒤에는 일반 값을 pipe나
+        pipeAsync에 전달할 수 있습니다.
       </p>
     </div>
 
@@ -465,33 +465,12 @@ const finalPipeline = pipeSideEffect(
     </div>
 
     <h3 class="text-xl md:text-2xl font-medium text-gray-900 dark:text-white mb-4 mt-6">
-      엄격 버전
+      정확한 effect 타입
     </h3>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      분기별 SideEffect 결과 타입을 정밀한 유니온으로 유지하려면{' '}
-      <a
-        href="/composition/pipeSideEffectStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/composition/pipeSideEffectStrict');
-        }}
-        class="font-semibold text-blue-700 dark:text-blue-300"
-      >
-        pipeSideEffectStrict
-      </a>{' '}
-      또는{' '}
-      <a
-        href="/async/pipeAsyncSideEffectStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/async/pipeAsyncSideEffectStrict');
-        }}
-        class="font-semibold text-blue-700 dark:text-blue-300"
-      >
-        pipeAsyncSideEffectStrict
-      </a>
-      를 사용하세요.
+      <code class="text-sm">pipeSideEffect</code>와 <code class="text-sm">pipeAsyncSideEffect</code>는 분기별 effect를
+      정확한 유니온으로 유지합니다. 예전 <code class="text-sm">*Strict</code> 변형은 이제 deprecated 별칭입니다.
     </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -539,21 +518,6 @@ const finalPipeline = pipeSideEffect(
         </p>
       </a>
 
-      <a
-        href="/composition/pipeSideEffectStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/composition/pipeSideEffectStrict');
-        }}
-        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer"
-      >
-        <h3 class="text-lg md:text-xl font-medium text-blue-600 dark:text-blue-400 mb-2">
-          pipeSideEffectStrict →
-        </h3>
-        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          SideEffect 결과 타입을 엄격 유니온으로 유지합니다.
-        </p>
-      </a>
 
       <a
         href="/async/pipeAsyncSideEffect"
@@ -571,21 +535,6 @@ const finalPipeline = pipeSideEffect(
         </p>
       </a>
 
-      <a
-        href="/async/pipeAsyncSideEffectStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/async/pipeAsyncSideEffectStrict');
-        }}
-        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-500 transition-colors cursor-pointer"
-      >
-        <h3 class="text-lg md:text-xl font-medium text-purple-600 dark:text-purple-400 mb-2">
-          pipeAsyncSideEffectStrict →
-        </h3>
-        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          비동기 파이프라인에서 엄격한 SideEffect 유니온을 유지합니다.
-        </p>
-      </a>
 
       <a
         href="/control/tryCatch"

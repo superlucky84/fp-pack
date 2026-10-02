@@ -4,104 +4,89 @@ import { navigateTo } from '@/store';
 export const PipeAsyncSideEffectStrict_ko = () => (
   <div class="prose prose-lg dark:prose-invert max-w-none">
     <h1 class="text-3xl md:text-4xl font-semibold text-gray-900 dark:text-white mb-6">
-      pipeAsyncSideEffectStrict
+      pipeAsyncSideEffectStrict <span class="text-base align-middle px-2 py-1 rounded bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-200">deprecated</span>
     </h1>
 
     <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
-      비동기 파이프라인용 엄격한 SideEffect 유니온
+      0.15.0부터 deprecated — pipeAsyncSideEffect를 사용하세요
     </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      pipeAsyncSideEffectStrict란?
+      왜 deprecated 되었나요?
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      <strong class="font-semibold text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/20 px-2 py-1 rounded">
-        pipeAsyncSideEffectStrict
-      </strong>{' '}
-      는 <strong>pipeAsyncSideEffect</strong>의 엄격 버전입니다. SideEffect 결과 타입을 정확한 유니온으로 유지하면서
-      파이프라인을 단락(short-circuit)합니다. 타입 추론을 위해
-      <code class="text-sm">pipeAsyncSideEffectStrict(data, ...)</code> 형태를 우선 사용하세요.
+      0.15.0부터 <code class="text-sm">pipeAsyncSideEffect</code>가 모든 단계를 컴파일 타임에 검사하고, 정확한 effect 유니온(예: <code class="text-sm">SideEffect&lt;'NOT_FOUND' | 'INVALID'&gt;</code>)을 추적합니다. <code class="text-sm">pipeAsyncSideEffectStrict</code>가 제공하던 기능 그대로입니다. 조기 종료 런타임 동작은 바뀌지 않았습니다.
     </p>
 
-    <CodeBlock
-      language="typescript"
-      code={`import { pipeAsyncSideEffectStrict, SideEffect } from 'fp-pack';
-
-// 결과 타입: Promise<number | SideEffect<'NEGATIVE' | 0>>
-const result = await pipeAsyncSideEffectStrict(
-  5,
-  async (n: number) => (n > 0 ? n : SideEffect.of(() => 'NEGATIVE' as const)),
-  (n) => (n > 10 ? n : SideEffect.of(() => 0 as const))
-);`}
-    />
-
-    <div class="bg-amber-50 dark:bg-amber-900/20 p-4 mb-6 rounded border border-amber-200 dark:border-amber-800 mt-6">
+    <div class="bg-amber-50 dark:bg-amber-900/20 p-4 mb-6 rounded border border-amber-200 dark:border-amber-800">
       <p class="text-sm md:text-base text-amber-900 dark:text-amber-200 leading-relaxed">
-        <span class="font-medium">✅ pipeAsyncSideEffectStrict는 언제 사용하나요?</span>
-        <br />
-        <br />
-        SideEffect 결과 타입을 정밀하게 유지하고 싶을 때{' '}
-        <code class="bg-amber-100 dark:bg-amber-900/40 px-1 py-0.5 rounded">pipeAsyncSideEffectStrict</code>를 사용하세요.
-        일반적으로는{' '}
-        <code class="bg-amber-100 dark:bg-amber-900/40 px-1 py-0.5 rounded">pipeAsyncSideEffect</code>가 더 간편합니다.
+        <code class="text-sm">pipeAsyncSideEffectStrict</code>는 1.0까지 <code class="text-sm">pipeAsyncSideEffect</code>의 별칭으로 export됩니다. 기존 import는 유지되지만, 이전 오버로드가 숨기던 타입 불일치나 추론 정보 부족은 새 컴파일 오류로 드러날 수 있습니다.
       </p>
     </div>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      어떤 파이프를 선택할까?
+      마이그레이션
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      fp-pack은 추론 유연성과 타입 안전성 사이의 다양한 트레이드오프를 가진 여러 파이프 변형을
-      제공합니다. 당신의 사용 사례에 어떤 것이 적합한지 이해하려면 상세 가이드를 읽어보세요.
+      import와 호출을 기본 이름으로 바꾸세요. 두 이름은 pipeWithDeps에서도 같은 추론과 검사를 제공합니다.
+      입력 타입 정보가 없는 제네릭 유틸리티에는 value-first를 우선 사용하세요.
+      자세한 0.15.0 마이그레이션은 파이프 선택 가이드에서 확인할 수 있습니다.
     </p>
-
-    <a
-      href="/ko/guide/pipe-choice-guide"
-      onClick={(e: Event) => {
-        e.preventDefault();
-        navigateTo('/ko/guide/pipe-choice-guide');
-      }}
-      class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-    >
-      파이프 선택 가이드 읽기
-    </a>
-
-    <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
-
-    <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Type Signature
-    </h2>
 
     <CodeBlock
       language="typescript"
-      code={`function pipeAsyncSideEffectStrict<A, R>(
-  a: A,
-  ab: (a: A) => R | SideEffect | Promise<R | SideEffect>
-): Promise<R | SideEffect<UnionOfAllEffects>>;
+      code={`// before
+import { pipeAsyncSideEffectStrict, SideEffect } from 'fp-pack';
+const check = pipeAsyncSideEffectStrict(
+  async (n: number) => (n > 0 ? n : SideEffect.of(() => 'NON_POSITIVE' as const)),
+  (n: number) => n * 2
+);
 
-function pipeAsyncSideEffectStrict<A, R>(
-  ab: (a: A) => R | SideEffect | Promise<R | SideEffect>
-): (a: A | SideEffect) => Promise<R | SideEffect<UnionOfAllEffects>>;`}
+// after — same precise effect type: number | SideEffect<'NON_POSITIVE'>
+import { pipeAsyncSideEffect, SideEffect } from 'fp-pack';
+const check = pipeAsyncSideEffect(
+  async (n: number) => (n > 0 ? n : SideEffect.of(() => 'NON_POSITIVE' as const)),
+  (n: number) => n * 2
+);`}
     />
 
-    <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      출력 SideEffect 타입은 파이프라인에서 발생 가능한 모든 SideEffect 결과 타입의 유니온입니다.
-    </p>
+    <div class="flex flex-wrap gap-4 mt-8">
+      <a
+        href="/ko/async/pipeAsyncSideEffect"
+        onClick={(e: Event) => {
+          e.preventDefault();
+          navigateTo('/ko/async/pipeAsyncSideEffect');
+        }}
+        class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+      >
+        pipeAsyncSideEffect로 이동
+      </a>
+      <a
+        href="/ko/guide/pipe-choice-guide"
+        onClick={(e: Event) => {
+          e.preventDefault();
+          navigateTo('/ko/guide/pipe-choice-guide');
+        }}
+        class="inline-block px-6 py-3 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+      >
+        파이프 선택 가이드 보기
+      </a>
+    </div>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Source Code
+      소스 코드
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      <code class="text-sm">pipeAsyncSideEffectStrict</code> 구현을 GitHub에서 확인하세요.
+      별칭은 pipeAsyncSideEffect를 감싸는 한 줄짜리 래퍼입니다.
     </p>
 
     <a
@@ -113,63 +98,7 @@ function pipeAsyncSideEffectStrict<A, R>(
       <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
       </svg>
-      View on GitHub
+      GitHub에서 보기
     </a>
-
-    <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
-
-    <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Related Functions
-    </h2>
-
-    <div class="grid gap-6 mt-6">
-      <a
-        href="/async/pipeAsyncSideEffect"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/async/pipeAsyncSideEffect');
-        }}
-        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer"
-      >
-        <h3 class="text-lg md:text-xl font-medium text-blue-600 dark:text-blue-400 mb-2">
-          pipeAsyncSideEffect →
-        </h3>
-        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          any 기반 결과 유니온을 사용하는 기본 버전입니다.
-        </p>
-      </a>
-
-      <a
-        href="/async/pipeAsync"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/async/pipeAsync');
-        }}
-        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-emerald-500 dark:hover:border-emerald-500 transition-colors cursor-pointer"
-      >
-        <h3 class="text-lg md:text-xl font-medium text-emerald-600 dark:text-emerald-400 mb-2">
-          pipeAsync →
-        </h3>
-        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          SideEffect가 없는 순수 비동기 파이프라인입니다.
-        </p>
-      </a>
-
-      <a
-        href="/composition/sideEffect"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/composition/sideEffect');
-        }}
-        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-500 transition-colors cursor-pointer"
-      >
-        <h3 class="text-lg md:text-xl font-medium text-purple-600 dark:text-purple-400 mb-2">
-          SideEffect →
-        </h3>
-        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          조기 종료를 표현하는 SideEffect 컨테이너입니다.
-        </p>
-      </a>
-    </div>
   </div>
 );

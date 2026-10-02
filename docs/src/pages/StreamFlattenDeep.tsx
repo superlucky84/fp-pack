@@ -216,12 +216,13 @@ const nestedNumbers = [
 ];
 
 const result = pipe(
+  nestedNumbers,
   flattenDeep,
   filter((n: number) => n % 2 === 0),  // Only even numbers
   map((n: number) => n * 2),            // Double them
   take(3),                               // First 3
   toArray
-)(nestedNumbers);
+);
 // [4, 8, 12]`}
     />
 
@@ -255,10 +256,11 @@ const hugeNested = deepNesting(1000);
 
 // Only processes what's needed - stops after 5 items
 const first5 = pipe(
+  hugeNested,
   flattenDeep,
   take(5),
   toArray
-)(hugeNested);
+);
 // [2, 2, 2, 2, 2]`}
     />
 

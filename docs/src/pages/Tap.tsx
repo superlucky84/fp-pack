@@ -247,7 +247,7 @@ processOrder(order);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, tap } from 'fp-pack';
+      code={`import { pipeAsync, tap } from 'fp-pack';
 
 const cache = new Map<string, any>();
 
@@ -261,9 +261,10 @@ interface ApiResponse {
   timestamp: number;
 }
 
-const fetchAndCache = (endpoint: string) => pipe(
-  (endpoint: string) => fetch(endpoint),
-  (response: Response) => response.json(),
+const fetchAndCache = (endpoint: string) => pipeAsync(
+  endpoint,
+  (url: string) => fetch(url),
+  (response: Response) => response.json() as Promise<ApiResponse>,
   warmCache<ApiResponse>(\`api:\${endpoint}\`),
   (data: ApiResponse) => data.data
 );
@@ -283,7 +284,7 @@ const data = await fetchAndCache('/api/users');`}
 // Helper to detect mutations in development
 const detectMutation = <T extends object>(label: string) => {
   if (process.env.NODE_ENV !== 'development') {
-    return tap(() => {});
+    return tap<T>(() => {});
   }
 
   let snapshot: string;
@@ -301,12 +302,13 @@ const detectMutation = <T extends object>(label: string) => {
   });
 };
 
-const processData = pipe(
-  detectMutation('start'),
+const processData = (input: any[]) => pipe(
+  input,
+  detectMutation<any[]>('start'),
   (data: any[]) => data.map(x => ({ ...x, processed: true })),
-  detectMutation('after-map'),
+  detectMutation<any[]>('after-map'),
   (data: any[]) => data.filter(x => x.active),
-  detectMutation('after-filter')
+  detectMutation<any[]>('after-filter')
 );`}
     />
 
@@ -347,23 +349,24 @@ const verboseLog = <T>(label: string) =>
       language="typescript"
       code={`import { pipe, tap } from 'fp-pack';
 
-const measureTime = (label: string) => {
+const measureTime = <In, Out>(label: string) => {
   let startTime: number;
 
   return {
-    start: tap(() => {
+    start: tap<In>(() => {
       startTime = performance.now();
     }),
-    end: tap(() => {
+    end: tap<Out>(() => {
       const duration = performance.now() - startTime;
       console.log(\`\${label} took \${duration.toFixed(2)}ms\`);
     }),
   };
 };
 
-const timer = measureTime('Data processing');
+const timer = measureTime<number[], number>('Data processing');
 
-const processData = pipe(
+const processData = (input: number[]) => pipe(
+  input,
   timer.start,
   (data: number[]) => data.map(x => x * 2),
   (data: number[]) => data.filter(x => x > 10),

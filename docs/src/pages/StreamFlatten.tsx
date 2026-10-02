@@ -221,7 +221,8 @@ for await (const log of allLogs) {
 
     <CodeBlock
       language="typescript"
-      code={`import { flatten, filter, pipe } from 'fp-pack';
+      code={`import { pipe } from 'fp-pack';
+import { flatten, filter } from 'fp-pack/stream';
 
 // Simulate reading a large file in chunks
 function* readFileInChunks(filePath: string): IterableIterator<string[]> {
@@ -239,6 +240,7 @@ function* readFileInChunks(filePath: string): IterableIterator<string[]> {
 
 // Flatten chunks and process line by line
 const processedLines = pipe(
+  readFileInChunks('large-data.txt'),
   flatten,
   filter((line: string) => !line.includes('error')),
   function* (lines: Iterable<string>) {
@@ -246,7 +248,7 @@ const processedLines = pipe(
       yield line.toUpperCase();
     }
   }
-)(readFileInChunks('large-data.txt'));
+);
 
 let lineCount = 0;
 for (const line of processedLines) {
@@ -397,7 +399,8 @@ console.log(\`Average price: $\${avgPrice.toFixed(2)}\`);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { flatten, filter, map, pipe } from 'fp-pack';
+      code={`import { pipe } from 'fp-pack';
+import { flatten, filter, map } from 'fp-pack/stream';
 
 interface DataPoint {
   sensor: string;
@@ -439,13 +442,14 @@ function* sensorC(): IterableIterator<DataPoint> {
 const sensors = [sensorA(), sensorB(), sensorC()];
 
 const processedData = pipe(
+  sensors,
   flatten,
   filter((point: DataPoint) => point.value > 25),
   map((point: DataPoint) => ({
     ...point,
     normalized: point.value / 100,
   }))
-)(sensors);
+);
 
 const anomalies: DataPoint[] = [];
 for (const point of processedData) {

@@ -75,10 +75,10 @@ export const Guide_ko = () => (
     </p>
 
     <ol class="space-y-3 text-gray-700 dark:text-gray-300 list-decimal list-inside mb-8">
-      <li><strong>함수 조합</strong>: <code class="text-sm">pipe</code>와 <code class="text-sm">pipeAsync</code>를 연산 결합의 주요 도구로 사용 (더 엄격한 타입 검사가 필요하면 <code class="text-sm">pipeStrict</code> / <code class="text-sm">pipeAsyncStrict</code> 사용)</li>
+      <li><strong>함수 조합</strong>: <code class="text-sm">pipe</code>와 <code class="text-sm">pipeAsync</code>를 연산 결합의 주요 도구로 사용 (모든 단계가 타입 검사됨)</li>
       <li><strong>선언적 코드</strong>: 명령형 루프 및 변이보다 함수 조합 선호</li>
       <li><strong>모나드 패턴 없음</strong>: 전통적인 FP 모나드(Option, Either 등)는 사용하지 않음 - <code class="text-sm">pipe</code>와 잘 조합되지 않음</li>
-      <li><strong>SideEffect 패턴</strong>: <code class="text-sm">pipeSideEffect</code> / <code class="text-sm">pipeAsyncSideEffect</code> 파이프라인과 함께 <code class="text-sm">SideEffect</code>를 사용하여 에러 및 부수 효과 처리. 엄격한 유니온 타입이 필요하면 <code class="text-sm">pipeSideEffectStrict</code> / <code class="text-sm">pipeAsyncSideEffectStrict</code> 사용</li>
+      <li><strong>SideEffect 패턴</strong>: <code class="text-sm">pipeSideEffect</code> / <code class="text-sm">pipeAsyncSideEffect</code> 파이프라인과 함께 <code class="text-sm">SideEffect</code>를 사용하여 에러 및 부수 효과 처리. 정확한 effect 유니온이 유지됩니다</li>
       <li><strong>지연 평가</strong>: 효율적인 이터러블 처리를 위해 <code class="text-sm">stream/*</code> 함수 사용</li>
     </ol>
 
@@ -124,7 +124,7 @@ const processUsers = (users: User[]) => {
 
     <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 rounded">
       <p class="text-sm md:text-base text-blue-900 dark:text-blue-100">
-        SideEffect 기반 조기 종료의 경우 <code class="text-sm">pipeSideEffect</code>를 사용하세요. 타입 유니온을 엄격히 유지하려면 <code class="text-sm">pipeSideEffectStrict</code>가 적합합니다.
+        SideEffect 기반 조기 종료의 경우 <code class="text-sm">pipeSideEffect</code>를 사용하세요. 각 단계가 만들 수 있는 effect의 정확한 유니온이 추적됩니다.
       </p>
     </div>
 
@@ -189,7 +189,7 @@ const fetchUserData = async (userId: string) => {
 
     <div class="mt-6 p-4 bg-purple-50 dark:bg-purple-900/20 border-l-4 border-purple-500 rounded">
       <p class="text-sm md:text-base text-purple-900 dark:text-purple-100">
-        SideEffect를 인식하는 비동기 파이프라인의 경우 <code class="text-sm">pipeAsyncSideEffect</code>를 사용하세요. 엄격한 유니온이 필요하면 <code class="text-sm">pipeAsyncSideEffectStrict</code>를 사용하세요.
+        SideEffect를 인식하는 비동기 파이프라인의 경우 <code class="text-sm">pipeAsyncSideEffect</code>를 사용하세요. effect 타입도 정확하게 유지됩니다.
       </p>
     </div>
 
@@ -198,7 +198,7 @@ const fetchUserData = async (userId: string) => {
         📖 올바른 파이프 변형을 선택하는 데 도움이 필요하신가요?
       </h3>
       <p class="text-sm text-indigo-800 dark:text-indigo-200 mb-3">
-        fp-pack은 여러 파이프 변형(pipe, pipeStrict, pipeSideEffect 등)을 제공하며, 각각 다른 사용 사례에 최적화되어 있습니다. 각 변형을 언제 사용해야 하는지 이해하는 것이 효과적인 사용의 핵심입니다.
+        fp-pack의 파이프는 pipe, pipeAsync, pipeSideEffect, pipeAsyncSideEffect 네 가지입니다. 모두 각 단계를 검사하므로, 동기/비동기와 조기 종료 여부만 고르면 됩니다.
       </p>
       <button
         onClick={() => navigateTo('/ko/guide/pipe-choice-guide')}
@@ -254,8 +254,8 @@ const fetchUserData = async (userId: string) => {
       일반 에러 처리의 경우 표준 try-catch 또는 에러 전파가 완벽하게 괜찮습니다.
     </p>
     <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-      분기별 SideEffect 결과 타입을 정밀하게 유지하려면 <code class="text-sm">pipeSideEffectStrict</code> /{' '}
-      <code class="text-sm">pipeAsyncSideEffectStrict</code>를 사용하세요.
+      <code class="text-sm">pipeSideEffect</code> / <code class="text-sm">pipeAsyncSideEffect</code>는 분기별 SideEffect 결과
+      타입을 정확한 유니온으로 유지합니다.
     </p>
 
     <CodeBlock
@@ -301,18 +301,19 @@ const finalValue = runPipeResult(
     />
 
     <h3 class="text-2xl font-medium text-gray-900 dark:text-white mb-3 mt-8">
-      엄격한 SideEffect 유니온
+      정확한 SideEffect 유니온
     </h3>
 
     <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-      분기별 SideEffect 결과 타입을 정확한 유니온으로 유지하고 싶다면 strict 버전을 사용하세요.
+      SideEffect 파이프라인은 분기별 effect를 정확한 유니온으로 추적합니다. 어떤 단계도 SideEffect를 반환하지 않으면
+      결과 타입에 SideEffect가 붙지 않습니다.
     </p>
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffectStrict, SideEffect } from 'fp-pack';
+      code={`import { pipeSideEffect, SideEffect } from 'fp-pack';
 
-const pipeline = pipeSideEffectStrict(
+const pipeline = pipeSideEffect(
   (n: number) => (n > 0 ? n : SideEffect.of(() => 'NEGATIVE' as const)),
   (n) => (n > 10 ? n : SideEffect.of(() => 0 as const))
 );
@@ -328,7 +329,7 @@ const result = pipeline(5);`}
     <ul class="space-y-3 text-gray-700 dark:text-gray-300 mb-6">
       <li><code class="text-sm">SideEffect.of(fn, label?)</code> - 부수 효과 컨테이너 생성</li>
       <li><code class="text-sm">isSideEffect(value)</code> - 값이 SideEffect인지 <strong>런타임 체크</strong>하는 타입 가드</li>
-      <li><code class="text-sm">runPipeResult&lt;T, R&gt;(result)</code> - SideEffect 실행 또는 값 반환 (파이프라인 <strong>외부</strong>에서 호출). 입력이 <code class="text-sm">SideEffect&lt;R&gt;</code>로 좁혀지면 <code class="text-sm">R</code>을 반환합니다. 입력 타입이 <code class="text-sm">SideEffect&lt;any&gt;</code>로 넓어졌다면 제네릭으로 안전한 유니온을 복구하세요.</li>
+      <li><code class="text-sm">runPipeResult&lt;T, R&gt;(result)</code> - SideEffect 실행 또는 값 반환 (파이프라인 <strong>외부</strong>에서 호출). 입력이 <code class="text-sm">SideEffect&lt;R&gt;</code>로 좁혀지면 <code class="text-sm">R</code>을 반환합니다. 직접 입력 타입을 넓혔다면(예: <code class="text-sm">SideEffect&lt;any&gt;</code>로 지정) 제네릭으로 안전한 유니온을 복구하세요.</li>
       <li><code class="text-sm">matchSideEffect(result, {'{'} value, effect {'}'})</code> - 결과에 대한 패턴 매치</li>
     </ul>
 
@@ -347,49 +348,35 @@ const result = pipeline(5);`}
 
     <CodeBlock
       language="typescript"
-      code={`import { pipeSideEffect, pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
+      code={`import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack';
 
 const processNumbers = pipeSideEffect(
   (nums: number[]) => nums.filter(n => n % 2 === 1),
-  (odds) => {
-    if (odds.length === 0) {
-      return SideEffect.of(() => '홀수가 없습니다');
-    }
-    return odds.map(n => n * 2);
-  }
+  (odds) => (odds.length === 0 ? SideEffect.of(() => 'NO_ODDS' as const) : odds.map(n => n * 2))
 );
 
 const oddsDoubled = processNumbers([1, 2, 3, 4, 5]);
+// oddsDoubled: number[] | SideEffect<'NO_ODDS'>
 
-// ✅ 올바름: isSideEffect로 타입 체크
+// ✅ 올바름: isSideEffect로 타입 확인
 if (!isSideEffect(oddsDoubled)) {
-  // TypeScript 인식: oddsDoubled는 number[]
+  // TypeScript가 앎: oddsDoubled는 number[]
   const sum: number = oddsDoubled.reduce((a, b) => a + b, 0);
-  console.log(\`합계: \${sum}\`);  // sum: number
+  console.log(\`합계: \${sum}\`);
 } else {
-  // pipeSideEffect는 SideEffect를 any로 넓혀서 runPipeResult가 any가 됨
-  const result = runPipeResult(oddsDoubled);
-  console.log(\`에러: \${result}\`);  // result: any
+  const reason = runPipeResult(oddsDoubled); // reason: 'NO_ODDS'
+  console.log(\`에러: \${reason}\`);
 }
 
-// ⚠️ 결과 타입이 넓어지면 추론이 깨짐
+// ✅ 좁히지 않아도 runPipeResult는 정확한 유니온을 반환
+const value = runPipeResult(oddsDoubled); // number[] | 'NO_ODDS'
+
+// ⚠️ 직접 타입을 넓힐 때만 추론이 깨짐
 const widened: number[] | SideEffect<any> = oddsDoubled;
-const unsafeResult = runPipeResult(widened);
-// unsafeResult: any
+const unsafeResult = runPipeResult(widened); // any
 
-// ✅ 올바름: 제네릭으로 안전한 유니온 복구
-const safeResult = runPipeResult<number[], string>(oddsDoubled);
-// safeResult: number[] | string (유니온 타입 - 안전하지만 좁혀지지 않음)
-
-// ✅ 엄격 파이프라인에서는 SideEffect 타입이 보존됨
-const strictResult = pipeSideEffectStrict(
-  (nums: number[]) => nums.length > 0 ? nums : SideEffect.of(() => 'EMPTY' as const),
-  (nums) => nums
-)([]);
-
-if (isSideEffect(strictResult)) {
-  const error = runPipeResult(strictResult); // 'EMPTY'
-}`}
+// ✅ 제네릭을 제공해 안전한 유니온 복구
+const safeResult = runPipeResult<number[], 'NO_ODDS'>(widened); // number[] | 'NO_ODDS'`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -517,10 +504,11 @@ export default curriedChunk;`}
 // propOr로 배열 타입을 유지
 const addTodo = (text: string, state: AppState) =>
   pipe(
+    state,
     propOr([], 'todos'),
     append(createTodo(text)),
     (todos) => assoc('todos', todos, state)
-  )(state);
+  );
 
 // ifElse는 값이 아니라 함수가 필요
 const toggleTodo = (id: string) => ifElse(
@@ -684,17 +672,6 @@ zeroArg(); // [4, 8] - 타입 에러 없음, 깔끔한 추론`}
           </tr>
           <tr class="border-b border-gray-200 dark:border-gray-800">
             <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-              더 엄격한 타입 불일치 검출 (동기)
-            </td>
-            <td class="px-4 py-3 text-sm">
-              <code class="text-xs bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">pipeStrict</code>
-            </td>
-            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-              단계 간 타입 검사를 더 강하게 적용
-            </td>
-          </tr>
-          <tr class="border-b border-gray-200 dark:border-gray-800">
-            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
               순수한 데이터 변환 (비동기)
             </td>
             <td class="px-4 py-3 text-sm">
@@ -706,27 +683,16 @@ zeroArg(); // [4, 8] - 타입 에러 없음, 깔끔한 추론`}
           </tr>
           <tr class="border-b border-gray-200 dark:border-gray-800">
             <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-              더 엄격한 타입 불일치 검출 (비동기)
-            </td>
-            <td class="px-4 py-3 text-sm">
-              <code class="text-xs bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">pipeAsyncStrict</code>
-            </td>
-            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-              단계 간 타입 검사를 더 강하게 적용
-            </td>
-          </tr>
-          <tr class="border-b border-gray-200 dark:border-gray-800">
-            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
               조기 종료 + 부수 효과 (동기)
             </td>
             <td class="px-4 py-3 text-sm">
               <code class="text-xs bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded">pipeSideEffect</code>
             </td>
             <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-              SideEffect에서 자동 단락
+              SideEffect에서 자동 단락, 정확한 effect 유니온
             </td>
           </tr>
-          <tr class="border-b border-gray-200 dark:border-gray-800">
+          <tr>
             <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
               조기 종료 + 부수 효과 (비동기)
             </td>
@@ -734,29 +700,7 @@ zeroArg(); // [4, 8] - 타입 에러 없음, 깔끔한 추론`}
               <code class="text-xs bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded">pipeAsyncSideEffect</code>
             </td>
             <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-              SideEffect에서 자동 단락
-            </td>
-          </tr>
-          <tr class="border-b border-gray-200 dark:border-gray-800">
-            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-              정확한 SideEffect 유니온 타입 (동기)
-            </td>
-            <td class="px-4 py-3 text-sm">
-              <code class="text-xs bg-green-100 dark:bg-green-900 px-2 py-1 rounded">pipeSideEffectStrict</code>
-            </td>
-            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-              분기별 정확한 유니온 추적
-            </td>
-          </tr>
-          <tr>
-            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-              정확한 SideEffect 유니온 타입 (비동기)
-            </td>
-            <td class="px-4 py-3 text-sm">
-              <code class="text-xs bg-green-100 dark:bg-green-900 px-2 py-1 rounded">pipeAsyncSideEffectStrict</code>
-            </td>
-            <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-              분기별 정확한 유니온 추적
+              SideEffect에서 자동 단락, 정확한 effect 유니온
             </td>
           </tr>
         </tbody>
@@ -1008,7 +952,7 @@ const result = processLargeDataset(range(1, 1000000));`}
     <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-6 space-y-2">
       <li>주요 함수: <code class="text-sm">import {'{'} pipe, map, filter {'}'} from 'fp-pack'</code></li>
       <li>비동기: <code class="text-sm">import {'{'} pipeAsync, delay, retry {'}'} from 'fp-pack'</code></li>
-      <li>SideEffect: <code class="text-sm">import {'{'} pipeSideEffect, pipeSideEffectStrict, pipeAsyncSideEffect, pipeAsyncSideEffectStrict, SideEffect {'}'} from 'fp-pack'</code></li>
+      <li>SideEffect: <code class="text-sm">import {'{'} pipeSideEffect, pipeAsyncSideEffect, SideEffect {'}'} from 'fp-pack'</code></li>
       <li>스트림: <code class="text-sm">import {'{'} map, filter, toArray {'}'} from 'fp-pack/stream'</code></li>
     </ul>
 
@@ -1020,7 +964,6 @@ const result = processLargeDataset(range(1, 1000000));`}
       <li><strong>순수 동기 변환</strong>: <code class="text-sm">pipe</code> + 배열/객체 함수</li>
       <li><strong>순수 비동기 연산</strong>: <code class="text-sm">pipeAsync</code></li>
       <li><strong>SideEffect를 사용한 에러 처리</strong>: <code class="text-sm">pipeSideEffect</code> (동기) / <code class="text-sm">pipeAsyncSideEffect</code> (비동기)</li>
-      <li><strong>엄격한 SideEffect 유니온</strong>: <code class="text-sm">pipeSideEffectStrict</code> (동기) / <code class="text-sm">pipeAsyncSideEffectStrict</code> (비동기)</li>
       <li><strong>런타임 타입 체크</strong>: <code class="text-sm">isSideEffect</code>로 SideEffect 여부 확인</li>
       <li><strong>SideEffect 실행</strong>: <code class="text-sm">runPipeResult&lt;T, R&gt;</code> (파이프라인 외부에서 호출, 제네릭 제공)</li>
       <li><strong>대용량 데이터셋</strong>: <code class="text-sm">stream/*</code> 함수</li>
@@ -1040,7 +983,6 @@ const result = processLargeDataset(range(1, 1000000));`}
       <li><strong>비동기 연산이 포함되면 <code class="text-sm">pipeAsync</code>로 전환</strong></li>
       <li><strong>지연, 메모리 효율적인 처리를 위해 <code class="text-sm">stream/*</code> 사용</strong></li>
       <li><strong><code class="text-sm">pipeSideEffect</code>/<code class="text-sm">pipeAsyncSideEffect</code>에서 <code class="text-sm">SideEffect</code>로 에러 처리</strong></li>
-      <li><strong>엄격한 유니온이 필요하면</strong> <code class="text-sm">pipeSideEffectStrict</code>/<code class="text-sm">pipeAsyncSideEffectStrict</code> 사용</li>
       <li><strong>명령형 루프 피하기</strong> - fp-pack의 선언적 함수 사용</li>
       <li><strong>모나드 제안하지 않기</strong> - 대신 SideEffect 패턴 사용</li>
       <li><strong>코드를 선언적으로 유지</strong> - 무엇을 할지 기술, 어떻게가 아님</li>

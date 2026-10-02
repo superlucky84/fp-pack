@@ -70,7 +70,7 @@ await toArray(gen());
       code={`import { chunk, toArray } from 'fp-pack/stream';
 import { pipeAsync } from 'fp-pack';
 
-await pipeAsync(chunk(2), toArray<number[]>)([1, 2, 3, 4]);
+await pipeAsync([1, 2, 3, 4],chunk(2), toArray<number[]>);
 // [[1, 2], [3, 4]]`}
     />
 

@@ -4,95 +4,74 @@ import { navigateTo } from '@/store';
 export const PipeAsyncStrict = () => (
   <div class="prose prose-lg dark:prose-invert max-w-none">
     <h1 class="text-3xl md:text-4xl font-semibold text-gray-900 dark:text-white mb-6">
-      pipeAsyncStrict
+      pipeAsyncStrict <span class="text-base align-middle px-2 py-1 rounded bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-200">deprecated</span>
     </h1>
 
     <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
-      Strict typing for async pipelines
+      Deprecated since 0.15.0 — use pipeAsync instead
     </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      What is pipeAsyncStrict?
+      Why is it deprecated?
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      <strong class="font-semibold text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/20 px-2 py-1 rounded">
-        pipeAsyncStrict
-      </strong>{' '}
-      is the strict counterpart of <strong>pipeAsync</strong>. It catches incompatible async chains earlier while
-      keeping the same runtime behavior. Prefer value-first
-      <code class="text-sm">pipeAsyncStrict(data, ...)</code> for inference.
+      Since 0.15.0, <code class="text-sm">pipeAsync</code> checks step compatibility while inferring inline callbacks through 32 steps after the first argument. Longer typed chains remain checked; split longer inline chains to preserve inference. The Strict name now shares these same signatures.
     </p>
 
-    <CodeBlock
-      language="typescript"
-      code={`import { pipeAsyncStrict } from 'fp-pack';
-
-const result = await pipeAsyncStrict(
-  2,
-  async (n: number) => n + 1,
-  (n) => n * 2
-); // 6`}
-    />
-
-    <div class="bg-amber-50 dark:bg-amber-900/20 p-4 mb-6 rounded border border-amber-200 dark:border-amber-800 mt-6">
+    <div class="bg-amber-50 dark:bg-amber-900/20 p-4 mb-6 rounded border border-amber-200 dark:border-amber-800">
       <p class="text-sm md:text-base text-amber-900 dark:text-amber-200 leading-relaxed">
-        <span class="font-medium">✅ When to use pipeAsyncStrict?</span>
-        <br />
-        <br />
-        Use <code class="bg-amber-100 dark:bg-amber-900/40 px-1 py-0.5 rounded">pipeAsyncStrict</code> when you want
-        stricter mismatch detection in async pipelines. For most cases, stick to{' '}
-        <code class="bg-amber-100 dark:bg-amber-900/40 px-1 py-0.5 rounded">pipeAsync</code>.
+        <code class="text-sm">pipeAsyncStrict</code> remains an exported alias of <code class="text-sm">pipeAsync</code> until 1.0. Existing imports remain available, but mismatches or missing inference context that older overloads hid may now produce errors.
       </p>
     </div>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Choosing Your Pipe
+      Migration
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      fp-pack offers several pipe variants, each with its own trade-offs between inference
-      flexibility and type safety. To understand which one is right for your use case, please
-      read our detailed guide.
+      Replace the import and call with the base name. Both names use the same inference and checks,
+      including pipeWithDeps. Prefer value-first for generic helpers without input context;
+      see the Pipe Choice Guide for the 0.15.0 migration.
     </p>
-
-    <a
-      href="/guide/pipe-choice-guide"
-      onClick={(e: Event) => {
-        e.preventDefault();
-        navigateTo('/guide/pipe-choice-guide');
-      }}
-      class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-    >
-      Read the Pipe Selection Guide
-    </a>
-
-    <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
-
-    <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Type Signature
-    </h2>
 
     <CodeBlock
       language="typescript"
-      code={`function pipeAsyncStrict<A, B, C>(
-  value: A,
-  ab: (a: A) => B | Promise<B>,
-  bc: (b: B) => C | Promise<C>
-): Promise<C>;
+      code={`// before
+import { pipeAsyncStrict } from 'fp-pack';
+const load = pipeAsyncStrict(fetchUser, (user: User) => user.name);
 
-function pipeAsyncStrict<A, B>(
-  ab: (a: A) => B | Promise<B>
-): (a: A) => Promise<B>;`}
+// after — same checks, same inference
+import { pipeAsync } from 'fp-pack';
+const load = pipeAsync(fetchUser, (user: User) => user.name);`}
     />
 
-    <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      Value-first calls give the best inference, while function-first keeps the pipeline reusable.
-    </p>
+    <div class="flex flex-wrap gap-4 mt-8">
+      <a
+        href="/async/pipeAsync"
+        onClick={(e: Event) => {
+          e.preventDefault();
+          navigateTo('/async/pipeAsync');
+        }}
+        class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+      >
+        Go to pipeAsync
+      </a>
+      <a
+        href="/guide/pipe-choice-guide"
+        onClick={(e: Event) => {
+          e.preventDefault();
+          navigateTo('/guide/pipe-choice-guide');
+        }}
+        class="inline-block px-6 py-3 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+      >
+        Read the Pipe Selection Guide
+      </a>
+    </div>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
@@ -101,7 +80,7 @@ function pipeAsyncStrict<A, B>(
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      View the implementation of <code class="text-sm">pipeAsyncStrict</code> on GitHub to see how it works internally.
+      The alias is a one-line wrapper around pipeAsync.
     </p>
 
     <a
@@ -115,61 +94,5 @@ function pipeAsyncStrict<A, B>(
       </svg>
       View on GitHub
     </a>
-
-    <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
-
-    <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Related Functions
-    </h2>
-
-    <div class="grid gap-6 mt-6">
-      <a
-        href="/async/pipeAsync"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/async/pipeAsync');
-        }}
-        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-emerald-500 dark:hover:border-emerald-500 transition-colors cursor-pointer"
-      >
-        <h3 class="text-lg md:text-xl font-medium text-emerald-600 dark:text-emerald-400 mb-2">
-          pipeAsync →
-        </h3>
-        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          Pure async pipelines with more permissive inference.
-        </p>
-      </a>
-
-      <a
-        href="/async/pipeAsyncSideEffectStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/async/pipeAsyncSideEffectStrict');
-        }}
-        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer"
-      >
-        <h3 class="text-lg md:text-xl font-medium text-blue-600 dark:text-blue-400 mb-2">
-          pipeAsyncSideEffectStrict →
-        </h3>
-        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          Strict SideEffect unions for async pipelines.
-        </p>
-      </a>
-
-      <a
-        href="/composition/pipeStrict"
-        onClick={(e: Event) => {
-          e.preventDefault();
-          navigateTo('/composition/pipeStrict');
-        }}
-        class="block p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-500 transition-colors cursor-pointer"
-      >
-        <h3 class="text-lg md:text-xl font-medium text-purple-600 dark:text-purple-400 mb-2">
-          pipeStrict →
-        </h3>
-        <p class="text-sm md:text-base text-gray-700 dark:text-gray-300">
-          Strict typing for sync pipelines.
-        </p>
-      </a>
-    </div>
   </div>
 );

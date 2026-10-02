@@ -45,7 +45,7 @@ CODING GUIDELINES:
 
 4. SIDE EFFECT HANDLING
    - Use \`pipeSideEffect*\` / \`pipeAsyncSideEffect*\` for early termination
-   - Prefer \`pipeSideEffectStrict\` / \`pipeAsyncSideEffectStrict\` for strict unions
+   - Effect unions are precise; do not use the deprecated \`*Strict\` variants
    - Wrap side effects in \`SideEffect.of()\`
    - Call \`runPipeResult\` OUTSIDE pipelines
    - Use \`isSideEffect\` for precise type narrowing
@@ -77,7 +77,7 @@ CODING GUIDELINES:
 IMPORT PATHS:
 - Core functions: \`import { pipe, map, filter } from 'fp-pack'\`
 - Async functions: \`import { pipeAsync, delay } from 'fp-pack'\`
-- SideEffect pattern: \`import { pipeSideEffect, pipeSideEffectStrict, SideEffect, isSideEffect, runPipeResult } from 'fp-pack'\`
+- SideEffect pattern: \`import { pipeSideEffect, SideEffect, isSideEffect, runPipeResult } from 'fp-pack'\`
 - Stream functions: \`import { map, filter, toArray } from 'fp-pack/stream'\`
 
 GUIDANCE APPROACH:

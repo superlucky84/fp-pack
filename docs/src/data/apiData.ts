@@ -7,11 +7,11 @@ export interface ApiItem {
 export const apiData = [
   // Composition
   { title: 'pipe', path: '/composition/pipe', category: 'Composition' },
-  { title: 'pipeStrict', path: '/composition/pipeStrict', category: 'Composition' },
+  { title: 'pipeStrict (deprecated)', path: '/composition/pipeStrict', category: 'Composition' },
   { title: 'pipeHint', path: '/composition/pipeHint', category: 'Composition' },
   { title: 'pipeWithDeps', path: '/composition/pipeWithDeps', category: 'Composition' },
   { title: 'pipeSideEffect', path: '/composition/pipeSideEffect', category: 'Composition' },
-  { title: 'pipeSideEffectStrict', path: '/composition/pipeSideEffectStrict', category: 'Composition' },
+  { title: 'pipeSideEffectStrict (deprecated)', path: '/composition/pipeSideEffectStrict', category: 'Composition' },
   { title: 'compose', path: '/composition/compose', category: 'Composition' },
   { title: 'curry', path: '/composition/curry', category: 'Composition' },
   { title: 'partial', path: '/composition/partial', category: 'Composition' },
@@ -44,9 +44,9 @@ export const apiData = [
 
   // Async
   { title: 'pipeAsync', path: '/async/pipeAsync', category: 'Async' },
-  { title: 'pipeAsyncStrict', path: '/async/pipeAsyncStrict', category: 'Async' },
+  { title: 'pipeAsyncStrict (deprecated)', path: '/async/pipeAsyncStrict', category: 'Async' },
   { title: 'pipeAsyncSideEffect', path: '/async/pipeAsyncSideEffect', category: 'Async' },
-  { title: 'pipeAsyncSideEffectStrict', path: '/async/pipeAsyncSideEffectStrict', category: 'Async' },
+  { title: 'pipeAsyncSideEffectStrict (deprecated)', path: '/async/pipeAsyncSideEffectStrict', category: 'Async' },
   { title: 'delay', path: '/async/delay', category: 'Async' },
   { title: 'timeout', path: '/async/timeout', category: 'Async' },
   { title: 'retry', path: '/async/retry', category: 'Async' },

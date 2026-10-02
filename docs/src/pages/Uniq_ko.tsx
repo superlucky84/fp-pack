@@ -95,7 +95,8 @@ uniq(data);
 // 정렬된 고유 값과 비교
 import { pipe, sort } from 'fp-pack';
 
-const sortedUnique = pipe(
+const sortedUnique = (values: string[]) => pipe(
+  values,
   uniq,
   sort((a: string, b: string) => a.localeCompare(b))
 );

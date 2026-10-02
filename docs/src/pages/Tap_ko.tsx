@@ -246,7 +246,7 @@ processOrder(order);
 
     <CodeBlock
       language="typescript"
-      code={`import { pipe, tap } from 'fp-pack';
+      code={`import { pipeAsync, tap } from 'fp-pack';
 
 const cache = new Map<string, any>();
 
@@ -260,9 +260,10 @@ interface ApiResponse {
   timestamp: number;
 }
 
-const fetchAndCache = (endpoint: string) => pipe(
-  (endpoint: string) => fetch(endpoint),
-  (response: Response) => response.json(),
+const fetchAndCache = (endpoint: string) => pipeAsync(
+  endpoint,
+  (url: string) => fetch(url),
+  (response: Response) => response.json() as Promise<ApiResponse>,
   warmCache<ApiResponse>(\`api:\${endpoint}\`),
   (data: ApiResponse) => data.data
 );
@@ -282,7 +283,7 @@ const data = await fetchAndCache('/api/users');`}
 // 개발 환경에서 변이를 감지하는 헬퍼
 const detectMutation = <T extends object>(label: string) => {
   if (process.env.NODE_ENV !== 'development') {
-    return tap(() => {});
+    return tap<T>(() => {});
   }
 
   let snapshot: string;
@@ -300,12 +301,13 @@ const detectMutation = <T extends object>(label: string) => {
   });
 };
 
-const processData = pipe(
-  detectMutation('시작'),
+const processData = (input: any[]) => pipe(
+  input,
+  detectMutation<any[]>('시작'),
   (data: any[]) => data.map(x => ({ ...x, processed: true })),
-  detectMutation('map 후'),
+  detectMutation<any[]>('map 후'),
   (data: any[]) => data.filter(x => x.active),
-  detectMutation('filter 후')
+  detectMutation<any[]>('filter 후')
 );`}
     />
 
@@ -346,23 +348,24 @@ const verboseLog = <T>(label: string) =>
       language="typescript"
       code={`import { pipe, tap } from 'fp-pack';
 
-const measureTime = (label: string) => {
+const measureTime = <In, Out>(label: string) => {
   let startTime: number;
 
   return {
-    start: tap(() => {
+    start: tap<In>(() => {
       startTime = performance.now();
     }),
-    end: tap(() => {
+    end: tap<Out>(() => {
       const duration = performance.now() - startTime;
       console.log(\`\${label} 소요 시간: \${duration.toFixed(2)}ms\`);
     }),
   };
 };
 
-const timer = measureTime('데이터 처리');
+const timer = measureTime<number[], number>('데이터 처리');
 
-const processData = pipe(
+const processData = (input: number[]) => pipe(
+  input,
   timer.start,
   (data: number[]) => data.map(x => x * 2),
   (data: number[]) => data.filter(x => x > 10),
