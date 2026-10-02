@@ -342,8 +342,8 @@ console.log(result);
         <strong>밖에서</strong> 호출해야 합니다.
         <br />
         <br />
-        파이프라인 내부에서 사용하면 타입 안전성이 깨지고 <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">unknown</code> 또는{' '}
-        <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">SideEffect&lt;any&gt;</code> 타입을 반환합니다.
+        SideEffect가 발생하면 이후 단계는 실행되지 않으므로, 체인 안의 결과 처리 함수는
+        해당 effect를 받지 못합니다. 파이프라인 실행이 끝난 경계에서 결과를 처리하세요.
         <br />
         <br />
         항상: <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">await runPipeResult(pipeline(input))</code>
@@ -359,11 +359,10 @@ console.log(result);
         <span class="font-medium">🔄 핵심 규칙: SideEffect의 전염성</span>
         <br />
         <br />
-        한번 <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipeAsyncSideEffect</code>를 사용하면, 그 결과는 <strong>항상 <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">Promise&lt;T | SideEffect&gt;</code></strong>입니다.
+        입력이나 단계에서 effect가 발생할 수 있으면 <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipeAsyncSideEffect</code>의 결과는 <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">Promise&lt;T | SideEffect&lt;E&gt;&gt;</code>입니다. effect가 발생할 수 없으면 <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">Promise&lt;T&gt;</code>를 반환합니다.
         <br />
         <br />
-        이 결과를 계속 합성하려면, <strong>반드시</strong> <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipeAsyncSideEffect</code>를 계속 사용해야 합니다.
-        <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipeAsync</code>로 <strong>돌아갈 수 없습니다</strong>. pipeAsync는 SideEffect를 처리할 수 없기 때문입니다.
+        결과에 SideEffect가 남아 있을 수 있다면 <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipeAsyncSideEffect</code>로 합성하세요. effect를 처리하거나 타입 가드로 제외한 뒤에는 일반 값을 순수 파이프에 전달할 수 있습니다.
       </p>
     </div>
 
@@ -402,8 +401,9 @@ const correctPipeline = pipeAsyncSideEffect(
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      fp-pack은 추론 유연성과 타입 안전성 사이의 다양한 트레이드오프를 가진 여러 파이프 변형을
-      제공합니다. 당신의 사용 사례에 어떤 것이 적합한지 이해하려면 상세 가이드를 읽어보세요.
+      비동기 작업 여부와 SideEffect 조기 종료 여부로 선택하세요. 네 파이프 모두 단계 간 타입을 검사하고,
+      첫 번째 인자 이후 32단계까지 콜백 타입을 추론합니다. 더 긴 인라인 체인은 작은 파이프로 나누세요.
+      가이드에서 추론 범위와 0.15.0 마이그레이션 방법을 확인할 수 있습니다.
     </p>
 
     <a

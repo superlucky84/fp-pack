@@ -403,13 +403,13 @@ if (isSideEffect(literalResult)) {
         <span class="font-medium">🔄 Critical Rule: SideEffect Contagion</span>
         <br />
         <br />
-        Once you use <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipeSideEffect</code> or{' '}
-        <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipeAsyncSideEffect</code>, the result is <strong>always <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">T | SideEffect</code></strong>.
+        When the input or a step can produce an effect, <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipeSideEffect</code> returns{' '}
+        <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">T | SideEffect&lt;E&gt;</code>; the async variant wraps this in a Promise. With no possible effect, the result is plain T (or Promise&lt;T&gt;).
         <br />
         <br />
-        If you want to continue composing this result, you <strong>MUST</strong> keep using SideEffect-aware pipes.
-        You <strong>CANNOT</strong> switch back to <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipe</code> or{' '}
-        <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipeAsync</code> because they don't handle SideEffect.
+        While a result can contain a SideEffect, continue with SideEffect-aware pipes.
+        After handling or narrowing away the effect at the boundary, ordinary values
+        can use pipe or pipeAsync again.
       </p>
     </div>
 

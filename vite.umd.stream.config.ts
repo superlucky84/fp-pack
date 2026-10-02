@@ -9,14 +9,12 @@ export default defineConfig({
     },
     rollupOptions: {
       external: [],
-      output: [
-        {
-          format: 'umd',
-          name: 'FpPackStream',
-          entryFileNames: 'fp-pack-stream.umd.js',
-          globals: {},
-        },
-      ],
+      output: ['fp-pack-stream.umd.js', 'fp-pack-stream.umd.cjs'].map((entryFileNames) => ({
+        format: 'umd' as const,
+        name: 'FpPackStream',
+        entryFileNames,
+        globals: {},
+      })),
       treeshake: {
         moduleSideEffects: false,
       },

@@ -482,7 +482,7 @@ Most data transformations are pure and don't need SideEffect handling. Use `pipe
 - **`pipeSideEffect`** - **Only when you need** SideEffect short-circuiting (sync)
 - **`pipeAsyncSideEffect`** - **Only when you need** SideEffect short-circuiting (async)
 
-**Important:** `pipe` and `pipeAsync` are for **pure** functions only—they don't handle `SideEffect`. If your pipeline can return `SideEffect`, use `pipeSideEffect` or `pipeAsyncSideEffect` instead. All four pipes check every step; SideEffect pipes keep precise effect unions.
+**Important:** `pipe` and `pipeAsync` are for **pure** functions only—they don't handle `SideEffect`. If your pipeline can return `SideEffect`, use `pipeSideEffect` or `pipeAsyncSideEffect` instead. All four pipes check every step; SideEffect pipes keep precise effect unions. Contextual inference covers 32 steps after the first argument. For longer inline chains, compose smaller pipelines; a checked fallback accepts already typed steps without inventing `any`. `pipeWithDeps` now shares those inference and validation guarantees for default and deprecated variants.
 
 ```typescript
 // Sync: use pipe
@@ -503,9 +503,9 @@ const processUsers = pipeAsync(
 
 **🔄 Critical Rule: SideEffect Contagion**
 
-Once you use `pipeSideEffect` or `pipeAsyncSideEffect`, the result is **always `T | SideEffect`** (or `Promise<T | SideEffect>` for async). The same rule applies to strict variants.
+When an input or step can produce a `SideEffect`, the result includes its precise effect type: `T | SideEffect<E>` (or `Promise<T | SideEffect<E>>` for async). If no effect can occur, the result is plain `T` (or `Promise<T>`).
 
-If you want to continue composing this result, you **MUST** keep using SideEffect-aware pipes. You **CANNOT** switch back to `pipe` or `pipeAsync` because they don't handle `SideEffect`.
+While a result can still contain a `SideEffect`, continue with SideEffect-aware pipes. After handling or narrowing away the effect at the boundary, ordinary values can use `pipe` or `pipeAsync` again.
 
 ```typescript
 import { pipe, pipeSideEffect, SideEffect } from 'fp-pack';

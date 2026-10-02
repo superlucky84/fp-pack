@@ -8,7 +8,7 @@ export default defineConfig({
       outDir: 'dist',
       insertTypesEntry: true,
       include: ['src/**/*'],
-      exclude: ['demo/**/*', 'src/**/*.spec.ts', 'src/**/*.test.ts'],
+      exclude: ['demo/**/*', 'src/**/*.spec.ts', 'src/**/*.test.ts', 'src/**/*.type-test.ts'],
     }),
   ],
   build: {

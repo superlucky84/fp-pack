@@ -38,7 +38,7 @@ const result = await pipeAsync(
     />
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6 mt-6">
-      Every step is type-checked: a step whose input does not accept the previous step's awaited output is a compile error, while inline lambdas keep full inference.
+      Each step must accept the previous step's awaited output. Inline callbacks receive contextual types through 32 steps after the first argument; compose smaller pipelines for longer inline chains.
     </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -68,9 +68,9 @@ const result = await pipeAsync('42', fetchUser, getName); // 'Ada'`}
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      fp-pack offers several pipe variants, each with its own trade-offs between inference
-      flexibility and type safety. To understand which one is right for your use case, please
-      read our detailed guide.
+      Choose by async work and SideEffect early exits. All four pipes check step compatibility
+      and infer callbacks through 32 steps after the first argument. Compose smaller pipelines
+      for longer inline chains. The guide covers these boundaries and the 0.15.0 migration.
     </p>
 
     <a

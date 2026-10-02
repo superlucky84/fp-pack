@@ -69,6 +69,8 @@ CODING GUIDELINES:
    - Use `pipe` / `pipeAsync` for 2+ step transformations
    - For single steps, call the function directly (no pipe needed)
    - Prefer value-first: `pipe(value, ...)` for better type inference
+- Let pipe infer intermediate parameters; do not add assertions to silence a broken chain. Contextual inference covers 32 steps after the first argument. Compose smaller pipelines beyond that limit; longer already typed chains remain checked.
+- `pipeWithDeps` infers intermediate values and intersects dependency contracts. Default and deprecated variants have identical checks. Annotate the dependency contract where needed, not every value parameter.
    - Use function-first only for reusable pipelines
    - For trivial one-liners, native JS is acceptable when it's clearer
 

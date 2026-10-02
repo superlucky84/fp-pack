@@ -74,13 +74,13 @@ function pipe<A, B, R>(
   bc: (b: B) => R
 ): (a: A) => R;
 
-// 11+ steps: every connection is still checked (mismatch → PipeError<From, To>)
-function pipe<A, Fns extends UnaryFn[]>(input: A, ...funcs: Fns): Output<Fns>;`}
+// Simplified examples above; overloads infer 32 steps after the first argument.
+// Longer typed chains use a fallback that validates each connection.`}
     />
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      The type signature ensures type safety across the pipeline. Each function's output type
-      must match the next function's input type.
+      Each function must accept the previous output. Contextual inference covers 32 steps
+      after the first argument; compose smaller pipelines for longer inline chains.
     </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -353,9 +353,9 @@ result;  // 5
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      fp-pack offers several pipe variants, each with its own trade-offs between inference
-      flexibility and type safety. To understand which one is right for your use case, please
-      read our detailed guide.
+      Choose by async work and SideEffect early exits. All four pipes check step compatibility
+      and infer callbacks through 32 steps after the first argument. Compose smaller pipelines
+      for longer inline chains. The guide covers these boundaries and the 0.15.0 migration.
     </p>
 
     <a

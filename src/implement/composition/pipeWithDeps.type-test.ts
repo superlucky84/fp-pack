@@ -128,7 +128,6 @@ export type PipeAsyncStrictDepsIsStrict = Expect<Equal<typeof pipeAsyncStrictDep
 
 pipeWithDeps(pipeAsyncStrict)(
   from(5),
-  // @ts-expect-error from() loses anchor info in pipeWithDeps + pipeAsyncStrict
   async (value: number) => value * 2,
   (value: number, deps: Logger) => {
     deps.log(`${value}`);

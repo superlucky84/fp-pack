@@ -24,3 +24,22 @@ Pass = every row behaves as described. Any deviation fails the release.
 | MT-17 | Generic-first function-first (migration) | `pipe(uniq, sort(...))` | Reports an error. The CHANGELOG fix (`(values: string[]) => pipe(values, uniq, …)`) compiles |
 
 Sign-off: ______ (date / TS versions tested / commit SHA)
+
+Inference-first follow-up gates (2026-10-02):
+
+- [ ] Long unannotated chains retain concrete parameter/result hovers. Insert an incompatible operation late in the chain and verify it errors. Exercise the documented contextual-inference boundary and fallback separately.
+- [ ] `pipeWithDeps` propagates unannotated value parameters through mixed sync/async steps and infers the intersection of declared dependency contracts.
+- [ ] Replacing any Strict alias with its default variant preserves both accepted and rejected wrapper examples, including `from()`.
+- [ ] Optional/default first parameters can still be omitted in short and long pipelines.
+- [ ] No positive example needs a new assertion or redundant annotation merely to satisfy the redesigned signatures.
+
+Automated evidence (working tree after `a00dcd7`): type regressions and packed-consumer declaration emission pass on TS 5.9.3 / 6.0.3 / 7.0.2; 388 runtime tests pass; ten updated EN/KO wrapper snippets compile against the tarball. IDE hover inspection and interactive release sign-off above remain manual.
+
+Publication preparation checks:
+
+- [x] `npm publish --dry-run` runs the release checks and builds version 0.15.0 without uploading it.
+- [x] The installed tarball includes CHANGELOG.md and skills/addons labeled with the package version; type-test declaration fixtures are excluded.
+- [x] Both `fp-pack` and `fp-pack/stream` work through ESM imports and CommonJS `require()`; browser UMD files remain present.
+- [x] README and EN/KO migration guidance describe the same four pipes, deprecated aliases, effect precision and contextual inference boundary.
+
+Publication evidence (2026-10-02): full hook dry run passed; 388/388 runtime tests, library/declaration build and docs lint/build passed. Installed 0.15.0 consumer checks passed on TS 5.9.3 / 6.0.3 / 7.0.2; eleven README/EN/KO snippets compiled against that tarball. Interactive IDE checks above have not been signed off by this automated run.

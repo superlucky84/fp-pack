@@ -33,6 +33,7 @@ If you want functional composition without a lot of ceremony, `fp-pack` is desig
 - [Why fp-pack?](#why-fp-pack)
 - [Design Principles](#design-principles)
 - [Installation](#installation)
+- [Upgrading to 0.15.0](#upgrading-to-0150)
 - [AI Agent Skills (Optional)](#ai-agent-skills-optional)
 - [Quick Start](#quick-start)
   - [Basic Pipe Composition](#basic-pipe-composition)
@@ -93,7 +94,7 @@ If you want functional composition without a lot of ceremony, `fp-pack` is desig
   `pipe` (sync) and `pipeAsync` (async) are the primary composition tools. All utilities are designed to work seamlessly in pipe chains.
 
 - **Type-safe by default, without giving up inference**
-  Every pipe checks each connection at compile time: a step whose input does not accept the previous step's output is an error that names the mismatch (`PipeError<number, string>`). Inference still flows end to end, so inline lambdas, pre-defined functions and curried utilities compose without manual annotations.
+  Every pipe checks each connection at compile time: a step whose input does not accept the previous step's output is an error. Data-first errors include the mismatch (`PipeError<number, string>`). Contextual inference covers 32 steps after the first argument, so inline lambdas, pre-defined functions and curried utilities compose without repeated annotations.
 
   Works best in value-first pipelines where the input anchors generics. Function-first or from-start pipelines whose first step is generic may need `pipeHint` or a typed first step.
 
@@ -164,12 +165,18 @@ pnpm add fp-pack
 yarn add fp-pack
 ```
 
+## Upgrading to 0.15.0
+
+Choose among `pipe`, `pipeAsync`, `pipeSideEffect` and `pipeAsyncSideEffect` based on async work and early exits. All four now check step compatibility while preserving contextual inference. The four `*Strict` names remain deprecated compatibility aliases until 1.0; replace them with their base names when convenient.
+
+Previously hidden mismatches or missing inference context can now produce compile errors. Prefer `pipe(value, ...)` to anchor generic helpers; use `pipeHint` or a typed first step for reusable generic-first pipelines. SideEffect-aware pipes infer the precise effect union and return plain values when no effect can occur. See the [0.15.0 migration notes](CHANGELOG.md#0150) and [Pipe Choice Guide](https://superlucky84.github.io/fp-pack/#/guide/pipe-choice-guide).
+
 ## AI Agent Skills (Optional)
 
 fp-pack includes an AI agent skills package that helps AI coding assistants (Claude Code, GitHub Copilot, Cursor, etc.) automatically write fp-pack-style functional code.
 
 When you have this skills package in your project, AI assistants will:
-- Default to using `pipe`/`pipeAsync` for pure transformations, and `pipeSideEffect`/`pipeAsyncSideEffect` when SideEffect is involved (use strict variants when you need strict effect unions)
+- Default to using `pipe`/`pipeAsync` for pure transformations, and `pipeSideEffect`/`pipeAsyncSideEffect` when SideEffect is involved; effect unions are inferred precisely by default
 - Use the `SideEffect` pattern instead of try-catch
 - Prefer `stream/*` functions for large datasets
 - Write declarative, functional code using fp-pack utilities
@@ -282,21 +289,26 @@ const fetchUserProfile = pipeAsync(
 const profile = await fetchUserProfile('user-123');
 ```
 
-Every step is type-checked: a mismatched step is a compile error, while inline lambdas keep full inference.
+Pipelines infer unannotated callbacks through 32 steps after the first argument, including curried helpers. `pipeWithDeps` provides the same value inference while intersecting declared dependency types; its default and deprecated variants have identical checks. Optional/default first parameters remain optional.
+
+For longer chains, compose smaller pipelines to keep inference without adding annotations. A checked fallback also accepts longer chains of already typed functions; callbacks that need missing context are rejected instead of becoming `any`. Explicit `any` and unchecked assertions can still bypass TypeScript checks. When the first argument's type does not distinguish data from a function, use `from(value)` to make the data intent explicit.
 
 ### Object Transformation
 
 ```typescript
 import { pipe, pick, mapValues, assoc } from 'fp-pack';
 
-// Transform and clean data
-const prepareUserData = pipe(
+const rawUserInput = { name: ' Ada ', email: ' ada@example.com ', age: 36, internalId: 1 };
+
+// The input anchors inference for generic object helpers.
+const cleanData = pipe(
+  rawUserInput,
   pick(['name', 'email', 'age']),
   mapValues((val) => typeof val === 'string' ? val.trim() : val),
   assoc('timestamp', Date.now())
 );
 
-const cleanData = prepareUserData(rawUserInput);
+// { name: 'Ada', email: 'ada@example.com', age: 36, timestamp: ... }
 ```
 
 ### Lazy Stream Processing
@@ -712,9 +724,9 @@ const fetchAndValidate = pipeAsyncSideEffect(
 
 **🔄 Critical Rule: SideEffect Contagion**
 
-Once you use `pipeSideEffect` or `pipeAsyncSideEffect`, the result is **always `T | SideEffect`** (or `Promise<T | SideEffect>` for async). The same rule applies to strict variants.
+When an input or step can produce a `SideEffect`, the result includes its precise effect type: `T | SideEffect<E>` (or `Promise<T | SideEffect<E>>` for async). If no effect can occur, the result is plain `T` (or `Promise<T>`).
 
-If you want to continue composing this result, you **MUST** keep using SideEffect-aware pipes. You **CANNOT** switch back to `pipe` or `pipeAsync` because they don't handle `SideEffect`.
+While a result can still contain a `SideEffect`, continue with SideEffect-aware pipes. After handling or narrowing away the effect at the boundary, ordinary values can use `pipe` or `pipeAsync` again.
 
 ```typescript
 import { pipe, pipeSideEffect, SideEffect } from 'fp-pack';
@@ -779,7 +791,7 @@ first10Evens(Stream.range(1, 1000000)); // Only processes ~10 items, not 1 milli
 
 - 🔧 **96+ Utility Functions** - Organized into 10 practical categories
 - 🎨 **Composable Design** - Built for pipes, currying, and function composition
-- 📦 **Modern Builds** - ESM and UMD formats for any environment
+- 📦 **Modern Builds** - ESM, CommonJS and browser UMD entry points
 - 🌳 **Tree-Shakeable** - Import only what you need
 - ⚡ **Zero Dependencies** - No bloat, just pure TypeScript
 - 💪 **Full Type Safety** - Strong inference with minimal annotations
@@ -809,6 +821,19 @@ pnpm test
 # Run dev server
 pnpm dev
 ```
+
+### Publishing
+
+After merging the release branch into `main`, run from the repository root:
+
+```bash
+pnpm install --frozen-lockfile
+npm publish
+```
+
+The [`prepublishOnly` hook](https://docs.npmjs.com/cli/v11/using-npm/scripts/#npm-publish) runs `pnpm release:check`: type/runtime tests, a fresh library and declaration build, installed-tarball checks, and documentation lint/build. Failed checks stop publication. The build also stamps the packaged skills and agent addon with the package version.
+
+Use `npm publish --dry-run` to exercise this flow without uploading, or `pnpm release:check` to validate locally. Publishing requires npm credentials for this package. The documentation build is included in validation; deploying the site remains a separate hosting step.
 
 ## Acknowledgements
 

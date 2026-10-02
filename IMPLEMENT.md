@@ -1,6 +1,26 @@
 # IMPLEMENT — Pipe Soundness & Variant Consolidation
 
 Source of truth: `REQUIREMENTS.md` (what), `DESIGN.md` § Pipe Soundness Revision (how and decisions), `MANUAL_TEST_CHECKLIST.md` (release gate).
+
+## Active release preparation — 0.15.0 (2026-10-02)
+
+1. [x] Update version, packaged files, and automatic publication validation/build scripts; repair CommonJS entry points while retaining browser UMD paths.
+2. [x] Align README, changelog, EN/KO site and AI guidance with migration requirements, precise effects and the 32-step contextual inference boundary.
+3. [x] Harden installed-tarball checks for versioned metadata/guidance, ESM and CommonJS exports and declaration emission.
+4. [x] Run the publication dry run, documentation checks and compiler matrix against the release artifact; record results and remaining owner actions.
+
+Exit: a merge followed by dependency installation and `npm publish` requires no manual version edit or build. No publication, tag or remote merge is performed by this task. Historical IDE and remote CI sign-off items below remain separately recorded.
+
+## Active follow-up — inference-first hardening (2026-10-02)
+
+Entry: `a00dcd7`, clean tree; review reproduced remaining inference/safety gaps. These phases take priority over the historical release checklist below.
+
+1. [x] **Regression baseline:** paired positive/negative tests for long unannotated chains, all wrapper modes/aliases, `from()`, and optional entries; confirmed failures before implementation.
+2. [x] **Signature implementation:** 32 generated contextual steps, checked fallback with no contextual `any`, unified wrapper inference/validation, preserved entry call shapes. Existing and added type tests pass.
+3. [x] **Test hardening:** exercised inference cutoff/fallback, curried helpers, readonly/union inputs, effect unions and dependency intersections; existing overloaded/generic probes checked during review. Type/runtime suites pass; comparable cost +14.8%.
+4. [x] **Integration:** declaration build and isolated packed consumer for main/stream exports, including exported wrappers; EN/KO migration guidance and examples updated and compiled against the packed package.
+
+Exit: new failures fixed with no added annotations in positive examples; default/alias wrappers equivalent; known inference boundaries documented; all executed checks recorded. Release/publish and remote branch-protection changes are separate work.
 Reproduction kit: `research/pipe-soundness/` (`reproduce.sh baseline|candidate`).
 
 Global baseline gate (run at the end of every phase):
@@ -8,8 +28,11 @@ Global baseline gate (run at the end of every phase):
 ```bash
 pnpm test:types          # tsc --noEmit (repo TS version)
 pnpm vitest run          # runtime tests
-research/pipe-soundness/reproduce.sh candidate   # once Phase 1 lands: expect 0/0/0 on TS 5.9/6.0/7.0
+pnpm build
+node scripts/check-packed-pipe.mjs  # optional args: paths to additional tsc entrypoints
 ```
+
+`research/pipe-soundness/reproduce.sh` and its transforms reproduce intermediate historical experiments; they are not the current implementation generator. Use `scripts/generate-pipe-overloads.mjs` and its `--check` mode for current signatures.
 
 ---
 
@@ -77,7 +100,7 @@ Exit criteria: the matrix is required in branch protection.
 
 - [~] `DESIGN.md`: the 0.14 architecture sections now carry a banner pointing to the revision; a full rewrite is deferred. Move the "Pipe Soundness Revision" content into the main architecture sections. Rewrite the Variants Matrix, the Design Philosophy item 3, and the Completeness Statement. Keep the superseded notes as a short history.
 - [x] Docs site: `PipeChoiceGuide(_ko)`, `Pipe(_ko)`, `PipeStrict(_ko)`, `PipeAsync(_ko)`, `PipeAsyncStrict(_ko)`, `Guide(_ko)`, `Home(_ko)`, `Sidebar`, `Layout`, `apiData.ts`.
-- [x] `README.md`, `fp-pack-full.md`, `fp-pack-agent-addon.md`, `skills/fp-pack/SKILL.md`, `skills/fp-pack/constraints/core-rules.md`: change "use pipeStrict for strictness" guidance to "pipe is strict; *SideEffectStrict = precise effect types".
+- [x] `README.md`, `fp-pack-full.md`, `fp-pack-agent-addon.md`, `skills/fp-pack/SKILL.md`, `skills/fp-pack/constraints/core-rules.md`: default pipes check compatibility and infer precise effects; all `*Strict` names are deprecated compatibility aliases.
 - [x] Release notes for 0.15.0 with a migration section (code that silently became `never` / `any` now errors).
 
 Baseline tests: `pnpm docs:build` and `pnpm docs:lint` pass.
@@ -103,6 +126,21 @@ Exit criteria: all manual checks pass and the release is tagged.
 ---
 
 ## Status Log
+
+### 2026-10-02 — 0.15.0 prepared for owner publication
+- Completed: package version 0.15.0, normalized repository metadata, packaged CHANGELOG, README publishing/migration instructions, EN/KO guide and API corrections. CommonJS exports now use `.umd.cjs`, with browser `.umd.js` paths preserved. Type-test declarations are excluded from dist; skills/addon versions are stamped during build.
+- Automation: `prepublishOnly` runs `release:check` (type/runtime tests, build, installed-tarball smoke, docs lint/build). The smoke script explicitly disables inherited dry-run flags only for local packing/installing so `npm publish --dry-run` tests real consumer artifacts without uploading.
+- Validation: full `npm publish --dry-run` passed with 388 runtime tests in 162 files, source types, library/declaration builds, packaged ESM/CommonJS main and stream checks, and docs lint/build. The 0.15.0 tarball also passed consumer type checking and declaration emission on TS 5.9.3 / 6.0.3 / 7.0.2. Eleven README and EN/KO snippets compiled against the installed 0.15.0 package. `git diff --check` passed.
+- Next: owner reviews/merges into main, installs the lockfile dependencies, then runs `npm publish` with package credentials. Hosting deployment, tagging, remote CI/branch-protection and the historical interactive IDE sign-off are separate owner actions.
+- Blockers: none for publication preparation. Latest commit: `a00dcd7`; changes remain in the working tree. No upload, merge, tag or push was performed.
+
+### 2026-10-02 — Inference-first follow-up complete locally
+- Completed: 32-step contextual signatures on all four pipes and `pipeWithDeps`; safe typed fallbacks; identical default/Strict wrapper signatures; repaired `from()` validation and optional/default entries; preserved effects from initial values in long typed chains. Added public `PipeWithDeps` type so inferred exported wrappers emit declarations without user annotations. Renamed unused `runPipeResult` type parameter to `_T` without changing positional generic arguments.
+- Tests: new `pipe.inference.type-test.ts` paired positive/negative regressions fail before and pass after; full TS 5.9.3 / 6.0.3 / 7.0.2 checks pass. Runtime 388/388 (162 files). Build + declarations, docs lint/build pass. `check-packed-pipe.mjs` passes consumer type checking and declaration emission on all three compilers, plus packaged ESM/stream runtime checks. Ten updated EN/KO wrapper examples compile against the packed package.
+- Cost: 126,084 → 144,800 instantiations with the existing corpus (+14.8%, within 20% budget); 232,065 including the new boundary regressions. Runtime algorithms are preserved.
+- Decisions: inference remains the primary UX requirement; Strict names remain compatibility aliases. Contextual inference is bounded to 32 steps after the first argument, and longer inline chains should compose smaller pipelines. No claim of arbitrary-length inference or safety through explicit `any`/unchecked assertions.
+- Next: review this diff; CI automation, the historical full per-utility sweep, editor/manual release sign-off, version bump and publication remain release work.
+- Blockers: none for this follow-up. Latest commit: `a00dcd7`; follow-up changes are in the working tree.
 
 ### 2026-10-01 — Research complete, docs drafted
 - Completed: Issue #5 root-cause analysis. TS 5.9/6.0/7.0 comparison (no inference difference). Candidate validated in scratch (v13/v14 = 0 errors on all three TS versions). Reproduction kit at `research/pipe-soundness/`. REQUIREMENTS/DESIGN/IMPLEMENT/MANUAL_TEST_CHECKLIST drafted.

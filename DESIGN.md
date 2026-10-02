@@ -343,7 +343,25 @@ myPipe(data, step1, step2)(deps);
 
 ## Pipe Soundness Revision (0.15.0)
 
-Status: **Implemented on `feat/pipe-soundness`** with the **4-pipe model** (DC-2 = B). Every change was first validated in a scratch copy of `src` (see [Evidence](#evidence)). Requirements: `REQUIREMENTS.md`. Plan and progress: `IMPLEMENT.md`.
+### Publication preparation (2026-10-02)
+
+- Set the package version to 0.15.0; include CHANGELOG.md in the tarball. Keep site and packaged AI guidance aligned with the inference-first four-pipe model.
+- Use `prepublishOnly` to run `release:check`: type/runtime tests, a fresh package build, installed-tarball consumer checks, and documentation lint/build. The consumer's internal `npm pack` does not run `prepublishOnly`, avoiding recursion. Consumers installing the registry package do not run release checks.
+- Fix the advertised CommonJS entry points: under `type: module`, the existing `.umd.js` files do not provide usable Node `require()` exports (reproduced: `require('fp-pack').pipe` is undefined). Build `.umd.cjs` counterparts and point `main` / conditional `require` exports at them; preserve `.umd.js` files for existing browser URLs.
+- Exclude type-test fixtures from emitted declarations, and validate versioned skills, migration notes, ESM and CommonJS main/stream exports in the installed tarball. Exercise the full hook with `npm publish --dry-run`; publishing, tagging and merging remain owner actions.
+
+### Inference-first follow-up (2026-10-02)
+
+The owner clarified that minimizing user/AI type assertions and annotations is a core requirement. Safety and inference must be evaluated together. The 2026-10-02 review reproduced remaining `any` leaks for 11+ steps and default `pipeWithDeps`, a new unchecked `from()` overload in Strict wrappers, and lost optional first parameters. Earlier completion/soundness claims below are historical and do not establish release readiness.
+
+- [x] **DC-8 — acceptance criterion:** pair negative mismatch tests with positive tests asserting precise inference from unannotated callbacks. Keep ordinary curried helpers and both entry styles working.
+- [x] **DC-9 — wrappers:** use one inference/validation model per runtime mode for both default and deprecated variants. Preserve dependency intersection and precise effects. Alias deprecation is valid only after wrapper equivalence is verified.
+- [x] **DC-10 — long chains:** generated single-candidate signatures cover 32 steps after the first argument. A reverse-mapped variadic prototype lost callback context (`unknown`), so it was rejected. Longer already typed chains use a checked fallback whose context is `never`, not `any`; inline chains beyond the boundary should compose smaller pipelines. `scripts/generate-pipe-overloads.mjs --check` guards generated declarations. Boundary tests verify both precise positive results and rejection of an inferred identity hiding a mismatch.
+- [x] **DC-11 — entries:** preserve optional/default first parameters and `from()` entry behavior. Test positive calls as well as mismatches.
+
+Validation: new type regressions first, existing type/runtime suite, declaration build and a packed-package consumer. Record verified compiler versions; do not infer multi-version support from one compiler run.
+
+Historical 2026-10-01 status: **Initial implementation on `feat/pipe-soundness`; superseded by the follow-up above** with the **4-pipe model** (DC-2 = B). Every change was first validated in a scratch copy of `src` (see [Evidence](#evidence)). Requirements: `REQUIREMENTS.md`. Plan and progress: `IMPLEMENT.md`.
 
 ### Root Cause
 

@@ -37,7 +37,7 @@ const result = await pipeAsync(
     />
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6 mt-6">
-      모든 단계가 타입 검사됩니다. 이전 단계의 await된 출력을 받을 수 없는 단계는 컴파일 에러이고, 인라인 람다의 추론은 그대로 유지됩니다.
+      각 단계는 이전 단계의 await된 출력을 받을 수 있어야 합니다. 첫 번째 인자 이후 32단계까지 인라인 콜백의 타입을 추론하며, 더 긴 인라인 체인은 작은 파이프로 나누세요.
     </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -67,8 +67,9 @@ const result = await pipeAsync('42', fetchUser, getName); // 'Ada'`}
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      fp-pack은 추론 유연성과 타입 안전성 사이의 다양한 트레이드오프를 가진 여러 파이프 변형을
-      제공합니다. 당신의 사용 사례에 어떤 것이 적합한지 이해하려면 상세 가이드를 읽어보세요.
+      비동기 작업 여부와 SideEffect 조기 종료 여부로 선택하세요. 네 파이프 모두 단계 간 타입을 검사하고,
+      첫 번째 인자 이후 32단계까지 콜백 타입을 추론합니다. 더 긴 인라인 체인은 작은 파이프로 나누세요.
+      가이드에서 추론 범위와 0.15.0 마이그레이션 방법을 확인할 수 있습니다.
     </p>
 
     <a

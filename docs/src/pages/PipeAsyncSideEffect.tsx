@@ -341,8 +341,8 @@ console.log(result);
         <strong>OUTSIDE</strong> the <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">pipeAsyncSideEffect</code> chain.
         <br />
         <br />
-        Using them inside the pipeline will break type safety and return <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">unknown</code> or{' '}
-        <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">SideEffect&lt;any&gt;</code> types.
+        A SideEffect stops the chain before later steps run, so a result handler inside the
+        pipeline will not receive that effect. Handle the completed result at the boundary.
         <br />
         <br />
         Always: <code class="bg-orange-100 dark:bg-orange-900/40 px-1 py-0.5 rounded">await runPipeResult(pipeline(input))</code>
@@ -358,11 +358,10 @@ console.log(result);
         <span class="font-medium">🔄 Critical Rule: SideEffect Contagion</span>
         <br />
         <br />
-        Once you use <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipeAsyncSideEffect</code>, the result is <strong>always <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">Promise&lt;T | SideEffect&gt;</code></strong>.
+        When the input or a step can produce an effect, <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipeAsyncSideEffect</code> returns <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">Promise&lt;T | SideEffect&lt;E&gt;&gt;</code>. With no possible effect, it returns <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">Promise&lt;T&gt;</code>.
         <br />
         <br />
-        If you want to continue composing this result, you <strong>MUST</strong> keep using <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipeAsyncSideEffect</code>.
-        You <strong>CANNOT</strong> switch back to <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipeAsync</code> because it doesn't handle SideEffect.
+        While the result can contain a SideEffect, continue with <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipeAsyncSideEffect</code>. After handling or narrowing away the effect, ordinary values can use pure pipes again.
       </p>
     </div>
 
@@ -401,9 +400,9 @@ const correctPipeline = pipeAsyncSideEffect(
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      fp-pack offers several pipe variants, each with its own trade-offs between inference
-      flexibility and type safety. To understand which one is right for your use case, please
-      read our detailed guide.
+      Choose by async work and SideEffect early exits. All four pipes check step compatibility
+      and infer callbacks through 32 steps after the first argument. Compose smaller pipelines
+      for longer inline chains. The guide covers these boundaries and the 0.15.0 migration.
     </p>
 
     <a

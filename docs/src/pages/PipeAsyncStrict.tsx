@@ -18,12 +18,12 @@ export const PipeAsyncStrict = () => (
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      Since 0.15.0, <code class="text-sm">pipeAsync</code> checks every step at compile time, so a mismatched function chain is always an error — the guarantee <code class="text-sm">pipeAsyncStrict</code> was created for. Unlike the old strict variant, it keeps full inference for inline lambdas, so there is no longer a trade-off to choose between.
+      Since 0.15.0, <code class="text-sm">pipeAsync</code> checks step compatibility while inferring inline callbacks through 32 steps after the first argument. Longer typed chains remain checked; split longer inline chains to preserve inference. The Strict name now shares these same signatures.
     </p>
 
     <div class="bg-amber-50 dark:bg-amber-900/20 p-4 mb-6 rounded border border-amber-200 dark:border-amber-800">
       <p class="text-sm md:text-base text-amber-900 dark:text-amber-200 leading-relaxed">
-        <code class="text-sm">pipeAsyncStrict</code> is still exported as an alias of <code class="text-sm">pipeAsync</code>, so existing code keeps compiling. It will be removed in 1.0.
+        <code class="text-sm">pipeAsyncStrict</code> remains an exported alias of <code class="text-sm">pipeAsync</code> until 1.0. Existing imports remain available, but mismatches or missing inference context that older overloads hid may now produce errors.
       </p>
     </div>
 
@@ -34,7 +34,9 @@ export const PipeAsyncStrict = () => (
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      Replace the import and the call — nothing else changes.
+      Replace the import and call with the base name. Both names use the same inference and checks,
+      including pipeWithDeps. Prefer value-first for generic helpers without input context;
+      see the Pipe Choice Guide for the 0.15.0 migration.
     </p>
 
     <CodeBlock

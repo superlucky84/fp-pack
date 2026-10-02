@@ -405,13 +405,13 @@ if (isSideEffect(literalResult)) {
         <span class="font-medium">🔄 핵심 규칙: SideEffect의 전염성</span>
         <br />
         <br />
-        한번 <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipeSideEffect</code> 또는{' '}
-        <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipeAsyncSideEffect</code>를 사용하면, 그 결과는 <strong>항상 <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">T | SideEffect</code></strong>입니다.
+        입력이나 단계에서 effect가 발생할 수 있으면 <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipeSideEffect</code>는{' '}
+        <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">T | SideEffect&lt;E&gt;</code>를 반환합니다. 비동기는 이 타입을 Promise로 감쌉니다. effect가 발생할 수 없으면 일반 T(비동기는 Promise&lt;T&gt;)를 반환합니다.
         <br />
         <br />
-        이 결과를 계속 합성하려면, <strong>반드시</strong> SideEffect-aware 파이프를 계속 사용해야 합니다.
-        <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipe</code>나{' '}
-        <code class="bg-purple-100 dark:bg-purple-900/40 px-1 py-0.5 rounded">pipeAsync</code>로 <strong>돌아갈 수 없습니다</strong>. 이들은 SideEffect를 처리할 수 없기 때문입니다.
+        결과에 SideEffect가 남아 있을 수 있다면 SideEffect-aware 파이프로 합성하세요.
+        경계에서 effect를 처리하거나 타입 가드로 제외한 뒤에는 일반 값을 pipe나
+        pipeAsync에 전달할 수 있습니다.
       </p>
     </div>
 

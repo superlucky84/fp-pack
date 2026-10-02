@@ -23,7 +23,7 @@ export const PipeAsyncSideEffectStrict_ko = () => (
 
     <div class="bg-amber-50 dark:bg-amber-900/20 p-4 mb-6 rounded border border-amber-200 dark:border-amber-800">
       <p class="text-sm md:text-base text-amber-900 dark:text-amber-200 leading-relaxed">
-        <code class="text-sm">pipeAsyncSideEffectStrict</code>는 <code class="text-sm">pipeAsyncSideEffect</code>의 별칭으로 계속 export되므로 기존 코드는 그대로 컴파일됩니다. 1.0에서 제거될 예정입니다.
+        <code class="text-sm">pipeAsyncSideEffectStrict</code>는 1.0까지 <code class="text-sm">pipeAsyncSideEffect</code>의 별칭으로 export됩니다. 기존 import는 유지되지만, 이전 오버로드가 숨기던 타입 불일치나 추론 정보 부족은 새 컴파일 오류로 드러날 수 있습니다.
       </p>
     </div>
 
@@ -34,7 +34,9 @@ export const PipeAsyncSideEffectStrict_ko = () => (
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      import와 호출만 바꾸면 됩니다. 나머지는 그대로입니다.
+      import와 호출을 기본 이름으로 바꾸세요. 두 이름은 pipeWithDeps에서도 같은 추론과 검사를 제공합니다.
+      입력 타입 정보가 없는 제네릭 유틸리티에는 value-first를 우선 사용하세요.
+      자세한 0.15.0 마이그레이션은 파이프 선택 가이드에서 확인할 수 있습니다.
     </p>
 
     <CodeBlock

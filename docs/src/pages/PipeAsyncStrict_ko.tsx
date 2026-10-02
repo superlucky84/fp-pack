@@ -18,12 +18,12 @@ export const PipeAsyncStrict_ko = () => (
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      0.15.0부터 <code class="text-sm">pipeAsync</code>가 모든 단계를 컴파일 타임에 검사하므로, 타입이 맞지 않는 함수 체인은 항상 에러가 됩니다. <code class="text-sm">pipeAsyncStrict</code>가 제공하던 바로 그 보장입니다. 예전 strict 버전과 달리 인라인 람다의 추론도 그대로 유지되기 때문에 더 이상 둘 중 하나를 고를 필요가 없습니다.
+      0.15.0부터 <code class="text-sm">pipeAsync</code>는 단계 간 타입을 검사하면서 첫 번째 인자 이후 32단계까지 인라인 콜백을 추론합니다. 더 긴 체인도 이미 타입이 정해진 함수라면 검사하며, 긴 인라인 체인은 작은 파이프로 나누면 추론을 유지할 수 있습니다. Strict 이름도 같은 시그니처를 사용합니다.
     </p>
 
     <div class="bg-amber-50 dark:bg-amber-900/20 p-4 mb-6 rounded border border-amber-200 dark:border-amber-800">
       <p class="text-sm md:text-base text-amber-900 dark:text-amber-200 leading-relaxed">
-        <code class="text-sm">pipeAsyncStrict</code>는 <code class="text-sm">pipeAsync</code>의 별칭으로 계속 export되므로 기존 코드는 그대로 컴파일됩니다. 1.0에서 제거될 예정입니다.
+        <code class="text-sm">pipeAsyncStrict</code>는 1.0까지 <code class="text-sm">pipeAsync</code>의 별칭으로 export됩니다. 기존 import는 유지되지만, 이전 오버로드가 숨기던 타입 불일치나 추론 정보 부족은 새 컴파일 오류로 드러날 수 있습니다.
       </p>
     </div>
 
@@ -34,7 +34,9 @@ export const PipeAsyncStrict_ko = () => (
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      import와 호출만 바꾸면 됩니다. 나머지는 그대로입니다.
+      import와 호출을 기본 이름으로 바꾸세요. 두 이름은 pipeWithDeps에서도 같은 추론과 검사를 제공합니다.
+      입력 타입 정보가 없는 제네릭 유틸리티에는 value-first를 우선 사용하세요.
+      자세한 0.15.0 마이그레이션은 파이프 선택 가이드에서 확인할 수 있습니다.
     </p>
 
     <CodeBlock

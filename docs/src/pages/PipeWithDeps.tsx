@@ -12,8 +12,17 @@ export const PipeWithDeps = () => (
     </p>
 
     <div class="mb-8 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 text-amber-900 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-100">
-      <strong class="font-semibold">Note:</strong> This utility is new and has limited real-world test coverage.
+      <strong class="font-semibold">Note:</strong> This utility is new and has
+      limited real-world test coverage.
     </div>
+
+    <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+      Intermediate values are inferred without repeated annotations. Default
+      functions and Strict aliases have identical checks, including from()
+      entry. Callback inference covers 32 steps after the first argument.
+      Compose smaller pipelines for longer inline chains; longer chains of
+      already typed functions remain checked.
+    </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
@@ -25,11 +34,13 @@ export const PipeWithDeps = () => (
       <strong class="font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/20 px-2 py-1 rounded">
         pipeWithDeps
       </strong>{' '}
-      wraps a pipe function and injects <strong>dependencies</strong> into every step. Each step can be
-      either <code class="text-xs">(value) =&gt; result</code> or{' '}
-      <code class="text-xs">(value, deps) =&gt; result</code>. The deps type is the intersection of
-      all declared dependency types. You can use it in <strong>value-first</strong> or{' '}
-      <strong>steps-first</strong> form. If you need to pass a function as input, wrap it with{' '}
+      wraps a pipe function and injects <strong>dependencies</strong> into every
+      step. Each step can be either{' '}
+      <code class="text-xs">(value) =&gt; result</code> or{' '}
+      <code class="text-xs">(value, deps) =&gt; result</code>. The deps type is
+      the intersection of all declared dependency types. You can use it in{' '}
+      <strong>value-first</strong> or <strong>steps-first</strong> form. If you
+      need to pass a function as input, wrap it with{' '}
       <code class="text-xs">from</code> to avoid data-last detection.
     </p>
 
@@ -45,7 +56,7 @@ const withDeps = pipeWithDeps(pipeAsyncSideEffect);
 const getUserNameLength = withDeps(
   async (userId: number, deps: Db) => deps.query(userId),
   (user) => user.name,
-  (name: string, deps: Logger) => {
+  (name, deps: Logger) => {
     deps.log(name);
     return name.length;
   }
@@ -62,20 +73,25 @@ getUserNameLength(1)(deps).then(console.log); // 6`}
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Type Signature (Simplified)
+      Inferred Types
     </h2>
 
     <CodeBlock
       language="typescript"
-      code={`function pipeWithDeps<P>(
-  pipeFn: P
-): (input: any, ...steps: Array<(value: any, deps?: any) => any>) =>
-  (deps: unknown) => ReturnType<P>;`}
+      code={`const withDeps = pipeWithDeps(pipe);
+const result = withDeps(
+  1,
+  (value, deps: { add: number }) => value + deps.add,
+  value => value.toFixed()
+);
+// (deps: { add: number }) => string
+result({ add: 2 }); // "3"`}
     />
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      Use the <strong>value-first</strong> pipe form. When you need a reusable pipeline without
-      input, create a wrapper function and call it at the entry point.
+      Prefer <strong>value-first</strong> when the input is available. For a
+      reusable function-first pipeline, declare the first input contract once;
+      later value parameters are inferred.
     </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -96,8 +112,8 @@ const withDeps = pipeWithDeps(pipe);
 
 const formatPrice = withDeps(
   100,
-  (value: number, deps: { tax: number }) => value * deps.tax,
-  (value: number) => \`$\${value.toFixed(2)}\`
+  (value, deps: { tax: number }) => value * deps.tax,
+  (value) => \`$\${value.toFixed(2)}\`
 );
 
 formatPrice({ tax: 1.1 }); // "$110.00"`}
@@ -115,7 +131,7 @@ const withDeps = pipeWithDeps(pipe);
 
 const pipeline = withDeps(
   (value: number, deps: { add: number }) => value + deps.add,
-  (value: number) => value * 2
+  (value) => value * 2
 );
 
 pipeline(2)({ add: 3 }); // 10`}
@@ -133,9 +149,9 @@ const withDeps = pipeWithDeps(pipe);
 
 const label = withDeps(
   '  fp-pack  ',
-  (value: string) => value.trim(),
-  (value: string, deps: { prefix: string }) => \`\${deps.prefix}\${value}\`,
-  (value: string) => value.toUpperCase()
+  (value) => value.trim(),
+  (value, deps: { prefix: string }) => \`\${deps.prefix}\${value}\`,
+  (value) => value.toUpperCase()
 );
 
 label({ prefix: 'lib: ' }); // "LIB: FP-PACK"`}
@@ -148,7 +164,8 @@ label({ prefix: 'lib: ' }); // "LIB: FP-PACK"`}
     </h2>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      View the implementation of <code class="text-sm">pipeWithDeps</code> on GitHub.
+      View the implementation of <code class="text-sm">pipeWithDeps</code> on
+      GitHub.
     </p>
 
     <a
@@ -157,8 +174,13 @@ label({ prefix: 'lib: ' }); // "LIB: FP-PACK"`}
       rel="noopener noreferrer"
       class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 dark:bg-gray-700 text-white rounded-lg hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors"
     >
-      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+      <svg
+        class="w-5 h-5"
+        fill="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
       </svg>
       View on GitHub
     </a>
