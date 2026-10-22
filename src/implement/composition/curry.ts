@@ -12,7 +12,7 @@ export type Curry2<Fn> = Fn extends (a: infer A, b: infer B) => infer R
 
 export type Curry3<Fn> = Fn extends (a: infer A, b: infer B, c: infer C) => infer R
   ? {
-      (...args: [A]): (b: B) => (c: C) => R;
+      (...args: [A]): Curry2<(b: B, c: C) => R>;
       (...args: [A, B]): (c: C) => R;
       (...args: [A, B, C]): R;
     }
@@ -20,8 +20,8 @@ export type Curry3<Fn> = Fn extends (a: infer A, b: infer B, c: infer C) => infe
 
 export type Curry4<Fn> = Fn extends (a: infer A, b: infer B, c: infer C, d: infer D) => infer R
   ? {
-      (...args: [A]): (b: B) => (c: C) => (d: D) => R;
-      (...args: [A, B]): (c: C) => (d: D) => R;
+      (...args: [A]): Curry3<(b: B, c: C, d: D) => R>;
+      (...args: [A, B]): Curry2<(c: C, d: D) => R>;
       (...args: [A, B, C]): (d: D) => R;
       (...args: [A, B, C, D]): R;
     }
@@ -29,9 +29,9 @@ export type Curry4<Fn> = Fn extends (a: infer A, b: infer B, c: infer C, d: infe
 
 export type Curry5<Fn> = Fn extends (a: infer A, b: infer B, c: infer C, d: infer D, e: infer E) => infer R
   ? {
-      (...args: [A]): (b: B) => (c: C) => (d: D) => (e: E) => R;
-      (...args: [A, B]): (c: C) => (d: D) => (e: E) => R;
-      (...args: [A, B, C]): (d: D) => (e: E) => R;
+      (...args: [A]): Curry4<(b: B, c: C, d: D, e: E) => R>;
+      (...args: [A, B]): Curry3<(c: C, d: D, e: E) => R>;
+      (...args: [A, B, C]): Curry2<(d: D, e: E) => R>;
       (...args: [A, B, C, D]): (e: E) => R;
       (...args: [A, B, C, D, E]): R;
     }

@@ -7,6 +7,12 @@
   input; previously accepted sync input combinations could silently misbehave.
   Strings are valid stream inputs; deep flattening preserves string leaves.
   Zip operations close both inputs when consumption stops early.
+- Staged conditionals infer each handler's result when supplied; type guards
+  narrow branch callback inputs. `cond`/`fold` support heterogeneous results.
+  `curry` supports grouped calls through every remaining 2–5 argument stage.
+  `compose` rejects incompatible connections instead of returning never/any.
+  `pipe`/`pipeAsync` preserve supported single-step generic relationships;
+  `matchSideEffect` keeps the effect payload type in its handler.
 
 - Object transformations preserve changed property types; shallow/deep merge model
   actual right-hand overwrite precedence instead of intersecting conflicting values.

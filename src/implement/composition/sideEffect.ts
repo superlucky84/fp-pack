@@ -15,11 +15,20 @@ export class SideEffect<T = unknown> {
   }
 }
 
-export type MatchHandlers<T, RValue, REffect> = {
+export type MatchHandlers<T, RValue, REffect, E = unknown> = {
   value: (value: T) => RValue;
-  effect: (sideEffect: SideEffect) => REffect;
+  effect: (sideEffect: SideEffect<E>) => REffect;
 };
 
+type EffectValue<T> = T extends SideEffect<infer E> ? (0 extends 1 & E ? unknown : E) : never;
+export function matchSideEffect<Input, RValue, REffect>(
+  result: Input,
+  handlers: MatchHandlers<Exclude<Input, SideEffect<any>>, RValue, REffect, EffectValue<Input>>
+): RValue | REffect;
+export function matchSideEffect<T, RValue, REffect = unknown, E = unknown>(
+  result: T | SideEffect<E>,
+  handlers: MatchHandlers<T, RValue, REffect, E>
+): RValue | REffect;
 export function matchSideEffect<T, RValue, REffect = any>(
   result: T | SideEffect,
   handlers: MatchHandlers<T, RValue, REffect>
@@ -32,8 +41,8 @@ export function matchSideEffect<T, RValue, REffect = any>(
 
 export function runPipeResult<_T, R>(result: SideEffect<R>): R;
 export function runPipeResult<T>(result: T): T extends SideEffect<infer R> ? R : T;
-export function runPipeResult<T, R=any>(result: T | SideEffect<R>): T | R;
-export function runPipeResult<T, R=any>(result: T | SideEffect<R>): T | R {
+export function runPipeResult<T, R = any>(result: T | SideEffect<R>): T | R;
+export function runPipeResult<T, R = any>(result: T | SideEffect<R>): T | R {
   if (isSideEffect(result)) {
     return result.effect() as R;
   }

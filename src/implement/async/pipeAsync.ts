@@ -57,6 +57,8 @@ type Result<I, Rs extends any[]> = IsFn<I> extends true
 type PipeCheckFrom<Input, Fns extends [AnyFn, ...AnyFn[]]> =
   Fns & (PipeCheckResult<[() => Input, ...Fns]> extends true ? unknown : PipeCheckResult<[() => Input, ...Fns]>);
 
+function pipeAsync<T>(first: FromFn<T>): (input?: unknown) => Promise<Awaited<T>>;
+function pipeAsync<Args extends [] | [unknown?], R>(first: (...args: Args) => R): (...args: Args) => Promise<Awaited<R>>;
 function pipeAsync<I>(first: I): Result<I, []>;
 function pipeAsync<I, R1>(
   first: I,

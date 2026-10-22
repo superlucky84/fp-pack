@@ -1,3 +1,4 @@
+import type { FromFn } from './from';
 type PipeError<From, To> = { __pipe_error: ['pipe', From, '->', To] };
 type AnyFn = (...args: any[]) => any;
 // No contextual any beyond the generated inference signatures.
@@ -48,6 +49,8 @@ type Result<I, Rs extends any[]> = IsFn<I> extends true
 type PipeCheckFrom<Input, Fns extends [AnyFn, ...AnyFn[]]> =
   Fns & (PipeCheckResult<[() => Input, ...Fns]> extends true ? unknown : PipeCheckResult<[() => Input, ...Fns]>);
 
+function pipe<T>(first: FromFn<T>): (input?: unknown) => T;
+function pipe<Args extends [] | [unknown?], R>(first: (...args: Args) => R): (...args: Args) => R;
 function pipe<I>(first: I): Result<I, []>;
 function pipe<I, R1>(
   first: I,

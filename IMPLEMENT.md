@@ -23,7 +23,7 @@ without pnpm 11's environment-specific automatic dependency reinstallation.
    overloads, async-mode declarations and guards, iterable detection and guard
    narrowing. Entry: Phase 1 green. Exit: IU-06–07 and baseline plus build/consumer
    pass, including sync/async and stored-step tests.
-4. [ ] **IU Phase 3 — Composition and boundaries.** Repair compose validation,
+4. [x] **IU Phase 3 — Composition and boundaries.** Repair compose validation,
    staged branch/curry declarations, supported generic pipe entry and effect
    matching. Entry: Phase 2 green. Exit: IU-08–10 and baseline plus build/consumer
    pass; inference boundaries documented without unchecked overloads.
@@ -51,11 +51,18 @@ without pnpm 11's environment-specific automatic dependency reinstallation.
   accumulators require async input; untyped sync misuse throws a clear error.
   Strings are iterable, deep flattening keeps string leaves atomic, and zip closes
   both inputs. Types, 398 runtime tests, build and installed consumer passed.
-- next: Phase 3 composition/control/effect inference, followed by hardening.
+- done: Phase 3 regression cases failed before fixes. Staged branch results,
+  guard narrowing, heterogeneous cond/fold results, grouped curry calls, checked
+  compose fallbacks and effect matching now infer precisely. Tuple-constrained
+  unary signatures preserve generic relationships in pipe/pipeAsync while
+  retaining optional/zero/from entries. Effect pipes retain their existing
+  overloaded effect-input protocol. Types, 399 runtime tests, build and installed
+  consumer passed.
+- next: Phase 4 cross-mode/optional/union hardening, then installed integration.
 - blockers: none. Credentials are stored only in the environment's private ctxbin
   configuration, outside the repository. ctxbin needs `NODE_USE_ENV_PROXY=1` here.
-- latest implementation commit: `f79a00f` (Phase 1); Phase 2 is committed
-  immediately after this record. Contracts: `13385a8`; baseline: `b9a92e0`.
+- latest implementation commit: `0b21119` (Phase 2); Phase 3 is committed
+  immediately after this record. Phase 1: `f79a00f`; baseline: `b9a92e0`.
 
 ## Historical plan — Pipe Soundness & Variant Consolidation
 

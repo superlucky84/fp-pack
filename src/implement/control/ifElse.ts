@@ -1,43 +1,51 @@
 import curry from '../composition/curry';
 
-type NoInfer<T> = [T][T extends any ? 0 : never];
-
 type IfElse = {
+  <T, S extends T>(
+    predicate: (value: T) => value is S
+  ): <RTrue>(
+    onTrue: (value: S) => RTrue
+  ) => <RFalse>(onFalse: (value: Exclude<T, S>) => RFalse) => (value: T) => RTrue | RFalse;
+  <T, S extends T, RTrue>(
+    predicate: (value: T) => value is S,
+    onTrue: (value: S) => RTrue
+  ): <RFalse>(onFalse: (value: Exclude<T, S>) => RFalse) => (value: T) => RTrue | RFalse;
+  <T, S extends T, RTrue, RFalse>(
+    predicate: (value: T) => value is S,
+    onTrue: (value: S) => RTrue,
+    onFalse: (value: Exclude<T, S>) => RFalse
+  ): (value: T) => RTrue | RFalse;
+  <T, S extends T, RTrue, RFalse>(
+    predicate: (value: T) => value is S,
+    onTrue: (value: S) => RTrue,
+    onFalse: (value: Exclude<T, S>) => RFalse,
+    value: T
+  ): RTrue | RFalse;
+  <T>(
+    predicate: (value: T) => boolean
+  ): <RTrue>(onTrue: (value: T) => RTrue) => <RFalse>(onFalse: (value: T) => RFalse) => (value: T) => RTrue | RFalse;
+  <T, RTrue>(
+    predicate: (value: T) => boolean,
+    onTrue: (value: T) => RTrue
+  ): <RFalse>(onFalse: (value: T) => RFalse) => (value: T) => RTrue | RFalse;
   <T, RTrue, RFalse>(
-    ...args: [predicate: (value: T) => boolean]
+    predicate: (value: T) => boolean,
+    onTrue: (value: T) => RTrue,
+    onFalse: (value: T) => RFalse
+  ): (value: T) => RTrue | RFalse;
+  <T, RTrue, RFalse>(
+    predicate: (value: T) => boolean,
+    onTrue: (value: T) => RTrue,
+    onFalse: (value: T) => RFalse,
+    value: T
+  ): RTrue | RFalse;
+  <T, RTrue, RFalse>(
+    predicate: (value: T) => boolean
   ): (onTrue: (value: T) => RTrue) => (onFalse: (value: T) => RFalse) => (value: T) => RTrue | RFalse;
   <T, RTrue, RFalse>(
-    ...args: [predicate: (value: T) => boolean, onTrue: (value: T) => RTrue]
+    predicate: (value: T) => boolean,
+    onTrue: (value: T) => RTrue
   ): (onFalse: (value: T) => RFalse) => (value: T) => RTrue | RFalse;
-  <T, RTrue, RFalse>(
-    ...args: [predicate: (value: T) => boolean, onTrue: (value: T) => RTrue, onFalse: (value: T) => RFalse]
-  ): (value: T) => RTrue | RFalse;
-  <T, RTrue, RFalse>(
-    ...args: [
-      predicate: (value: T) => boolean,
-      onTrue: (value: T) => RTrue,
-      onFalse: (value: T) => RFalse,
-      value: T
-    ]
-  ): RTrue | RFalse;
-  <T, RTrue, RFalse>(
-    ...args: [predicate: (value: NoInfer<T>) => boolean, onTrue: (value: T) => RTrue]
-  ): (onFalse: (value: T) => RFalse) => (value: T) => RTrue | RFalse;
-  <T, RTrue, RFalse>(
-    ...args: [
-      predicate: (value: NoInfer<T>) => boolean,
-      onTrue: (value: T) => RTrue,
-      onFalse: (value: T) => RFalse
-    ]
-  ): (value: T) => RTrue | RFalse;
-  <T, RTrue, RFalse>(
-    ...args: [
-      predicate: (value: NoInfer<T>) => boolean,
-      onTrue: (value: T) => RTrue,
-      onFalse: (value: T) => RFalse,
-      value: T
-    ]
-  ): RTrue | RFalse;
 };
 
 /**
