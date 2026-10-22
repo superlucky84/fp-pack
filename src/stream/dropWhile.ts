@@ -21,7 +21,7 @@ function dropWhile<I extends AsyncIterableInput<unknown>>(
 ): (iterable: I) => AsyncIterableIterator<InputItem<I>>;
 function dropWhile<T>(
   predicate: (value: T) => boolean | PromiseLike<boolean>
-): <I extends AsyncIterableInput<PromiseLikeValue<T>>>(iterable: I) => AsyncIterableIterator<InputItem<I>>;
+): <I extends Extract<InputFor<T>, AsyncIterableInput<unknown>>>(iterable: I) => AsyncIterableIterator<InputItem<I>>;
 function dropWhile<I extends AnyIterableInput<unknown>>(
   predicate: (value: InputItem<I>) => boolean,
   iterable: I

@@ -55,6 +55,12 @@ curried untyped callbacks may lose contextual typing across successive calls; th
 combined partial-application form remains the supported inference-first form.
 Any residual generic-first limitation is recorded with a tested alternative.
 
+Hardening details: optional evolve entries union the retained source value with
+the transformed output. Deep merge enumerates own enumerable string/symbol keys.
+Stored stream callbacks accept async inputs only when the awaited input is valid
+for their parameter type. Sync accumulators reject Promise results and Promise
+initial values; use an async source for asynchronous accumulation.
+
 ## Table of Contents
 
 - [Pipe Architecture](#pipe-architecture)

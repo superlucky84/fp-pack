@@ -27,7 +27,7 @@ function find<I extends AsyncIterableInput<unknown>>(
 ): (iterable: I) => Promise<InputItem<I> | undefined>;
 function find<T>(
   predicate: (value: T) => boolean | PromiseLike<boolean>
-): <I extends AsyncIterableInput<PromiseLikeValue<T>>>(iterable: I) => Promise<InputItem<I> | undefined>;
+): <I extends Extract<InputFor<T>, AsyncIterableInput<unknown>>>(iterable: I) => Promise<InputItem<I> | undefined>;
 function find<I extends AnyIterableInput<unknown>, S extends InputItem<I>>(
   predicate: (value: InputItem<I>) => value is S,
   iterable: I

@@ -13,6 +13,9 @@
   `compose` rejects incompatible connections instead of returning never/any.
   `pipe`/`pipeAsync` preserve supported single-step generic relationships;
   `matchSideEffect` keeps the effect payload type in its handler.
+- Optional evolve tables retain the source type when a transformer is absent;
+  deep merge includes enumerable symbol keys. Stream accumulators require a
+  non-Promise initial value and an async source when the accumulator is async.
 
 - Object transformations preserve changed property types; shallow/deep merge model
   actual right-hand overwrite precedence instead of intersecting conflicting values.

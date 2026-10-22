@@ -68,5 +68,39 @@ describe('stream inference contracts', () => {
       )
     ).toEqual([2]);
     expect(closed.sort()).toEqual(['left', 'right']);
+    closed.length = 0;
+    expect([
+      ...take(
+        1,
+        zipWith((a, b) => a + b, source('right'), source('left'))
+      )
+    ]).toEqual([2]);
+    expect(closed.sort()).toEqual(['left', 'right']);
+    closed.length = 0;
+    expect(await toArray(take(1, zip(toAsync(source('right')), source('left'))))).toEqual([[1, 1]]);
+    expect(closed.sort()).toEqual(['left', 'right']);
+  });
+
+  it('closes the second input even when closing the first input throws', () => {
+    const closed: string[] = [];
+    function* source(name: string, fail: boolean) {
+      try {
+        yield 1;
+        yield 2;
+      } finally {
+        closed.push(name);
+        if (fail) throw new Error('close failed');
+      }
+    }
+    expect(() => [...take(1, zip(source('right', false), source('left', true)))]).toThrow('close failed');
+    expect(closed).toEqual(['left', 'right']);
+  });
+
+  it('resolves Promise elements only when the source is asynchronous', async () => {
+    const value = Promise.resolve('a');
+    expect([...zip([value], [1])]).toEqual([[1, value]]);
+    expect(await toArray(zip([value], Promise.resolve([1])))).toEqual([[1, 'a']]);
+    const predicate = (n: number): PromiseLike<boolean> => Promise.resolve(n > 1);
+    expect(await toArray(filter(predicate, toAsync([1, 2])))).toEqual([2]);
   });
 });

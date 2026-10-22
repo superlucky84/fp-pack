@@ -10,13 +10,15 @@ type MergeDeep = {
  * mergeDeep - 깊은 객체 병합
  */
 function mergeDeep<T, U>(obj1: T, obj2: U): T & U {
-  const isPlainObject = (value: unknown): value is Record<string, unknown> =>
+  const isPlainObject = (value: unknown): value is Record<PropertyKey, unknown> =>
     typeof value === 'object' && value !== null && !Array.isArray(value);
 
-  const mergeObjects = (left: Record<string, unknown>, right: Record<string, unknown>) => {
-    const result: Record<string, unknown> = { ...left };
+  const mergeObjects = (left: Record<PropertyKey, unknown>, right: Record<PropertyKey, unknown>) => {
+    const result: Record<PropertyKey, unknown> = { ...left };
 
-    for (const [key, value] of Object.entries(right)) {
+    for (const key of Reflect.ownKeys(right)) {
+      if (!Object.prototype.propertyIsEnumerable.call(right, key)) continue;
+      const value = right[key];
       const existing = result[key];
       if (isPlainObject(existing) && isPlainObject(value)) {
         result[key] = mergeObjects(existing, value);
@@ -34,7 +36,7 @@ function mergeDeep<T, U>(obj1: T, obj2: U): T & U {
 
   return {
     ...(obj1 as object),
-    ...(obj2 as object),
+    ...(obj2 as object)
   } as T & U;
 }
 

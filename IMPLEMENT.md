@@ -27,11 +27,13 @@ without pnpm 11's environment-specific automatic dependency reinstallation.
    staged branch/curry declarations, supported generic pipe entry and effect
    matching. Entry: Phase 2 green. Exit: IU-08–10 and baseline plus build/consumer
    pass; inference boundaries documented without unchecked overloads.
-5. [ ] **IU Phase 4 — Test Hardening.** Entry: implementation phases green.
+5. [x] **IU Phase 4 — Test Hardening.** Entry: implementation phases green.
    Exercise cross-mode combinations, optional/readonly/union/defaults, iterator
    cleanup, invalid calls, callback types and source test cost. Remove corrective
    casts from the newly covered usability scenarios. Exit: IU-11 and baseline
    pass; no unexplained any/unknown/never in positive examples.
+   Include optional transformation tables, symbol merge keys, saved callbacks on
+   Promise elements, accumulator mode rejection and both zip cleanup paths.
 6. [ ] **IU Phase 5 — Integration Test.** Entry: hardening green. Add packed
    consumer checks, run library/declaration build, ESM/CJS package checks, docs
    lint/build and supported compiler matrix when available. Update README,
@@ -58,11 +60,16 @@ without pnpm 11's environment-specific automatic dependency reinstallation.
   retaining optional/zero/from entries. Effect pipes retain their existing
   overloaded effect-input protocol. Types, 399 runtime tests, build and installed
   consumer passed.
-- next: Phase 4 cross-mode/optional/union hardening, then installed integration.
+- done: Phase 4 added cross-mode, readonly/default, optional/union/path, symbol,
+  negative callback/accumulator and iterator cleanup regressions. Fixed absent
+  evolve transforms, readonly array defaults, required array-property paths and
+  symbol deep merge. Homomorphic deep-value mapping preserves symbol names during
+  declaration emission. Types, 403 runtime tests, build and installed consumer pass.
+- next: Phase 5 compiler matrix, expanded packed consumers and EN/KO guidance.
 - blockers: none. Credentials are stored only in the environment's private ctxbin
   configuration, outside the repository. ctxbin needs `NODE_USE_ENV_PROXY=1` here.
-- latest implementation commit: `0b21119` (Phase 2); Phase 3 is committed
-  immediately after this record. Phase 1: `f79a00f`; baseline: `b9a92e0`.
+- latest implementation commit: `2c8c17b` (Phase 3); Phase 4 is committed
+  immediately after this record. Phase 2: `0b21119`; baseline: `b9a92e0`.
 
 ## Historical plan — Pipe Soundness & Variant Consolidation
 

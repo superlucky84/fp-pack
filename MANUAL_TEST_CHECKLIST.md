@@ -22,6 +22,9 @@ based solely on compiler results. See REQUIREMENTS IU-* and DESIGN IU-DC-*.
 
 Status: pending implementation and automation; interactive editor sign-off pending.
 
+Hardening automation also checks optional transformer tables, enumerable symbols,
+Promise-valued sync elements versus awaited async elements, and accumulator modes.
+
 ## Historical checks — Pipe Soundness Release (0.15.0)
 
 Run these in a fresh consumer project that installs the packed tarball (`npm pack`), in VS Code, once with TS 5.9 and once with TS 7.0 (select the workspace TS version).

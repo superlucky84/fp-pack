@@ -4,6 +4,16 @@ type AnyIterableInput<T> = Iterable<T> | AsyncIterableInput<T>;
 
 type PromiseLikeValue<T> = T | PromiseLike<T>;
 type InputFor<T> = Iterable<T> | (Awaited<T> extends T ? AsyncIterableInput<PromiseLikeValue<T>> : never);
+type Accumulator<T> =
+  T extends PromiseLike<unknown>
+    ? never
+    : T extends number
+      ? number
+      : T extends string
+        ? string
+        : T extends boolean
+          ? boolean
+          : T;
 
 type InputItem<I> =
   I extends PromiseLike<infer P>
@@ -70,6 +80,7 @@ export type {
   IteratorResultFor,
   ScalarResultFor,
   CombinedIterator,
-  CombinedItem
+  CombinedItem,
+  Accumulator
 };
 export { isPromiseLike, isAsyncIterable, isIterable, isAsyncInput, resolveIterable, awaitValue, requireSync };

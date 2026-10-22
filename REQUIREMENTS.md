@@ -43,6 +43,11 @@ Migration: tighter utility contracts may expose invalid callers; document the
 changes under an unreleased changelog entry. Async stream computations use the
 existing `toAsync` input boundary (see IU-DC-2), not a new wrapper or type hint.
 
+Hardening scope: optional transformation tables retain the original value when
+their transformer is absent; deep merge includes enumerable symbol keys. Stream
+callback constraints distinguish raw sync Promise elements from resolved async
+elements, and accumulator initial values are synchronous values.
+
 ## Historical requirements — Pipe Soundness & Variant Consolidation
 
 Status: **Inference-first hardening and 0.15.0 publication preparation validated locally**

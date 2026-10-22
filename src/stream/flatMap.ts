@@ -19,7 +19,7 @@ function flatMap<I extends AsyncIterableInput<unknown>, R>(
 ): (iterable: I) => AsyncIterableIterator<Awaited<R>>;
 function flatMap<T, R>(
   fn: (value: T) => Iterable<R> | PromiseLike<Iterable<R>>
-): (iterable: AsyncIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<Awaited<R>>;
+): (iterable: Extract<InputFor<T>, AsyncIterableInput<unknown>>) => AsyncIterableIterator<Awaited<R>>;
 function flatMap<I extends AnyIterableInput<unknown>, R>(
   fn: (value: InputItem<I>) => Iterable<R>,
   iterable: I

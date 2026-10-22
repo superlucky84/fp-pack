@@ -27,7 +27,7 @@ function filter<I extends AsyncIterableInput<unknown>>(
 ): (iterable: I) => AsyncIterableIterator<InputItem<I>>;
 function filter<T>(
   predicate: (value: T) => boolean | PromiseLike<boolean>
-): <I extends AsyncIterableInput<PromiseLikeValue<T>>>(iterable: I) => AsyncIterableIterator<InputItem<I>>;
+): <I extends Extract<InputFor<T>, AsyncIterableInput<unknown>>>(iterable: I) => AsyncIterableIterator<InputItem<I>>;
 function filter<I extends AnyIterableInput<unknown>, S extends InputItem<I>>(
   predicate: (value: InputItem<I>) => value is S,
   iterable: I

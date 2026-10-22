@@ -19,7 +19,7 @@ function some<I extends AsyncIterableInput<unknown>>(
 ): (iterable: I) => Promise<boolean>;
 function some<T>(
   predicate: (value: T) => boolean | PromiseLike<boolean>
-): <I extends AsyncIterableInput<PromiseLikeValue<T>>>(iterable: I) => Promise<boolean>;
+): <I extends Extract<InputFor<T>, AsyncIterableInput<unknown>>>(iterable: I) => Promise<boolean>;
 function some<I extends AnyIterableInput<unknown>>(
   predicate: (value: InputItem<I>) => boolean,
   iterable: I

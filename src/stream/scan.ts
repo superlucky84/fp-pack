@@ -1,4 +1,5 @@
 import type {
+  Accumulator,
   InputFor,
   AnyIterableInput,
   AsyncIterableInput,
@@ -11,38 +12,44 @@ import toAsync from './toAsync';
 
 /** scan - preserve source element types and execution mode. */
 function scan<I extends AnyIterableInput<unknown>, R>(
-  fn: (acc: R, value: InputItem<I>) => R,
-  initial: R
-): (iterable: I) => IteratorResultFor<I, R>;
+  fn: (acc: NoInfer<Accumulator<R>>, value: InputItem<I>) => NoInfer<Accumulator<R>>,
+  initial: R & Accumulator<R>
+): (iterable: I) => IteratorResultFor<I, Accumulator<R>>;
 function scan<T, R>(
-  fn: (acc: R, value: T) => R,
-  initial: R
-): <I extends InputFor<T>>(iterable: I) => IteratorResultFor<I, R>;
+  fn: (acc: NoInfer<Accumulator<R>>, value: T) => NoInfer<Accumulator<R>>,
+  initial: R & Accumulator<R>
+): <I extends InputFor<T>>(iterable: I) => IteratorResultFor<I, Accumulator<R>>;
 function scan<I extends AsyncIterableInput<unknown>, R>(
-  fn: (acc: R, value: InputItem<I>) => R | PromiseLike<R>,
-  initial: R
-): (iterable: I) => AsyncIterableIterator<Awaited<R>>;
+  fn: (
+    acc: NoInfer<Accumulator<R>>,
+    value: InputItem<I>
+  ) => NoInfer<Accumulator<R>> | PromiseLike<NoInfer<Accumulator<R>>>,
+  initial: R & Accumulator<R>
+): (iterable: I) => AsyncIterableIterator<Accumulator<R>>;
 function scan<T, R>(
-  fn: (acc: R, value: T) => R | PromiseLike<R>,
-  initial: R
-): (iterable: AsyncIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<Awaited<R>>;
+  fn: (acc: NoInfer<Accumulator<R>>, value: T) => NoInfer<Accumulator<R>> | PromiseLike<NoInfer<Accumulator<R>>>,
+  initial: R & Accumulator<R>
+): (iterable: Extract<InputFor<T>, AsyncIterableInput<unknown>>) => AsyncIterableIterator<Accumulator<R>>;
 function scan<I extends AnyIterableInput<unknown>, R>(
-  fn: (acc: R, value: InputItem<I>) => R,
-  initial: R,
+  fn: (acc: NoInfer<Accumulator<R>>, value: InputItem<I>) => NoInfer<Accumulator<R>>,
+  initial: R & Accumulator<R>,
   iterable: I
-): IteratorResultFor<I, R>;
+): IteratorResultFor<I, Accumulator<R>>;
 function scan<I extends AsyncIterableInput<unknown>, R>(
-  fn: (acc: R, value: InputItem<I>) => R | PromiseLike<R>,
-  initial: R,
+  fn: (
+    acc: NoInfer<Accumulator<R>>,
+    value: InputItem<I>
+  ) => NoInfer<Accumulator<R>> | PromiseLike<NoInfer<Accumulator<R>>>,
+  initial: R & Accumulator<R>,
   iterable: I
-): AsyncIterableIterator<Awaited<R>>;
+): AsyncIterableIterator<Accumulator<R>>;
 function scan<T, R>(
   fn: (acc: R, value: T) => R | PromiseLike<R>,
   initial: R,
   iterable?: AnyIterableInput<PromiseLikeValue<T>>
 ): any {
   if (iterable === undefined) {
-    return (next: AnyIterableInput<PromiseLikeValue<T>>) => scan(fn, initial, next as never);
+    return (next: AnyIterableInput<PromiseLikeValue<T>>) => scan(fn as never, initial as never, next as never);
   }
 
   if (isAsyncInput(iterable)) {
