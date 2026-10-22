@@ -2,6 +2,57 @@
 
 This document describes the internal design decisions and architectural choices made in fp-pack.
 
+## Inference Usability Revision (2026-10-22)
+
+This is the active cross-utility contract. Requirements IU-* are in REQUIREMENTS.md;
+the older architecture and dated pipe revision below remain historical evidence.
+
+- [x] **IU-DC-1 — Infer where information arrives.** Put independent generics on
+  the returned call accepting their evidence. A saved count-only stream operation
+  remains generic; its returned function carries sync/async overloads. Branch
+  result generics are introduced when the corresponding handler is supplied.
+  Validate IU-06/IU-09 with inline and stored partial applications.
+- [x] **IU-DC-2 — Preserve explicit execution modes.** Async stream callbacks
+  operate on an AsyncIterable or promised iterable. Normalize ordinary inputs
+  once with existing `toAsync`. Sync-only traversal never treats a Promise as a
+  predicate result or iterable/accumulator; reject invalid combinations statically
+  and fail clearly for untyped callers. `map`/`zipWith` may still produce a sync
+  iterable of Promise values (their map semantics); `toArray` resolves values.
+  This avoids runtime guessing from function names or eagerly executing a lazy
+  callback. Tighten previously accepted but broken overloads and document migration.
+  Validate IU-07 across sync, async, promised input, PromiseLike results and early exits.
+- [x] **IU-DC-3 — Model transformations, not assertions.** Evolve maps changed
+  keys to callback outputs; merge models right precedence including optional keys;
+  deep merge recursively follows object merge semantics. Path operations compute
+  bounded results from path tuples and source types; dynamic paths remain broad.
+  Deep array flattening derives leaf types. Validate IU-01/IU-03 with changed key
+  types, nested objects, unions, invalid downstream calls and actual values.
+- [x] **IU-DC-4 — Preserve useful input information.** Optional keys remain
+  optional; required property reads remain required; readonly arrays are accepted
+  by nonmutating operations. Defaults do not constrain the original input to the
+  fallback's narrow type. Type guards narrow the accepted branch; plain boolean
+  predicates keep conservative results. Validate IU-02/IU-04/IU-05.
+- [x] **IU-DC-5 — Keep sound composition.** Remove unchecked compose fallbacks
+  and verify its reverse connections; preserve pipe's generated signatures and
+  brands. Improve single generic steps only where their real unary call shape is
+  preserved; no new ambiguous execution mode. Validate IU-08 with positive and
+  negative examples, zero-arg/optional entries and long typed chains.
+- [x] **IU-DC-6 — Preserve effects and test inference itself.** Keep effect E in
+  match handlers, preserve existing explicit-generic compatibility where sound,
+  and test inferred values without casts. New regressions exercise source and
+  installed declarations. Validate IU-10/IU-11/IU-12.
+
+Implementation boundaries: use small shared internal type helpers only for shared
+contracts (object overwrite/path and stream input modes), rather than one universal
+conditional type engine. Bounded recursion must degrade to unknown instead of any.
+Do not change package version or publish as part of this branch. Add an Unreleased
+migration entry and update the affected user documentation before integration exits.
+
+Trade-offs: explicit async input is a semantic boundary, not a type hint. Fully
+curried untyped callbacks may lose contextual typing across successive calls; the
+combined partial-application form remains the supported inference-first form.
+Any residual generic-first limitation is recorded with a tested alternative.
+
 ## Table of Contents
 
 - [Pipe Architecture](#pipe-architecture)

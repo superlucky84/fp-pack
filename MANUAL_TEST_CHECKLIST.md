@@ -1,4 +1,28 @@
-# MANUAL TEST CHECKLIST — Pipe Soundness Release (0.15.0)
+# MANUAL TEST CHECKLIST — Inference Usability
+
+## Active checks — 2026-10-22
+
+Use the installed package in an editor, with its workspace TypeScript selected.
+Automation verifies types/runtime separately; do not mark IDE checks as performed
+based solely on compiler results. See REQUIREMENTS IU-* and DESIGN IU-DC-*.
+
+| ID | Check | Pass criterion |
+|---|---|---|
+| IU-MT-1 | Pipe an object through evolve changing number to string | Callback input is number, result property string; downstream numeric operation is rejected |
+| IU-MT-2 | Merge conflicting property types and nested records | Output matches the right-hand runtime value, not an impossible intersection |
+| IU-MT-3 | Read required/optional props; pick/omit optional keys | No added hints; exact optionality is retained |
+| IU-MT-4 | Nullable arrays through getOrElse([]) and map | Element callback is the input model, with no never[] or corrective cast |
+| IU-MT-5 | Path and flattenDeep inference | Hover comes from source/path; false expected output types are rejected |
+| IU-MT-6 | Use readonly arrays and inferred type guards | Nonmutating operations accept input; narrowed values flow to next step |
+| IU-MT-7 | Save stream.take(2), then use with sync/async sources | Both modes retain element type and correct iterator protocol |
+| IU-MT-8 | Async predicate over toAsync([1,2,3]) | Result is [2,3]; invalid sync/async mixtures fail clearly |
+| IU-MT-9 | Compose incompatible functions and use generic single pipe | Incompatible chain is rejected; supported generic relationship retained |
+| IU-MT-10 | Curried branches and SideEffect matching | Inferred result union survives; no unknown at the handling boundary |
+| IU-MT-11 | Read migration examples in README and EN/KO docs | Contracts and examples agree with installed declarations and runtime |
+
+Status: pending implementation and automation; interactive editor sign-off pending.
+
+## Historical checks — Pipe Soundness Release (0.15.0)
 
 Run these in a fresh consumer project that installs the packed tarball (`npm pack`), in VS Code, once with TS 5.9 and once with TS 7.0 (select the workspace TS version).
 Pass = every row behaves as described. Any deviation fails the release.

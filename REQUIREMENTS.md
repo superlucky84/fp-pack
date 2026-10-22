@@ -1,4 +1,49 @@
-# REQUIREMENTS — Pipe Soundness & Variant Consolidation
+# REQUIREMENTS — Inference Usability
+
+## Active revision — 2026-10-22
+
+Branch: `feat/inference-usability`; baseline: `b9a92e0` (0.15.0).
+Canonical documents remain at the package root because this change crosses object,
+array, nullable, control, composition and stream APIs. The earlier pipe revision
+below is historical where this revision supersedes it. Workflow: the user-requested
+ctxbin `doc-driven-designer-v1` skill and agent rule (loaded 2026-10-22).
+
+**User goal:** when an input type is known, ordinary pipelines preserve exact
+intermediate and result types without extra generics, casts or callback annotations.
+Valid programs must infer usefully; invalid programs must fail instead of escaping
+through `any`, `unknown` or `never`.
+
+| ID | Requirement | Validation |
+|---|---|---|
+| IU-01 | `evolve` infers transformer inputs and transformed property outputs; shallow/deep merge reflect runtime overwrite order | object inference and runtime regressions |
+| IU-02 | Required/optional properties work equally in direct and curried `prop`/`pick`/`omit`; required reads do not invent undefined | object inference tests |
+| IU-03 | Path reads/writes and deep array flattening derive outputs from inputs; unconstrained output generics cannot fabricate types | positive and negative path/flatten tests |
+| IU-04 | Empty-array, object and null defaults retain the actual nullable input type | getOrElse pipeline regressions |
+| IU-05 | Nonmutating array APIs accept readonly inputs; predicates preserve narrowing where valid | readonly and guard regression matrix |
+| IU-06 | Saved/inline curried stream steps retain generics and support their declared input modes | stream type tests and runtime tests |
+| IU-07 | Stream declarations match execution for sync/async callbacks; Promise predicates never silently count as true; strings are iterables | rejected invalid calls, async-source execution and cleanup tests |
+| IU-08 | compose rejects incompatible connections; single generic pipe steps preserve relationships where TypeScript permits | composition regressions |
+| IU-09 | Curried branch results are inferred at the call supplying them; curry's supported argument groupings match execution | control/curry positive and negative tests |
+| IU-10 | matchSideEffect preserves the effect type at the handling boundary | effect inference tests |
+| IU-11 | New positive usability cases contain no corrective casts/callback annotations; check callback types as well as outputs | new usability corpus and packed consumer |
+| IU-12 | Existing runtime behavior stays compatible except documented correctness fixes; source, declarations, ESM/CJS and docs agree | baseline, hardening and integration gates |
+
+Constraints: no dependencies, no publication or main merge, preserve the four pipe
+modes and generated 32-step boundary, preserve current compiler support. Do not
+replace missing inference with unchecked catch-alls. Input model declarations and
+external API contracts are legitimate context, not corrective hints.
+
+Explicit boundaries: arbitrary generic function transformations and fully untyped
+function-first callbacks cannot always be inferred by TypeScript. We improve
+verified cases and document remaining boundaries, rather than promise universal
+inference. Existing explicit legacy path result arguments will be evaluated for
+compatibility, but must not provide an unchecked escape through inferred APIs.
+
+Migration: tighter utility contracts may expose invalid callers; document the
+changes under an unreleased changelog entry. Async stream computations use the
+existing `toAsync` input boundary (see IU-DC-2), not a new wrapper or type hint.
+
+## Historical requirements — Pipe Soundness & Variant Consolidation
 
 Status: **Inference-first hardening and 0.15.0 publication preparation validated locally**
 Owner: superlucky84

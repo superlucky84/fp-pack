@@ -1,4 +1,53 @@
-# IMPLEMENT — Pipe Soundness & Variant Consolidation
+# IMPLEMENT — Inference Usability
+
+## Active work — 2026-10-22
+
+Branch `feat/inference-usability`, baseline `b9a92e0`. Follow REQUIREMENTS IU-* and
+DESIGN IU-DC-*. The root four-document set is canonical; dated sections below are
+historical and do not prescribe changes to the current implementation.
+
+Baseline for every phase: `npm run test:types` and `node_modules/.bin/vitest run`.
+Build/consumer gate for each implementation phase: `npm run build` then
+`npm run test:package`. These run the same underlying scripts as the pnpm commands
+without pnpm 11's environment-specific automatic dependency reinstallation.
+
+1. [ ] **IU Phase 0 — Baseline and contracts.** Entry: clean baseline, review
+   reproduced failures. Align the four documents, record decisions, add regression
+   cases before their fixes. Exit: baseline verified; failing cases attributable
+   to the documented contracts. Baseline: types/runtime and existing build/consumer evidence.
+2. [ ] **IU Phase 1 — Data transformations.** Fix evolve/merge/path/flatten,
+   optional property access, defaults, readonly inputs and narrowing. Entry:
+   decisions resolved and regression failures recorded. Exit: IU-01–05 and
+   baseline plus build/consumer pass with precise inferred output checks.
+3. [ ] **IU Phase 2 — Stream contracts.** Repair deferred generics/returned
+   overloads, async-mode declarations and guards, iterable detection and guard
+   narrowing. Entry: Phase 1 green. Exit: IU-06–07 and baseline plus build/consumer
+   pass, including sync/async and stored-step tests.
+4. [ ] **IU Phase 3 — Composition and boundaries.** Repair compose validation,
+   staged branch/curry declarations, supported generic pipe entry and effect
+   matching. Entry: Phase 2 green. Exit: IU-08–10 and baseline plus build/consumer
+   pass; inference boundaries documented without unchecked overloads.
+5. [ ] **IU Phase 4 — Test Hardening.** Entry: implementation phases green.
+   Exercise cross-mode combinations, optional/readonly/union/defaults, iterator
+   cleanup, invalid calls, callback types and source test cost. Remove corrective
+   casts from the newly covered usability scenarios. Exit: IU-11 and baseline
+   pass; no unexplained any/unknown/never in positive examples.
+6. [ ] **IU Phase 5 — Integration Test.** Entry: hardening green. Add packed
+   consumer checks, run library/declaration build, ESM/CJS package checks, docs
+   lint/build and supported compiler matrix when available. Update README,
+   changelog and affected EN/KO guidance. Exit: IU-12; all executed results and
+   remaining manual checks recorded; working tree review completed.
+
+### Current handoff
+
+- done: analysis of 90 combinations; requested branch created; ctxbin skill/rule
+  loaded; requirements and decisions recorded before implementation.
+- next: baseline verification and regression-first Phase 1.
+- blockers: none. Credentials are stored only in the environment's private ctxbin
+  configuration, outside the repository. ctxbin needs `NODE_USE_ENV_PROXY=1` here.
+- latest commit: `b9a92e0` (baseline); no implementation commits yet.
+
+## Historical plan — Pipe Soundness & Variant Consolidation
 
 Source of truth: `REQUIREMENTS.md` (what), `DESIGN.md` § Pipe Soundness Revision (how and decisions), `MANUAL_TEST_CHECKLIST.md` (release gate).
 
