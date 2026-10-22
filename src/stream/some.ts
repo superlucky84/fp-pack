@@ -1,23 +1,39 @@
-import type { AnyIterableInput, PromiseLikeValue } from './utils';
-import { isAsyncInput, isIterable } from './utils';
+import type {
+  InputFor,
+  AnyIterableInput,
+  AsyncIterableInput,
+  PromiseLikeValue,
+  InputItem,
+  ScalarResultFor
+} from './utils';
+import { isAsyncInput, isIterable, requireSync } from './utils';
 import toAsync from './toAsync';
 
-/** some - check any value matches */
-function some<T>(predicate: (value: T) => boolean): (iterable: Iterable<T>) => boolean;
+/** some - preserve source element types and execution mode. */
+function some<I extends AnyIterableInput<unknown>>(
+  predicate: (value: InputItem<I>) => boolean
+): (iterable: I) => ScalarResultFor<I, boolean>;
+function some<T>(predicate: (value: T) => boolean): <I extends InputFor<T>>(iterable: I) => ScalarResultFor<I, boolean>;
+function some<I extends AsyncIterableInput<unknown>>(
+  predicate: (value: InputItem<I>) => boolean | PromiseLike<boolean>
+): (iterable: I) => Promise<boolean>;
 function some<T>(
-  predicate: (value: T) => boolean | Promise<boolean>
-): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => Promise<boolean>;
-function some<T>(predicate: (value: T) => boolean, iterable: Iterable<T>): boolean;
-function some<T>(
-  predicate: (value: T) => boolean | Promise<boolean>,
-  iterable: AnyIterableInput<PromiseLikeValue<T>>
+  predicate: (value: T) => boolean | PromiseLike<boolean>
+): <I extends AsyncIterableInput<PromiseLikeValue<T>>>(iterable: I) => Promise<boolean>;
+function some<I extends AnyIterableInput<unknown>>(
+  predicate: (value: InputItem<I>) => boolean,
+  iterable: I
+): ScalarResultFor<I, boolean>;
+function some<I extends AsyncIterableInput<unknown>>(
+  predicate: (value: InputItem<I>) => boolean | PromiseLike<boolean>,
+  iterable: I
 ): Promise<boolean>;
 function some<T>(
-  predicate: (value: T) => boolean | Promise<boolean>,
+  predicate: (value: T) => boolean | PromiseLike<boolean>,
   iterable?: AnyIterableInput<PromiseLikeValue<T>>
 ): any {
   if (iterable === undefined) {
-    return (next: AnyIterableInput<PromiseLikeValue<T>>) => some(predicate, next);
+    return (next: AnyIterableInput<PromiseLikeValue<T>>) => some(predicate, next as never);
   }
 
   if (isAsyncInput(iterable)) {
@@ -33,7 +49,7 @@ function some<T>(
 
   if (isIterable(iterable)) {
     for (const item of iterable) {
-      if (predicate(item as T)) {
+      if (requireSync(predicate(item as T), 'some')) {
         return true;
       }
     }

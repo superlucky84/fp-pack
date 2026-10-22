@@ -1,20 +1,51 @@
-import type { AnyIterableInput, PromiseLikeValue } from './utils';
-import { isAsyncInput, isIterable } from './utils';
+import type {
+  InputFor,
+  AnyIterableInput,
+  AsyncIterableInput,
+  PromiseLikeValue,
+  InputItem,
+  IteratorResultFor
+} from './utils';
+import { isAsyncInput, isIterable, requireSync } from './utils';
 import toAsync from './toAsync';
 
-/** takeWhile - lazily take values while predicate holds */
-function takeWhile<T>(predicate: (value: T) => boolean): (iterable: Iterable<T>) => IterableIterator<T>;
+/** takeWhile - preserve source element types and execution mode. */
+function takeWhile<I extends AnyIterableInput<unknown>, S extends InputItem<I>>(
+  predicate: (value: InputItem<I>) => value is S
+): (iterable: I) => IteratorResultFor<I, S>;
+function takeWhile<T, S extends T>(
+  predicate: (value: T) => value is S
+): <I extends InputFor<T>>(iterable: I) => IteratorResultFor<I, S>;
+function takeWhile<I extends AnyIterableInput<unknown>>(
+  predicate: (value: InputItem<I>) => boolean
+): (iterable: I) => IteratorResultFor<I, InputItem<I>>;
 function takeWhile<T>(
-  predicate: (value: T) => boolean | Promise<boolean>
-): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<T>;
-function takeWhile<T>(predicate: (value: T) => boolean, iterable: Iterable<T>): IterableIterator<T>;
+  predicate: (value: T) => boolean
+): <I extends InputFor<T>>(iterable: I) => IteratorResultFor<I, InputItem<I>>;
+function takeWhile<I extends AsyncIterableInput<unknown>>(
+  predicate: (value: InputItem<I>) => boolean | PromiseLike<boolean>
+): (iterable: I) => AsyncIterableIterator<InputItem<I>>;
 function takeWhile<T>(
-  predicate: (value: T) => boolean | Promise<boolean>,
-  iterable: AnyIterableInput<PromiseLikeValue<T>>
-): AsyncIterableIterator<T>;
-function takeWhile<T>(predicate: (value: T) => boolean | Promise<boolean>, iterable?: AnyIterableInput<PromiseLikeValue<T>>): any {
+  predicate: (value: T) => boolean | PromiseLike<boolean>
+): <I extends AsyncIterableInput<PromiseLikeValue<T>>>(iterable: I) => AsyncIterableIterator<InputItem<I>>;
+function takeWhile<I extends AnyIterableInput<unknown>, S extends InputItem<I>>(
+  predicate: (value: InputItem<I>) => value is S,
+  iterable: I
+): IteratorResultFor<I, S>;
+function takeWhile<I extends AnyIterableInput<unknown>>(
+  predicate: (value: InputItem<I>) => boolean,
+  iterable: I
+): IteratorResultFor<I, InputItem<I>>;
+function takeWhile<I extends AsyncIterableInput<unknown>>(
+  predicate: (value: InputItem<I>) => boolean | PromiseLike<boolean>,
+  iterable: I
+): AsyncIterableIterator<InputItem<I>>;
+function takeWhile<T>(
+  predicate: (value: T) => boolean | PromiseLike<boolean>,
+  iterable?: AnyIterableInput<PromiseLikeValue<T>>
+): any {
   if (iterable === undefined) {
-    return (next: AnyIterableInput<PromiseLikeValue<T>>) => takeWhile(predicate, next);
+    return (next: AnyIterableInput<PromiseLikeValue<T>>) => takeWhile(predicate, next as never);
   }
 
   if (isAsyncInput(iterable)) {
@@ -31,7 +62,7 @@ function takeWhile<T>(predicate: (value: T) => boolean | Promise<boolean>, itera
   if (isIterable(iterable)) {
     return (function* () {
       for (const item of iterable) {
-        if (!predicate(item as T)) {
+        if (!requireSync(predicate(item as T), 'takeWhile')) {
           break;
         }
         yield item as T;

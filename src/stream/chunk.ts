@@ -1,4 +1,4 @@
-import type { AnyIterableInput, PromiseLikeValue } from './utils';
+import type { AnyIterableInput, PromiseLikeValue, InputItem, IteratorResultFor } from './utils';
 import { awaitValue, isAsyncIterable, isIterable, isPromiseLike } from './utils';
 import toAsync from './toAsync';
 
@@ -42,12 +42,11 @@ const chunkAsyncIterable = async function* <T>(size: number, iterable: AsyncIter
   }
 };
 
-type ChunkFn<T> = (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<T[]> | IterableIterator<T[]>;
-
-function chunk<T>(size: number): ChunkFn<T>;
-function chunk<T>(size: number, iterable: Iterable<T>): IterableIterator<T[]>;
-function chunk<T>(size: number, iterable: AnyIterableInput<PromiseLikeValue<T>>): AsyncIterableIterator<T[]> | IterableIterator<T[]>;
-function chunk<T>(size: number, iterable?: AnyIterableInput<PromiseLikeValue<T>>) {
+function chunk(
+  size: number
+): <I extends AnyIterableInput<unknown>>(iterable: I) => IteratorResultFor<I, InputItem<I>[]>;
+function chunk<I extends AnyIterableInput<unknown>>(size: number, iterable: I): IteratorResultFor<I, InputItem<I>[]>;
+function chunk<T>(size: number, iterable?: AnyIterableInput<PromiseLikeValue<T>>): any {
   if (iterable === undefined) {
     return (nextIterable: AnyIterableInput<PromiseLikeValue<T>>) => chunk(size, nextIterable);
   }
@@ -57,11 +56,14 @@ function chunk<T>(size: number, iterable?: AnyIterableInput<PromiseLikeValue<T>>
   }
 
   if (isAsyncIterable(iterable)) {
-    return chunkAsyncIterable(size, (async function* () {
-      for await (const item of iterable) {
-        yield await awaitValue(item as PromiseLikeValue<T>);
-      }
-    })());
+    return chunkAsyncIterable(
+      size,
+      (async function* () {
+        for await (const item of iterable) {
+          yield await awaitValue(item as PromiseLikeValue<T>);
+        }
+      })()
+    );
   }
 
   if (isIterable(iterable)) {

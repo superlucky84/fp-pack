@@ -1,26 +1,48 @@
-import type { AnyIterableInput, PromiseLikeValue } from './utils';
-import { isAsyncInput, isIterable } from './utils';
+import type {
+  InputFor,
+  AnyIterableInput,
+  AsyncIterableInput,
+  PromiseLikeValue,
+  InputItem,
+  IteratorResultFor
+} from './utils';
+import { isAsyncInput, isIterable, requireSync } from './utils';
 import toAsync from './toAsync';
 
-/** scan - fold values and emit each accumulated value */
-function scan<T, R>(fn: (acc: R, value: T) => R, initial: R): (iterable: Iterable<T>) => IterableIterator<R>;
-function scan<T, R>(
-  fn: (acc: R, value: T) => R | Promise<R>,
+/** scan - preserve source element types and execution mode. */
+function scan<I extends AnyIterableInput<unknown>, R>(
+  fn: (acc: R, value: InputItem<I>) => R,
   initial: R
-): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<R>;
-function scan<T, R>(fn: (acc: R, value: T) => R, initial: R, iterable: Iterable<T>): IterableIterator<R>;
+): (iterable: I) => IteratorResultFor<I, R>;
 function scan<T, R>(
-  fn: (acc: R, value: T) => R | Promise<R>,
+  fn: (acc: R, value: T) => R,
+  initial: R
+): <I extends InputFor<T>>(iterable: I) => IteratorResultFor<I, R>;
+function scan<I extends AsyncIterableInput<unknown>, R>(
+  fn: (acc: R, value: InputItem<I>) => R | PromiseLike<R>,
+  initial: R
+): (iterable: I) => AsyncIterableIterator<Awaited<R>>;
+function scan<T, R>(
+  fn: (acc: R, value: T) => R | PromiseLike<R>,
+  initial: R
+): (iterable: AsyncIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<Awaited<R>>;
+function scan<I extends AnyIterableInput<unknown>, R>(
+  fn: (acc: R, value: InputItem<I>) => R,
   initial: R,
-  iterable: AnyIterableInput<PromiseLikeValue<T>>
-): AsyncIterableIterator<R>;
+  iterable: I
+): IteratorResultFor<I, R>;
+function scan<I extends AsyncIterableInput<unknown>, R>(
+  fn: (acc: R, value: InputItem<I>) => R | PromiseLike<R>,
+  initial: R,
+  iterable: I
+): AsyncIterableIterator<Awaited<R>>;
 function scan<T, R>(
-  fn: (acc: R, value: T) => R | Promise<R>,
+  fn: (acc: R, value: T) => R | PromiseLike<R>,
   initial: R,
   iterable?: AnyIterableInput<PromiseLikeValue<T>>
 ): any {
   if (iterable === undefined) {
-    return (next: AnyIterableInput<PromiseLikeValue<T>>) => scan(fn, initial, next);
+    return (next: AnyIterableInput<PromiseLikeValue<T>>) => scan(fn, initial, next as never);
   }
 
   if (isAsyncInput(iterable)) {
@@ -37,7 +59,7 @@ function scan<T, R>(
     return (function* () {
       let acc = initial;
       for (const item of iterable) {
-        acc = fn(acc, item as T) as R;
+        acc = requireSync(fn(acc, item as T), 'scan') as R;
         yield acc;
       }
     })();

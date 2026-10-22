@@ -2,6 +2,12 @@
 
 ## Unreleased — Inference usability
 
+- Stream partial applications retain source element types and sync/async mode.
+  Async predicates/flatMap/accumulators require `toAsync(input)` or another async
+  input; previously accepted sync input combinations could silently misbehave.
+  Strings are valid stream inputs; deep flattening preserves string leaves.
+  Zip operations close both inputs when consumption stops early.
+
 - Object transformations preserve changed property types; shallow/deep merge model
   actual right-hand overwrite precedence instead of intersecting conflicting values.
 - Nonmutating array helpers accept readonly inputs. `drop` preserves its existing

@@ -1,23 +1,41 @@
-import type { AnyIterableInput, PromiseLikeValue } from './utils';
-import { isAsyncInput, isIterable } from './utils';
+import type {
+  InputFor,
+  AnyIterableInput,
+  AsyncIterableInput,
+  PromiseLikeValue,
+  InputItem,
+  ScalarResultFor
+} from './utils';
+import { isAsyncInput, isIterable, requireSync } from './utils';
 import toAsync from './toAsync';
 
-/** every - check all values match */
-function every<T>(predicate: (value: T) => boolean): (iterable: Iterable<T>) => boolean;
+/** every - preserve source element types and execution mode. */
+function every<I extends AnyIterableInput<unknown>>(
+  predicate: (value: InputItem<I>) => boolean
+): (iterable: I) => ScalarResultFor<I, boolean>;
 function every<T>(
-  predicate: (value: T) => boolean | Promise<boolean>
-): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => Promise<boolean>;
-function every<T>(predicate: (value: T) => boolean, iterable: Iterable<T>): boolean;
+  predicate: (value: T) => boolean
+): <I extends InputFor<T>>(iterable: I) => ScalarResultFor<I, boolean>;
+function every<I extends AsyncIterableInput<unknown>>(
+  predicate: (value: InputItem<I>) => boolean | PromiseLike<boolean>
+): (iterable: I) => Promise<boolean>;
 function every<T>(
-  predicate: (value: T) => boolean | Promise<boolean>,
-  iterable: AnyIterableInput<PromiseLikeValue<T>>
+  predicate: (value: T) => boolean | PromiseLike<boolean>
+): <I extends AsyncIterableInput<PromiseLikeValue<T>>>(iterable: I) => Promise<boolean>;
+function every<I extends AnyIterableInput<unknown>>(
+  predicate: (value: InputItem<I>) => boolean,
+  iterable: I
+): ScalarResultFor<I, boolean>;
+function every<I extends AsyncIterableInput<unknown>>(
+  predicate: (value: InputItem<I>) => boolean | PromiseLike<boolean>,
+  iterable: I
 ): Promise<boolean>;
 function every<T>(
-  predicate: (value: T) => boolean | Promise<boolean>,
+  predicate: (value: T) => boolean | PromiseLike<boolean>,
   iterable?: AnyIterableInput<PromiseLikeValue<T>>
 ): any {
   if (iterable === undefined) {
-    return (next: AnyIterableInput<PromiseLikeValue<T>>) => every(predicate, next);
+    return (next: AnyIterableInput<PromiseLikeValue<T>>) => every(predicate, next as never);
   }
 
   if (isAsyncInput(iterable)) {
@@ -33,7 +51,7 @@ function every<T>(
 
   if (isIterable(iterable)) {
     for (const item of iterable) {
-      if (!predicate(item as T)) {
+      if (!requireSync(predicate(item as T), 'every')) {
         return false;
       }
     }

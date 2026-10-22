@@ -1,22 +1,18 @@
-import type { AnyIterableInput, PromiseLikeValue } from './utils';
+import type { AnyIterableInput, PromiseLikeValue, InputItem, IteratorResultFor } from './utils';
 import { isAsyncInput, isIterable } from './utils';
 import toAsync from './toAsync';
 
-/** take - lazily take first n values */
-function take<T>(count: number): (iterable: Iterable<T>) => IterableIterator<T>;
-function take<T>(count: number): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<T>;
-function take<T>(count: number, iterable: Iterable<T>): IterableIterator<T>;
-function take<T>(count: number, iterable: AnyIterableInput<PromiseLikeValue<T>>): AsyncIterableIterator<T>;
+/** take - preserve source element types and execution mode. */
+function take(count: number): <I extends AnyIterableInput<unknown>>(iterable: I) => IteratorResultFor<I, InputItem<I>>;
+function take<I extends AnyIterableInput<unknown>>(count: number, iterable: I): IteratorResultFor<I, InputItem<I>>;
 function take<T>(count: number, iterable?: AnyIterableInput<PromiseLikeValue<T>>): any {
   if (iterable === undefined) {
-    return (next: AnyIterableInput<PromiseLikeValue<T>>) => take(count, next);
+    return (next: AnyIterableInput<PromiseLikeValue<T>>) => take(count, next as never);
   }
 
   const limit = Math.floor(count);
   if (!Number.isFinite(limit) || limit <= 0) {
-    return isAsyncInput(iterable)
-      ? (async function* () {})()
-      : (function* () {})();
+    return isAsyncInput(iterable) ? (async function* () {})() : (function* () {})();
   }
 
   if (isAsyncInput(iterable)) {

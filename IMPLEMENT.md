@@ -19,7 +19,7 @@ without pnpm 11's environment-specific automatic dependency reinstallation.
    optional property access, defaults, readonly inputs and narrowing. Entry:
    decisions resolved and regression failures recorded. Exit: IU-01–05 and
    baseline plus build/consumer pass with precise inferred output checks.
-3. [ ] **IU Phase 2 — Stream contracts.** Repair deferred generics/returned
+3. [x] **IU Phase 2 — Stream contracts.** Repair deferred generics/returned
    overloads, async-mode declarations and guards, iterable detection and guard
    narrowing. Entry: Phase 1 green. Exit: IU-06–07 and baseline plus build/consumer
    pass, including sync/async and stored-step tests.
@@ -46,11 +46,16 @@ without pnpm 11's environment-specific automatic dependency reinstallation.
   corresponding precise expectation updates in historical tests. Removed unsafe
   explicit path-output type arguments from their consumers. `drop(0)` retains
   reference identity, so its readonly input overload returns a readonly array.
-- next: Phase 2 stream contracts, followed by composition and hardening.
+- done: Phase 2 source-derived stream signatures preserve inline inference and
+  stored partial applications across sync/async inputs. Async predicates and
+  accumulators require async input; untyped sync misuse throws a clear error.
+  Strings are iterable, deep flattening keeps string leaves atomic, and zip closes
+  both inputs. Types, 398 runtime tests, build and installed consumer passed.
+- next: Phase 3 composition/control/effect inference, followed by hardening.
 - blockers: none. Credentials are stored only in the environment's private ctxbin
   configuration, outside the repository. ctxbin needs `NODE_USE_ENV_PROXY=1` here.
-- latest commit before Phase 1: `13385a8` (contracts); Phase 1 implementation is
-  committed immediately after this record. Baseline: `b9a92e0`.
+- latest implementation commit: `f79a00f` (Phase 1); Phase 2 is committed
+  immediately after this record. Contracts: `13385a8`; baseline: `b9a92e0`.
 
 ## Historical plan — Pipe Soundness & Variant Consolidation
 

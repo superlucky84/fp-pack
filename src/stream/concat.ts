@@ -1,18 +1,21 @@
-import type { AnyIterableInput, PromiseLikeValue } from './utils';
+import type { AnyIterableInput, PromiseLikeValue, InputItem, CombinedIterator } from './utils';
 import { isAsyncInput, isIterable } from './utils';
 import toAsync from './toAsync';
 
-/** concat - lazily concatenate two iterables */
-function concat<T>(other: Iterable<T>): (iterable: Iterable<T>) => IterableIterator<T>;
-function concat<T>(other: AnyIterableInput<PromiseLikeValue<T>>): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<T>;
-function concat<T>(other: Iterable<T>, iterable: Iterable<T>): IterableIterator<T>;
+/** concat - preserve source element types and execution mode. */
+function concat<O extends AnyIterableInput<unknown>>(
+  other: O
+): <I extends AnyIterableInput<unknown>>(iterable: I) => CombinedIterator<I, O, InputItem<I> | InputItem<O>>;
+function concat<I extends AnyIterableInput<unknown>, O extends AnyIterableInput<unknown>>(
+  other: O,
+  iterable: I
+): CombinedIterator<I, O, InputItem<I> | InputItem<O>>;
 function concat<T>(
   other: AnyIterableInput<PromiseLikeValue<T>>,
-  iterable: AnyIterableInput<PromiseLikeValue<T>>
-): AsyncIterableIterator<T>;
-function concat<T>(other: AnyIterableInput<PromiseLikeValue<T>>, iterable?: AnyIterableInput<PromiseLikeValue<T>>): any {
+  iterable?: AnyIterableInput<PromiseLikeValue<T>>
+): any {
   if (iterable === undefined) {
-    return (next: AnyIterableInput<PromiseLikeValue<T>>) => concat(other, next);
+    return (next: AnyIterableInput<PromiseLikeValue<T>>) => concat(other, next as never);
   }
 
   if (isAsyncInput(other) || isAsyncInput(iterable)) {

@@ -1,20 +1,41 @@
-import type { AnyIterableInput, PromiseLikeValue } from './utils';
-import { isAsyncInput, isIterable } from './utils';
+import type {
+  InputFor,
+  AnyIterableInput,
+  AsyncIterableInput,
+  PromiseLikeValue,
+  InputItem,
+  IteratorResultFor
+} from './utils';
+import { isAsyncInput, isIterable, requireSync } from './utils';
 import toAsync from './toAsync';
 
-/** dropWhile - lazily drop values while predicate holds */
-function dropWhile<T>(predicate: (value: T) => boolean): (iterable: Iterable<T>) => IterableIterator<T>;
+/** dropWhile - preserve source element types and execution mode. */
+function dropWhile<I extends AnyIterableInput<unknown>>(
+  predicate: (value: InputItem<I>) => boolean
+): (iterable: I) => IteratorResultFor<I, InputItem<I>>;
 function dropWhile<T>(
-  predicate: (value: T) => boolean | Promise<boolean>
-): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<T>;
-function dropWhile<T>(predicate: (value: T) => boolean, iterable: Iterable<T>): IterableIterator<T>;
+  predicate: (value: T) => boolean
+): <I extends InputFor<T>>(iterable: I) => IteratorResultFor<I, InputItem<I>>;
+function dropWhile<I extends AsyncIterableInput<unknown>>(
+  predicate: (value: InputItem<I>) => boolean | PromiseLike<boolean>
+): (iterable: I) => AsyncIterableIterator<InputItem<I>>;
 function dropWhile<T>(
-  predicate: (value: T) => boolean | Promise<boolean>,
-  iterable: AnyIterableInput<PromiseLikeValue<T>>
-): AsyncIterableIterator<T>;
-function dropWhile<T>(predicate: (value: T) => boolean | Promise<boolean>, iterable?: AnyIterableInput<PromiseLikeValue<T>>): any {
+  predicate: (value: T) => boolean | PromiseLike<boolean>
+): <I extends AsyncIterableInput<PromiseLikeValue<T>>>(iterable: I) => AsyncIterableIterator<InputItem<I>>;
+function dropWhile<I extends AnyIterableInput<unknown>>(
+  predicate: (value: InputItem<I>) => boolean,
+  iterable: I
+): IteratorResultFor<I, InputItem<I>>;
+function dropWhile<I extends AsyncIterableInput<unknown>>(
+  predicate: (value: InputItem<I>) => boolean | PromiseLike<boolean>,
+  iterable: I
+): AsyncIterableIterator<InputItem<I>>;
+function dropWhile<T>(
+  predicate: (value: T) => boolean | PromiseLike<boolean>,
+  iterable?: AnyIterableInput<PromiseLikeValue<T>>
+): any {
   if (iterable === undefined) {
-    return (next: AnyIterableInput<PromiseLikeValue<T>>) => dropWhile(predicate, next);
+    return (next: AnyIterableInput<PromiseLikeValue<T>>) => dropWhile(predicate, next as never);
   }
 
   if (isAsyncInput(iterable)) {
@@ -35,7 +56,7 @@ function dropWhile<T>(predicate: (value: T) => boolean | Promise<boolean>, itera
     return (function* () {
       let dropping = true;
       for (const item of iterable) {
-        if (dropping && !predicate(item as T)) {
+        if (dropping && !requireSync(predicate(item as T), 'dropWhile')) {
           dropping = false;
         }
         if (!dropping) {

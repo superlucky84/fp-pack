@@ -1,19 +1,25 @@
-import type { AnyIterableInput, PromiseLikeValue } from './utils';
+import type { AnyIterableInput, PromiseLikeValue, InputItem, IteratorResultFor } from './utils';
 import { awaitValue, isAsyncInput, isIterable } from './utils';
 import toAsync from './toAsync';
 
 /** flattenDeep - lazily flatten nested iterables */
-function flattenDeep<T>(iterable: Iterable<unknown>): IterableIterator<T>;
-function flattenDeep<T>(iterable: AnyIterableInput<PromiseLikeValue<unknown>>): AsyncIterableIterator<T>;
-function flattenDeep<T>(iterable: AnyIterableInput<PromiseLikeValue<unknown>>): any {
-  const walkSync = function* (value: unknown): IterableIterator<T> {
-    if (isIterable(value)) {
+type DeepLeaf<T, Depth extends unknown[] = []> = Depth['length'] extends 16
+  ? unknown
+  : T extends string
+    ? T
+    : T extends Iterable<infer Item>
+      ? DeepLeaf<Item, [...Depth, 0]>
+      : T;
+function flattenDeep<I extends AnyIterableInput<unknown>>(iterable: I): IteratorResultFor<I, DeepLeaf<InputItem<I>>>;
+function flattenDeep(iterable: AnyIterableInput<unknown>): any {
+  const walkSync = function* (value: unknown): IterableIterator<unknown> {
+    if (typeof value !== 'string' && isIterable(value)) {
       for (const item of value as Iterable<unknown>) {
         yield* walkSync(item);
       }
       return;
     }
-    yield value as T;
+    yield value;
   };
 
   if (isAsyncInput(iterable)) {
@@ -21,7 +27,7 @@ function flattenDeep<T>(iterable: AnyIterableInput<PromiseLikeValue<unknown>>): 
       for await (const item of toAsync(iterable)) {
         const resolved = await awaitValue(item as PromiseLikeValue<unknown>);
         for (const inner of walkSync(resolved)) {
-          yield inner as T;
+          yield inner;
         }
       }
     })();

@@ -1,20 +1,19 @@
-import type { AnyIterableInput, PromiseLikeValue } from './utils';
+import type { InputFor, AnyIterableInput, PromiseLikeValue, InputItem, IteratorResultFor } from './utils';
 import { isAsyncInput, isIterable } from './utils';
 import toAsync from './toAsync';
 
-/** map - lazy map over iterables */
-function map<T, R>(fn: (value: T) => R): (iterable: Iterable<T>) => IterableIterator<R>;
-function map<T, R>(
-  fn: (value: T) => R | Promise<R>
-): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<R>;
-function map<T, R>(fn: (value: T) => R, iterable: Iterable<T>): IterableIterator<R>;
-function map<T, R>(
-  fn: (value: T) => R | Promise<R>,
-  iterable: AnyIterableInput<PromiseLikeValue<T>>
-): AsyncIterableIterator<R>;
-function map<T, R>(fn: (value: T) => R | Promise<R>, iterable?: AnyIterableInput<PromiseLikeValue<T>>): any {
+/** map - preserve source element types and execution mode. */
+function map<I extends AnyIterableInput<unknown>, R>(
+  fn: (value: InputItem<I>) => R
+): (iterable: I) => IteratorResultFor<I, R>;
+function map<T, R>(fn: (value: T) => R): <I extends InputFor<T>>(iterable: I) => IteratorResultFor<I, R>;
+function map<I extends AnyIterableInput<unknown>, R>(
+  fn: (value: InputItem<I>) => R,
+  iterable: I
+): IteratorResultFor<I, R>;
+function map<T, R>(fn: (value: T) => R | PromiseLike<R>, iterable?: AnyIterableInput<PromiseLikeValue<T>>): any {
   if (iterable === undefined) {
-    return (next: AnyIterableInput<PromiseLikeValue<T>>) => map(fn, next);
+    return (next: AnyIterableInput<PromiseLikeValue<T>>) => map(fn, next as never);
   }
 
   if (isAsyncInput(iterable)) {

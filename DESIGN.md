@@ -9,7 +9,9 @@ the older architecture and dated pipe revision below remain historical evidence.
 
 - [x] **IU-DC-1 — Infer where information arrives.** Put independent generics on
   the returned call accepting their evidence. A saved count-only stream operation
-  remains generic; its returned function carries sync/async overloads. Branch
+  remains generic; its returned function derives element and execution mode from
+  its input. Contextual and stored-callback overloads remain separate because
+  overloading the returned function alone loses inline pipe inference. Branch
   result generics are introduced when the corresponding handler is supplied.
   Validate IU-06/IU-09 with inline and stored partial applications.
 - [x] **IU-DC-2 — Preserve explicit execution modes.** Async stream callbacks

@@ -1,23 +1,39 @@
-import type { AnyIterableInput, PromiseLikeValue } from './utils';
-import { isAsyncInput, isIterable } from './utils';
+import type {
+  InputFor,
+  AnyIterableInput,
+  AsyncIterableInput,
+  PromiseLikeValue,
+  InputItem,
+  IteratorResultFor
+} from './utils';
+import { isAsyncInput, isIterable, requireSync } from './utils';
 import toAsync from './toAsync';
 
-/** flatMap - lazy map + flatten */
-function flatMap<T, R>(fn: (value: T) => Iterable<R>): (iterable: Iterable<T>) => IterableIterator<R>;
+/** flatMap - preserve source element types and execution mode. */
+function flatMap<I extends AnyIterableInput<unknown>, R>(
+  fn: (value: InputItem<I>) => Iterable<R>
+): (iterable: I) => IteratorResultFor<I, R>;
+function flatMap<T, R>(fn: (value: T) => Iterable<R>): <I extends InputFor<T>>(iterable: I) => IteratorResultFor<I, R>;
+function flatMap<I extends AsyncIterableInput<unknown>, R>(
+  fn: (value: InputItem<I>) => Iterable<R> | PromiseLike<Iterable<R>>
+): (iterable: I) => AsyncIterableIterator<Awaited<R>>;
 function flatMap<T, R>(
-  fn: (value: T) => Iterable<R> | Promise<Iterable<R>>
-): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<R>;
-function flatMap<T, R>(fn: (value: T) => Iterable<R>, iterable: Iterable<T>): IterableIterator<R>;
+  fn: (value: T) => Iterable<R> | PromiseLike<Iterable<R>>
+): (iterable: AsyncIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<Awaited<R>>;
+function flatMap<I extends AnyIterableInput<unknown>, R>(
+  fn: (value: InputItem<I>) => Iterable<R>,
+  iterable: I
+): IteratorResultFor<I, R>;
+function flatMap<I extends AsyncIterableInput<unknown>, R>(
+  fn: (value: InputItem<I>) => Iterable<R> | PromiseLike<Iterable<R>>,
+  iterable: I
+): AsyncIterableIterator<Awaited<R>>;
 function flatMap<T, R>(
-  fn: (value: T) => Iterable<R> | Promise<Iterable<R>>,
-  iterable: AnyIterableInput<PromiseLikeValue<T>>
-): AsyncIterableIterator<R>;
-function flatMap<T, R>(
-  fn: (value: T) => Iterable<R> | Promise<Iterable<R>>,
+  fn: (value: T) => Iterable<R> | PromiseLike<Iterable<R>>,
   iterable?: AnyIterableInput<PromiseLikeValue<T>>
 ): any {
   if (iterable === undefined) {
-    return (next: AnyIterableInput<PromiseLikeValue<T>>) => flatMap(fn, next);
+    return (next: AnyIterableInput<PromiseLikeValue<T>>) => flatMap(fn, next as never);
   }
 
   if (isAsyncInput(iterable)) {
@@ -34,7 +50,7 @@ function flatMap<T, R>(
   if (isIterable(iterable)) {
     return (function* () {
       for (const item of iterable) {
-        const mapped = fn(item as T) as Iterable<R>;
+        const mapped = requireSync(fn(item as T), 'flatMap') as Iterable<R>;
         for (const inner of mapped) {
           yield inner;
         }

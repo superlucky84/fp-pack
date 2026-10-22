@@ -1,18 +1,15 @@
-import type { AnyIterableInput, PromiseLikeValue } from './utils';
+import type { AnyIterableInput, PromiseLikeValue, InputItem, IteratorResultFor } from './utils';
 import { awaitValue, isAsyncInput, isIterable } from './utils';
 import toAsync from './toAsync';
 
-/** prepend - lazily prepend a value to the start */
-function prepend<T>(value: T): (iterable: Iterable<T>) => IterableIterator<T>;
-function prepend<T>(value: PromiseLikeValue<T>): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<T>;
-function prepend<T>(value: T, iterable: Iterable<T>): IterableIterator<T>;
-function prepend<T>(
-  value: PromiseLikeValue<T>,
-  iterable: AnyIterableInput<PromiseLikeValue<T>>
-): AsyncIterableIterator<T>;
+/** prepend - preserve source element types and execution mode. */
+function prepend<V>(
+  value: V
+): <I extends AnyIterableInput<unknown>>(iterable: I) => IteratorResultFor<I, InputItem<I> | V>;
+function prepend<I extends AnyIterableInput<unknown>, V>(value: V, iterable: I): IteratorResultFor<I, InputItem<I> | V>;
 function prepend<T>(value: PromiseLikeValue<T>, iterable?: AnyIterableInput<PromiseLikeValue<T>>): any {
   if (iterable === undefined) {
-    return (next: AnyIterableInput<PromiseLikeValue<T>>) => prepend(value, next);
+    return (next: AnyIterableInput<PromiseLikeValue<T>>) => prepend(value, next as never);
   }
 
   if (isAsyncInput(iterable)) {
