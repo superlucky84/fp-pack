@@ -1,5 +1,6 @@
 import curry from '../composition/curry';
 import type { PathKey } from './pathKey';
+import type { SetPath } from './path.types';
 
 const isIndexKey = (key: PathKey): key is number | `${number}` => {
   if (typeof key === 'number') {
@@ -26,11 +27,9 @@ const isObjectLike = (value: unknown): value is Record<PropertyKey, unknown> =>
   value !== null && typeof value === 'object';
 
 type AssocPath = {
-  <T = unknown>(
-    ...args: [pathArray: PathKey[]]
-  ): (value: unknown) => (obj: unknown) => T;
-  <T = unknown>(...args: [pathArray: PathKey[], value: unknown]): (obj: unknown) => T;
-  <T = unknown>(...args: [pathArray: PathKey[], value: unknown, obj: unknown]): T;
+  <const P extends readonly PathKey[]>(pathArray: P): <V>(value: V) => <T>(obj: T) => SetPath<T, P, V>;
+  <const P extends readonly PathKey[], V>(pathArray: P, value: V): <T>(obj: T) => SetPath<T, P, V>;
+  <T, const P extends readonly PathKey[], V>(pathArray: P, value: V, obj: T): SetPath<T, P, V>;
 };
 
 /**

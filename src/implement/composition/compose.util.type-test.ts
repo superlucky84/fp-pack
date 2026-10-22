@@ -66,7 +66,7 @@ export const composeArrayControlString = compose(
   flattenDeep<number>
 );
 
-type ComposeArrayControlStringExpected = (input: any[]) => string;
+type ComposeArrayControlStringExpected = (input: readonly number[]) => string;
 export type ComposeArrayControlStringIsStrict = Expect<
   Equal<typeof composeArrayControlString, ComposeArrayControlStringExpected>
 >;

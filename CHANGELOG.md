@@ -1,5 +1,24 @@
 # Changelog
 
+## Unreleased — Inference usability
+
+- Object transformations preserve changed property types; shallow/deep merge model
+  actual right-hand overwrite precedence instead of intersecting conflicting values.
+- Nonmutating array helpers accept readonly inputs. `drop` preserves its existing
+  no-op reference identity and therefore retains readonly outputs for readonly inputs.
+- Optional properties work in curried `prop`/`pick`/`omit`; required `prop` reads
+  no longer add undefined. Array `find` and `partition` preserve type guards.
+- Nullable defaults, including empty arrays, infer from the incoming value.
+- Paths and deep array flattening derive results from input types. Remove old
+  output-only type arguments such as `path<string>(keys, object)` and
+  `assocPath<DesiredOutput>(keys, value, object)`; use inferred calls instead.
+  `flattenDeep`'s generic describes its input element, not an asserted output.
+  Literal paths infer without `as const`; dynamic paths and recursion beyond the
+  documented type budget remain unknown.
+
+This entry describes development on `feat/inference-usability`; no version has
+been published by this work.
+
 ## 0.15.0
 
 ### Highlights

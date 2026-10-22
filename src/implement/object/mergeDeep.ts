@@ -1,8 +1,9 @@
 import curry from '../composition/curry';
+import type { DeepMergeResult } from './merge.types';
 
 type MergeDeep = {
-  <T>(...args: [obj1: T]): <U>(obj2: U) => T & U;
-  <T, U>(...args: [obj1: T, obj2: U]): T & U;
+  <T>(...args: [obj1: T]): <U>(obj2: U) => DeepMergeResult<T, U>;
+  <T, U>(...args: [obj1: T, obj2: U]): DeepMergeResult<T, U>;
 };
 
 /**

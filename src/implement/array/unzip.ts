@@ -1,7 +1,7 @@
 /**
  * unzip - 배열 분리
  */
-function unzip<T, U>(arr: Array<[T, U]>): [T[], U[]] {
+function unzip<T, U>(arr: ReadonlyArray<readonly [T, U]>): [T[], U[]] {
   const left: T[] = [];
   const right: U[] = [];
 

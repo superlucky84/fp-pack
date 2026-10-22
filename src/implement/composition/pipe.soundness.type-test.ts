@@ -73,7 +73,7 @@ export const curriedUtils = pipe([1, 2, 3], map((x: number) => x * 2), filter((x
 export type CurriedUtilsIsStrict = Expect<Equal<typeof curriedUtils, number[]>>;
 
 export const genericSteps = pipe({ a: 1 }, prop('a'), identity);
-export type GenericStepsIsStrict = Expect<Equal<typeof genericSteps, number | undefined>>;
+export type GenericStepsIsStrict = Expect<Equal<typeof genericSteps, number>>;
 
 export const functionFirstInline = pipe(numToStr, (s) => s.length);
 export type FunctionFirstInlineIsStrict = Expect<Equal<typeof functionFirstInline, (a: number) => number>>;
@@ -102,7 +102,7 @@ export const tapInFunctionFirst = pipe(double, tap((x) => x.toFixed()), addTen, 
 export type TapInFunctionFirstIsStrict = Expect<Equal<typeof tapInFunctionFirst, (a: number) => number>>;
 
 export const curriedThenTap = pipe(filter((n: number) => n > 0), tap((xs) => xs.length));
-export type CurriedThenTapIsStrict = Expect<Equal<typeof curriedThenTap, (a: number[]) => number[]>>;
+export type CurriedThenTapIsStrict = Expect<Equal<typeof curriedThenTap, (a: readonly number[]) => number[]>>;
 
 export const asyncTapInFunctionFirst = pipeAsync(async (n: number) => n * 2, tap((x) => x.toFixed()));
 export type AsyncTapInFunctionFirstIsStrict = Expect<

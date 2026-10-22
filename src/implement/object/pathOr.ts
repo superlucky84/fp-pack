@@ -1,10 +1,11 @@
 import curry from '../composition/curry';
 import type { PathKey } from './pathKey';
+import type { PathValue } from './path.types';
 
 type PathOr = {
-  <D>(...args: [defaultValue: D]): <T>(pathArray: PathKey[]) => (obj: any) => T | D;
-  <D>(...args: [defaultValue: D, pathArray: PathKey[]]): <T>(obj: any) => T | D;
-  <T, D>(...args: [defaultValue: D, pathArray: PathKey[], obj: any]): T | D;
+  <D>(defaultValue: D): <const P extends readonly PathKey[]>(pathArray: P) => <T>(obj: T) => NonNullable<PathValue<T, P>> | D;
+  <D, const P extends readonly PathKey[]>(defaultValue: D, pathArray: P): <T>(obj: T) => NonNullable<PathValue<T, P>> | D;
+  <T, D, const P extends readonly PathKey[]>(defaultValue: D, pathArray: P, obj: T): NonNullable<PathValue<T, P>> | D;
 };
 
 /**

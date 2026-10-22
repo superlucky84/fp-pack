@@ -1,9 +1,10 @@
 import curry from '../composition/curry';
 import type { PathKey } from './pathKey';
+import type { PathValue } from './path.types';
 
 type Path = {
-  (pathArray: PathKey[]): <T>(obj: any) => T | undefined;
-  <T>(...args: [pathArray: PathKey[], obj: any]): T | undefined;
+  <const P extends readonly PathKey[]>(pathArray: P): <T>(obj: T) => PathValue<T, P>;
+  <T, const P extends readonly PathKey[]>(pathArray: P, obj: T): PathValue<T, P>;
 };
 
 /**

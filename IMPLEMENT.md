@@ -11,11 +11,11 @@ Build/consumer gate for each implementation phase: `npm run build` then
 `npm run test:package`. These run the same underlying scripts as the pnpm commands
 without pnpm 11's environment-specific automatic dependency reinstallation.
 
-1. [ ] **IU Phase 0 — Baseline and contracts.** Entry: clean baseline, review
+1. [x] **IU Phase 0 — Baseline and contracts.** Entry: clean baseline, review
    reproduced failures. Align the four documents, record decisions, add regression
    cases before their fixes. Exit: baseline verified; failing cases attributable
    to the documented contracts. Baseline: types/runtime and existing build/consumer evidence.
-2. [ ] **IU Phase 1 — Data transformations.** Fix evolve/merge/path/flatten,
+2. [x] **IU Phase 1 — Data transformations.** Fix evolve/merge/path/flatten,
    optional property access, defaults, readonly inputs and narrowing. Entry:
    decisions resolved and regression failures recorded. Exit: IU-01–05 and
    baseline plus build/consumer pass with precise inferred output checks.
@@ -40,12 +40,17 @@ without pnpm 11's environment-specific automatic dependency reinstallation.
 
 ### Current handoff
 
-- done: analysis of 90 combinations; requested branch created; ctxbin skill/rule
-  loaded; requirements and decisions recorded before implementation.
-- next: baseline verification and regression-first Phase 1.
+- done: Phase 0 baseline (388 runtime tests/types); Phase 1 regression failures
+  reproduced before fixes, then types, 393 runtime tests, build and installed
+  consumer passed. Required property reads and readonly function inputs required
+  corresponding precise expectation updates in historical tests. Removed unsafe
+  explicit path-output type arguments from their consumers. `drop(0)` retains
+  reference identity, so its readonly input overload returns a readonly array.
+- next: Phase 2 stream contracts, followed by composition and hardening.
 - blockers: none. Credentials are stored only in the environment's private ctxbin
   configuration, outside the repository. ctxbin needs `NODE_USE_ENV_PROXY=1` here.
-- latest commit: `b9a92e0` (baseline); no implementation commits yet.
+- latest commit before Phase 1: `13385a8` (contracts); Phase 1 implementation is
+  committed immediately after this record. Baseline: `b9a92e0`.
 
 ## Historical plan — Pipe Soundness & Variant Consolidation
 

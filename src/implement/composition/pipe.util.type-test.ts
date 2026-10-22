@@ -86,7 +86,7 @@ export const pipeArrayControlString = pipe(
   log<string>('total')
 );
 
-type PipeArrayControlStringExpected = (input: any[]) => string;
+type PipeArrayControlStringExpected = (input: readonly number[]) => string;
 export type PipeArrayControlStringIsStrict = Expect<
   Equal<typeof pipeArrayControlString, PipeArrayControlStringExpected>
 >;
