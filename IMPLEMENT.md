@@ -78,12 +78,14 @@ without pnpm 11's environment-specific automatic dependency reinstallation.
   `research/inference-usability/README.md`. No version/dependency changes.
 - cost: baseline whole corpus 232,065 instantiations; final whole corpus including
   new regressions 275,788 (+18.8%). Timing is not treated as a stable benchmark.
-- next: implementation is complete; push the reviewed commits to the new feature
-  branch. Interactive IDE/browser sign-off remains a separate manual check.
+- done: feature branch pushed to origin and remote head verified at `90afb0b`.
+- next: implementation is complete. Interactive IDE/browser sign-off remains a
+  separate manual check; owner review and a future release use this feature branch.
 - blockers: none. Credentials are stored only in the environment's private ctxbin
   configuration, outside the repository. ctxbin needs `NODE_USE_ENV_PROXY=1` here.
-- latest implementation commit: `cc6f7aa` (Phase 4); Phase 5 and this evidence are
-  committed immediately after this record. Phase 3: `2c8c17b`; Phase 2: `0b21119`;
+- latest implementation/integration commit: `90afb0b` (Phase 5). This final
+  handoff checkpoint is documentation-only. Phase 4: `cc6f7aa`;
+  Phase 3: `2c8c17b`; Phase 2: `0b21119`;
   Phase 1: `f79a00f`; contracts: `13385a8`; baseline: `b9a92e0`.
 
 ## Historical plan — Pipe Soundness & Variant Consolidation
