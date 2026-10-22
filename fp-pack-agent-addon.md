@@ -302,3 +302,11 @@ This add-on intentionally avoids:
 - **Absolute prohibitions**: "Never" statements reduce flexibility and pragmatism
 
 The goal is minimal, actionable guidance that modifies agent behavior without overwhelming the context window or duplicating external documentation.
+
+## Inference usability (unreleased)
+
+Prefer `pipe(value, ...)` so source types reach utility callbacks. Evolve and merge
+track changed properties; literal path outputs derive from their source. Async
+stream predicates, flatMap callbacks and accumulators require `toAsync(input)` or
+another async/promised input. `pipeAsync` alone keeps a sync iterable synchronous.
+Use the inferred APIs rather than asserting output generics or casting results.

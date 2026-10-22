@@ -31,27 +31,22 @@ export const StreamAppend_ko = () => (
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Type Signature
+      입력 모드와 타입 추론
     </h2>
 
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      동기 입력은 동기 순회를, 비동기·Promise 입력은 비동기 순회를 사용합니다. pipe 입력은 인라인 콜백의 타입을 결정하며, 콜백 없는 저장 단계는 입력을 받을 때 원소 타입을
+      추론합니다. 비동기 조건 함수·flatMap·누산 함수는 toAsync로 입력을 변환한 뒤 사용하세요. toArray는 어느 모드에서든 Promise를 반환합니다.
+    </p>
+
+    {/* inference-usability: append */}
     <CodeBlock
       language="typescript"
-      code={`// 동기 버전 - 동기 이터러블에 값 추가
-function append<T>(value: T, iterable: Iterable<T>): IterableIterator<T>;
+      code={`import { pipe } from 'fp-pack';
+import { append, toAsync, toArray } from 'fp-pack/stream';
 
-// 비동기 버전 - 비동기 이터러블에 값 추가
-function append<T>(
-  value: PromiseLikeValue<T>,
-  iterable: AnyIterableInput<PromiseLikeValue<T>>
-): AsyncIterableIterator<T>;
-
-// 커리된 동기 버전 - 값을 추가하는 함수를 반환
-function append<T>(value: T): (iterable: Iterable<T>) => IterableIterator<T>;
-
-// 커리된 비동기 버전 - 값을 추가하는 함수를 반환
-function append<T>(
-  value: PromiseLikeValue<T>
-): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<T>;`}
+const sync = pipe([1, 2, 3], append(4), toArray);
+const async = pipe([1, 2, 3], toAsync, append(4), toArray);`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -92,7 +87,7 @@ console.log(Array.from(withFour));
     <CodeBlock
       language="typescript"
       code={`import { append } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { map } from 'fp-pack/stream';
 
 // 재사용 가능한 append 함수 생성
@@ -159,7 +154,7 @@ for await (const chunk of withEOF) {
     <CodeBlock
       language="typescript"
       code={`import { append } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { map } from 'fp-pack/stream';
 
 interface Transaction {
@@ -301,7 +296,7 @@ for await (const item of usersWithCount) {
       language="typescript"
       code={`import { append } from 'fp-pack/stream';
 import { map } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 
 interface LogEntry {
   level: 'INFO' | 'WARN' | 'ERROR';
@@ -346,7 +341,7 @@ for (const line of formatLogs(logs)) {
       language="typescript"
       code={`import { append } from 'fp-pack/stream';
 import { take } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 
 function* fibonacci() {
   let a = 0, b = 1;

@@ -20,10 +20,19 @@ based solely on compiler results. See REQUIREMENTS IU-* and DESIGN IU-DC-*.
 | IU-MT-10 | Curried branches and SideEffect matching | Inferred result union survives; no unknown at the handling boundary |
 | IU-MT-11 | Read migration examples in README and EN/KO docs | Contracts and examples agree with installed declarations and runtime |
 
-Status: pending implementation and automation; interactive editor sign-off pending.
+Status: implementation and automated coverage complete. Interactive editor hover
+inspection and browser sign-off remain pending; they are not implied by compiler
+or build success.
 
 Hardening automation also checks optional transformer tables, enumerable symbols,
 Promise-valued sync elements versus awaited async elements, and accumulator modes.
+
+Automated evidence (2026-10-22, `feat/inference-usability`): 403/403 runtime tests
+in 164 files; source types and generated-signature check; library/declaration
+build; installed ESM/CJS execution; installed new type corpus plus 50 README/EN/KO
+examples and declaration emission on TypeScript 5.9.3 / 6.0.3 / 7.0.2 with
+exactOptionalPropertyTypes; docs lint/build; `git diff --check`. IU-MT-1–11 have
+matching automated evidence; the interactive parts remain unsigned.
 
 ## Historical checks — Pipe Soundness Release (0.15.0)
 

@@ -29,33 +29,7 @@ merge(a, b);
       For nested merges, use <code>mergeDeep</code> instead; <code>merge</code> only performs a shallow merge.
     </p>
 
-    <div class="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 rounded">
-      <p class="text-sm md:text-base text-yellow-900 dark:text-yellow-100">
-        <strong class="font-semibold">Note:</strong> In data-last pipelines, TypeScript may not infer the final data type for this utility.
-        Use pipeHint, a small type hint, or a data-first wrapper. See{' '}
-        <a
-          href="/guide/type-usage"
-          onClick={(e: Event) => {
-            e.preventDefault();
-            navigateTo('/guide/type-usage');
-          }}
-          class="underline decoration-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-200"
-        >
-          Type Usage
-        </a>{' '}
-        and{' '}
-        <a
-          href="/guide"
-          onClick={(e: Event) => {
-            e.preventDefault();
-            navigateTo('/guide');
-          }}
-          class="underline decoration-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-200"
-        >
-          Detailed Guide
-        </a>.
-      </p>
-    </div>
+    <p class="text-sm text-gray-700 dark:text-gray-300 my-6">The second object wins, including conflicting property types. An optional right property retains the left value when absent.</p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 

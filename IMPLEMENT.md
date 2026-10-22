@@ -34,7 +34,7 @@ without pnpm 11's environment-specific automatic dependency reinstallation.
    pass; no unexplained any/unknown/never in positive examples.
    Include optional transformation tables, symbol merge keys, saved callbacks on
    Promise elements, accumulator mode rejection and both zip cleanup paths.
-6. [ ] **IU Phase 5 — Integration Test.** Entry: hardening green. Add packed
+6. [x] **IU Phase 5 — Integration Test.** Entry: hardening green. Add packed
    consumer checks, run library/declaration build, ESM/CJS package checks, docs
    lint/build and supported compiler matrix when available. Update README,
    changelog and affected EN/KO guidance. Exit: IU-12; all executed results and
@@ -65,11 +65,26 @@ without pnpm 11's environment-specific automatic dependency reinstallation.
   evolve transforms, readonly array defaults, required array-property paths and
   symbol deep merge. Homomorphic deep-value mapping preserves symbol names during
   declaration emission. Types, 403 runtime tests, build and installed consumer pass.
-- next: Phase 5 compiler matrix, expanded packed consumers and EN/KO guidance.
+- done: Phase 5 expanded the packed consumer to all four new inference fixtures
+  plus 50 marked README/EN/KO examples, compiled verbatim. TS 5.9.3 / 6.0.3 /
+  7.0.2 pass consumer checks and declaration emission with exact optional types;
+  source checks on all three also passed during integration. Optional-merge
+  assertions check readable values and key optionality independently because
+  compiler versions differ in whether implicit undefined is displayed as an
+  explicit optional write type. Installed ESM/CJS execution, library/declaration
+  build, docs lint/build, final source types and all 403 runtime tests pass.
+  Integration also tightened stream.flatten's sync/async inner-iterable contract.
+  The review and remaining inference boundaries are in
+  `research/inference-usability/README.md`. No version/dependency changes.
+- cost: baseline whole corpus 232,065 instantiations; final whole corpus including
+  new regressions 275,788 (+18.8%). Timing is not treated as a stable benchmark.
+- next: implementation is complete; push the reviewed commits to the new feature
+  branch. Interactive IDE/browser sign-off remains a separate manual check.
 - blockers: none. Credentials are stored only in the environment's private ctxbin
   configuration, outside the repository. ctxbin needs `NODE_USE_ENV_PROXY=1` here.
-- latest implementation commit: `2c8c17b` (Phase 3); Phase 4 is committed
-  immediately after this record. Phase 2: `0b21119`; baseline: `b9a92e0`.
+- latest implementation commit: `cc6f7aa` (Phase 4); Phase 5 and this evidence are
+  committed immediately after this record. Phase 3: `2c8c17b`; Phase 2: `0b21119`;
+  Phase 1: `f79a00f`; contracts: `13385a8`; baseline: `b9a92e0`.
 
 ## Historical plan — Pipe Soundness & Variant Consolidation
 

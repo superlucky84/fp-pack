@@ -171,6 +171,57 @@ Choose among `pipe`, `pipeAsync`, `pipeSideEffect` and `pipeAsyncSideEffect` bas
 
 Previously hidden mismatches or missing inference context can now produce compile errors. Prefer `pipe(value, ...)` to anchor generic helpers; use `pipeHint` or a typed first step for reusable generic-first pipelines. SideEffect-aware pipes infer the precise effect union and return plain values when no effect can occur. See the [0.15.0 migration notes](CHANGELOG.md#0150) and [Pipe Choice Guide](https://superlucky84.github.io/fp-pack/#/guide/pipe-choice-guide).
 
+### Unreleased inference improvements
+
+Object transforms infer changed properties, defaults retain incoming array elements,
+and nonmutating array helpers accept readonly inputs. Literal paths infer from the
+source without output generics or `as const`; dynamic paths and paths beyond eight
+keys return `unknown`. Deep flattening derives leaves up to sixteen levels.
+
+<!-- inference-usability: object pipeline -->
+
+```typescript
+import { pipe, evolve, prop } from 'fp-pack';
+
+const label = pipe(
+  { count: 2, name: 'items' },
+  evolve({ count: n => n.toFixed() }),
+  prop('count'),
+  count => count.toUpperCase()
+); // string
+```
+
+Saved count-only stream steps infer their element type and execution mode from
+each input. Async predicates, `flatMap` callbacks and accumulators require an
+async or promised source. Use `toAsync` once to cross that boundary; `pipeAsync`
+alone does not turn a synchronous iterable into an async iterable. Sync `map`
+and `zipWith` can yield Promise elements, which `toArray` resolves.
+
+<!-- inference-usability: async stream boundary -->
+
+```typescript
+import { pipe } from 'fp-pack';
+import { take, toAsync, filter, map, toArray } from 'fp-pack/stream';
+
+const firstTwo = take(2);
+const sync = firstTwo([1, 2, 3]); // IterableIterator<number>
+const async = firstTwo(Promise.resolve([1, 2, 3])); // AsyncIterableIterator<number>
+const result = pipe(
+  [1, 2, 3],
+  toAsync,
+  filter(async n => n > 1),
+  map(n => n.toFixed()),
+  toArray
+); // Promise<string[]>
+```
+
+Single-step `pipe` and `pipeAsync` preserve supported generic unary relationships
+such as `identity`. For chains starting with an arbitrary generic function, or
+fully staged callbacks supplied before any input context, prefer a value-first
+pipeline or declare the reusable function's input contract. See the
+[inference review](research/inference-usability/README.md) and
+[migration notes](CHANGELOG.md#unreleased--inference-usability).
+
 ## AI Agent Skills (Optional)
 
 fp-pack includes an AI agent skills package that helps AI coding assistants (Claude Code, GitHub Copilot, Cursor, etc.) automatically write fp-pack-style functional code.

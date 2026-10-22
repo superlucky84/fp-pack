@@ -11,44 +11,19 @@ export const Path = () => (
       Safely access a nested property by path
     </p>
 
+    {/* inference-usability: Path */}
     <CodeBlock
       language="typescript"
-      code={`import { path } from 'fp-pack';
+      code={`import { pipe, path } from 'fp-pack';
 
-const user = { profile: { name: 'Ada', address: { city: 'Seoul' } } };
-
-path(['profile', 'name'], user);           // 'Ada'
-path(['profile', 'address', 'city'], user); // 'Seoul'
-path(['profile', 'phone'], user);           // undefined`}
+const name = pipe({ user: { name: 'Ada' } }, path(['user', 'name'])); // string
+const missing = path(['user', 'phone'], { user: { name: 'Ada' } }); // undefined`}
     />
 
-    <div class="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 rounded">
-      <p class="text-sm md:text-base text-yellow-900 dark:text-yellow-100">
-        <strong class="font-semibold">Note:</strong> In data-last pipelines, TypeScript may not infer the final data type for this utility.
-        Use pipeHint, a small type hint, or a data-first wrapper. See{' '}
-        <a
-          href="/guide/type-usage"
-          onClick={(e: Event) => {
-            e.preventDefault();
-            navigateTo('/guide/type-usage');
-          }}
-          class="underline decoration-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-200"
-        >
-          Type Usage
-        </a>{' '}
-        and{' '}
-        <a
-          href="/guide"
-          onClick={(e: Event) => {
-            e.preventDefault();
-            navigateTo('/guide');
-          }}
-          class="underline decoration-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-200"
-        >
-          Detailed Guide
-        </a>.
-      </p>
-    </div>
+    <p class="text-sm text-gray-700 dark:text-gray-300 my-6">
+      Literal paths infer their output from the source without output type arguments or as const. Dynamic paths
+      and paths beyond the 8-step type budget return unknown.
+    </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 

@@ -11,45 +11,18 @@ export const Path_ko = () => (
       경로 배열로 중첩 프로퍼티를 안전하게 조회합니다
     </p>
 
+    {/* inference-usability: Path */}
     <CodeBlock
       language="typescript"
-      code={`import { path } from 'fp-pack';
+      code={`import { pipe, path } from 'fp-pack';
 
-const user = { profile: { name: 'Ada', address: { city: 'Seoul' } } };
-
-path(['profile', 'name'], user);            // 'Ada'
-path(['profile', 'address', 'city'], user); // 'Seoul'
-path(['profile', 'phone'], user);           // undefined`}
+const name = pipe({ user: { name: 'Ada' } }, path(['user', 'name'])); // string
+const missing = path(['user', 'phone'], { user: { name: 'Ada' } }); // undefined`}
     />
 
-    <div class="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 rounded">
-      <p class="text-sm md:text-base text-yellow-900 dark:text-yellow-100">
-        <strong class="font-semibold">참고:</strong> data-last 파이프라인에서는 TypeScript가 이 유틸의 최종 데이터 타입을 추론하지 못할 수 있습니다.
-        pipeHint, 간단한 타입 힌트, 또는 data-first 래핑을 사용하세요. 자세한 내용은{' '}
-        <a
-          href="/guide/type-usage"
-          onClick={(e: Event) => {
-            e.preventDefault();
-            navigateTo('/guide/type-usage');
-          }}
-          class="underline decoration-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-200"
-        >
-          타입 활용
-        </a>{' '}
-        과{' '}
-        <a
-          href="/guide"
-          onClick={(e: Event) => {
-            e.preventDefault();
-            navigateTo('/guide');
-          }}
-          class="underline decoration-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-200"
-        >
-          상세 가이드
-        </a>
-        를 참고하세요.
-      </p>
-    </div>
+    <p class="text-sm text-gray-700 dark:text-gray-300 my-6">
+      리터럴 경로는 출력 제네릭이나 as const 없이 원본에서 결과를 추론합니다. 동적 경로나 타입 계산의 8단계 한도를 넘는 경로는 unknown입니다.
+    </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 

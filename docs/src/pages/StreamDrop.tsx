@@ -88,28 +88,24 @@ const noSkip = pipe(
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Type Signature
+      Input modes and inference
     </h2>
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      Sync sources use sync iteration; async or promised sources use async iteration. The source anchors inline
+      pipe callbacks; saved steps without callbacks infer elements when supplied an input. Async predicates,
+      flatMap callbacks and accumulators require an async source: use toAsync once before those steps. toArray
+      returns a Promise in either mode.
+    </p>
 
+    {/* inference-usability: drop */}
     <CodeBlock
       language="typescript"
-      code={`function drop<T>(
-  count: number,
-  iterable: Iterable<T>
-): IterableIterator<T>;
+      code={`import { drop, toArray } from 'fp-pack/stream';
 
-function drop<T>(
-  count: number,
-  iterable: AnyIterableInput<PromiseLikeValue<T>>
-): AsyncIterableIterator<T>;
-
-function drop<T>(
-  count: number
-): (iterable: Iterable<T>) => IterableIterator<T>;
-
-function drop<T>(
-  count: number
-): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<T>;`}
+const saved = drop(2);
+const sync = saved([1, 2, 3]); // IterableIterator<number>
+const async = saved(Promise.resolve([1, 2, 3])); // AsyncIterableIterator<number>
+const values = toArray(async);`}
     />
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6 mt-4">

@@ -79,32 +79,23 @@ const pairs = toArray(zip(ages, names));
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Type Signature
+      Input modes and inference
     </h2>
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      Sync sources use sync iteration; async or promised sources use async iteration. The source anchors inline
+      pipe callbacks; saved steps without callbacks infer elements when supplied an input. Async predicates,
+      flatMap callbacks and accumulators require an async source: use toAsync once before those steps. toArray
+      returns a Promise in either mode.
+    </p>
 
+    {/* inference-usability: zip */}
     <CodeBlock
       language="typescript"
-      code={`// Sync iterable
-function zip<A, B>(
-  other: Iterable<B>,
-  iterable: Iterable<A>
-): IterableIterator<[A, B]>;
+      code={`import { pipe } from 'fp-pack';
+import { zip, toAsync, toArray } from 'fp-pack/stream';
 
-// Async iterable
-function zip<A, B>(
-  other: AnyIterableInput<PromiseLikeValue<B>>,
-  iterable: AnyIterableInput<PromiseLikeValue<A>>
-): AsyncIterableIterator<[A, B]>;
-
-// Curried sync
-function zip<A, B>(
-  other: Iterable<B>
-): (iterable: Iterable<A>) => IterableIterator<[A, B]>;
-
-// Curried async
-function zip<A, B>(
-  other: AnyIterableInput<PromiseLikeValue<B>>
-): (iterable: AnyIterableInput<PromiseLikeValue<A>>) => AsyncIterableIterator<[A, B]>;`}
+const sync = pipe([1, 2, 3], zip(['a', 'b']), toArray);
+const async = pipe([1, 2, 3], toAsync, zip(['a', 'b']), toArray);`}
     />
 
     <div class="mt-6 space-y-3 text-sm md:text-base text-gray-700 dark:text-gray-300">

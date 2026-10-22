@@ -11,56 +11,22 @@ export const Evolve = () => (
       Transform object values using a schema of functions
     </p>
 
+    {/* inference-usability: Evolve */}
     <CodeBlock
       language="typescript"
-      code={`import { evolve } from 'fp-pack';
+      code={`import { pipe, evolve } from 'fp-pack';
 
-const user = { id: 1, name: 'A' };
-const updated = evolve({
-  id: (value: number) => value + 1,
-  name: (value: string) => value.toLowerCase(),
-}, user);
-
-// { id: 2, name: "a" }`}
+const result = pipe(
+  { count: 2, label: 'items' },
+  evolve({ count: n => n.toFixed() }),
+  item => item.count.toUpperCase() + item.label
+); // string`}
     />
 
-    <div class="bg-blue-50 dark:bg-blue-900/20 p-4 mb-6 rounded border border-blue-200 dark:border-blue-800">
-      <p class="text-sm md:text-base text-blue-800 dark:text-blue-200 leading-relaxed">
-        <span class="font-medium">Tip:</span>
-        <br />
-        For data-last usage, omit generics and annotate transformer params (e.g.{' '}
-        <code class="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">value: number</code>). If you need explicit
-        generics, use data-first: <code class="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">evolve&lt;MyType&gt;(schema, obj)</code>.
-      </p>
-    </div>
-
-    <div class="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 rounded">
-      <p class="text-sm md:text-base text-yellow-900 dark:text-yellow-100">
-        <strong class="font-semibold">Note:</strong> In data-last pipelines, TypeScript may not infer the final data type for this utility.
-        Use pipeHint, a small type hint, or a data-first wrapper. See{' '}
-        <a
-          href="/guide/type-usage"
-          onClick={(e: Event) => {
-            e.preventDefault();
-            navigateTo('/guide/type-usage');
-          }}
-          class="underline decoration-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-200"
-        >
-          Type Usage
-        </a>{' '}
-        and{' '}
-        <a
-          href="/guide"
-          onClick={(e: Event) => {
-            e.preventDefault();
-            navigateTo('/guide');
-          }}
-          class="underline decoration-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-200"
-        >
-          Detailed Guide
-        </a>.
-      </p>
-    </div>
+    <p class="text-sm text-gray-700 dark:text-gray-300 my-6">
+      The source anchors transformer inputs and changed property outputs in pipe(value, evolve(...)). Optional
+      transformer entries retain the source value when absent.
+    </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 

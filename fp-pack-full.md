@@ -1813,3 +1813,13 @@ const processAction = (action) => {
 ```
 
 Your goal is to write clean, readable, functional code that leverages fp-pack's full potential in real-world UI applications.
+
+## Inference usability (unreleased)
+
+Value-first pipelines infer changed evolve/merge properties, optional reads,
+nullable defaults and readonly arrays without corrective assertions. Literal path
+outputs derive from the source (eight-key budget); deep flattening derives leaves
+(sixteen-level budget). Remove old output-only path/flatten generic arguments.
+Async stream predicates, flatMap callbacks and accumulators require async/promised
+input; use `toAsync` once for an ordinary iterable. `pipeAsync` does not change
+iterator protocols. See `research/inference-usability/README.md` and CHANGELOG.

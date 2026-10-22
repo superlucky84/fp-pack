@@ -31,32 +31,22 @@ export const StreamFilter_ko = () => (
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Type Signature
+      입력 모드와 타입 추론
     </h2>
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      동기 입력은 동기 순회를, 비동기·Promise 입력은 비동기 순회를 사용합니다. pipe 입력은 인라인 콜백의 타입을 결정하며, 콜백 없는 저장 단계는 입력을 받을 때 원소 타입을
+      추론합니다. 비동기 조건 함수·flatMap·누산 함수는 toAsync로 입력을 변환한 뒤 사용하세요. toArray는 어느 모드에서든 Promise를 반환합니다.
+    </p>
 
+    {/* inference-usability: filter */}
     <CodeBlock
       language="typescript"
-      code={`// 동기 버전 - 동기 조건으로 동기 이터러블 필터링
-function filter<T>(
-  predicate: (value: T) => boolean,
-  iterable: Iterable<T>
-): IterableIterator<T>;
+      code={`import { pipe } from 'fp-pack';
+import { filter, toAsync, toArray } from 'fp-pack/stream';
 
-// 비동기 버전 - 비동기 조건 또는 비동기 이터러블로 필터링
-function filter<T>(
-  predicate: (value: T) => boolean | Promise<boolean>,
-  iterable: AnyIterableInput<PromiseLikeValue<T>>
-): AsyncIterableIterator<T>;
-
-// 커리된 동기 버전 - 이터러블을 필터링하는 함수를 반환
-function filter<T>(
-  predicate: (value: T) => boolean
-): (iterable: Iterable<T>) => IterableIterator<T>;
-
-// 커리된 비동기 버전 - 이터러블을 필터링하는 함수를 반환
-function filter<T>(
-  predicate: (value: T) => boolean | Promise<boolean>
-): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<T>;`}
+const sync = pipe([1, 2, 3], filter(n => n > 1), toArray);
+const async = pipe([1, 2, 3], toAsync, filter(n => n > 1), toArray);
+const awaited = pipe([1, 2, 3], toAsync, filter(async n => n > 1), toArray);`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -97,7 +87,7 @@ console.log(Array.from(activeUsers));
     <CodeBlock
       language="typescript"
       code={`import { filter } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { map } from 'fp-pack/stream';
 
 // 재사용 가능한 필터 함수 생성
@@ -130,7 +120,7 @@ console.log(Array.from(processNumbers(numbers)));
     <CodeBlock
       language="typescript"
       code={`import { filter } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 
 interface FormData {
   email: string;
@@ -212,7 +202,7 @@ console.log(results);
     <CodeBlock
       language="typescript"
       code={`import { filter } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { map } from 'fp-pack/stream';
 
 interface LogEntry {
@@ -306,7 +296,7 @@ console.log(authorizedUsers.map(u => u.name));
     <CodeBlock
       language="typescript"
       code={`import { filter } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { map } from 'fp-pack/stream';
 
 interface RawData {
@@ -350,7 +340,7 @@ console.log(cleaned);
     <CodeBlock
       language="typescript"
       code={`import { filter } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { take, map } from 'fp-pack/stream';
 
 // 자연수의 무한 시퀀스
@@ -423,7 +413,7 @@ console.log(primes.map(p => p.value));
           범용 호환성
         </h3>
         <p class="text-sm text-orange-800 dark:text-orange-200">
-          모든 이터러블(배열, 제너레이터, 비동기 이터러블, Set, Map)과 작동하며 동기 및 비동기 조건을 자동으로 처리합니다.
+          모든 이터러블(배열, 제너레이터, 비동기 이터러블, Set, Map)과 작동하며 비동기·Promise 입력에서는 비동기 조건을 기다립니다. 일반 이터러블에는 먼저 toAsync를 적용하세요.
         </p>
       </div>
     </div>

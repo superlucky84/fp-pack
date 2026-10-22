@@ -35,15 +35,24 @@ const sum = reduce((acc: number, n: number) => acc + n, 0, [1, 2, 3]);
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Type Signature
+      Input modes and inference
     </h2>
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      Sync sources use sync iteration; async or promised sources use async iteration. The source anchors inline
+      pipe callbacks; saved steps without callbacks infer elements when supplied an input. Async predicates,
+      flatMap callbacks and accumulators require an async source: use toAsync once before those steps. toArray
+      returns a Promise in either mode.
+    </p>
 
+    {/* inference-usability: reduce */}
     <CodeBlock
       language="typescript"
-      code={`function reduce<T, R>(fn: (acc: R, value: T) => R, initial: R, iterable: Iterable<T>): R;
-function reduce<T, R>(fn: (acc: R, value: T) => R | Promise<R>, initial: R, iterable: AnyIterableInput<PromiseLikeValue<T>>): Promise<R>;
-function reduce<T, R>(fn: (acc: R, value: T) => R, initial: R): (iterable: Iterable<T>) => R;
-function reduce<T, R>(fn: (acc: R, value: T) => R | Promise<R>, initial: R): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => Promise<R>;`}
+      code={`import { pipe } from 'fp-pack';
+import { reduce, toAsync } from 'fp-pack/stream';
+
+const sync = pipe([1, 2, 3], reduce((sum, n) => sum + n, 0));
+const async = pipe([1, 2, 3], toAsync, reduce((sum, n) => sum + n, 0));
+const awaited = pipe([1, 2, 3], toAsync, reduce(async (sum, n) => sum + n, 0));`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />

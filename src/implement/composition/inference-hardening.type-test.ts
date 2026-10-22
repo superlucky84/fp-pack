@@ -27,8 +27,9 @@ export type UnionMerge = Expect<Equal<typeof unionMerge.value, boolean>>;
 declare const optionalLeft: { count?: string };
 declare const optionalRight: { count?: number };
 export const optionalBoth = merge(optionalLeft, optionalRight);
-export type OptionalBoth = Expect<Equal<typeof optionalBoth, { count?: string | number | undefined }>>;
-export const symbol: unique symbol = Symbol('nested');
+export type OptionalBoth = Expect<Equal<typeof optionalBoth.count, string | number | undefined>>;
+export type OptionalBothKey = Expect<Equal<{} extends Pick<typeof optionalBoth, 'count'> ? true : false, true>>;
+export const symbol = Symbol('nested');
 export const symbolic = mergeDeep({ [symbol]: { count: 'old', keep: true } }, { [symbol]: { count: 2 } });
 export type Symbolic = Expect<Equal<(typeof symbolic)[typeof symbol], { count: number; keep: boolean }>>;
 declare const tuple: readonly [{ name: string }, null];
@@ -45,6 +46,10 @@ declare const missingUser: { user?: { name: string; id: number } };
 export const nestedWrite = assocPath(['user', 'name'], 42, missingUser);
 export type NestedWrite = Expect<Equal<typeof nestedWrite.user.name, 42>>;
 declare const readonlyMaybe: readonly { name: string }[] | undefined;
+export const readonlyDefault = pipe(readonlyMaybe, getOrElse([]));
+export type ReadonlyDefault = Expect<Equal<typeof readonlyDefault, readonly { name: string }[]>>;
+// @ts-expect-error the fallback must not turn an existing readonly array mutable
+readonlyDefault.push({ name: 'Ada' });
 export const readonlyFallback = pipe(
   readonlyMaybe,
   getOrElse([]),
@@ -86,6 +91,10 @@ export const streamedDeep = pipe(
   stream.toArray
 );
 export type StreamedDeep = Expect<Equal<typeof streamedDeep, Promise<string[]>>>;
+export const streamedFlat = pipe([[1], [2]], stream.flatten, stream.map(n => n.toFixed()), stream.toArray);
+export type StreamedFlat = Expect<Equal<typeof streamedFlat, Promise<string[]>>>;
+// @ts-expect-error sync flatten cannot iterate a Promise as an inner iterable
+stream.flatten([Promise.resolve([1, 2])]);
 export const asyncEffectStream = pipeAsyncSideEffect(
   [1, 2],
   stream.take(1),

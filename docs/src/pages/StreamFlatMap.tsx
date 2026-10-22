@@ -25,38 +25,30 @@ export const StreamFlatMap = () => (
     </p>
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-      Unlike performing <code class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-sm">map</code> followed by <code class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-sm">flatten</code> separately, <code class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-sm">flatMap</code> performs both operations lazily in a single pass, making it more memory-efficient when working with large or infinite sequences. The function supports both synchronous and asynchronous iterables, automatically handling async operations without additional configuration.
+      Unlike performing <code class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-sm">map</code> followed by <code class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-sm">flatten</code> separately, <code class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-sm">flatMap</code> performs both operations lazily in a single pass, making it more memory-efficient when working with large or infinite sequences. The function supports both synchronous and asynchronous iterables, awaiting async callbacks when the input is async or promised. Use toAsync before async callbacks over ordinary iterables.
     </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Type Signature
+      Input modes and inference
     </h2>
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      Sync sources use sync iteration; async or promised sources use async iteration. The source anchors inline
+      pipe callbacks; saved steps without callbacks infer elements when supplied an input. Async predicates,
+      flatMap callbacks and accumulators require an async source: use toAsync once before those steps. toArray
+      returns a Promise in either mode.
+    </p>
 
+    {/* inference-usability: flatMap */}
     <CodeBlock
       language="typescript"
-      code={`// Sync iterable with sync mapper
-function flatMap<T, R>(
-  fn: (value: T) => Iterable<R>,
-  iterable: Iterable<T>
-): IterableIterator<R>;
+      code={`import { pipe } from 'fp-pack';
+import { flatMap, toAsync, toArray } from 'fp-pack/stream';
 
-// Async iterable or async mapper
-function flatMap<T, R>(
-  fn: (value: T) => Iterable<R> | Promise<Iterable<R>>,
-  iterable: AnyIterableInput<PromiseLikeValue<T>>
-): AsyncIterableIterator<R>;
-
-// Curried sync version
-function flatMap<T, R>(
-  fn: (value: T) => Iterable<R>
-): (iterable: Iterable<T>) => IterableIterator<R>;
-
-// Curried async version
-function flatMap<T, R>(
-  fn: (value: T) => Iterable<R> | Promise<Iterable<R>>
-): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<R>;`}
+const sync = pipe([1, 2, 3], flatMap(n => [n, n * 10]), toArray);
+const async = pipe([1, 2, 3], toAsync, flatMap(n => [n, n * 10]), toArray);
+const awaited = pipe([1, 2, 3], toAsync, flatMap(async n => [n, n * 10]), toArray);`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />

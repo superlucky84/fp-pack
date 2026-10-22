@@ -60,28 +60,24 @@ const stopEarly = pipe(
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Type Signature
+      Input modes and inference
     </h2>
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      Sync sources use sync iteration; async or promised sources use async iteration. The source anchors inline
+      pipe callbacks; saved steps without callbacks infer elements when supplied an input. Async predicates,
+      flatMap callbacks and accumulators require an async source: use toAsync once before those steps. toArray
+      returns a Promise in either mode.
+    </p>
 
+    {/* inference-usability: takeWhile */}
     <CodeBlock
       language="typescript"
-      code={`function takeWhile<T>(
-  predicate: (value: T) => boolean,
-  iterable: Iterable<T>
-): IterableIterator<T>;
+      code={`import { pipe } from 'fp-pack';
+import { takeWhile, toAsync, toArray } from 'fp-pack/stream';
 
-function takeWhile<T>(
-  predicate: (value: T) => boolean | Promise<boolean>,
-  iterable: AnyIterableInput<PromiseLikeValue<T>>
-): AsyncIterableIterator<T>;
-
-function takeWhile<T>(
-  predicate: (value: T) => boolean
-): (iterable: Iterable<T>) => IterableIterator<T>;
-
-function takeWhile<T>(
-  predicate: (value: T) => boolean | Promise<boolean>
-): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<T>;`}
+const sync = pipe([1, 2, 3], takeWhile(n => n < 3), toArray);
+const async = pipe([1, 2, 3], toAsync, takeWhile(n => n < 3), toArray);
+const awaited = pipe([1, 2, 3], toAsync, takeWhile(async n => n < 3), toArray);`}
     />
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6 mt-4">

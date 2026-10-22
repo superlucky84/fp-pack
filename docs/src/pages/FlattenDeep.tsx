@@ -41,7 +41,9 @@ flattenDeep([1, [2, [3, 4], 5], [[6]]]);
 
     <CodeBlock
       language="typescript"
-      code={`function flattenDeep<T>(arr: any[]): T[];`}
+      code={`type DeepElement<T, D extends unknown[] = []> = D['length'] extends 16 ? unknown
+  : T extends readonly (infer U)[] ? DeepElement<U, [...D, 0]> : T;
+function flattenDeep<T>(arr: readonly T[]): DeepElement<T>[];`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />

@@ -76,15 +76,17 @@ console.log(output); // "0으로 나눌 수 없습니다"`}
 
     <CodeBlock
       language="typescript"
-      code={`type MatchHandlers<T, RValue, REffect> = {
+      code={`type MatchHandlers<T, RValue, REffect, E = unknown> = {
   value: (value: T) => RValue;
-  effect: (sideEffect: SideEffect) => REffect;
+  effect: (sideEffect: SideEffect<E>) => REffect;
 };
 
-function matchSideEffect<T, RValue, REffect = any>(
-  result: T | SideEffect,
-  handlers: MatchHandlers<T, RValue, REffect>
-): RValue | REffect`}
+type EffectValue<T> = T extends SideEffect<infer E>
+  ? 0 extends 1 & E ? unknown : E : never;
+function matchSideEffect<Input, RValue, REffect>(
+  result: Input,
+  handlers: MatchHandlers<Exclude<Input, SideEffect<any>>, RValue, REffect, EffectValue<Input>>
+): RValue | REffect;`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />

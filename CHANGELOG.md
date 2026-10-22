@@ -7,6 +7,8 @@
   input; previously accepted sync input combinations could silently misbehave.
   Strings are valid stream inputs; deep flattening preserves string leaves.
   Zip operations close both inputs when consumption stops early.
+  Stream flatten/flattenDeep derive leaves from the source; remove old output-only
+  generic arguments. Flattening promised inner iterables needs an async source.
 - Staged conditionals infer each handler's result when supplied; type guards
   narrow branch callback inputs. `cond`/`fold` support heterogeneous results.
   `curry` supports grouped calls through every remaining 2–5 argument stage.

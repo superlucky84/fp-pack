@@ -54,18 +54,28 @@ const result = pipe(
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Type Signature
+      Input modes and inference
     </h2>
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      Sync sources use sync iteration; async or promised sources use async iteration. The source anchors inline
+      pipe callbacks; saved steps without callbacks infer elements when supplied an input. Async predicates,
+      flatMap callbacks and accumulators require an async source: use toAsync once before those steps. toArray
+      returns a Promise in either mode.
+    </p>
 
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      Strings are valid sources; nested strings stay atomic leaves. Leaf-type inference is bounded to sixteen
+      levels.
+    </p>
+
+    {/* inference-usability: flattenDeep */}
     <CodeBlock
       language="typescript"
-      code={`function flattenDeep<T>(
-  iterable: Iterable<unknown>
-): IterableIterator<T>;
+      code={`import { pipe } from 'fp-pack';
+import { flattenDeep, toAsync, toArray } from 'fp-pack/stream';
 
-function flattenDeep<T>(
-  iterable: AnyIterableInput<PromiseLikeValue<unknown>>
-): AsyncIterableIterator<T>;`}
+const sync = pipe([[1], [2, [3]]], flattenDeep, toArray);
+const async = pipe([[1], [2, [3]]], toAsync, flattenDeep, toArray);`}
     />
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6 mt-4">

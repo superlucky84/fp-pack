@@ -35,15 +35,22 @@ const value = find((n: number) => n > 2, [1, 2, 3]);
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Type Signature
+      입력 모드와 타입 추론
     </h2>
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      동기 입력은 동기 순회를, 비동기·Promise 입력은 비동기 순회를 사용합니다. pipe 입력은 인라인 콜백의 타입을 결정하며, 콜백 없는 저장 단계는 입력을 받을 때 원소 타입을
+      추론합니다. 비동기 조건 함수·flatMap·누산 함수는 toAsync로 입력을 변환한 뒤 사용하세요. toArray는 어느 모드에서든 Promise를 반환합니다.
+    </p>
 
+    {/* inference-usability: find */}
     <CodeBlock
       language="typescript"
-      code={`function find<T>(predicate: (value: T) => boolean, iterable: Iterable<T>): T | undefined;
-function find<T>(predicate: (value: T) => boolean | Promise<boolean>, iterable: AnyIterableInput<PromiseLikeValue<T>>): Promise<T | undefined>;
-function find<T>(predicate: (value: T) => boolean): (iterable: Iterable<T>) => T | undefined;
-function find<T>(predicate: (value: T) => boolean | Promise<boolean>): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => Promise<T | undefined>;`}
+      code={`import { pipe } from 'fp-pack';
+import { find, toAsync } from 'fp-pack/stream';
+
+const sync = pipe([1, 2, 3], find(n => n > 1));
+const async = pipe([1, 2, 3], toAsync, find(n => n > 1));
+const awaited = pipe([1, 2, 3], toAsync, find(async n => n > 1));`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />

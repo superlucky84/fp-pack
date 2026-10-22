@@ -54,18 +54,25 @@ const result = pipe(
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      타입 시그니처
+      입력 모드와 타입 추론
     </h2>
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      동기 입력은 동기 순회를, 비동기·Promise 입력은 비동기 순회를 사용합니다. pipe 입력은 인라인 콜백의 타입을 결정하며, 콜백 없는 저장 단계는 입력을 받을 때 원소 타입을
+      추론합니다. 비동기 조건 함수·flatMap·누산 함수는 toAsync로 입력을 변환한 뒤 사용하세요. toArray는 어느 모드에서든 Promise를 반환합니다.
+    </p>
 
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      문자열도 입력으로 사용할 수 있으며 중첩 문자열은 더 쪼개지지 않습니다. 리프 타입 추론은 16단계까지 계산합니다.
+    </p>
+
+    {/* inference-usability: flattenDeep */}
     <CodeBlock
       language="typescript"
-      code={`function flattenDeep<T>(
-  iterable: Iterable<unknown>
-): IterableIterator<T>;
+      code={`import { pipe } from 'fp-pack';
+import { flattenDeep, toAsync, toArray } from 'fp-pack/stream';
 
-function flattenDeep<T>(
-  iterable: AnyIterableInput<PromiseLikeValue<unknown>>
-): AsyncIterableIterator<T>;`}
+const sync = pipe([[1], [2, [3]]], flattenDeep, toArray);
+const async = pipe([[1], [2, [3]]], toAsync, flattenDeep, toArray);`}
     />
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6 mt-4">

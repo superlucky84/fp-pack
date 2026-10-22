@@ -31,32 +31,24 @@ export const StreamFilter = () => (
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Type Signature
+      Input modes and inference
     </h2>
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      Sync sources use sync iteration; async or promised sources use async iteration. The source anchors inline
+      pipe callbacks; saved steps without callbacks infer elements when supplied an input. Async predicates,
+      flatMap callbacks and accumulators require an async source: use toAsync once before those steps. toArray
+      returns a Promise in either mode.
+    </p>
 
+    {/* inference-usability: filter */}
     <CodeBlock
       language="typescript"
-      code={`// Sync version - filter sync iterable with sync predicate
-function filter<T>(
-  predicate: (value: T) => boolean,
-  iterable: Iterable<T>
-): IterableIterator<T>;
+      code={`import { pipe } from 'fp-pack';
+import { filter, toAsync, toArray } from 'fp-pack/stream';
 
-// Async version - filter with async predicate or async iterable
-function filter<T>(
-  predicate: (value: T) => boolean | Promise<boolean>,
-  iterable: AnyIterableInput<PromiseLikeValue<T>>
-): AsyncIterableIterator<T>;
-
-// Curried sync version - returns function that filters iterable
-function filter<T>(
-  predicate: (value: T) => boolean
-): (iterable: Iterable<T>) => IterableIterator<T>;
-
-// Curried async version - returns function that filters iterable
-function filter<T>(
-  predicate: (value: T) => boolean | Promise<boolean>
-): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<T>;`}
+const sync = pipe([1, 2, 3], filter(n => n > 1), toArray);
+const async = pipe([1, 2, 3], toAsync, filter(n => n > 1), toArray);
+const awaited = pipe([1, 2, 3], toAsync, filter(async n => n > 1), toArray);`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -97,7 +89,7 @@ console.log(Array.from(activeUsers));
     <CodeBlock
       language="typescript"
       code={`import { filter } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { map } from 'fp-pack/stream';
 
 // Create reusable filter functions
@@ -130,7 +122,7 @@ console.log(Array.from(processNumbers(numbers)));
     <CodeBlock
       language="typescript"
       code={`import { filter } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 
 interface FormData {
   email: string;
@@ -212,7 +204,7 @@ console.log(results);
     <CodeBlock
       language="typescript"
       code={`import { filter } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { map } from 'fp-pack/stream';
 
 interface LogEntry {
@@ -306,7 +298,7 @@ console.log(authorizedUsers.map(u => u.name));
     <CodeBlock
       language="typescript"
       code={`import { filter } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { map } from 'fp-pack/stream';
 
 interface RawData {
@@ -350,7 +342,7 @@ console.log(cleaned);
     <CodeBlock
       language="typescript"
       code={`import { filter } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { take, map } from 'fp-pack/stream';
 
 // Infinite sequence of natural numbers
@@ -423,7 +415,7 @@ console.log(primes.map(p => p.value));
           Universal Compatibility
         </h3>
         <p class="text-sm text-orange-800 dark:text-orange-200">
-          Works with any iterable (arrays, generators, async iterables, sets, maps) and automatically handles both sync and async predicates.
+          Works with any iterable (arrays, generators, async iterables, sets, maps) and awaits async predicates when the source is async or promised. Use toAsync for an ordinary iterable.
         </p>
       </div>
     </div>

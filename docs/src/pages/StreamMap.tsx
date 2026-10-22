@@ -31,27 +31,23 @@ export const StreamMap = () => (
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Type Signature
+      Input modes and inference
     </h2>
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      Sync sources use sync iteration; async or promised sources use async iteration. The source anchors inline
+      pipe callbacks; saved steps without callbacks infer elements when supplied an input. Async predicates,
+      flatMap callbacks and accumulators require an async source: use toAsync once before those steps. toArray
+      returns a Promise in either mode.
+    </p>
 
+    {/* inference-usability: map */}
     <CodeBlock
       language="typescript"
-      code={`// Sync version - transform sync iterable with sync function
-function map<T, R>(fn: (value: T) => R, iterable: Iterable<T>): IterableIterator<R>;
+      code={`import { pipe } from 'fp-pack';
+import { map, toAsync, toArray } from 'fp-pack/stream';
 
-// Async version - transform with async function or async iterable
-function map<T, R>(
-  fn: (value: T) => R | Promise<R>,
-  iterable: AnyIterableInput<PromiseLikeValue<T>>
-): AsyncIterableIterator<R>;
-
-// Curried sync version - returns function that transforms iterable
-function map<T, R>(fn: (value: T) => R): (iterable: Iterable<T>) => IterableIterator<R>;
-
-// Curried async version - returns function that transforms iterable
-function map<T, R>(
-  fn: (value: T) => R | Promise<R>
-): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<R>;`}
+const sync = pipe([1, 2, 3], map(n => n.toFixed()), toArray);
+const async = pipe([1, 2, 3], toAsync, map(n => n.toFixed()), toArray);`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -91,7 +87,7 @@ console.log(Array.from(names));
     <CodeBlock
       language="typescript"
       code={`import { map } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { filter } from 'fp-pack/stream';
 
 // Create reusable transformation functions
@@ -123,7 +119,7 @@ console.log(Array.from(processNumbers(numbers)));
     <CodeBlock
       language="typescript"
       code={`import { map } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 
 interface RawUser {
   first_name: string;
@@ -204,7 +200,7 @@ for await (const profile of userProfiles) {
     <CodeBlock
       language="typescript"
       code={`import { map } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { filter } from 'fp-pack/stream';
 
 interface LogEntry {
@@ -263,7 +259,7 @@ for await (const entry of logEntries) {
     <CodeBlock
       language="typescript"
       code={`import { map } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 
 interface Product {
   id: string;
@@ -358,7 +354,7 @@ console.log(imagesWithUrls[0]);
     <CodeBlock
       language="typescript"
       code={`import { map } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { take } from 'fp-pack/stream';
 
 // Infinite sequence of natural numbers
