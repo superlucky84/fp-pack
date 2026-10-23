@@ -17,13 +17,19 @@
   Async predicates/flatMap/accumulators require `toAsync(input)` or another async
   input; previously accepted sync input combinations could silently misbehave.
   Strings are valid stream inputs; deep flattening preserves string leaves.
-  Zip operations close both inputs when consumption stops early.
+  Zip operations close both inputs when consumption stops early or the shorter
+  input ends. An async input rejection is reported at once; the other input
+  closes after its pending read settles instead of delaying the error.
   Stream flatten/flattenDeep derive leaves from the source; remove old output-only
   generic arguments. Flattening promised inner iterables needs an async source.
 - Staged conditionals infer each handler's result when supplied; type guards
   narrow branch callback inputs. `cond`/`fold` support heterogeneous results.
   `curry` supports grouped calls through every remaining 2–5 argument stage.
   `compose` rejects incompatible connections instead of returning never/any.
+  Its untyped `Array` catch-all overload is removed, as `pipe`'s was in 0.15.0,
+  so `compose(...fns)` over a runtime array no longer type-checks. Pass a tuple
+  (`as const` works) or fold same-typed functions with
+  `fns.reduceRight((acc, fn) => fn(acc), input)`.
   `pipe`/`pipeAsync` preserve supported single-step generic relationships;
   `matchSideEffect` keeps the effect payload type in its handler.
 - Optional evolve tables retain the source type when a transformer is absent;

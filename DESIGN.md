@@ -1,5 +1,21 @@
 # fp-pack Design Document
 
+## Combined-branch review fixes design — 2026-10-23
+
+- [x] **RF-DC-1 — Never hold an error behind a pending read.** Async zip inputs
+  are async generators (`toAsync`), and a generator's `return()` waits behind a
+  pending `next()`. When the paired read rejects, request `return()` on both
+  inputs without awaiting it: the rejection propagates now and the pending input
+  closes after its read settles. On this path a cleanup failure is ignored in
+  favour of the original error. Completion and early termination keep awaited,
+  ordered cleanup (right still closes if left throws). zip and zipWith share one
+  helper. Validate RF-01.
+- [x] **RF-DC-2 — Document the removed catch-all.** The compose signature block
+  shows the right-to-left typed overloads and the checked variadic form; it no
+  longer lists `Array<(input: any) => any>`. The CHANGELOG migration names the
+  replacements: a tuple (`as const` works) or `reduceRight` over a homogeneous
+  list. Validate RF-02.
+
 ## Interactive playground design — 2026-10-23
 
 - [x] **PG-DC-1 — Integrate without constraining the demo.** Add `/playground`

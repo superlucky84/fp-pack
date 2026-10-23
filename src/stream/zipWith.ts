@@ -1,5 +1,5 @@
 import type { AnyIterableInput, PromiseLikeValue, InputFor, InputItem, CombinedItem, CombinedIterator } from './utils';
-import { isAsyncInput, isIterable } from './utils';
+import { closeAsyncPair, isAsyncInput, isIterable } from './utils';
 import toAsync from './toAsync';
 
 /** zipWith - preserve source element types and execution mode. */
@@ -32,20 +32,19 @@ function zipWith<A, B, R>(
       const leftIter = left[Symbol.asyncIterator]();
       const rightIter = right[Symbol.asyncIterator]();
 
+      let readPending = false;
       try {
         while (true) {
+          readPending = true;
           const [leftResult, rightResult] = await Promise.all([leftIter.next(), rightIter.next()]);
+          readPending = false;
           if (leftResult.done || rightResult.done) {
             return;
           }
           yield await fn(leftResult.value as A, rightResult.value as B);
         }
       } finally {
-        try {
-          await leftIter.return?.();
-        } finally {
-          await rightIter.return?.();
-        }
+        await closeAsyncPair(leftIter, rightIter, readPending);
       }
     })();
   }

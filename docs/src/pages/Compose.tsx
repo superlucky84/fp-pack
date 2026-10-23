@@ -58,19 +58,35 @@ transform(5);  // "20"
 
     <CodeBlock
       language="typescript"
-      code={`function compose<A, R>(ab: (a: A) => R): (a: A) => R;
+      code={`// Right to left: the last function receives the input.
+function compose<A, R>(f: (a: A) => R): (a: A) => R;
 function compose<A, B, R>(
-  ab: (a: A) => B,
-  bc: (b: B) => R
+  g: (b: B) => R,
+  f: (a: A) => B
 ): (a: A) => R;
 function compose<A, B, C, R>(
-  ab: (a: A) => B,
-  bc: (b: B) => C,
-  cd: (c: C) => R
+  h: (c: C) => R,
+  g: (b: B) => C,
+  f: (a: A) => B
 ): (a: A) => R;
+// ...typed overloads up to 10 functions,
+// plus zero-argument and from() entries.
 
-function compose(...funcs: Array<(input: any) => any>): (input: any) => any;`}
+// Longer chains: every adjacent connection is still checked.
+function compose<Fns extends [Fn, ...Fn[]]>(
+  ...funcs: Fns & ComposeCheck<Fns>
+): (input: InputOfLast<Fns>) => OutputOfFirst<Fns>;`}
     />
+
+    <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6 mt-4">
+      There is no untyped catch-all overload, so a mismatched chain is a compile error instead of
+      returning <code class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">any</code>. For the same
+      reason, spreading a runtime array (<code class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">compose(...fns)</code> with{' '}
+      <code class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">fns: Array&lt;Fn&gt;</code>) is rejected. Pass a
+      tuple (<code class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">[f, g] as const</code>) or fold a list of
+      same-typed functions with{' '}
+      <code class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">fns.reduceRight((acc, fn) =&gt; fn(acc), input)</code>.
+    </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 

@@ -70,6 +70,35 @@ const requireSync = <T>(value: T, operation: string): T => {
   return value;
 };
 
+/**
+ * Close both inputs of an async zip. Normally cleanup is awaited in order and the
+ * right input still closes if the left one throws. After a rejected paired read
+ * the other read may still be pending, and an async generator's return() waits
+ * behind it, so cleanup is only requested: the original error propagates now and
+ * that input closes once its read settles.
+ */
+const closeAsyncPair = async (
+  left: AsyncIterator<unknown>,
+  right: AsyncIterator<unknown>,
+  readPending: boolean
+): Promise<void> => {
+  if (readPending) {
+    for (const iterator of [left, right]) {
+      try {
+        void Promise.resolve(iterator.return?.()).catch(() => {});
+      } catch {
+        // The original rejection takes precedence over a cleanup failure.
+      }
+    }
+    return;
+  }
+  try {
+    await left.return?.();
+  } finally {
+    await right.return?.();
+  }
+};
+
 export type {
   AnyIterable,
   AnyIterableInput,
@@ -83,4 +112,13 @@ export type {
   CombinedItem,
   Accumulator
 };
-export { isPromiseLike, isAsyncIterable, isIterable, isAsyncInput, resolveIterable, awaitValue, requireSync };
+export {
+  isPromiseLike,
+  isAsyncIterable,
+  isIterable,
+  isAsyncInput,
+  resolveIterable,
+  awaitValue,
+  requireSync,
+  closeAsyncPair
+};

@@ -1,5 +1,21 @@
 # REQUIREMENTS — Inference Usability
 
+## Active revision — combined-branch review fixes (2026-10-23)
+
+Branch `ccr-80cfc3e1-vwp61m` fast-forwards `feat/inference-usability`,
+`feat/curry-n` and `feat/inference-playground` (`2958e5d`) for one review against
+`main`. Findings were checked against the IU/CN/PG intent recorded in these
+documents and the ctxbin handoffs. Intended and documented, so unchanged: sync
+accumulators reject Promise values (IU-DC-2), zip closes both inputs (IU-07),
+required `prop` reads omit undefined (IU-DC-4). Two findings need changes:
+
+| ID | Requirement | Validation |
+|---|---|---|
+| RF-01 | Async `zip`/`zipWith` report an input rejection immediately, even while the other input's read is pending; that input still closes once its read settles. IU-07 early-termination cleanup is unchanged | regressions that time out before the fix; existing cleanup tests |
+| RF-02 | `compose` docs and CHANGELOG match IU-DC-5: no unchecked array catch-all; dynamic lists use a tuple or an explicit fold | docs signature, migration entry, compiler probe of the alternatives |
+
+Scope: no public type, dependency or version change; no merge or publication.
+
 ## Active feature — interactive playground (2026-10-23)
 
 Branch `feat/inference-playground`, based on curryN `3e46200`. The user wants

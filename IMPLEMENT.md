@@ -1,5 +1,31 @@
 # IMPLEMENT — Inference Usability
 
+## Active revision — combined-branch review fixes (2026-10-23)
+
+Branch `ccr-80cfc3e1-vwp61m`, baseline `2958e5d` (467 tests, types pass).
+
+1. [x] **RF Phase 0 — Contracts.** Add RF-* sections. Gate: baseline green.
+2. [x] **RF Phase 1 — Reproduce and fix.** Add zip/zipWith pending-read rejection
+   regressions and confirm they time out first; add the shared cleanup helper.
+   Gate: new and existing stream tests.
+3. [x] **RF Phase 2 — Docs.** Compose signature block and CHANGELOG. Gate:
+   compiler probe of the documented alternatives.
+4. [x] **RF Phase 3 — Integration.** Types, full tests, build, packed consumer,
+   docs lint/build; commit and push.
+
+Handoff (complete):
+
+- done: `closeAsyncPair` in `src/stream/utils.ts` (internal) serves zip/zipWith.
+  The new regression timed out at 2s before the fix and passes after it; existing
+  early-termination and cleanup-failure tests are unchanged. EN/KO compose pages
+  show the checked right-to-left signatures and the dynamic-list replacement;
+  the KO page gained the Type Signature section the EN page already had.
+- validation: source types and generated-signature check; 468 tests in 167
+  files; library build; packed TS 5.9.3 consumer with 59 marked examples and
+  ESM/CJS runtime; docs lint and build; `git diff --check`. Compiler probe: a
+  mutable tuple, an `as const` tuple and `reduceRight` all type-check.
+- manual: RF-MT-1/2 are not signed off; automated coverage above only.
+
 ## Active feature — interactive playground (2026-10-23)
 
 Branch `feat/inference-playground`, baseline `3e46200`.

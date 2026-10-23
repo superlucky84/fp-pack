@@ -1,5 +1,12 @@
 # MANUAL TEST CHECKLIST — Inference Usability
 
+## Combined-branch review fix checks — 2026-10-23
+
+| ID | Check | Pass criterion |
+|---|---|---|
+| RF-MT-1 | `pipe(zip(slowSource, failingSource), toArray)` in an app | Error appears at once, not after the slow source; the slow source's `finally` still runs |
+| RF-MT-2 | Open `/compose` docs | Type Signature lists right-to-left overloads, no `any` catch-all |
+
 ## Interactive playground checks — 2026-10-23
 
 | ID | Check | Pass criterion |

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { pipe } from '../index';
 import { take, map, filter, flatMap, reduce, toAsync, toArray, zip, zipWith, flattenDeep } from './index';
 
@@ -95,6 +95,38 @@ describe('stream inference contracts', () => {
     expect(() => [...take(1, zip(source('right', false), source('left', true)))]).toThrow('close failed');
     expect(closed).toEqual(['left', 'right']);
   });
+
+  it('rejects at once while the other input is pending, then closes that input', async () => {
+    type Combine = (slow: AsyncIterable<number>, failing: AsyncIterable<number>) => AsyncIterable<unknown>;
+    const cases: [string, Combine][] = [
+      ['zip', (slow, failing) => zip(slow, failing)],
+      ['zipWith', (slow, failing) => zipWith((a, b) => a + b, slow, failing)]
+    ];
+    for (const [name, combine] of cases) {
+      const closed: string[] = [];
+      let release!: () => void;
+      const gate = new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      async function* slow() {
+        try {
+          await gate;
+          yield 1;
+          yield 2;
+        } finally {
+          closed.push('slow');
+        }
+      }
+      async function* failing(): AsyncGenerator<number> {
+        throw new Error(`${name} failed`);
+      }
+      // Before RF-01 this waited for the gate, which only opens afterwards.
+      await expect(toArray(combine(slow(), failing()))).rejects.toThrow(`${name} failed`);
+      expect(closed).toEqual([]);
+      release();
+      await vi.waitFor(() => expect(closed).toEqual(['slow']));
+    }
+  }, 2000);
 
   it('resolves Promise elements only when the source is asynchronous', async () => {
     const value = Promise.resolve('a');
