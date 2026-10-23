@@ -1,5 +1,19 @@
 # MANUAL TEST CHECKLIST — Inference Usability
 
+## curryN checks — 2026-10-23
+
+| ID | Check | Pass criterion |
+|---|---|---|
+| CN-MT-1 | Default and optional parameters, count 1 vs 2 | Execution follows chosen count; no added result generic/cast |
+| CN-MT-2 | Required prefix plus rest and grouped final call | Correct argument order and return type; invalid rest values rejected |
+| CN-MT-3 | Reuse partials, call an empty stage, pass undefined | Partials stay independent; empty call waits; defaults apply to undefined |
+| CN-MT-4 | Count 0/32 and invalid count/argument values | No eager zero execution; correct upper-bound typing and clear errors |
+| CN-MT-5 | Callback parameters, literal/Promise results and pipes | IDE types agree with source and installed-consumer regressions |
+| CN-MT-6 | EN/KO curryN navigation and examples | Sidebar/search/route discover the page; rendered examples follow contract |
+
+Status: implementation/automation pending. Interactive editor/browser inspection
+is separate from compiler/runtime evidence and remains unsigned until performed.
+
 ## Active checks — 2026-10-22
 
 Use the installed package in an editor, with its workspace TypeScript selected.

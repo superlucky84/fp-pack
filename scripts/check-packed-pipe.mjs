@@ -36,6 +36,7 @@ try {
     .replace(/import (\w+) from '[^']+';/g, "import { $1 } from 'fp-pack';");
   writeFileSync(join(consumer, 'regressions.ts'), regressions);
   const usabilityFiles = [
+    'src/implement/composition/curryN.type-test.ts',
     'src/implement/composition/data-inference.type-test.ts',
     'src/implement/composition/boundary-inference.type-test.ts',
     'src/implement/composition/inference-hardening.type-test.ts',
@@ -79,7 +80,7 @@ try {
   }
   run(process.execPath, ['--input-type=module', '-e', `
     import assert from 'node:assert/strict';
-    import { pipe, pipeWithDeps, pipeAsyncSideEffect, from, SideEffect, isSideEffect, evolve, mergeDeep, path } from 'fp-pack';
+    import { pipe, pipeWithDeps, pipeAsyncSideEffect, from, SideEffect, isSideEffect, evolve, mergeDeep, path, curryN } from 'fp-pack';
     import { range, toArray, toAsync, filter, take, flatten } from 'fp-pack/stream';
     assert.equal(pipe(2, x => x + 1, x => x * 2), 6);
     assert.deepEqual(await pipe(range(0, 3), toArray), [0, 1, 2]);
@@ -96,11 +97,15 @@ try {
     assert.deepEqual(await toArray(firstTwo(Promise.resolve([1, 2, 3]))), [1, 2]);
     assert.deepEqual(await pipe([1, 2, 3], toAsync, filter(async n => n > 1), toArray), [2, 3]);
     assert.deepEqual(await toArray(flatten(toAsync([Promise.resolve([1, 2])]))), [1, 2]);
+    const addDefault = (a, b = 10) => a + b;
+    assert.equal(curryN(1, addDefault)(2), 12);
+    assert.equal(curryN(2, addDefault)(2)(3), 5);
+    assert.equal(curryN(3, (...values) => values.length)(1)(2, 3, 4), 4);
   `]);
   run(process.execPath, ['--input-type=commonjs', '-e', `
     (async () => {
     const assert = require('node:assert/strict');
-    const { pipe, pipeStrict, pipeSideEffect, SideEffect, runPipeResult, evolve } = require('fp-pack');
+    const { pipe, pipeStrict, pipeSideEffect, SideEffect, runPipeResult, evolve, curryN } = require('fp-pack');
     const { range, toArray, toAsync, filter, take } = require('fp-pack/stream');
     assert.equal(pipe(2, x => x + 1, x => x * 2), 6);
     assert.equal(pipeStrict(2, x => x + 1, x => x * 2), 6);
@@ -112,6 +117,8 @@ try {
     assert.equal(pipe({ count: 2 }, evolve({ count: n => n.toFixed() })).count, '2');
     assert.deepEqual([...take(2)([1, 2, 3])], [1, 2]);
     assert.deepEqual(await pipe([1, 2, 3], toAsync, filter(async n => n > 1), toArray), [2, 3]);
+    assert.equal(curryN(2, (a, b = 10) => a + b)(2)(undefined), 12);
+    assert.equal(curryN(0, () => 42)(), 42);
     })().catch(error => { console.error(error); process.exitCode = 1; });
   `]);
   console.log(`Packed ${metadata.version} metadata, ESM and CommonJS runtime passed. Consumer artifacts: ${consumer}`);

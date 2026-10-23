@@ -2,6 +2,44 @@
 
 This document describes the internal design decisions and architectural choices made in fp-pack.
 
+## curryN design — 2026-10-23
+
+See REQUIREMENTS CN-*; the existing root document set is canonical.
+
+- [x] **CN-DC-1 — Separate explicit policy.** Add `curryN(arity, fn)` and
+  `CurriedN<Fn, Arity>` beside curry. The existing curry implementation and types
+  stay intact. The number controls execution timing; function types supply
+  parameter and result information. Validate CN-01/CN-07.
+- [x] **CN-DC-2 — Threshold and forwarding.** Return a collector without eagerly
+  calling fn, including for zero. Accumulate immutable argument lists; once the
+  threshold is met, forward every supplied value. Empty calls do not finish a
+  positive stage; undefined consumes a slot and lets JavaScript apply defaults.
+  No placeholders. Validate CN-02–04, repeated partial use and rest overflow.
+- [x] **CN-DC-3 — Bounded, checked counts.** Accept literal counts 0–32 to keep
+  recursive type work bounded. Statically reject counts that cannot form a
+  valid original call (below its required prefix or above finite parameter
+  capacity). Noninteger/out-of-range runtime counts throw RangeError; nonfunction
+  input throws TypeError. Dynamic number counts have no precise static stage
+  contract and are rejected. Validate CN-05 and the 0/32 boundaries.
+- [x] **CN-DC-4 — Consume actual prefixes.** Type each call from valid prefixes
+  of remaining parameters, preserving undefined on optional entries and rest
+  element types. Compute remaining count/parameters from the supplied tuple;
+  expose the result only once that tuple proves completion. Extra values must
+  remain valid for fn. Unbounded spreads with uncertain completion return unknown.
+  Function/count unions remain conservative. Validate CN-03/CN-05/CN-06.
+- [x] **CN-DC-5 — Preserve honest inference.** Contextually type function-valued
+  parameters and retain literal/Promise results. Use no unchecked public catchall.
+  Explicit this contracts require binding; arbitrary generic/overload extraction
+  retains the compiler's established boundaries. Add paired positive/negative
+  cases and installed-consumer declaration emission. Validate CN-06/CN-08.
+  Export the stage interface `CurriedArgs<Parameters, Arity, Result>` as well as
+  the checked `CurriedN<Fn, Arity>` alias: inferred exported partials must name a
+  public type during consumer declaration emission (a private stage caused TS4023).
+
+Implementation scope: one composition module and barrel exports, focused runtime
+and type fixtures, existing consumer script, discoverable EN/KO pages and bundled
+authoring guidance. No curry refactor is required to add the collector.
+
 ## Inference Usability Revision (2026-10-22)
 
 This is the active cross-utility contract. Requirements IU-* are in REQUIREMENTS.md;

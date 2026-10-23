@@ -1,5 +1,39 @@
 # REQUIREMENTS — Inference Usability
 
+## Active feature — curryN (2026-10-23)
+
+Branch `feat/curry-n`, based on `6727836` from `feat/inference-usability`.
+The user requested explicit-arity currying for default, optional and rest
+parameters while preserving inference. The canonical root documents remain in
+use; the completed IU-* revision below remains the feature's baseline.
+
+| ID | Requirement | Validation |
+|---|---|---|
+| CN-01 | Export `curryN(arity, fn)` and its reusable result type; infer parameters/results from fn | source and installed declarations |
+| CN-02 | Execute once the total supplied count reaches arity; support grouped, empty and reusable partial calls | runtime and exact type regressions |
+| CN-03 | Defaults, optional parameters, required prefixes plus rest, and explicit undefined follow JavaScript function calls | paired runtime/type examples |
+| CN-04 | Zero arity returns a callable and invokes only when called | execution counter and zero-arity types |
+| CN-05 | Reject incompatible argument values, omitted required parameters at completion, invalid counts and finite-parameter overflow | negative type/runtime cases |
+| CN-06 | Retain callback contextual types, Promise/literal results and compatibility with all four pipe modes | inference corpus without corrective casts |
+| CN-07 | Existing curry and its public types retain their behavior | existing tests and unchanged implementation |
+| CN-08 | Ship coherent EN/KO docs, navigation, README, guidance and package checks; update ctxbin handoff after push | docs/build/compiler matrix and readback |
+
+Execution policy: arity is a nonnegative integer literal in 0–32. It is a minimum
+execution threshold: extra arguments in the completing call are forwarded if
+valid for the original remaining signature. Supplying undefined counts as one
+argument. Empty calls retain the partial stage while a positive count remains.
+The static count must permit a valid original function call; a required parameter
+cannot be skipped by choosing a smaller count. Runtime count validation also
+protects JavaScript callers. No placeholder arguments or inferred end-of-rest
+marker is introduced. Standalone/bound functions are supported; explicit this
+contracts must be bound before currying.
+
+Known boundaries: arbitrary generic function relationships are limited by
+Parameters/ReturnType extraction. For an unbounded argument spread that might
+not reach the threshold, preserve an unknown result rather than inventing a
+completed return type. Literal tuples retain exact stages. No dependencies,
+version change, main merge or publication are part of this feature.
+
 ## Active revision — 2026-10-22
 
 Branch: `feat/inference-usability`; baseline: `b9a92e0` (0.15.0).
