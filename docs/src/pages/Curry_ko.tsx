@@ -11,6 +11,15 @@ export const Curry_ko = () => (
       부분 적용을 지원하도록 함수를 변환
     </p>
 
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      기본값·선택적·rest 인자의 실행 시점을 지정하려면 curryN(arity, fn)을 사용하세요.
+      기존 curry는 fn.length를 따르며 2–5개 필수 인자의 타입을 지원합니다.{' '}
+      <a href="/ko/composition/curryN" onClick={(event: Event) => {
+        event.preventDefault();
+        navigateTo('/ko/composition/curryN');
+      }}>curryN</a>
+    </p>
+
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">

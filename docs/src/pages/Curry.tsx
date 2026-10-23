@@ -56,24 +56,27 @@ add2(10); // 12`}
       Type Signature
     </h2>
 
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      Use curryN(arity, fn) to choose execution timing for default, optional or rest parameters. Existing curry follows fn.length and supports typed 2–5 required parameters.{' '}
+      <a href="/composition/curryN" onClick={(event: Event) => {
+        event.preventDefault();
+        navigateTo('/composition/curryN');
+      }}>curryN</a>
+    </p>
+
     <CodeBlock
       language="typescript"
-      code={`// Supports 2-5 parameter functions with full type inference
-function curry<A, B, R>(fn: (a: A, b: B) => R): Curry2<A, B, R>;
-function curry<A, B, C, R>(fn: (a: A, b: B, c: C) => R): Curry3<A, B, C, R>;
-function curry<A, B, C, D, R>(fn: (a: A, b: B, c: C, d: D) => R): Curry4<A, B, C, D, R>;
-function curry<A, B, C, D, E, R>(fn: (a: A, b: B, c: C, d: D, e: E) => R): Curry5<A, B, C, D, E, R>;
+      code={`function curry<F extends (...args: any[]) => any>(fn: F): Curried<F>;
 
-// Example: Curry2 type allows flexible calling
-type Curry2<A, B, R> = {
-  (a: A): (b: B) => R;      // Partial: one arg at a time
-  (a: A, b: B): R;          // Full: all args at once
-};`}
+// Curry2 keeps the original function's parameter and result types.
+type Curry2<F> = F extends (a: infer A, b: infer B) => infer R
+  ? { (a: A): (b: B) => R; (a: A, b: B): R }
+  : never;`}
     />
 
     <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
       fp-pack's curry provides excellent TypeScript support with full type inference for
-      functions with 2-5 parameters.
+      functions with 2-5 required parameters.
     </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />

@@ -294,6 +294,7 @@ const result = Array.from({ length: 1000000 }, (_, i) => i + 1)
 - `pipeSideEffectStrict` - Deprecated alias of `pipeSideEffect`
 - `compose` - Right-to-left function composition
 - `curry` - Curry a function
+- `curryN` - Curry with an explicit execution count for default, optional or rest parameters
 - `partial` - Partial application
 - `flip` - Flip function argument order
 - `complement` - Logical negation
@@ -446,7 +447,8 @@ When you add your own helpers for `pipe`, follow these rules:
 
 - Keep **data-last** argument order.
 - **Curry multi-arg functions** so they compose well.
-- **Fixed signatures** can use `curry(fn)` directly.
+- **Fixed required-parameter signatures** can use `curry(fn)` directly.
+- **Default/optional/rest parameters** use `curryN(arity, fn)` with a valid literal count 0–32. The count includes undefined; extra valid final-call values are forwarded. Zero waits for a call, empty positive stages keep waiting, and uncertain spreads retain unknown. Bind explicit receivers first.
 - **Generic or overloaded signatures** should use an explicit type alias + cast to preserve inference.
 
 ```typescript

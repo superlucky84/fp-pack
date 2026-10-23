@@ -386,7 +386,8 @@ When you write your own helpers that should compose cleanly with `pipe`/`pipeAsy
 
 - **Data-last arguments** so partial application works naturally in pipelines.
 - **Curry multi-argument functions** to make them pipe-friendly.
-- **Fixed signatures** can use `curry(fn)` directly.
+- **Fixed required-parameter signatures** can use `curry(fn)` directly.
+- **Default, optional or rest parameters** can use `curryN(arity, fn)` to choose when enough arguments have arrived. Use a literal count from 0 to 32 that covers the required parameters.
 - **Generic or overloaded signatures** should be wrapped with an explicit type alias and a cast to preserve inference.
 
 ```typescript
@@ -411,6 +412,29 @@ const curriedChunk = curry(chunk) as Chunk;
 export default curriedChunk;
 ```
 
+`curryN` infers argument and return types from the original function. Every
+supplied value counts, including `undefined`; extra valid values in the completing
+call are forwarded. Zero returns a function that runs when called, and empty
+calls keep positive stages waiting. An uncertain-length spread has an `unknown`
+result until its known prefix proves completion. Bind explicit receivers first.
+
+<!-- inference-usability: curryN authoring -->
+
+```typescript
+import { curryN, pipe } from 'fp-pack';
+
+const add = (a: number, b = 10) => a + b;
+curryN(1, add)(2);            // 12
+curryN(2, add)(2)(3);         // 5
+curryN(2, add)(2)(undefined); // 12
+
+const addFive = curryN(2, add)(5);
+const label = pipe(3, addFive, value => value.toFixed()); // string
+
+const sum = curryN(3, (...values: number[]) => values.reduce((a, b) => a + b, 0));
+sum(1)(2, 3, 4); // 10
+```
+
 ## API Reference
 
 ### Composition
@@ -424,6 +448,7 @@ Functions for composing and transforming other functions.
 - **pipeSideEffectStrict** - *Deprecated* alias of `pipeSideEffect` (removed in 1.0)
 - **compose** - Compose functions right to left (h → g → f)
 - **curry** - Transform a function to support partial application
+- **curryN** - Curry with an explicit execution count for default, optional and rest parameters
 - **partial** - Pre-fill function arguments
 - **flip** - Reverse the order of function arguments
 - **complement** - Logical negation of a predicate

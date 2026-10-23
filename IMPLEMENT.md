@@ -16,27 +16,35 @@ Follow REQUIREMENTS CN-* and DESIGN CN-DC-*. Every phase runs
    empty/grouped/reused calls, explicit undefined, literal/Promise/callback types,
    invalid/union counts, uncertain spreads and all pipe modes. Exit: paired
    positive/negative cases and baseline pass; type-cost evidence recorded.
-4. [ ] **CN Phase 3 — Integration Test.** Add the fixture and marked documentation
+4. [x] **CN Phase 3 — Integration Test.** Add the fixture and marked documentation
    examples to the installed consumer; update EN/KO routes/search/sidebar,
    README/changelog and authoring guidance. Exit: baseline, build, ESM/CJS,
    TS 5.9/6.0/7.0 installed declaration checks and docs lint/build pass. Commit,
    push feature branch, then save and read back ctxbin handoff.
 
-Handoff: done — inherited context, resolved contracts and baseline (403 tests/types).
-New regressions failed before exports/implementation. Collector and tuple inference
-now pass types and all 412 runtime tests (165 files), build and installed ESM/CJS
-consumer/declaration emission. Default parameters require a callable constraint
-using never[] rather than any[] to avoid contextual any. A public stage interface
-fixes the reproduced TS4023 for exported inferred partials. Next — hardening and
-user documentation. Phase 2 types and all 414 runtime tests pass. Shared prefixes
-of function unions are intersected, their parameters consumed per branch, and
-their results combined conservatively. Applying NoInfer to the completed guard
-rather than its function argument preserves union distribution. Extra fixtures
-cover required-after-default, optional+rest, count unions, reusable exports,
-receiver unions and spread completion. Whole-corpus instantiations: 275,788 →
-326,411 (+18.4%, including the new fixture). Blockers — none. Latest implementation
-commit — `b149416`; hardening is committed after this record. Local ctxbin credentials stay outside git;
-commands here use NODE_USE_ENV_PROXY=1. Main/feature parent is not merged.
+Handoff:
+
+- done: all CN phases. The inherited 403 tests/types passed before the new
+  regressions failed on the missing API. Final source types, generated-signature
+  check and all 414 runtime tests (165 files) pass. Library/declaration build,
+  installed ESM/CJS execution, exported inferred partials and 59 marked README/
+  EN/KO examples pass consumer type/declaration checks on TS 5.9.3 / 6.0.3 / 7.0.2
+  with exact optional properties. Docs lint/build and git diff --check pass.
+- decisions validated: a never[] callable constraint retains default parameter
+  inference without contextual any. A public stage interface fixes TS4023 for
+  exported inferred partials. Function unions intersect their valid prefixes and
+  consume each possible remaining signature; applying NoInfer to the completed
+  guard preserves branch distribution. Arbitrary generic extraction and
+  uncertain-length spreads retain unknown instead of inventing a precise result.
+- cost: whole-corpus instantiations 275,788 → 326,411 (+18.4%, new fixture included).
+- next: optional interactive IDE/browser checks and owner review. Implementation
+  is complete. Final pushed HEAD and continuation notes are recorded in ctxbin
+  `fp-pack/feat/curry-n`; the parent context points to this follow-up.
+- blockers: none. Latest implementation commit `343f12e` (hardening), original
+  implementation `b149416`; this integration/documentation checkpoint follows.
+  Parent is `feat/inference-usability` at `6727836`; main remains unmerged.
+- environment: ctxbin credentials remain outside git; use NODE_USE_ENV_PROXY=1
+  here. No version or dependency changes, main merge, publication or PR creation.
 
 ## Active work — 2026-10-22
 

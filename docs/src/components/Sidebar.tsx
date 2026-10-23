@@ -38,6 +38,7 @@ export const Sidebar = mount(renew => {
           { title: 'pipeSideEffectStrict (deprecated)', path: '/composition/pipeSideEffectStrict' },
           { title: 'compose', path: '/composition/compose' },
           { title: 'curry', path: '/composition/curry' },
+          { title: 'curryN', path: '/composition/curryN' },
           { title: 'partial', path: '/composition/partial' },
           { title: 'flip', path: '/composition/flip' },
           { title: 'identity', path: '/composition/identity' },

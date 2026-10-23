@@ -2,6 +2,12 @@
 
 ## Unreleased — Inference usability
 
+- Add `curryN(arity, fn)` with inferred grouped/reusable partial applications for
+  default, optional and rest parameters. Literal counts 0–32 control execution;
+  undefined counts as a supplied value, and extra valid arguments are forwarded.
+  Zero waits for an explicit call. Export `CurriedN`, `CurriedArgs` and `CurryArity`;
+  existing `curry` behavior is unchanged.
+
 - Stream partial applications retain source element types and sync/async mode.
   Async predicates/flatMap/accumulators require `toAsync(input)` or another async
   input; previously accepted sync input combinations could silently misbehave.

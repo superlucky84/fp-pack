@@ -11,8 +11,13 @@
 | CN-MT-5 | Callback parameters, literal/Promise results and pipes | IDE types agree with source and installed-consumer regressions |
 | CN-MT-6 | EN/KO curryN navigation and examples | Sidebar/search/route discover the page; rendered examples follow contract |
 
-Status: implementation/automation pending. Interactive editor/browser inspection
-is separate from compiler/runtime evidence and remains unsigned until performed.
+Status: implementation and automated coverage complete. Source types and all
+414 runtime tests pass. Installed ESM/CJS execution and declaration emission on
+TS 5.9.3 / 6.0.3 / 7.0.2 pass, including the new curryN corpus and 59 documentation
+snippets (nine new curryN snippets). Library/declaration build and docs lint/build
+pass. Route/sidebar/search registrations include both language pages.
+Interactive editor/browser inspection remains unsigned and is separate from the
+compiler/runtime evidence.
 
 ## Active checks — 2026-10-22
 

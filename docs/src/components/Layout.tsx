@@ -32,6 +32,8 @@ import { Compose } from '@/pages/Compose';
 import { Compose_ko } from '@/pages/Compose_ko';
 import { Curry } from '@/pages/Curry';
 import { Curry_ko } from '@/pages/Curry_ko';
+import { CurryN } from '@/pages/CurryN';
+import { CurryN_ko } from '@/pages/CurryN_ko';
 import { Partial } from '@/pages/Partial';
 import { Partial_ko } from '@/pages/Partial_ko';
 import { Flip } from '@/pages/Flip';
@@ -351,6 +353,8 @@ const routes: Record<string, PageComponent> = {
   '/ko/composition/compose': Compose_ko,
   '/composition/curry': Curry,
   '/ko/composition/curry': Curry_ko,
+  '/composition/curryN': CurryN,
+  '/ko/composition/curryN': CurryN_ko,
   '/composition/partial': Partial,
   '/ko/composition/partial': Partial_ko,
   '/composition/flip': Flip,

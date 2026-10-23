@@ -37,6 +37,7 @@ If `fp-pack` is **not** installed, use the project's existing conventions. Do **
 - `pipeWithDeps` infers intermediate values and intersects dependency contracts. Default and deprecated variants have identical checks. Annotate the dependency contract where needed, not every value parameter.
 - If the first arg is a function, it's treated as composition; wrap function values with `from()`.
 - Keep pipeline functions **unary**; prefer data-last, curried helpers.
+- Use `curryN(arity, fn)` for explicit default/optional/rest execution timing. Pick a valid literal count 0–32; function argument/result types infer automatically. Bind explicit receivers first.
 - Async stream predicates, flatMap callbacks and accumulators require an async/promised source; use `toAsync` for ordinary iterables. `pipeAsync` does not change the source's iterator protocol.
 - Anchored transforms, literal paths, defaults and readonly arrays infer directly. Do not add output-only path/flatten generics or corrective casts.
 - `map`/`filter` are for arrays/iterables, not single values.

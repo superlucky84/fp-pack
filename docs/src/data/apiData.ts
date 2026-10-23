@@ -14,6 +14,7 @@ export const apiData = [
   { title: 'pipeSideEffectStrict (deprecated)', path: '/composition/pipeSideEffectStrict', category: 'Composition' },
   { title: 'compose', path: '/composition/compose', category: 'Composition' },
   { title: 'curry', path: '/composition/curry', category: 'Composition' },
+  { title: 'curryN', path: '/composition/curryN', category: 'Composition' },
   { title: 'partial', path: '/composition/partial', category: 'Composition' },
   { title: 'flip', path: '/composition/flip', category: 'Composition' },
   { title: 'identity', path: '/composition/identity', category: 'Composition' },
