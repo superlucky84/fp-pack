@@ -1,5 +1,48 @@
 # IMPLEMENT — Inference Usability
 
+## Active feature — interactive playground (2026-10-23)
+
+Branch `feat/inference-playground`, baseline `3e46200`.
+
+1. [x] **PG Phase 0 — Contracts/baseline.** Align PG-* docs. Entry: clean curryN
+   branch. Gate: inherited source types/runtime and docs type-check.
+2. [x] **PG Phase 1 — Implementation.** Build typed scenario engine, six-lab UI,
+   presets/challenges, real compiler worker and docs discovery. Gate: source
+   baseline plus docs types, deterministic expected runtime and compiler cases.
+3. [x] **PG Phase 2 — Test Hardening.** Cover default/undefined/zero/rest/reuse,
+   empty collections, optional reads, streams/cleanup, effect early exit,
+   positive/negative compiler examples, async supersession and recovery.
+   Gate: source baseline, scenario/compiler suite, accessible responsive browser
+   interaction when available.
+4. [ ] **PG Phase 3 — Integration Test.** Docs lint/type/build, packed consumer
+   baseline, root-relative hosted build, browser/asset smoke, commit/push,
+   private Site deployment and ctxbin handoff readback. Gate: evidence recorded,
+   remote HEAD verified, ready-to-open URL and known limitations documented.
+
+Handoff (implementation checkpoint):
+
+- done: PG phases 0–2. Baseline inherited 414 tests, source types and docs types
+  passed. Six labs and 21 independent runtime presets, eight editable positive/
+  negative examples, actual worker compiler, stale-run protection and cleanup
+  are implemented. New coverage: 23 scenario/session tests plus 30 compiler tests.
+- validation: all 467 tests in 167 files pass; source types and docs types/lint
+  pass. Standard `/fp-pack/` docs build and standalone `/` build pass. Installed
+  ESM/CJS metadata/runtime, TS 5.9.3 consumer and declaration emission pass with
+  59 existing marked docs examples. No library implementation changed.
+- browser: Chromium desktop 1440x1000 and mobile 390x844 passed against dev and
+  production builds: all 21 UI checks, real worker inference/invalid examples,
+  edited code, async supersession, language/docs navigation and optional controls;
+  no unexpected page/console errors or horizontal overflow. Evidence in
+  `/tmp/fp-playground-browser.log` and `...-production-browser.log`.
+- next: finish source snapshot, GitHub push, private Site deployment and ctxbin
+  readback; record deployed URL/final commit in the completion handoff. The Site
+  helper scripts are not mounted in this runtime; use ordinary Git with the
+  returned short-lived credential through stdin and native Sites archive tools.
+- blockers: none. The compiler is a 7.1 MB uncompressed worker loaded on demand;
+  first check can take longer. Existing docs chunk warning remains. Baseline
+  commit `3e46200eb151c4a70f38ff56e1765f58b74eba29`; this checkpoint follows.
+  Hosted identity is separate from fp-pack git; credentials remain outside files.
+
 ## Active feature — curryN (2026-10-23)
 
 Branch `feat/curry-n`, baseline `6727836` (completed inference feature).

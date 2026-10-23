@@ -2,6 +2,11 @@
 
 ## Unreleased — Inference usability
 
+- Add an EN/KO interactive playground with six experiments, 21 checked runtime
+  presets, random challenges and an editable TypeScript worker that reports real
+  inferred types and diagnostics against this checkout. Build a standalone demo
+  with `npm run demo:build`; existing GitHub Pages docs keep their base path.
+
 - Add `curryN(arity, fn)` with inferred grouped/reusable partial applications for
   default, optional and rest parameters. Literal counts 0–32 control execution;
   undefined counts as a supplied value, and extra valid arguments are forwarded.

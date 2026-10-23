@@ -4,6 +4,7 @@ import { Sidebar } from './Sidebar';
 import { appStore } from '@/store';
 import { Home } from '@/pages/Home';
 import { Home_ko } from '@/pages/Home_ko';
+import { Playground } from '@/pages/Playground';
 import { Guide } from '@/pages/Guide';
 import { Guide_ko } from '@/pages/Guide_ko';
 import { TypeUsage } from '@/pages/TypeUsage';
@@ -644,6 +645,9 @@ export const Layout = mount(renew => {
   const store = appStore.watch(renew);
 
   return () => {
+    if (normalizeRoute(store.route) === '/playground' || normalizeRoute(store.route) === '/ko/playground') {
+      return <Playground />;
+    }
     const CurrentPage = resolveRoute(store.route);
 
     return (

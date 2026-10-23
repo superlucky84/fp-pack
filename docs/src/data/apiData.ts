@@ -5,6 +5,7 @@ export interface ApiItem {
 }
 
 export const apiData = [
+  { title: 'Playground · 플레이그라운드 · interactive demo', path: '/playground', category: 'Getting Started' },
   // Composition
   { title: 'pipe', path: '/composition/pipe', category: 'Composition' },
   { title: 'pipeStrict (deprecated)', path: '/composition/pipeStrict', category: 'Composition' },

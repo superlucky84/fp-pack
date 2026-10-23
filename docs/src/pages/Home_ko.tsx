@@ -13,6 +13,11 @@ export const Home_ko = () => (
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
+    <a href="#/ko/playground" onClick={(event: Event) => { event.preventDefault(); navigateTo('/playground'); }} class="block p-6 mb-8 bg-green-50 border border-green-200 rounded-xl text-green-900">
+      <strong>직접 만져보는 fp-pack →</strong>
+      <p class="text-sm mt-2">커리 바부터 타입 실험실까지. 여섯 가지 데모에서 입력을 바꾸고 실행 결과와 실제 타입 추론을 확인하세요.</p>
+    </a>
+
     <h2 class="text-3xl font-semibold text-gray-900 dark:text-white mb-4">
       핵심 철학
     </h2>

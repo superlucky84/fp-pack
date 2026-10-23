@@ -1,5 +1,32 @@
 # fp-pack Design Document
 
+## Interactive playground design — 2026-10-23
+
+- [x] **PG-DC-1 — Integrate without constraining the demo.** Add `/playground`
+  and `/ko/playground`, a full-width page with its own compact navigation. Keep
+  the existing documentation layout for other routes. Validate PG-01.
+- [x] **PG-DC-2 — Real, deterministic labs.** A typed scenario module imports
+  the current root/stream implementation, returns observable stages and results,
+  and carries curated control presets with independent expected values. Six
+  tabs, random challenges, live controls and a batch verification drawer provide
+  varied paths. Invalid numeric input is bounded/validated. Validate PG-02/03.
+- [x] **PG-DC-3 — Genuine inference evidence.** A lazy Web Worker uses the
+  existing TypeScript dependency, bundled standard libs and checkout source in
+  a virtual compiler host. Strict/exactOptionalPropertyTypes checks return real
+  top-level inferred variable types and diagnostics. Editable source is never
+  executed. Worker errors/timeouts can be retried; stale replies are ignored.
+  Tests run the same compiler host against valid/invalid examples. Validate PG-04.
+- [x] **PG-DC-4 — Interaction ownership.** Each run has an incrementing request
+  ID; superseded results cannot overwrite the active lab. Cleanup disposes
+  workers/timers when leaving the page. Visible loading, failure and reset paths,
+  labeled keyboard-operable controls and responsive grid prevent hidden state.
+  Validate PG-05 with runtime hardening and browser interaction.
+- [x] **PG-DC-5 — Source and hosting.** Create a feature branch from curryN;
+  retain the canonical docs and source there. Publish a new owner-private Site
+  containing a static build of the same docs, defaulting to Korean playground.
+  Keep Site identity/source snapshot in its own workspace, outside fp-pack git.
+  Use Sites workflow; no main merge or release. Validate PG-06.
+
 This document describes the internal design decisions and architectural choices made in fp-pack.
 
 ## curryN design — 2026-10-23

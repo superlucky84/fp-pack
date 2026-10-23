@@ -1,5 +1,27 @@
 # REQUIREMENTS — Inference Usability
 
+## Active feature — interactive playground (2026-10-23)
+
+Branch `feat/inference-playground`, based on curryN `3e46200`. The user wants
+an enjoyable, varied hands-on way to validate the inference improvements and new
+API. These PG-* contracts use the canonical root four-document set.
+
+| ID | Requirement | Validation |
+|---|---|---|
+| PG-01 | Discoverable EN/KO full-width playground inside the existing docs | routes, sidebar, search and site build |
+| PG-02 | Six labs cover curryN defaults/optional/rest/zero/reuse, readonly order pipelines, evolve/mergeDeep/optional paths, sync/async lazy streams and iterator cleanup, control/effect short-circuiting, and editable inference examples | runtime scenarios and browser interaction |
+| PG-03 | Controls, curated presets and random challenges change real library execution; show input, pipeline stages, output and expected checks | independent expected-value regression suite |
+| PG-04 | Editable TypeScript uses a real browser worker compiler with this checkout's source signatures; show inferred variable types and diagnostics, including intentionally invalid cases | positive/negative compiler fixtures and worker smoke |
+| PG-05 | Busy/error states, stale async result protection, reset, repeatable checks and accessible mobile controls work | hardening and browser checks |
+| PG-06 | Provide a ready-to-open private demo URL and preserve source in a new GitHub branch; save/read back ctxbin handoff | deployment, remote head and context readback |
+
+Scope: demo/docs only; no library behavior, dependencies or versions change.
+Compiler editing validates types only; runtime panels execute the selected form
+controls, and the UI makes that distinction explicit. No backend or external API
+is needed. Every runtime preset must have an independent expected result. Hosted
+artifact is built from the same checkout, retaining the docs' existing base path
+for GitHub Pages while the private demo uses a root-relative build.
+
 ## Active feature — curryN (2026-10-23)
 
 Branch `feat/curry-n`, based on `6727836` from `feat/inference-usability`.

@@ -1,5 +1,28 @@
 # MANUAL TEST CHECKLIST — Inference Usability
 
+## Interactive playground checks — 2026-10-23
+
+| ID | Check | Pass criterion |
+|---|---|---|
+| PG-MT-1 | Open EN/KO playground, sidebar/search, return to docs | Correct route/language and full-width layout |
+| PG-MT-2 | Change curryN presets, grouped/default/undefined/rest/reuse/zero | Real results and stages match independently expected values |
+| PG-MT-3 | Order filters, optional profile, merge/evolve changes | Results update; input remains unchanged; empty/missing cases work |
+| PG-MT-4 | Sync/async streams and early zip termination | Correct sequence, mapped-count trace and both cleanup markers |
+| PG-MT-5 | Valid/blocked effect pipeline | Early exit prevents later steps; handled output is visible |
+| PG-MT-6 | Edit TypeScript and check valid/invalid presets | Genuine inferred variable types and line diagnostics; no code execution |
+| PG-MT-7 | Run all cases, random challenge, reset, switch while async pending | Repeatable results, no stale output, useful busy/error recovery |
+| PG-MT-8 | Narrow viewport and keyboard navigation | No page overflow, labeled controls, visible focus, readable results |
+| PG-MT-9 | Open deployed private demo | Default Korean playground, assets/worker load and presets work |
+
+Status: automated scenario/compiler coverage passed (53 new tests); full suite
+467 tests/167 files, source/docs types, lint, standard/standalone builds and
+installed-package TS 5.9 consumer passed. Chromium against development and
+production builds verified desktop 1440x1000/mobile 390x844: 21 batch checks,
+worker positive/negative examples, edited code, async supersession, language/docs
+navigation and optional-argument controls; no unexpected console/page errors or
+horizontal overflow. PG-MT-9 deployed-host check remains pending. Tests against a
+local production build do not establish remote deployment success.
+
 ## curryN checks — 2026-10-23
 
 | ID | Check | Pass criterion |

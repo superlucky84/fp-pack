@@ -30,6 +30,7 @@ If you want functional composition without a lot of ceremony, `fp-pack` is desig
 
 ## Table of Contents
 
+- [Interactive Playground (Unreleased)](#interactive-playground-unreleased)
 - [Why fp-pack?](#why-fp-pack)
 - [Design Principles](#design-principles)
 - [Installation](#installation)
@@ -65,6 +66,27 @@ If you want functional composition without a lot of ceremony, `fp-pack` is desig
 - [License](#license)
 
 ---
+
+## Interactive Playground (Unreleased)
+
+The feature branch includes six hands-on experiments: curryN defaults/optional/
+rest arguments, readonly order pipelines, object transformations, lazy sync/async
+streams, effect short-circuiting and a live type laboratory. Change inputs, try
+21 curated cases or edit TypeScript and inspect actual inferred types/errors.
+Edited code is type-checked only; runtime controls execute the library examples.
+
+```bash
+# Existing docs, including #/ko/playground and #/playground
+npm --prefix docs run dev
+
+# Standalone build; starts on the Korean playground
+npm run demo:build
+python3 -m http.server 8080 --directory demo-dist
+```
+
+The normal docs build retains `/fp-pack/` for GitHub Pages. The standalone build
+uses `/` and the current checkout's library implementation, not the npm release.
+The browser loads the TypeScript compiler only when a type check is requested.
 
 ## Why fp-pack?
 
