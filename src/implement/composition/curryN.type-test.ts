@@ -92,3 +92,104 @@ function needsReceiver(this: { value: number }, extra: number) {
 curryN(1, needsReceiver);
 export const bound = curryN(1, needsReceiver.bind({ value: 1 }))(2);
 export type Bound = Expect<Equal<typeof bound, number>>;
+
+// A required parameter after a default still needs its original slot.
+const afterDefault = (count = 1, label: string) => label.repeat(count);
+export const requiredAfterDefault = curryN(2, afterDefault)(undefined)('x');
+export type RequiredAfterDefault = Expect<Equal<typeof requiredAfterDefault, string>>;
+// @ts-expect-error count 1 cannot omit the required label
+curryN(1, afterDefault);
+// @ts-expect-error nonfunctions do not acquire a callable public signature
+curryN(0, {});
+
+declare const literalFunction: (value: number) => 'OK' | 'ERR';
+export const literalResult = curryN(1, literalFunction)(2);
+export type LiteralResult = Expect<Equal<typeof literalResult, 'OK' | 'ERR'>>;
+declare const genericFunction: <T>(value: T) => T;
+export const genericResult = curryN(1, genericFunction)(2);
+export type GenericResult = Expect<Equal<typeof genericResult, unknown>>;
+
+declare const unionCount: 1 | 2;
+export const unionCountResult = curryN(unionCount, add)(2);
+export type UnionCountResult = Expect<Equal<typeof unionCountResult, number | CurriedN<(b?: number) => number, 1>>>;
+export const completedUnionCount = curryN(unionCount, add)(2, 3);
+export type CompletedUnionCount = Expect<Equal<typeof completedUnionCount, number>>;
+declare const invalidUnionCount: 1 | 3;
+// @ts-expect-error all possible counts must be valid for the source function
+curryN(invalidUnionCount, add);
+declare const unionFunction: ((a: number, b?: number) => number) | ((a: number, b?: number) => string);
+export const unionFunctionResult = curryN(1, unionFunction)(2);
+export type UnionFunctionResult = Expect<Equal<typeof unionFunctionResult, number | string>>;
+declare const finiteOrRest: ((a: number, b?: number) => string) | ((...values: number[]) => number);
+export const finiteOrRestPartial = curryN(2, finiteOrRest)(1);
+export const finiteOrRestResult = finiteOrRestPartial(2);
+export type FiniteOrRestResult = Expect<Equal<typeof finiteOrRestResult, number | string>>;
+// @ts-expect-error undefined is invalid for the possible numeric rest function
+finiteOrRestPartial(undefined);
+declare const incompatibleTail: ((a: number, b?: string) => string) | ((...values: number[]) => number);
+const incompatibleTailPartial = curryN(2, incompatibleTail)(1);
+// @ts-expect-error consuming a shared prefix must preserve every possible remaining signature
+incompatibleTailPartial(2);
+declare const incompatibleFunctions: ((a: number) => number) | ((a: string) => string);
+// @ts-expect-error a union source must be narrowed before using incompatible parameters
+curryN(1, incompatibleFunctions)(2);
+declare const differingCounts: ((a: number) => number) | ((a: number, b: number) => number);
+// @ts-expect-error count 1 is invalid for one possible function
+curryN(1, differingCounts);
+
+declare const pair: readonly [number, number];
+export const tupleSpread = curryN(2, sum)(...pair);
+export type TupleSpread = Expect<Equal<typeof tupleSpread, number>>;
+export const zeroRest = curryN(0, sum)(...values);
+export type ZeroRest = Expect<Equal<typeof zeroRest, number>>;
+export const partialThroughEmpty = curryN(2, add)(1)();
+export const reusedEmptyPartial = partialThroughEmpty(2);
+export type ReusedEmptyPartial = Expect<Equal<typeof reusedEmptyPartial, number>>;
+declare const readonlyValues: readonly number[];
+export const readonlyParameter = curryN(
+  2,
+  (prefix: string, data: readonly number[]) => prefix + data.join(',')
+)('values:')(readonlyValues);
+export type ReadonlyParameter = Expect<Equal<typeof readonlyParameter, string>>;
+
+export const atLimit = curryN(32, sum)(
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20,
+  21,
+  22,
+  23,
+  24,
+  25,
+  26,
+  27,
+  28,
+  29,
+  30,
+  31
+);
+export const completedLimit = atLimit(32);
+export type CompletedLimit = Expect<Equal<typeof completedLimit, number>>;
+// @ts-expect-error rest values after the threshold remain checked
+atLimit(32, 'wrong');
+
+declare const receiverUnion: ((value: number) => number) | ((this: { value: number }, extra: number) => number);
+// @ts-expect-error one possible function still requires binding its receiver
+curryN(1, receiverUnion);

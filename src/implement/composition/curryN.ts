@@ -36,14 +36,27 @@ export type CurryArity =
   | 31
   | 32;
 
-type DropFirst<P extends unknown[]> = '0' extends keyof P ? (P extends [unknown?, ...infer Rest] ? Rest : []) : P;
+type DropFirst<P extends unknown[]> = P extends unknown[]
+  ? '0' extends keyof P
+    ? P extends [unknown?, ...infer Rest]
+      ? Rest
+      : []
+    : P
+  : never;
 
 // Tuple heads may be optional; a homogeneous rest array stays reusable.
-type Prefixes<P extends unknown[]> = P extends []
+type PrefixesOfOne<P extends unknown[]> = P extends []
   ? []
   : '0' extends keyof P
-    ? [] | [P[0], ...Prefixes<DropFirst<P>>]
+    ? [] | [P[0], ...PrefixesOfOne<DropFirst<P>>]
     : P;
+
+// A union source must accept the supplied prefix in every possible branch.
+type Prefixes<P extends unknown[]> = (P extends unknown[] ? (args: PrefixesOfOne<P>) => void : never) extends (
+  args: infer Shared extends unknown[]
+) => void
+  ? Shared
+  : never;
 
 type Count<N extends CurryArity, C extends unknown[] = []> = C['length'] extends N ? C : Count<N, [...C, unknown]>;
 type Counts<N extends CurryArity> = N extends CurryArity ? Count<N> : never;
@@ -81,9 +94,7 @@ type Apply<P extends unknown[], C extends unknown[], R, A extends unknown[]> = C
 /** Curried stages inferred from a function and an explicit execution threshold. */
 export type CurriedN<F extends Callable, N extends CurryArity> = [N] extends [ValidCount<N, F>]
   ? [InvalidReceiver<F>] extends [never]
-    ? F extends Callable
-      ? CurriedArgs<Parameters<F>, N, ReturnType<F>>
-      : never
+    ? CurriedArgs<Parameters<F>, N, ReturnType<F>>
     : never
   : never;
 
@@ -93,7 +104,7 @@ export type CurriedN<F extends Callable, N extends CurryArity> = [N] extends [Va
  * Extra valid arguments are forwarded, and zero waits for an explicit call.
  */
 function curryN<const N extends CurryArity, F extends Callable>(
-  arity: N & ValidCount<N, NoInfer<F>> & ValidFunction<NoInfer<F>>,
+  arity: N & NoInfer<ValidCount<N, F> & ValidFunction<F>>,
   fn: F
 ): CurriedN<F, N>;
 function curryN(arity: number, fn: Callable): (...args: unknown[]) => unknown {

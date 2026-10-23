@@ -105,4 +105,18 @@ describe('curryN', () => {
     }
     expect(() => Reflect.apply(curryN, undefined, [1, null])).toThrow(TypeError);
   });
+
+  it('counts a default slot before a later required argument', () => {
+    const repeat = (count = 1, label: string) => label.repeat(count);
+    expect(curryN(2, repeat)(undefined)('x')).toBe('x');
+    expect(curryN(2, repeat)(3, 'x')).toBe('xxx');
+  });
+
+  it('combines optional heads, rest values and explicit undefined', () => {
+    const format = (label?: string, ...values: number[]) => (label ?? 'sum:') + values.reduce((a, b) => a + b, 0);
+    expect(curryN(2, format)(undefined)(1, 2)).toBe('sum:3');
+    expect(curryN(0, format)()).toBe('sum:0');
+    const pair: readonly [number, number] = [1, 2];
+    expect(curryN(2, (...values: number[]) => values.length)(...pair)).toBe(2);
+  });
 });

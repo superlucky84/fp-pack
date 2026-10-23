@@ -12,7 +12,7 @@ Follow REQUIREMENTS CN-* and DESIGN CN-DC-*. Every phase runs
 2. [x] **CN Phase 1 — Implementation.** Add failing runtime/type cases, then
    collector, checked tuple types and exports. Exit: CN-01–07 regressions and
    baseline pass; library/declaration build and installed consumer pass.
-3. [ ] **CN Phase 2 — Test Hardening.** Exercise 0/32, optional+rest combinations,
+3. [x] **CN Phase 2 — Test Hardening.** Exercise 0/32, optional+rest combinations,
    empty/grouped/reused calls, explicit undefined, literal/Promise/callback types,
    invalid/union counts, uncertain spreads and all pipe modes. Exit: paired
    positive/negative cases and baseline pass; type-cost evidence recorded.
@@ -28,8 +28,14 @@ now pass types and all 412 runtime tests (165 files), build and installed ESM/CJ
 consumer/declaration emission. Default parameters require a callable constraint
 using never[] rather than any[] to avoid contextual any. A public stage interface
 fixes the reproduced TS4023 for exported inferred partials. Next — hardening and
-user documentation. Blockers — none. Latest pre-implementation commit — `6727836`;
-Phase 1 is committed after this record. Local ctxbin credentials stay outside git;
+user documentation. Phase 2 types and all 414 runtime tests pass. Shared prefixes
+of function unions are intersected, their parameters consumed per branch, and
+their results combined conservatively. Applying NoInfer to the completed guard
+rather than its function argument preserves union distribution. Extra fixtures
+cover required-after-default, optional+rest, count unions, reusable exports,
+receiver unions and spread completion. Whole-corpus instantiations: 275,788 →
+326,411 (+18.4%, including the new fixture). Blockers — none. Latest implementation
+commit — `b149416`; hardening is committed after this record. Local ctxbin credentials stay outside git;
 commands here use NODE_USE_ENV_PROXY=1. Main/feature parent is not merged.
 
 ## Active work — 2026-10-22
