@@ -14,34 +14,49 @@ Branch `feat/inference-playground`, baseline `3e46200`.
    positive/negative compiler examples, async supersession and recovery.
    Gate: source baseline, scenario/compiler suite, accessible responsive browser
    interaction when available.
-4. [ ] **PG Phase 3 — Integration Test.** Docs lint/type/build, packed consumer
+4. [x] **PG Phase 3 — Integration Test.** Docs lint/type/build, packed consumer
    baseline, root-relative hosted build, browser/asset smoke, commit/push,
    private Site deployment and ctxbin handoff readback. Gate: evidence recorded,
    remote HEAD verified, ready-to-open URL and known limitations documented.
 
-Handoff (implementation checkpoint):
+Handoff (complete):
 
-- done: PG phases 0–2. Baseline inherited 414 tests, source types and docs types
-  passed. Six labs and 21 independent runtime presets, eight editable positive/
-  negative examples, actual worker compiler, stale-run protection and cleanup
-  are implemented. New coverage: 23 scenario/session tests plus 30 compiler tests.
-- validation: all 467 tests in 167 files pass; source types and docs types/lint
-  pass. Standard `/fp-pack/` docs build and standalone `/` build pass. Installed
-  ESM/CJS metadata/runtime, TS 5.9.3 consumer and declaration emission pass with
-  59 existing marked docs examples. No library implementation changed.
-- browser: Chromium desktop 1440x1000 and mobile 390x844 passed against dev and
-  production builds: all 21 UI checks, real worker inference/invalid examples,
-  edited code, async supersession, language/docs navigation and optional controls;
-  no unexpected page/console errors or horizontal overflow. Evidence in
-  `/tmp/fp-playground-browser.log` and `...-production-browser.log`.
-- next: finish source snapshot, GitHub push, private Site deployment and ctxbin
-  readback; record deployed URL/final commit in the completion handoff. The Site
-  helper scripts are not mounted in this runtime; use ordinary Git with the
-  returned short-lived credential through stdin and native Sites archive tools.
-- blockers: none. The compiler is a 7.1 MB uncompressed worker loaded on demand;
-  first check can take longer. Existing docs chunk warning remains. Baseline
-  commit `3e46200eb151c4a70f38ff56e1765f58b74eba29`; this checkpoint follows.
-  Hosted identity is separate from fp-pack git; credentials remain outside files.
+- done: all PG phases. Six labs, 21 independent runtime presets, random/reset,
+  eight editable positive/negative examples, the actual compiler worker,
+  supersession protection and cleanup are implemented. Baseline 414 tests/types
+  passed; 23 new scenario/session and 30 real compiler tests were added.
+- validation: all 467 tests in 167 files, source types, docs types/lint pass.
+  Standard `/fp-pack/` docs build and standalone `/` build pass. Installed ESM/CJS
+  metadata/runtime and TS 5.9.3 consumer/declaration emission pass with 59 existing
+  marked documentation examples. No library behavior or dependency changes.
+- browser: Chromium against dev and production builds passed desktop 1440x1000,
+  mobile 390x844 and narrow 320px: all 21 UI checks, actual worker valid/invalid
+  examples and edited code, sliders/toggles, zip cleanup, curry reuse/zero,
+  random/reset, async supersession, language/docs navigation and worker network
+  failure followed by successful retry. No unexpected console/page errors or
+  horizontal overflow. Logs `/tmp/fp-playground-browser.log`,
+  `/tmp/fp-playground-production-browser.log`, `/tmp/fp-playground-extra-browser.log`.
+- deployment: new owner-private Site succeeded. Ready-to-open URL:
+  https://fp-pack-flow-lab.vastslug258.chatgpt.site (defaults to Korean playground).
+  Site project `appgprj_6adabe94e8e48191a3212df049dbe587`, deployment
+  `appgdep_6adac1030cf881919f043736af177c34`, saved version
+  `appgprj_6adabe94e8e48191a3212df049dbe587~appgver_234ce58a29f081919e6c79ca76ddd139`.
+  Native Sites status confirmed success; protected remote browser interaction
+  remains owner sign-off. Local production browser checks exercised the same app.
+- source: implementation `bf7212c4abc469156e3bee163f9ff5549d3409e4` pushed and
+  remote verified. Hosted source snapshot commit
+  `7ce317642f628417ad68b94c464452755668f951` corresponds to that implementation;
+  standalone build metadata uses the Site origin. Site checkout is
+  `/workspace/sites/fp-pack-flow-lab`, separate from fp-pack git. Helper scripts
+  were not mounted; ordinary Git used the returned credential through hidden
+  stdin, with a verified source push and 6,272,871-byte artifact archive.
+- next: owner can exercise the deployed URL; implementation is complete. This
+  documentation checkpoint follows the implementation commit. Final pushed HEAD
+  and continuation are saved/read back under ctxbin
+  `fp-pack/feat/inference-playground`; parent `fp-pack/feat/curry-n` points there.
+- blockers: none. On-demand compiler worker is 7.1 MB uncompressed; first check
+  may take longer. Existing docs chunk warning remains. No release, main merge,
+  PR, version or dependency changes. Parent is curryN `3e46200` (still unmerged).
 
 ## Active feature — curryN (2026-10-23)
 

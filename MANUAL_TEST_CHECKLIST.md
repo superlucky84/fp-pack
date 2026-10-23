@@ -20,8 +20,15 @@ installed-package TS 5.9 consumer passed. Chromium against development and
 production builds verified desktop 1440x1000/mobile 390x844: 21 batch checks,
 worker positive/negative examples, edited code, async supersession, language/docs
 navigation and optional-argument controls; no unexpected console/page errors or
-horizontal overflow. PG-MT-9 deployed-host check remains pending. Tests against a
-local production build do not establish remote deployment success.
+horizontal overflow. Extended production browser checks passed order/profile/gate
+controls, zip cleanup, curry reuse/zero, random/reset, a 320px viewport and an
+intentionally blocked worker request followed by successful retry.
+
+PG-MT-9 deployment succeeded according to native Sites status at
+https://fp-pack-flow-lab.vastslug258.chatgpt.site. The artifact defaults to the
+Korean playground, has root-relative assets and correct Site metadata. The site
+is owner-private; authenticated interaction on the remote host remains owner
+sign-off. The same application/worker was exercised locally in a production build.
 
 ## curryN checks — 2026-10-23
 
