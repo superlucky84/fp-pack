@@ -27,8 +27,9 @@ when started by hand from main, never on merge.
 | REL-03 | It publishes only when package.json holds a stable version newer than npm's; an already published version ends without publishing; a lower version or prerelease fails | version check run against the registry with each case |
 | REL-04 | It runs the repository's `release:check` first, offers a dry run, and tags `fp-pack@<version>` after a real publish | workflow review; first dry run on GitHub |
 | REL-05 | Public docs drop the private demo host address, hosting identifiers and local log paths | grep |
+| REL-06 | Like lithent, merging docs or library source changes into main deploys the docs site to gh-pages; a manual run from main redeploys | workflow lint; local rehearsal of the replace step on a gh-pages checkout |
 
-Scope: npm package only; the GitHub Pages docs deployment stays manual. No
+Scope: npm publishing stays manual; the docs deploy on merge (REL-06). No
 dependency changes. Merging and the first real publish are the owner's actions.
 
 ## Active revision — combined-branch review fixes (2026-10-23)

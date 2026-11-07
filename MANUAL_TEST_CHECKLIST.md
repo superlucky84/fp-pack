@@ -16,7 +16,8 @@
 | REL-MT-3 | Run again without dry run | npm shows 0.16.0 with provenance; tag `fp-pack@0.16.0` exists |
 | REL-MT-4 | Run once more | Ends with "already on npm"; nothing published |
 | REL-MT-5 | Run from another branch | Fails at the main-branch step |
-| REL-MT-6 | Deploy docs to GitHub Pages as before | Playground and curryN pages are live |
+| REL-MT-6 | Merge PR #8; Actions → Deploy docs runs on main | gh-pages gets a `docs: deploy` commit; playground and curryN pages are live |
+| REL-MT-7 | Settings → Pages still serves the gh-pages branch | Site updates within a few minutes of the deploy commit |
 
 ## Combined-branch review fix checks — 2026-10-23
 

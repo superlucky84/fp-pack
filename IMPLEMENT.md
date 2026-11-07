@@ -41,6 +41,8 @@ Branch `ccr-80cfc3e1-vwp61m`, baseline `5ba6b88`.
    actionlint; version check against npm for new, published, lower and
    prerelease versions.
 4. [x] **REL Phase 3 — Integration.** `pnpm release:check`; commit, push, PR to main.
+5. [x] **REL Phase 4 — Docs deployment.** docs.yml (REL-06). Gate: actionlint;
+   rehearse build, replace and commit against a local gh-pages checkout.
 
 Handoff (complete):
 

@@ -1,0 +1,75 @@
+name: Deploy docs
+
+# Publishes the docs site to the gh-pages branch, which GitHub Pages serves at
+# https://superlucky84.github.io/fp-pack/. Runs when docs or the library source
+# they render (the playground runs it) change on main, and on demand from the
+# Actions tab. npm publishing stays the separate, manual release workflow.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - 'src/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deploy-docs
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require main
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "::error::Deploy docs from main (this run used ${GITHUB_REF})."
+          exit 1
+
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm docs:build
+
+      - uses: actions/checkout@v5
+        with:
+          ref: gh-pages
+          path: site
+
+      # Hashed bundles change on every build, so the previous ones are removed.
+      # Other files already on gh-pages are left as they are.
+      - name: Replace the built files
+        run: |
+          rm -rf site/assets
+          cp -R docs/dist/. site/
+
+      - name: Commit and push
+        working-directory: site
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "The site is already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "docs: deploy ${GITHUB_SHA::7}"
+          git push origin gh-pages

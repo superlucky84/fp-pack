@@ -35,6 +35,13 @@
   one-time npmjs.com setting names this repository and `release.yml`. An optional
   `NPM_TOKEN` secret is the fallback. A real publish pushes the lightweight tag
   `fp-pack@<version>`, matching earlier tags.
+- [x] **REL-DC-5 — Docs follow main.** `.github/workflows/docs.yml`, modelled on
+  lithent's, runs on pushes to main that touch `docs/**`, `src/**` (the playground
+  runs the library source) or the workspace manifests, and on manual dispatch
+  from main only. It builds the docs and replaces `assets/` plus the built files
+  on gh-pages, leaving older files there untouched, then commits as
+  github-actions[bot]. Docs can briefly describe a version before its manual npm
+  release, so run the release right after merging a version bump.
 
 ## Combined-branch review fixes design — 2026-10-23
 
