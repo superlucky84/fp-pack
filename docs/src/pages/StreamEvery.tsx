@@ -35,15 +35,24 @@ const result = every((n: number) => n > 0, [1, 2, 3]);
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Type Signature
+      Input modes and inference
     </h2>
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      Sync sources use sync iteration; async or promised sources use async iteration. The source anchors inline
+      pipe callbacks; saved steps without callbacks infer elements when supplied an input. Async predicates,
+      flatMap callbacks and accumulators require an async source: use toAsync once before those steps. toArray
+      returns a Promise in either mode.
+    </p>
 
+    {/* inference-usability: every */}
     <CodeBlock
       language="typescript"
-      code={`function every<T>(predicate: (value: T) => boolean, iterable: Iterable<T>): boolean;
-function every<T>(predicate: (value: T) => boolean | Promise<boolean>, iterable: AnyIterableInput<PromiseLikeValue<T>>): Promise<boolean>;
-function every<T>(predicate: (value: T) => boolean): (iterable: Iterable<T>) => boolean;
-function every<T>(predicate: (value: T) => boolean | Promise<boolean>): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => Promise<boolean>;`}
+      code={`import { pipe } from 'fp-pack';
+import { every, toAsync } from 'fp-pack/stream';
+
+const sync = pipe([1, 2, 3], every(n => n > 0));
+const async = pipe([1, 2, 3], toAsync, every(n => n > 0));
+const awaited = pipe([1, 2, 3], toAsync, every(async n => n > 0));`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />

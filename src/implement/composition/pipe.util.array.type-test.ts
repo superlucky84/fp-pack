@@ -54,7 +54,7 @@ export const pipeArrayTagScore = pipe(
   sumTagLengths
 );
 
-type PipeArrayTagScoreExpected = (input: User[]) => number;
+type PipeArrayTagScoreExpected = (input: readonly User[]) => number;
 export type PipeArrayTagScoreIsStrict = Expect<Equal<typeof pipeArrayTagScore, PipeArrayTagScoreExpected>>;
 
 const groupByActive = groupBy((user: User) => (user.active ? 'active' : 'inactive'));
@@ -67,7 +67,7 @@ export const pipeArrayFindActive = pipe(
   (user) => (user ? user.id : undefined)
 );
 
-type PipeArrayFindActiveExpected = (input: User[]) => number | undefined;
+type PipeArrayFindActiveExpected = (input: readonly User[]) => number | undefined;
 export type PipeArrayFindActiveIsStrict = Expect<Equal<typeof pipeArrayFindActive, PipeArrayFindActiveExpected>>;
 
 export const pipeArrayZipSome = pipe(
@@ -83,7 +83,7 @@ export const pipeArrayEveryUnique = pipe(
   every((value: number) => value > 0)
 );
 
-type PipeArrayEveryUniqueExpected = (input: number[]) => boolean;
+type PipeArrayEveryUniqueExpected = (input: readonly number[]) => boolean;
 export type PipeArrayEveryUniqueIsStrict = Expect<Equal<typeof pipeArrayEveryUnique, PipeArrayEveryUniqueExpected>>;
 
 export const pipeArrayFilterStrings = pipe(
@@ -91,7 +91,7 @@ export const pipeArrayFilterStrings = pipe(
   map((value: string) => value.toUpperCase())
 );
 
-type PipeArrayFilterStringsExpected = (input: MixedValue[]) => string[];
+type PipeArrayFilterStringsExpected = (input: readonly MixedValue[]) => string[];
 export type PipeArrayFilterStringsIsStrict = Expect<
   Equal<typeof pipeArrayFilterStrings, PipeArrayFilterStringsExpected>
 >;
@@ -101,28 +101,28 @@ export const pipeArrayFilterUnknownStrings = pipe(
   map((value: string) => value.toUpperCase())
 );
 
-type PipeArrayFilterUnknownStringsExpected = (input: unknown[]) => string[];
+type PipeArrayFilterUnknownStringsExpected = (input: readonly unknown[]) => string[];
 export type PipeArrayFilterUnknownStringsIsStrict = Expect<
   Equal<typeof pipeArrayFilterUnknownStrings, PipeArrayFilterUnknownStringsExpected>
 >;
 
 export const arrayEveryString = every(isString);
 
-type ArrayEveryStringExpected = (input: MixedValue[]) => input is string[];
+type ArrayEveryStringExpected = (input: readonly MixedValue[]) => input is readonly string[];
 export type ArrayEveryStringIsStrict = Expect<
   Equal<typeof arrayEveryString, ArrayEveryStringExpected>
 >;
 
 export const arrayEveryUnknownString = every(isStringUnknown);
 
-type ArrayEveryUnknownStringExpected = (input: unknown[]) => input is string[];
+type ArrayEveryUnknownStringExpected = (input: readonly unknown[]) => input is readonly string[];
 export type ArrayEveryUnknownStringIsStrict = Expect<
   Equal<typeof arrayEveryUnknownString, ArrayEveryUnknownStringExpected>
 >;
 
 export const arraySomeString = some(isString);
 
-type ArraySomeStringExpected = (input: MixedValue[]) => boolean;
+type ArraySomeStringExpected = (input: readonly MixedValue[]) => boolean;
 export type ArraySomeStringIsStrict = Expect<
   Equal<typeof arraySomeString, ArraySomeStringExpected>
 >;
@@ -136,7 +136,7 @@ export const pipeSideEffectArray = pipeSideEffect(
 );
 
 type PipeSideEffectArrayExpectedLegacy = (input: User[] | SideEffect<any>) => User | SideEffect<any>;
-type PipeSideEffectArrayExpected = { (input: User[]): User | SideEffect<"NOT_FOUND">; <EIn>(input: User[] | SideEffect<EIn>): User | SideEffect<"NOT_FOUND" | EIn>; };
+type PipeSideEffectArrayExpected = { (input: readonly User[]): User | SideEffect<"NOT_FOUND">; <EIn>(input: readonly User[] | SideEffect<EIn>): User | SideEffect<"NOT_FOUND" | EIn>; };
 export type PipeSideEffectArrayIsStrict = Expect<Equal<typeof pipeSideEffectArray, PipeSideEffectArrayExpected>>;
 export type PipeSideEffectArrayExpectedLegacyCompatible = Expect<Extends<typeof pipeSideEffectArray, PipeSideEffectArrayExpectedLegacy>>;
 
@@ -167,7 +167,7 @@ export const pipeAsyncArray = pipeAsync(
   async (total) => `${total}`
 );
 
-type PipeAsyncArrayExpected = (input: number[]) => Promise<string>;
+type PipeAsyncArrayExpected = (input: readonly number[]) => Promise<string>;
 export type PipeAsyncArrayIsStrict = Expect<Equal<typeof pipeAsyncArray, PipeAsyncArrayExpected>>;
 
 export const pipeAsyncSideEffectArray = pipeAsyncSideEffect(

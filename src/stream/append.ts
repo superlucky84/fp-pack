@@ -1,18 +1,15 @@
-import type { AnyIterableInput, PromiseLikeValue } from './utils';
+import type { AnyIterableInput, PromiseLikeValue, InputItem, IteratorResultFor } from './utils';
 import { awaitValue, isAsyncInput, isIterable } from './utils';
 import toAsync from './toAsync';
 
-/** append - lazily append a value to the end */
-function append<T>(value: T): (iterable: Iterable<T>) => IterableIterator<T>;
-function append<T>(value: PromiseLikeValue<T>): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<T>;
-function append<T>(value: T, iterable: Iterable<T>): IterableIterator<T>;
-function append<T>(
-  value: PromiseLikeValue<T>,
-  iterable: AnyIterableInput<PromiseLikeValue<T>>
-): AsyncIterableIterator<T>;
+/** append - preserve source element types and execution mode. */
+function append<V>(
+  value: V
+): <I extends AnyIterableInput<unknown>>(iterable: I) => IteratorResultFor<I, InputItem<I> | V>;
+function append<I extends AnyIterableInput<unknown>, V>(value: V, iterable: I): IteratorResultFor<I, InputItem<I> | V>;
 function append<T>(value: PromiseLikeValue<T>, iterable?: AnyIterableInput<PromiseLikeValue<T>>): any {
   if (iterable === undefined) {
-    return (next: AnyIterableInput<PromiseLikeValue<T>>) => append(value, next);
+    return (next: AnyIterableInput<PromiseLikeValue<T>>) => append(value, next as never);
   }
 
   if (isAsyncInput(iterable)) {

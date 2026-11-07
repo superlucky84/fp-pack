@@ -1,4 +1,163 @@
-# REQUIREMENTS — Pipe Soundness & Variant Consolidation
+# REQUIREMENTS — Inference Usability
+
+## Active revision — pre-release review fixes (2026-11-07)
+
+Before releasing 0.16.0, every TypeScript example in the docs site, README, skills
+and AI guides (1,835) was compiled on main and on this branch. It found one
+library regression and docs that did not follow 0.16.0 contracts.
+
+| ID | Requirement | Validation |
+|---|---|---|
+| RF-03 | In pipes, `ifElse`/`when`/`unless` with plain boolean predicates and unannotated callbacks give each callback the input type (never `never`) and compile as on main. Type-guard narrowing and staged inference from IU-09 stay | case matrix on main and branch; new type regressions; existing type tests |
+| RF-04 | Docs examples follow 0.16.0: no output generics on `path`, async stream callbacks get an async source, saved stream pipelines have a known input | example corpus: nothing that compiled on main fails now |
+| RF-05 | CHANGELOG and README upgrade notes name the saved stream pipeline change and its value-first or typed-wrapper replacement | docs review |
+
+| RF-06 | Inline generic callbacks such as `tap(...)` in `when`/`unless`/`ifElse` with an unannotated predicate keep the input type as on 0.15 | 0.15 vs 0.16 probes; type regressions |
+| RF-07 | A saved stream pipeline that starts with a stream step keeps its element types (0.15: `Promise<number[]>`), without losing 0.16's sync/async inference for value-first pipelines; if TypeScript cannot express both, docs and migration notes say so | 0.15 examples compiled on 0.15 and 0.16: variable type comparison |
+
+| RF-08 | Saved stream steps and pipelines exported from user code emit declarations (no TS2742 from unexported helper types) | packed consumer declaration emit on TS 5.9/6.0/7.0 |
+
+Scope: type declarations and docs only; runtime behavior is unchanged.
+
+## Active release — 0.16.0 (2026-11-07)
+
+Branch `ccr-80cfc3e1-vwp61m` (`5ba6b88`) carries the IU, CN, PG and RF work. The
+user asked for the version bump, a PR to main, and an npm release that runs only
+when started by hand from main, never on merge.
+
+| ID | Requirement | Validation |
+|---|---|---|
+| REL-01 | Version 0.16.0 in package.json, CHANGELOG, README upgrade notes and shipped guides; nothing shipped says unreleased or points at a feature branch | grep, release:check |
+| REL-02 | A GitHub Actions workflow publishes to npm only on manual dispatch from main; pushes and merges never publish | workflow lint, trigger review |
+| REL-03 | It publishes only when package.json holds a stable version newer than npm's; an already published version ends without publishing; a lower version or prerelease fails | version check run against the registry with each case |
+| REL-04 | It runs the repository's `release:check` first, offers a dry run, and tags `fp-pack@<version>` after a real publish | workflow review; first dry run on GitHub |
+| REL-05 | Public docs drop the private demo host address, hosting identifiers and local log paths | grep |
+| REL-06 | Like lithent, merging docs or library source changes into main deploys the docs site to gh-pages; a manual run from main redeploys | workflow lint; local rehearsal of the replace step on a gh-pages checkout |
+
+Scope: npm publishing stays manual; the docs deploy on merge (REL-06). No
+dependency changes. Merging and the first real publish are the owner's actions.
+
+## Active revision — combined-branch review fixes (2026-10-23)
+
+Branch `ccr-80cfc3e1-vwp61m` fast-forwards `feat/inference-usability`,
+`feat/curry-n` and `feat/inference-playground` (`2958e5d`) for one review against
+`main`. Findings were checked against the IU/CN/PG intent recorded in these
+documents and the ctxbin handoffs. Intended and documented, so unchanged: sync
+accumulators reject Promise values (IU-DC-2), zip closes both inputs (IU-07),
+required `prop` reads omit undefined (IU-DC-4). Two findings need changes:
+
+| ID | Requirement | Validation |
+|---|---|---|
+| RF-01 | Async `zip`/`zipWith` report an input rejection immediately, even while the other input's read is pending; that input still closes once its read settles. IU-07 early-termination cleanup is unchanged | regressions that time out before the fix; existing cleanup tests |
+| RF-02 | `compose` docs and CHANGELOG match IU-DC-5: no unchecked array catch-all; dynamic lists use a tuple or an explicit fold | docs signature, migration entry, compiler probe of the alternatives |
+
+Scope: no public type, dependency or version change; no merge or publication.
+
+## Active feature — interactive playground (2026-10-23)
+
+Branch `feat/inference-playground`, based on curryN `3e46200`. The user wants
+an enjoyable, varied hands-on way to validate the inference improvements and new
+API. These PG-* contracts use the canonical root four-document set.
+
+| ID | Requirement | Validation |
+|---|---|---|
+| PG-01 | Discoverable EN/KO full-width playground inside the existing docs | routes, sidebar, search and site build |
+| PG-02 | Six labs cover curryN defaults/optional/rest/zero/reuse, readonly order pipelines, evolve/mergeDeep/optional paths, sync/async lazy streams and iterator cleanup, control/effect short-circuiting, and editable inference examples | runtime scenarios and browser interaction |
+| PG-03 | Controls, curated presets and random challenges change real library execution; show input, pipeline stages, output and expected checks | independent expected-value regression suite |
+| PG-04 | Editable TypeScript uses a real browser worker compiler with this checkout's source signatures; show inferred variable types and diagnostics, including intentionally invalid cases | positive/negative compiler fixtures and worker smoke |
+| PG-05 | Busy/error states, stale async result protection, reset, repeatable checks and accessible mobile controls work | hardening and browser checks |
+| PG-06 | Provide a ready-to-open private demo URL and preserve source in a new GitHub branch; save/read back ctxbin handoff | deployment, remote head and context readback |
+
+Scope: demo/docs only; no library behavior, dependencies or versions change.
+Compiler editing validates types only; runtime panels execute the selected form
+controls, and the UI makes that distinction explicit. No backend or external API
+is needed. Every runtime preset must have an independent expected result. Hosted
+artifact is built from the same checkout, retaining the docs' existing base path
+for GitHub Pages while the private demo uses a root-relative build.
+
+## Active feature — curryN (2026-10-23)
+
+Branch `feat/curry-n`, based on `6727836` from `feat/inference-usability`.
+The user requested explicit-arity currying for default, optional and rest
+parameters while preserving inference. The canonical root documents remain in
+use; the completed IU-* revision below remains the feature's baseline.
+
+| ID | Requirement | Validation |
+|---|---|---|
+| CN-01 | Export `curryN(arity, fn)` and its reusable result type; infer parameters/results from fn | source and installed declarations |
+| CN-02 | Execute once the total supplied count reaches arity; support grouped, empty and reusable partial calls | runtime and exact type regressions |
+| CN-03 | Defaults, optional parameters, required prefixes plus rest, and explicit undefined follow JavaScript function calls | paired runtime/type examples |
+| CN-04 | Zero arity returns a callable and invokes only when called | execution counter and zero-arity types |
+| CN-05 | Reject incompatible argument values, omitted required parameters at completion, invalid counts and finite-parameter overflow | negative type/runtime cases |
+| CN-06 | Retain callback contextual types, Promise/literal results and compatibility with all four pipe modes | inference corpus without corrective casts |
+| CN-07 | Existing curry and its public types retain their behavior | existing tests and unchanged implementation |
+| CN-08 | Ship coherent EN/KO docs, navigation, README, guidance and package checks; update ctxbin handoff after push | docs/build/compiler matrix and readback |
+
+Execution policy: arity is a nonnegative integer literal in 0–32. It is a minimum
+execution threshold: extra arguments in the completing call are forwarded if
+valid for the original remaining signature. Supplying undefined counts as one
+argument. Empty calls retain the partial stage while a positive count remains.
+The static count must permit a valid original function call; a required parameter
+cannot be skipped by choosing a smaller count. Runtime count validation also
+protects JavaScript callers. No placeholder arguments or inferred end-of-rest
+marker is introduced. Standalone/bound functions are supported; explicit this
+contracts must be bound before currying.
+
+Known boundaries: arbitrary generic function relationships are limited by
+Parameters/ReturnType extraction. For an unbounded argument spread that might
+not reach the threshold, preserve an unknown result rather than inventing a
+completed return type. Literal tuples retain exact stages. No dependencies,
+version change, main merge or publication are part of this feature.
+
+## Active revision — 2026-10-22
+
+Branch: `feat/inference-usability`; baseline: `b9a92e0` (0.15.0).
+Canonical documents remain at the package root because this change crosses object,
+array, nullable, control, composition and stream APIs. The earlier pipe revision
+below is historical where this revision supersedes it. Workflow: the user-requested
+ctxbin `doc-driven-designer-v1` skill and agent rule (loaded 2026-10-22).
+
+**User goal:** when an input type is known, ordinary pipelines preserve exact
+intermediate and result types without extra generics, casts or callback annotations.
+Valid programs must infer usefully; invalid programs must fail instead of escaping
+through `any`, `unknown` or `never`.
+
+| ID | Requirement | Validation |
+|---|---|---|
+| IU-01 | `evolve` infers transformer inputs and transformed property outputs; shallow/deep merge reflect runtime overwrite order | object inference and runtime regressions |
+| IU-02 | Required/optional properties work equally in direct and curried `prop`/`pick`/`omit`; required reads do not invent undefined | object inference tests |
+| IU-03 | Path reads/writes and deep array flattening derive outputs from inputs; unconstrained output generics cannot fabricate types | positive and negative path/flatten tests |
+| IU-04 | Empty-array, object and null defaults retain the actual nullable input type | getOrElse pipeline regressions |
+| IU-05 | Nonmutating array APIs accept readonly inputs; predicates preserve narrowing where valid | readonly and guard regression matrix |
+| IU-06 | Saved/inline curried stream steps retain generics and support their declared input modes | stream type tests and runtime tests |
+| IU-07 | Stream declarations match execution for sync/async callbacks; Promise predicates never silently count as true; strings are iterables | rejected invalid calls, async-source execution and cleanup tests |
+| IU-08 | compose rejects incompatible connections; single generic pipe steps preserve relationships where TypeScript permits | composition regressions |
+| IU-09 | Curried branch results are inferred at the call supplying them; curry's supported argument groupings match execution | control/curry positive and negative tests |
+| IU-10 | matchSideEffect preserves the effect type at the handling boundary | effect inference tests |
+| IU-11 | New positive usability cases contain no corrective casts/callback annotations; check callback types as well as outputs | new usability corpus and packed consumer |
+| IU-12 | Existing runtime behavior stays compatible except documented correctness fixes; source, declarations, ESM/CJS and docs agree | baseline, hardening and integration gates |
+
+Constraints: no dependencies, no publication or main merge, preserve the four pipe
+modes and generated 32-step boundary, preserve current compiler support. Do not
+replace missing inference with unchecked catch-alls. Input model declarations and
+external API contracts are legitimate context, not corrective hints.
+
+Explicit boundaries: arbitrary generic function transformations and fully untyped
+function-first callbacks cannot always be inferred by TypeScript. We improve
+verified cases and document remaining boundaries, rather than promise universal
+inference. Existing explicit legacy path result arguments will be evaluated for
+compatibility, but must not provide an unchecked escape through inferred APIs.
+
+Migration: tighter utility contracts may expose invalid callers; document the
+changes under an unreleased changelog entry. Async stream computations use the
+existing `toAsync` input boundary (see IU-DC-2), not a new wrapper or type hint.
+
+Hardening scope: optional transformation tables retain the original value when
+their transformer is absent; deep merge includes enumerable symbol keys. Stream
+callback constraints distinguish raw sync Promise elements from resolved async
+elements, and accumulator initial values are synchronous values.
+
+## Historical requirements — Pipe Soundness & Variant Consolidation
 
 Status: **Inference-first hardening and 0.15.0 publication preparation validated locally**
 Owner: superlucky84

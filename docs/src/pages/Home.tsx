@@ -13,6 +13,11 @@ export const Home = () => (
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
+    <a href="#/playground" onClick={(event: Event) => { event.preventDefault(); navigateTo('/playground'); }} class="block p-6 mb-8 bg-green-50 border border-green-200 rounded-xl text-green-900">
+      <strong>Get hands-on with fp-pack →</strong>
+      <p class="text-sm mt-2">From the curry bar to the type laboratory. Change inputs and inspect actual results and type inference in six interactive experiments.</p>
+    </a>
+
     <h2 class="text-3xl font-semibold text-gray-900 dark:text-white mb-4">
       Core Philosophy
     </h2>

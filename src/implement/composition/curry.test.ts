@@ -16,6 +16,14 @@ describe('curry', () => {
 
     expect(curriedCombine('x')('y')('z')).toBe('x-y-z');
     expect(curriedCombine('x', 'y')('z')).toBe('x-y-z');
+    expect(curriedCombine('x')('y', 'z')).toBe('x-y-z');
+  });
+
+  it('keeps grouped applications reusable through five arguments', () => {
+    const sum = curry((a: number, b: number, c: number, d: number, e: number) => a + b + c + d + e);
+    const withOne = sum(1);
+    expect(withOne(2, 3)(4, 5)).toBe(15);
+    expect(withOne(2)(3, 4, 6)).toBe(16);
   });
 
   it('reuses partial applications', () => {

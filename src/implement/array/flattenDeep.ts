@@ -1,21 +1,16 @@
-/**
- * flattenDeep - 깊은 배열 평탄화
- */
-function flattenDeep<T>(arr: any[]): T[] {
-  const result: T[] = [];
+type DeepElement<T, D extends unknown[] = []> = D['length'] extends 16 ? unknown
+  : T extends readonly (infer U)[] ? DeepElement<U, [...D, 0]> : T;
 
-  const walk = (items: any[]) => {
+/** flattenDeep - recursively collect array leaves without changing the input. */
+function flattenDeep<T>(arr: readonly T[]): DeepElement<T>[] {
+  const result: unknown[] = [];
+  const walk = (items: readonly unknown[]) => {
     for (const item of items) {
-      if (Array.isArray(item)) {
-        walk(item);
-      } else {
-        result.push(item);
-      }
+      if (Array.isArray(item)) walk(item);
+      else result.push(item);
     }
   };
-
   walk(arr);
-  return result;
+  return result as DeepElement<T>[];
 }
-
 export default flattenDeep;

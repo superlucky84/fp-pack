@@ -159,7 +159,7 @@ Available in `fp-pack`:
 - Array operations: `map`, `filter`, `reduce`, `take`, `drop`, `chunk`, `flatten`, `flatMap`, `sort`, `sortBy`, `groupBy`, `uniq`, `zip`
 - Object operations: `prop`, `pick`, `omit`, `assoc`, `merge`, `mapValues`, `evolve`, `path`
 - Control flow: `ifElse`, `when`, `unless`, `cond`
-- Utilities: `from`, `tap`, `tap0`, `curry`, `compose`
+- Utilities: `from`, `tap`, `tap0`, `curry`, `curryN`, `compose`
 
 ### SideEffect Pattern
 Available in `fp-pack`:
@@ -302,3 +302,15 @@ This add-on intentionally avoids:
 - **Absolute prohibitions**: "Never" statements reduce flexibility and pragmatism
 
 The goal is minimal, actionable guidance that modifies agent behavior without overwhelming the context window or duplicating external documentation.
+
+## Inference usability (since 0.16.0)
+
+Prefer `pipe(value, ...)` so source types reach utility callbacks. Evolve and merge
+track changed properties; literal path outputs derive from their source. Async
+stream predicates, flatMap callbacks and accumulators require `toAsync(input)` or
+another async/promised input. `pipeAsync` alone keeps a sync iterable synchronous.
+Use the inferred APIs rather than asserting output generics or casting results.
+
+For default/optional/rest parameters, use `curryN(arity, fn)` with a valid literal
+count 0–32. Every supplied value counts, including undefined; zero waits for an
+explicit call. Argument and result types infer from fn. Bind explicit receivers.

@@ -6,20 +6,23 @@ import type { FromFn } from './from';
 
 type UnaryFn<A, R> = (a: A) => R;
 type ZeroFn<R> = () => R;
-type ComposeInput<Fns extends UnaryFn<any, any>[]> = Fns extends [...UnaryFn<any, any>[], UnaryFn<infer A, any>]
-  ? A
+type FallbackFn = (value: never) => unknown;
+type ComposeInput<Fns extends FallbackFn[]> = Fns extends [...FallbackFn[], infer Last extends FallbackFn]
+  ? Parameters<Last>[0]
   : never;
-type ComposeOutput<Fns extends UnaryFn<any, any>[]> = Fns extends [UnaryFn<any, infer R>]
-  ? R
-  : Fns extends [UnaryFn<infer A, infer R>, ...infer Rest]
-    ? Rest extends [UnaryFn<any, any>, ...UnaryFn<any, any>[]]
-      ? ComposeOutput<Rest> extends A
-        ? R
-        : never
-      : never
-    : never;
-type Compose<Fns extends UnaryFn<any, any>[]> = (input: ComposeInput<Fns>) => ComposeOutput<Fns>;
-type ComposeFrom<Fns extends [...UnaryFn<any, any>[], FromFn<any>]> = (input?: ComposeInput<Fns>) => ComposeOutput<Fns>;
+type ComposeOutput<Fns extends FallbackFn[]> = ReturnType<Fns[0]>;
+type Compose<Fns extends FallbackFn[]> = (input: ComposeInput<Fns>) => ComposeOutput<Fns>;
+type ComposeFrom<Fns extends [...FallbackFn[], FromFn<any>]> = (input?: ComposeInput<Fns>) => ComposeOutput<Fns>;
+
+type ComposeCheck<Fns extends FallbackFn[]> = Fns extends [
+  infer Left extends FallbackFn,
+  infer Right extends FallbackFn,
+  ...infer Rest extends FallbackFn[]
+]
+  ? [ReturnType<Right>] extends [Parameters<Left>[0]]
+    ? ComposeCheck<[Right, ...Rest]>
+    : { __compose_error: [ReturnType<Right>, '->', Parameters<Left>[0]] }
+  : unknown;
 
 function compose<R>(ab: ZeroFn<R>): () => R;
 function compose<B, R>(ab: UnaryFn<B, R>, bc: ZeroFn<B>): () => R;
@@ -83,7 +86,7 @@ function compose<J, I, H, G, F, E, D, C, B, R>(
   jk: ZeroFn<J>
 ): () => R;
 
-function compose<Fns extends [...UnaryFn<any, any>[], FromFn<any>]>(...funcs: Fns): ComposeFrom<Fns>;
+function compose<Fns extends [...FallbackFn[], FromFn<any>]>(...funcs: Fns & ComposeCheck<Fns>): ComposeFrom<Fns>;
 function compose<A, R>(ab: UnaryFn<A, R>): (a: A) => R;
 function compose<A, B, R>(ab: UnaryFn<B, R>, bc: UnaryFn<A, B>): (a: A) => R;
 function compose<A, B, C, R>(ab: UnaryFn<C, R>, bc: UnaryFn<B, C>, cd: UnaryFn<A, B>): (a: A) => R;
@@ -151,8 +154,7 @@ function compose<A, B, C, D, E, F, G, H, I, J, R>(
   jk: UnaryFn<A, B>
 ): (a: A) => R;
 
-function compose<Fns extends [UnaryFn<any, any>, ...UnaryFn<any, any>[]]>(...funcs: Fns): Compose<Fns>;
-function compose(...funcs: Array<UnaryFn<any, any>>): (input: any) => any;
+function compose<Fns extends [FallbackFn, ...FallbackFn[]]>(...funcs: Fns & ComposeCheck<Fns>): Compose<Fns>;
 function compose(...funcs: Array<(...args: any[]) => any>) {
   return (value: any) => funcs.reduceRight((acc, fn) => fn(acc), value);
 }

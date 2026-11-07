@@ -8,6 +8,8 @@ export { default as pipeSideEffectStrict } from './pipeSideEffectStrict';
 export { default as compose } from './compose';
 export { default as curry } from './curry';
 export type { Curried, Curry2, Curry3, Curry4, Curry5 } from './curry';
+export { default as curryN } from './curryN';
+export type { CurriedN, CurriedArgs, CurryArity } from './curryN';
 export { default as partial } from './partial';
 export { default as flip } from './flip';
 export { default as complement } from './complement';

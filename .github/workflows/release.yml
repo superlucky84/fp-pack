@@ -1,0 +1,77 @@
+name: Release to npm
+
+# Publishes only when started by hand: Actions → Release to npm → Run workflow.
+# Pushes and merges never publish. The run must be on main, and it publishes only
+# when package.json holds a version npm does not have yet.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Run every check and npm publish --dry-run, without publishing or tagging
+        type: boolean
+        default: false
+
+concurrency:
+  group: npm-release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # push the fp-pack@<version> tag
+      id-token: write # npm trusted publishing (OIDC) and provenance
+    steps:
+      - name: Require main
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "::error::Run this workflow from main (this run used ${GITHUB_REF})."
+          exit 1
+
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Compare package.json version with npm
+        id: version
+        run: node scripts/release-version-check.mjs
+
+      - name: Install dependencies
+        if: steps.version.outputs.publish == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Release checks (types, tests, build, packed consumer, docs)
+        if: steps.version.outputs.publish == 'true'
+        run: pnpm release:check
+
+      - name: Use an npm that supports trusted publishing
+        if: steps.version.outputs.publish == 'true'
+        run: npm install -g npm@11
+
+      - name: Publish
+        if: steps.version.outputs.publish == 'true'
+        # Trusted publishing needs no secret. NPM_TOKEN is only a fallback when it
+        # is not set up on npmjs.com. release:check above is prepublishOnly's gate,
+        # so lifecycle scripts are skipped instead of running it twice.
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --ignore-scripts ${{ inputs.dry_run && '--dry-run' || '' }}
+
+      - name: Tag release
+        if: steps.version.outputs.publish == 'true' && !inputs.dry_run
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          git tag "fp-pack@${VERSION}"
+          git push origin "fp-pack@${VERSION}"

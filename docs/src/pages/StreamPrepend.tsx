@@ -31,27 +31,23 @@ export const StreamPrepend = () => (
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Type Signature
+      Input modes and inference
     </h2>
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      Sync sources use sync iteration; async or promised sources use async iteration. The source anchors inline
+      pipe callbacks; saved steps without callbacks infer elements when supplied an input. Async predicates,
+      flatMap callbacks and accumulators require an async source: use toAsync once before those steps. toArray
+      returns a Promise in either mode.
+    </p>
 
+    {/* inference-usability: prepend */}
     <CodeBlock
       language="typescript"
-      code={`// Sync version - prepend value to sync iterable
-function prepend<T>(value: T, iterable: Iterable<T>): IterableIterator<T>;
+      code={`import { pipe } from 'fp-pack';
+import { prepend, toAsync, toArray } from 'fp-pack/stream';
 
-// Async version - prepend value to async iterable
-function prepend<T>(
-  value: PromiseLikeValue<T>,
-  iterable: AnyIterableInput<PromiseLikeValue<T>>
-): AsyncIterableIterator<T>;
-
-// Curried sync version - returns function that prepends value
-function prepend<T>(value: T): (iterable: Iterable<T>) => IterableIterator<T>;
-
-// Curried async version - returns function that prepends value
-function prepend<T>(
-  value: PromiseLikeValue<T>
-): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<T>;`}
+const sync = pipe([1, 2, 3], prepend(0), toArray);
+const async = pipe([1, 2, 3], toAsync, prepend(0), toArray);`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -92,7 +88,7 @@ console.log(Array.from(withOne));
     <CodeBlock
       language="typescript"
       code={`import { prepend } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { map } from 'fp-pack/stream';
 
 // Create reusable prepend functions
@@ -100,10 +96,12 @@ const addHeader = prepend('=== Report Header ===');
 const addTimestamp = prepend(\`Generated: \${new Date().toISOString()}\`);
 
 // Use in functional pipelines
-const processItems = pipe(
-  map((item: string) => \`  \${item}\`),
-  addHeader
-);
+const processItems = (items: string[]) =>
+  pipe(
+    items,
+    map((item) => \`  \${item}\`),
+    addHeader
+  );
 
 const items = ['Item 1', 'Item 2', 'Item 3'];
 console.log(Array.from(processItems(items)));
@@ -157,7 +155,7 @@ for await (const row of csvWithHeader) {
     <CodeBlock
       language="typescript"
       code={`import { prepend } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 
 interface FileChunk {
   type: 'metadata' | 'content';
@@ -305,7 +303,7 @@ for await (const item of productsWithCacheInfo) {
     <CodeBlock
       language="typescript"
       code={`import { prepend } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 
 function* generateLogs() {
   yield '[INFO] Service started';
@@ -343,7 +341,7 @@ for (const line of logsWithBanner) {
       language="typescript"
       code={`import { prepend } from 'fp-pack/stream';
 import { filter } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 
 function* getNumbers() {
   yield 1;
@@ -354,21 +352,25 @@ function* getNumbers() {
 }
 
 // Filter for numbers greater than 10 (will be empty)
-const largeNumbers = pipe(
-  filter((n: number) => n > 10),
-  // Prepend a default value
-  prepend(-1)
-);
+const largeNumbers = (items: Iterable<number>) =>
+  pipe(
+    items,
+    filter((n: number) => n > 10),
+    // Prepend a default value
+    prepend(-1)
+  );
 
 const result = Array.from(largeNumbers(getNumbers()));
 console.log(result);
 // Output: [-1] (only the default value, as no numbers > 10)
 
 // With numbers that match
-const evenNumbers = pipe(
-  filter((n: number) => n % 2 === 0),
-  prepend(0) // Add 0 as the first even number
-);
+const evenNumbers = (items: Iterable<number>) =>
+  pipe(
+    items,
+    filter((n: number) => n % 2 === 0),
+    prepend(0) // Add 0 as the first even number
+  );
 
 const result2 = Array.from(evenNumbers(getNumbers()));
 console.log(result2);

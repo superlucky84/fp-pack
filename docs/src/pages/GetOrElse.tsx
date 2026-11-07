@@ -11,14 +11,14 @@ export const GetOrElse = () => (
       Provide a default value when input is null or undefined
     </p>
 
+    {/* inference-usability: GetOrElse */}
     <CodeBlock
       language="typescript"
-      code={`import { getOrElse } from 'fp-pack';
+      code={`import { pipe, getOrElse, map } from 'fp-pack';
 
-const withDefault = getOrElse('Guest');
-
-withDefault(null);       // "Guest"
-withDefault('Alice');    // "Alice"`}
+type User = { name: string };
+const names = (users: readonly User[] | undefined) =>
+  pipe(users, getOrElse([]), map(user => user.name)); // string[]`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />

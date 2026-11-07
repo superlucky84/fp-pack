@@ -1,6 +1,208 @@
 # fp-pack Design Document
 
+## Pre-release review fixes design — 2026-11-07
+
+- [x] **RF-DC-3 — Guard overloads must not poison callbacks.** TypeScript fixes an
+  unannotated callback's parameter type the first time an overload contextually
+  types it, even if that overload is then rejected. A plain boolean predicate
+  first meets the type-guard overloads, where `S` falls back to `T` and
+  `Exclude<T, S>` is `never`; the false branch keeps `never`. The guard overloads
+  use `[Exclude<T, S>] extends [never] ? T : Exclude<T, S>` for the false side, so
+  a rejected guard attempt leaves the input type. A guard covering all of `T`
+  gives its unreachable branch `T` instead of `never`, which is harmless.
+  Same-type `when`/`unless` overloads must not infer `T` from the callback result
+  of an already fixed callback; they take `T` from the input only. Validate RF-03.
+- [x] **RF-DC-4 — Examples teach the 0.16 forms.** Saved stream pipelines become
+  value-first pipelines inside a typed function; `path` drops output generics and
+  uses literal paths for precise results; async `flatMap` uses `toAsync`. Validate
+  RF-04/RF-05.
+- [x] **RF-DC-5 — One conditional overload family.** `ifElse`/`when`/`unless`
+  declare one overload per arity with `P extends Predicate<T>`; `Passed<T, P>` and
+  `Failed<T, P>` read a type predicate from `P` (guard narrowing) or fall back to
+  `T`. No rejected guard attempt is left to fix an inline callback such as
+  `tap(...)` at `unknown`. Same-type overloads (`NoInfer<T>` result) stay first;
+  explicit type arguments from earlier versions (`ifElse<T, RTrue, RFalse>`,
+  `when`/`unless<T, R>`) keep legacy overloads at the end. Validate RF-06.
+- [x] **RF-DC-6 — Read the first step at its own parameter type.** Function-first
+  pipes read the first step's output as `F extends (a: A) => infer R`, `A` being
+  its parameter. A generic step's bare return type collapsed to `never` for stream
+  partials whose element depends on the input (`filter`), erasing every later
+  step. Applies to pipe, pipeAsync, both SideEffect pipes and pipeWithDeps. Saved
+  stream pipelines accept sync or async input, collectors keep their 0.15 result
+  types, and iterator results are the honest sync/async union (pipeHint or a
+  typed wrapper gives a sync iterator). Validate RF-07.
+- [x] **RF-DC-7 — Name every type an inferred stream step shows.** `fp-pack` and
+  `fp-pack/stream` export the stream helper types (`InputFor`, `InputItem`,
+  `IteratorResultFor`, ...) so consumers can emit declarations for exported saved
+  steps and pipelines. Validate RF-08.
+
+## Release 0.16.0 design — 2026-11-07
+
+- [x] **REL-DC-1 — Manual trigger, main only.** `.github/workflows/release.yml`
+  has only `workflow_dispatch`. Its first step fails unless the run is on
+  `refs/heads/main`, so a merge never publishes and another branch cannot.
+- [x] **REL-DC-2 — The version decides.** `scripts/release-version-check.mjs`
+  compares package.json with npm's published versions. Already published: notice
+  and stop successfully. Newer stable x.y.z: publish. Lower, or a prerelease:
+  fail with a message (prereleases need a dist-tag and stay manual). npm itself
+  still refuses a duplicate version. A registry error stops the run.
+- [x] **REL-DC-3 — Same gate as a local publish.** CI runs `pnpm release:check`
+  (prepublishOnly's command), then `npm publish --ignore-scripts` so the gate does
+  not run twice. `dry_run` runs everything with `npm publish --dry-run`, no tag.
+- [x] **REL-DC-4 — Tokenless auth first.** npm trusted publishing (OIDC,
+  `id-token: write`, npm 11.5.1+) needs no stored secret and adds provenance; a
+  one-time npmjs.com setting names this repository and `release.yml`. An optional
+  `NPM_TOKEN` secret is the fallback. A real publish pushes the lightweight tag
+  `fp-pack@<version>`, matching earlier tags.
+- [x] **REL-DC-5 — Docs follow main.** `.github/workflows/docs.yml`, modelled on
+  lithent's, runs on pushes to main that touch `docs/**`, `src/**` (the playground
+  runs the library source) or the workspace manifests, and on manual dispatch
+  from main only. It builds the docs and replaces `assets/` plus the built files
+  on gh-pages, leaving older files there untouched, then commits as
+  github-actions[bot]. Docs can briefly describe a version before its manual npm
+  release, so run the release right after merging a version bump.
+
+## Combined-branch review fixes design — 2026-10-23
+
+- [x] **RF-DC-1 — Never hold an error behind a pending read.** Async zip inputs
+  are async generators (`toAsync`), and a generator's `return()` waits behind a
+  pending `next()`. When the paired read rejects, request `return()` on both
+  inputs without awaiting it: the rejection propagates now and the pending input
+  closes after its read settles. On this path a cleanup failure is ignored in
+  favour of the original error. Completion and early termination keep awaited,
+  ordered cleanup (right still closes if left throws). zip and zipWith share one
+  helper. Validate RF-01.
+- [x] **RF-DC-2 — Document the removed catch-all.** The compose signature block
+  shows the right-to-left typed overloads and the checked variadic form; it no
+  longer lists `Array<(input: any) => any>`. The CHANGELOG migration names the
+  replacements: a tuple (`as const` works) or `reduceRight` over a homogeneous
+  list. Validate RF-02.
+
+## Interactive playground design — 2026-10-23
+
+- [x] **PG-DC-1 — Integrate without constraining the demo.** Add `/playground`
+  and `/ko/playground`, a full-width page with its own compact navigation. Keep
+  the existing documentation layout for other routes. Validate PG-01.
+- [x] **PG-DC-2 — Real, deterministic labs.** A typed scenario module imports
+  the current root/stream implementation, returns observable stages and results,
+  and carries curated control presets with independent expected values. Six
+  tabs, random challenges, live controls and a batch verification drawer provide
+  varied paths. Invalid numeric input is bounded/validated. Validate PG-02/03.
+- [x] **PG-DC-3 — Genuine inference evidence.** A lazy Web Worker uses the
+  existing TypeScript dependency, bundled standard libs and checkout source in
+  a virtual compiler host. Strict/exactOptionalPropertyTypes checks return real
+  top-level inferred variable types and diagnostics. Editable source is never
+  executed. Worker errors/timeouts can be retried; stale replies are ignored.
+  Tests run the same compiler host against valid/invalid examples. Validate PG-04.
+- [x] **PG-DC-4 — Interaction ownership.** Each run has an incrementing request
+  ID; superseded results cannot overwrite the active lab. Cleanup disposes
+  workers/timers when leaving the page. Visible loading, failure and reset paths,
+  labeled keyboard-operable controls and responsive grid prevent hidden state.
+  Validate PG-05 with runtime hardening and browser interaction.
+- [x] **PG-DC-5 — Source and hosting.** Create a feature branch from curryN;
+  retain the canonical docs and source there. Publish a new owner-private Site
+  containing a static build of the same docs, defaulting to Korean playground.
+  Keep Site identity/source snapshot in its own workspace, outside fp-pack git.
+  Use Sites workflow; no main merge or release. Validate PG-06.
+
 This document describes the internal design decisions and architectural choices made in fp-pack.
+
+## curryN design — 2026-10-23
+
+See REQUIREMENTS CN-*; the existing root document set is canonical.
+
+- [x] **CN-DC-1 — Separate explicit policy.** Add `curryN(arity, fn)` and
+  `CurriedN<Fn, Arity>` beside curry. The existing curry implementation and types
+  stay intact. The number controls execution timing; function types supply
+  parameter and result information. Validate CN-01/CN-07.
+- [x] **CN-DC-2 — Threshold and forwarding.** Return a collector without eagerly
+  calling fn, including for zero. Accumulate immutable argument lists; once the
+  threshold is met, forward every supplied value. Empty calls do not finish a
+  positive stage; undefined consumes a slot and lets JavaScript apply defaults.
+  No placeholders. Validate CN-02–04, repeated partial use and rest overflow.
+- [x] **CN-DC-3 — Bounded, checked counts.** Accept literal counts 0–32 to keep
+  recursive type work bounded. Statically reject counts that cannot form a
+  valid original call (below its required prefix or above finite parameter
+  capacity). Noninteger/out-of-range runtime counts throw RangeError; nonfunction
+  input throws TypeError. Dynamic number counts have no precise static stage
+  contract and are rejected. Validate CN-05 and the 0/32 boundaries.
+- [x] **CN-DC-4 — Consume actual prefixes.** Type each call from valid prefixes
+  of remaining parameters, preserving undefined on optional entries and rest
+  element types. Compute remaining count/parameters from the supplied tuple;
+  expose the result only once that tuple proves completion. Extra values must
+  remain valid for fn. Unbounded spreads with uncertain completion return unknown.
+  Function/count unions remain conservative. Validate CN-03/CN-05/CN-06.
+- [x] **CN-DC-5 — Preserve honest inference.** Contextually type function-valued
+  parameters and retain literal/Promise results. Use no unchecked public catchall.
+  Explicit this contracts require binding; arbitrary generic/overload extraction
+  retains the compiler's established boundaries. Add paired positive/negative
+  cases and installed-consumer declaration emission. Validate CN-06/CN-08.
+  Export the stage interface `CurriedArgs<Parameters, Arity, Result>` as well as
+  the checked `CurriedN<Fn, Arity>` alias: inferred exported partials must name a
+  public type during consumer declaration emission (a private stage caused TS4023).
+
+Implementation scope: one composition module and barrel exports, focused runtime
+and type fixtures, existing consumer script, discoverable EN/KO pages and bundled
+authoring guidance. No curry refactor is required to add the collector.
+
+## Inference Usability Revision (2026-10-22)
+
+This is the active cross-utility contract. Requirements IU-* are in REQUIREMENTS.md;
+the older architecture and dated pipe revision below remain historical evidence.
+
+- [x] **IU-DC-1 — Infer where information arrives.** Put independent generics on
+  the returned call accepting their evidence. A saved count-only stream operation
+  remains generic; its returned function derives element and execution mode from
+  its input. Contextual and stored-callback overloads remain separate because
+  overloading the returned function alone loses inline pipe inference. Branch
+  result generics are introduced when the corresponding handler is supplied.
+  Validate IU-06/IU-09 with inline and stored partial applications.
+- [x] **IU-DC-2 — Preserve explicit execution modes.** Async stream callbacks
+  operate on an AsyncIterable or promised iterable. Normalize ordinary inputs
+  once with existing `toAsync`. Sync-only traversal never treats a Promise as a
+  predicate result or iterable/accumulator; reject invalid combinations statically
+  and fail clearly for untyped callers. `map`/`zipWith` may still produce a sync
+  iterable of Promise values (their map semantics); `toArray` resolves values.
+  This avoids runtime guessing from function names or eagerly executing a lazy
+  callback. Tighten previously accepted but broken overloads and document migration.
+  Validate IU-07 across sync, async, promised input, PromiseLike results and early exits.
+- [x] **IU-DC-3 — Model transformations, not assertions.** Evolve maps changed
+  keys to callback outputs; merge models right precedence including optional keys;
+  deep merge recursively follows object merge semantics. Path operations compute
+  bounded results from path tuples and source types; dynamic paths remain broad.
+  Deep array flattening derives leaf types. Validate IU-01/IU-03 with changed key
+  types, nested objects, unions, invalid downstream calls and actual values.
+- [x] **IU-DC-4 — Preserve useful input information.** Optional keys remain
+  optional; required property reads remain required; readonly arrays are accepted
+  by nonmutating operations. Defaults do not constrain the original input to the
+  fallback's narrow type. Type guards narrow the accepted branch; plain boolean
+  predicates keep conservative results. Validate IU-02/IU-04/IU-05.
+- [x] **IU-DC-5 — Keep sound composition.** Remove unchecked compose fallbacks
+  and verify its reverse connections; preserve pipe's generated signatures and
+  brands. Improve single generic steps only where their real unary call shape is
+  preserved; no new ambiguous execution mode. Validate IU-08 with positive and
+  negative examples, zero-arg/optional entries and long typed chains.
+- [x] **IU-DC-6 — Preserve effects and test inference itself.** Keep effect E in
+  match handlers, preserve existing explicit-generic compatibility where sound,
+  and test inferred values without casts. New regressions exercise source and
+  installed declarations. Validate IU-10/IU-11/IU-12.
+
+Implementation boundaries: use small shared internal type helpers only for shared
+contracts (object overwrite/path and stream input modes), rather than one universal
+conditional type engine. Bounded recursion must degrade to unknown instead of any.
+Do not change package version or publish as part of this branch. Add an Unreleased
+migration entry and update the affected user documentation before integration exits.
+
+Trade-offs: explicit async input is a semantic boundary, not a type hint. Fully
+curried untyped callbacks may lose contextual typing across successive calls; the
+combined partial-application form remains the supported inference-first form.
+Any residual generic-first limitation is recorded with a tested alternative.
+
+Hardening details: optional evolve entries union the retained source value with
+the transformed output. Deep merge enumerates own enumerable string/symbol keys.
+Stored stream callbacks accept async inputs only when the awaited input is valid
+for their parameter type. Sync accumulators reject Promise results and Promise
+initial values; use an async source for asynchronous accumulation.
 
 ## Table of Contents
 

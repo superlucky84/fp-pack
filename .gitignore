@@ -14,6 +14,7 @@ GEMINI.md
 node_modules
 dist
 dist-ssr
+demo-dist
 *.local
 
 # Editor directories and files

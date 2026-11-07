@@ -12,7 +12,7 @@ describe('assocPath', () => {
 
   it('overrides non-object values on the path', () => {
     const data = { a: 5 };
-    const updated = assocPath<{ a: { b: { c: number } } }>(['a', 'b', 'c'], 42, data);
+    const updated = assocPath(['a', 'b', 'c'], 42, data);
 
     expect(updated).toEqual({ a: { b: { c: 42 } } });
   });

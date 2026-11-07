@@ -1,5 +1,63 @@
 # Changelog
 
+## 0.16.0
+
+- Add an EN/KO interactive playground with six experiments, 21 checked runtime
+  presets, random challenges and an editable TypeScript worker that reports real
+  inferred types and diagnostics against this checkout. Build a standalone demo
+  with `npm run demo:build`; existing GitHub Pages docs keep their base path.
+
+- Add `curryN(arity, fn)` with inferred grouped/reusable partial applications for
+  default, optional and rest parameters. Literal counts 0–32 control execution;
+  undefined counts as a supplied value, and extra valid arguments are forwarded.
+  Zero waits for an explicit call. Export `CurriedN`, `CurriedArgs` and `CurryArity`;
+  existing `curry` behavior is unchanged.
+
+- Stream partial applications retain source element types and sync/async mode.
+  Async predicates/flatMap/accumulators require `toAsync(input)` or another async
+  input; previously accepted sync input combinations could silently misbehave.
+  A saved pipeline that starts with a stream step keeps its element types and now
+  accepts sync or async sources; ending with `toArray` or `reduce` gives the same
+  result type as before. Ending with an iterator (`pipe(map(fn), take(2))`) gives
+  `IterableIterator<T> | AsyncIterableIterator<T>` until it is called; for a sync
+  iterator, start from the value, wrap it in a function with a typed input, or use
+  `pipeHint`. Stream helper types (`InputFor`, `InputItem`, `IteratorResultFor`,
+  `ScalarResultFor`, `CombinedIterator`, ...) are exported so inferred stream steps
+  and saved pipelines can be exported with declarations.
+  Strings are valid stream inputs; deep flattening preserves string leaves.
+  Zip operations close both inputs when consumption stops early or the shorter
+  input ends. An async input rejection is reported at once; the other input
+  closes after its pending read settles instead of delaying the error.
+  Stream flatten/flattenDeep derive leaves from the source; remove old output-only
+  generic arguments. Flattening promised inner iterables needs an async source.
+- Staged conditionals infer each handler's result when supplied; type guards
+  narrow branch callback inputs. `cond`/`fold` support heterogeneous results.
+  `curry` supports grouped calls through every remaining 2–5 argument stage.
+  `compose` rejects incompatible connections instead of returning never/any.
+  Its untyped `Array` catch-all overload is removed, as `pipe`'s was in 0.15.0,
+  so `compose(...fns)` over a runtime array no longer type-checks. Pass a tuple
+  (`as const` works) or fold same-typed functions with
+  `fns.reduceRight((acc, fn) => fn(acc), input)`.
+  `pipe`/`pipeAsync` preserve supported single-step generic relationships;
+  `matchSideEffect` keeps the effect payload type in its handler.
+- Optional evolve tables retain the source type when a transformer is absent;
+  deep merge includes enumerable symbol keys. Stream accumulators require a
+  non-Promise initial value and an async source when the accumulator is async.
+
+- Object transformations preserve changed property types; shallow/deep merge model
+  actual right-hand overwrite precedence instead of intersecting conflicting values.
+- Nonmutating array helpers accept readonly inputs. `drop` preserves its existing
+  no-op reference identity and therefore retains readonly outputs for readonly inputs.
+- Optional properties work in curried `prop`/`pick`/`omit`; required `prop` reads
+  no longer add undefined. Array `find` and `partition` preserve type guards.
+- Nullable defaults, including empty arrays, infer from the incoming value.
+- Paths and deep array flattening derive results from input types. Remove old
+  output-only type arguments such as `path<string>(keys, object)` and
+  `assocPath<DesiredOutput>(keys, value, object)`; use inferred calls instead.
+  `flattenDeep`'s generic describes its input element, not an asserted output.
+  Literal paths infer without `as const`; dynamic paths and recursion beyond the
+  documented type budget remain unknown.
+
 ## 0.15.0
 
 ### Highlights

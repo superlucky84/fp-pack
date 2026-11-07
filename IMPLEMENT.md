@@ -1,4 +1,294 @@
-# IMPLEMENT — Pipe Soundness & Variant Consolidation
+# IMPLEMENT — Inference Usability
+
+## Active revision — pre-release review fixes (2026-11-07)
+
+1. [x] **RF Phase 4 — Reproduce.** Case matrix on main and branch; add failing
+   type regressions for the conditional shapes.
+2. [x] **RF Phase 5 — Fix.** ifElse/when/unless declarations. Gate: regressions,
+   existing type tests, case matrix.
+3. [x] **RF Phase 6 — Docs.** Rewrite failing EN/KO examples; CHANGELOG/README
+   migration note. Gate: example corpus comparison.
+4. [x] **RF Phase 7 — Integration.** `pnpm release:check`; commit, push to PR #8.
+
+Handoff (complete):
+
+- done: guard overloads of ifElse/unless use `Rest<T, S>` for the false side;
+  same-type when/unless overloads take `T` from the input (`NoInfer` result).
+  Five regressions in `boundary-inference.type-test.ts` failed first and pass now.
+  Rewrote 0.16-breaking examples on 20 EN/KO pages (saved stream pipelines,
+  `path` generics, async flatMap/takeWhile sources) and fixed examples that were
+  already wrong at runtime (stream flatten inputs, zip row index, append EOF
+  check). AI guide: value-first cond example, `ifElse` given a function.
+  CHANGELOG/README name the saved stream pipeline change.
+- validation: case matrix 12/12, and seven probe result types equal main's;
+  `pnpm release:check` (468 tests, build, packed consumer, docs lint/build);
+  packed consumer on TS 5.9.3, 6.0.3 and 7.0.2. Example corpus: no example that
+  compiled on main fails and no failing example gained an error; failing
+  examples 535 → 511 (main 611). The two changed AI guide examples are pseudo
+  code with undefined names and fewer errors than on main.
+- known: 511 examples still fail on both main and this branch, mostly fragments
+  with undefined names; older mistakes such as TypeUsage's explicit
+  `curriedFilter<User>` are outside this revision.
+
+## Active revision — 0.15 parity for inference (2026-11-07)
+
+1. [x] **RF Phase 8 — Measure.** Compile the 1,802 examples from main's docs on
+   0.15 and 0.16 source; compare compile results and every top-level variable type.
+2. [x] **RF Phase 9 — Conditionals.** One overload family (RF-DC-5); RF-06
+   regressions failed on the old declarations first.
+3. [x] **RF Phase 10 — Saved stream pipelines.** FirstOutput in all pipes
+   (RF-DC-6), public stream types (RF-DC-7); RF-07 regressions failed first.
+4. [x] **RF Phase 11 — Integration.** release:check, TS 6.0/7.0 consumer, both
+   example corpora, docs for iterator-ending saved pipelines.
+
+Handoff (complete):
+
+- result: 0.15 examples on 0.16 keep 3,728 variable types and improve or
+  correct the rest; the 17 that gain `unknown` are generic partials shown with
+  their constraint, intended rejections (async callbacks on sync sources, `path`
+  output generics) or explicit `any` inputs. Compile results: 4 intended
+  rejections, 17 examples that only compile on 0.16.
+- before this revision: exporting a saved stream step such as
+  `filter((n: number) => ...)` failed declaration emit with TS2742 in consumers.
+- validation: release:check (468 tests, build, packed consumer with 59 examples,
+  docs), packed consumer on TS 6.0.3/7.0.2, case matrix 12/12, inline tap
+  probes 8/8 equal to 0.15, branch example corpus with no new failures.
+  Type-check instantiations 327,523 → 333,083 (+1.7%, new fixtures included).
+
+## Active release — 0.16.0 (2026-11-07)
+
+Branch `ccr-80cfc3e1-vwp61m`, baseline `5ba6b88`.
+
+1. [x] **REL Phase 0 — Contracts.** REL-* sections in the four documents.
+2. [x] **REL Phase 1 — Version.** package.json, CHANGELOG, README, guides and
+   playground labels; remove private hosting details. Gate: grep.
+3. [x] **REL Phase 2 — Workflow.** release.yml and the version check. Gate:
+   actionlint; version check against npm for new, published, lower and
+   prerelease versions.
+4. [x] **REL Phase 3 — Integration.** `pnpm release:check`; commit, push, PR to main.
+5. [x] **REL Phase 4 — Docs deployment.** docs.yml (REL-06). Gate: actionlint;
+   rehearse build, replace and commit against a local gh-pages checkout.
+
+Handoff (complete):
+
+- done: version 0.16.0 in package.json, CHANGELOG, README (new upgrade section
+  holding the former unreleased notes), AI guides and playground labels.
+  `.github/workflows/release.yml` (manual dispatch, main only) and
+  `scripts/release-version-check.mjs`. Private demo host details removed.
+- validation: `pnpm release:check` (468 tests, build, packed 0.16.0 consumer with
+  59 examples and ESM/CJS, docs lint/build); `npm publish --dry-run` shows
+  fp-pack@0.16.0; actionlint 1.7.12 clean. The version check against the live
+  registry: 0.16.0 publishes, 0.15.0 is a no-op notice, 0.14.9 and
+  0.16.0-beta.1 fail, an unpublished package publishes.
+- manual: REL-MT-1 to REL-MT-6 need the owner (npm setting, GitHub runs, docs).
+
+## Active revision — combined-branch review fixes (2026-10-23)
+
+Branch `ccr-80cfc3e1-vwp61m`, baseline `2958e5d` (467 tests, types pass).
+
+1. [x] **RF Phase 0 — Contracts.** Add RF-* sections. Gate: baseline green.
+2. [x] **RF Phase 1 — Reproduce and fix.** Add zip/zipWith pending-read rejection
+   regressions and confirm they time out first; add the shared cleanup helper.
+   Gate: new and existing stream tests.
+3. [x] **RF Phase 2 — Docs.** Compose signature block and CHANGELOG. Gate:
+   compiler probe of the documented alternatives.
+4. [x] **RF Phase 3 — Integration.** Types, full tests, build, packed consumer,
+   docs lint/build; commit and push.
+
+Handoff (complete):
+
+- done: `closeAsyncPair` in `src/stream/utils.ts` (internal) serves zip/zipWith.
+  The new regression timed out at 2s before the fix and passes after it; existing
+  early-termination and cleanup-failure tests are unchanged. EN/KO compose pages
+  show the checked right-to-left signatures and the dynamic-list replacement;
+  the KO page gained the Type Signature section the EN page already had.
+- validation: source types and generated-signature check; 468 tests in 167
+  files; library build; packed TS 5.9.3 consumer with 59 marked examples and
+  ESM/CJS runtime; docs lint and build; `git diff --check`. Compiler probe: a
+  mutable tuple, an `as const` tuple and `reduceRight` all type-check.
+- manual: RF-MT-1/2 are not signed off; automated coverage above only.
+
+## Active feature — interactive playground (2026-10-23)
+
+Branch `feat/inference-playground`, baseline `3e46200`.
+
+1. [x] **PG Phase 0 — Contracts/baseline.** Align PG-* docs. Entry: clean curryN
+   branch. Gate: inherited source types/runtime and docs type-check.
+2. [x] **PG Phase 1 — Implementation.** Build typed scenario engine, six-lab UI,
+   presets/challenges, real compiler worker and docs discovery. Gate: source
+   baseline plus docs types, deterministic expected runtime and compiler cases.
+3. [x] **PG Phase 2 — Test Hardening.** Cover default/undefined/zero/rest/reuse,
+   empty collections, optional reads, streams/cleanup, effect early exit,
+   positive/negative compiler examples, async supersession and recovery.
+   Gate: source baseline, scenario/compiler suite, accessible responsive browser
+   interaction when available.
+4. [x] **PG Phase 3 — Integration Test.** Docs lint/type/build, packed consumer
+   baseline, root-relative hosted build, browser/asset smoke, commit/push,
+   private Site deployment and ctxbin handoff readback. Gate: evidence recorded,
+   remote HEAD verified, ready-to-open URL and known limitations documented.
+
+Handoff (complete):
+
+- done: all PG phases. Six labs, 21 independent runtime presets, random/reset,
+  eight editable positive/negative examples, the actual compiler worker,
+  supersession protection and cleanup are implemented. Baseline 414 tests/types
+  passed; 23 new scenario/session and 30 real compiler tests were added.
+- validation: all 467 tests in 167 files, source types, docs types/lint pass.
+  Standard `/fp-pack/` docs build and standalone `/` build pass. Installed ESM/CJS
+  metadata/runtime and TS 5.9.3 consumer/declaration emission pass with 59 existing
+  marked documentation examples. No library behavior or dependency changes.
+- browser: Chromium against dev and production builds passed desktop 1440x1000,
+  mobile 390x844 and narrow 320px: all 21 UI checks, actual worker valid/invalid
+  examples and edited code, sliders/toggles, zip cleanup, curry reuse/zero,
+  random/reset, async supersession, language/docs navigation and worker network
+  failure followed by successful retry. No unexpected console/page errors or
+  horizontal overflow.
+- deployment: a standalone build (`npm run demo:build`) of implementation
+  `bf7212c` was deployed to an owner-private demo host for sign-off. Its address
+  and hosting identifiers live in the private handoff, not in this repository.
+- next: owner can exercise the private demo; implementation is complete. This
+  documentation checkpoint follows the implementation commit. Final pushed HEAD
+  and continuation are saved/read back under ctxbin
+  `fp-pack/feat/inference-playground`; parent `fp-pack/feat/curry-n` points there.
+- blockers: none. On-demand compiler worker is 7.1 MB uncompressed; first check
+  may take longer. Existing docs chunk warning remains. No release, main merge,
+  PR, version or dependency changes. Parent is curryN `3e46200` (still unmerged).
+
+## Active feature — curryN (2026-10-23)
+
+Branch `feat/curry-n`, baseline `6727836` (completed inference feature).
+Follow REQUIREMENTS CN-* and DESIGN CN-DC-*. Every phase runs
+`npm run test:types` and `node_modules/.bin/vitest run` as baseline gates.
+
+1. [x] **CN Phase 0 — Contracts/baseline.** Read ctxbin handoff and requested
+   doc-driven skill/rule. Resolve the four documents and verify inherited tests.
+   Exit: documented call policy and baseline 403 tests/types pass.
+2. [x] **CN Phase 1 — Implementation.** Add failing runtime/type cases, then
+   collector, checked tuple types and exports. Exit: CN-01–07 regressions and
+   baseline pass; library/declaration build and installed consumer pass.
+3. [x] **CN Phase 2 — Test Hardening.** Exercise 0/32, optional+rest combinations,
+   empty/grouped/reused calls, explicit undefined, literal/Promise/callback types,
+   invalid/union counts, uncertain spreads and all pipe modes. Exit: paired
+   positive/negative cases and baseline pass; type-cost evidence recorded.
+4. [x] **CN Phase 3 — Integration Test.** Add the fixture and marked documentation
+   examples to the installed consumer; update EN/KO routes/search/sidebar,
+   README/changelog and authoring guidance. Exit: baseline, build, ESM/CJS,
+   TS 5.9/6.0/7.0 installed declaration checks and docs lint/build pass. Commit,
+   push feature branch, then save and read back ctxbin handoff.
+
+Handoff:
+
+- done: all CN phases. The inherited 403 tests/types passed before the new
+  regressions failed on the missing API. Final source types, generated-signature
+  check and all 414 runtime tests (165 files) pass. Library/declaration build,
+  installed ESM/CJS execution, exported inferred partials and 59 marked README/
+  EN/KO examples pass consumer type/declaration checks on TS 5.9.3 / 6.0.3 / 7.0.2
+  with exact optional properties. Docs lint/build and git diff --check pass.
+- decisions validated: a never[] callable constraint retains default parameter
+  inference without contextual any. A public stage interface fixes TS4023 for
+  exported inferred partials. Function unions intersect their valid prefixes and
+  consume each possible remaining signature; applying NoInfer to the completed
+  guard preserves branch distribution. Arbitrary generic extraction and
+  uncertain-length spreads retain unknown instead of inventing a precise result.
+- cost: whole-corpus instantiations 275,788 → 326,411 (+18.4%, new fixture included).
+- next: optional interactive IDE/browser checks and owner review. Implementation
+  is complete. Final pushed HEAD and continuation notes are recorded in ctxbin
+  `fp-pack/feat/curry-n`; the parent context points to this follow-up.
+- blockers: none. Latest implementation commit `343f12e` (hardening), original
+  implementation `b149416`; this integration/documentation checkpoint follows.
+  Parent is `feat/inference-usability` at `6727836`; main remains unmerged.
+- environment: ctxbin credentials remain outside git; use NODE_USE_ENV_PROXY=1
+  here. No version or dependency changes, main merge, publication or PR creation.
+
+## Active work — 2026-10-22
+
+Branch `feat/inference-usability`, baseline `b9a92e0`. Follow REQUIREMENTS IU-* and
+DESIGN IU-DC-*. The root four-document set is canonical; dated sections below are
+historical and do not prescribe changes to the current implementation.
+
+Baseline for every phase: `npm run test:types` and `node_modules/.bin/vitest run`.
+Build/consumer gate for each implementation phase: `npm run build` then
+`npm run test:package`. These run the same underlying scripts as the pnpm commands
+without pnpm 11's environment-specific automatic dependency reinstallation.
+
+1. [x] **IU Phase 0 — Baseline and contracts.** Entry: clean baseline, review
+   reproduced failures. Align the four documents, record decisions, add regression
+   cases before their fixes. Exit: baseline verified; failing cases attributable
+   to the documented contracts. Baseline: types/runtime and existing build/consumer evidence.
+2. [x] **IU Phase 1 — Data transformations.** Fix evolve/merge/path/flatten,
+   optional property access, defaults, readonly inputs and narrowing. Entry:
+   decisions resolved and regression failures recorded. Exit: IU-01–05 and
+   baseline plus build/consumer pass with precise inferred output checks.
+3. [x] **IU Phase 2 — Stream contracts.** Repair deferred generics/returned
+   overloads, async-mode declarations and guards, iterable detection and guard
+   narrowing. Entry: Phase 1 green. Exit: IU-06–07 and baseline plus build/consumer
+   pass, including sync/async and stored-step tests.
+4. [x] **IU Phase 3 — Composition and boundaries.** Repair compose validation,
+   staged branch/curry declarations, supported generic pipe entry and effect
+   matching. Entry: Phase 2 green. Exit: IU-08–10 and baseline plus build/consumer
+   pass; inference boundaries documented without unchecked overloads.
+5. [x] **IU Phase 4 — Test Hardening.** Entry: implementation phases green.
+   Exercise cross-mode combinations, optional/readonly/union/defaults, iterator
+   cleanup, invalid calls, callback types and source test cost. Remove corrective
+   casts from the newly covered usability scenarios. Exit: IU-11 and baseline
+   pass; no unexplained any/unknown/never in positive examples.
+   Include optional transformation tables, symbol merge keys, saved callbacks on
+   Promise elements, accumulator mode rejection and both zip cleanup paths.
+6. [x] **IU Phase 5 — Integration Test.** Entry: hardening green. Add packed
+   consumer checks, run library/declaration build, ESM/CJS package checks, docs
+   lint/build and supported compiler matrix when available. Update README,
+   changelog and affected EN/KO guidance. Exit: IU-12; all executed results and
+   remaining manual checks recorded; working tree review completed.
+
+### Current handoff
+
+- done: Phase 0 baseline (388 runtime tests/types); Phase 1 regression failures
+  reproduced before fixes, then types, 393 runtime tests, build and installed
+  consumer passed. Required property reads and readonly function inputs required
+  corresponding precise expectation updates in historical tests. Removed unsafe
+  explicit path-output type arguments from their consumers. `drop(0)` retains
+  reference identity, so its readonly input overload returns a readonly array.
+- done: Phase 2 source-derived stream signatures preserve inline inference and
+  stored partial applications across sync/async inputs. Async predicates and
+  accumulators require async input; untyped sync misuse throws a clear error.
+  Strings are iterable, deep flattening keeps string leaves atomic, and zip closes
+  both inputs. Types, 398 runtime tests, build and installed consumer passed.
+- done: Phase 3 regression cases failed before fixes. Staged branch results,
+  guard narrowing, heterogeneous cond/fold results, grouped curry calls, checked
+  compose fallbacks and effect matching now infer precisely. Tuple-constrained
+  unary signatures preserve generic relationships in pipe/pipeAsync while
+  retaining optional/zero/from entries. Effect pipes retain their existing
+  overloaded effect-input protocol. Types, 399 runtime tests, build and installed
+  consumer passed.
+- done: Phase 4 added cross-mode, readonly/default, optional/union/path, symbol,
+  negative callback/accumulator and iterator cleanup regressions. Fixed absent
+  evolve transforms, readonly array defaults, required array-property paths and
+  symbol deep merge. Homomorphic deep-value mapping preserves symbol names during
+  declaration emission. Types, 403 runtime tests, build and installed consumer pass.
+- done: Phase 5 expanded the packed consumer to all four new inference fixtures
+  plus 50 marked README/EN/KO examples, compiled verbatim. TS 5.9.3 / 6.0.3 /
+  7.0.2 pass consumer checks and declaration emission with exact optional types;
+  source checks on all three also passed during integration. Optional-merge
+  assertions check readable values and key optionality independently because
+  compiler versions differ in whether implicit undefined is displayed as an
+  explicit optional write type. Installed ESM/CJS execution, library/declaration
+  build, docs lint/build, final source types and all 403 runtime tests pass.
+  Integration also tightened stream.flatten's sync/async inner-iterable contract.
+  The review and remaining inference boundaries are in
+  `research/inference-usability/README.md`. No version/dependency changes.
+- cost: baseline whole corpus 232,065 instantiations; final whole corpus including
+  new regressions 275,788 (+18.8%). Timing is not treated as a stable benchmark.
+- done: feature branch pushed to origin and remote head verified at `90afb0b`.
+- next: implementation is complete. Interactive IDE/browser sign-off remains a
+  separate manual check; owner review and a future release use this feature branch.
+- blockers: none. Credentials are stored only in the environment's private ctxbin
+  configuration, outside the repository. ctxbin needs `NODE_USE_ENV_PROXY=1` here.
+- latest implementation/integration commit: `90afb0b` (Phase 5). This final
+  handoff checkpoint is documentation-only. Phase 4: `cc6f7aa`;
+  Phase 3: `2c8c17b`; Phase 2: `0b21119`;
+  Phase 1: `f79a00f`; contracts: `13385a8`; baseline: `b9a92e0`.
+
+## Historical plan — Pipe Soundness & Variant Consolidation
 
 Source of truth: `REQUIREMENTS.md` (what), `DESIGN.md` § Pipe Soundness Revision (how and decisions), `MANUAL_TEST_CHECKLIST.md` (release gate).
 

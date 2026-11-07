@@ -1,10 +1,9 @@
-import type { AnyIterableInput, PromiseLikeValue } from './utils';
+import type { AnyIterableInput, PromiseLikeValue, InputFor, InputItem, IteratorResultFor } from './utils';
 import { awaitValue, isAsyncInput, isIterable } from './utils';
 import toAsync from './toAsync';
 
 /** flatten - lazily flatten iterable of iterables */
-function flatten<T>(iterable: Iterable<Iterable<T>>): IterableIterator<T>;
-function flatten<T>(iterable: AnyIterableInput<PromiseLikeValue<Iterable<T>>>): AsyncIterableIterator<T>;
+function flatten<I extends InputFor<Iterable<unknown>>>(iterable: I): IteratorResultFor<I, InputItem<InputItem<I>>>;
 function flatten<T>(iterable: AnyIterableInput<PromiseLikeValue<Iterable<T>>>): any {
   if (isAsyncInput(iterable)) {
     return (async function* () {

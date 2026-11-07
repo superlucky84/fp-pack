@@ -11,50 +11,21 @@ export const AssocPath = () => (
       Set a value at a nested path immutably
     </p>
 
+    {/* inference-usability: AssocPath */}
     <CodeBlock
       language="typescript"
-      code={`import { assocPath } from 'fp-pack';
+      code={`import { pipe, assocPath } from 'fp-pack';
 
-assocPath(['a', 'b', 'c'], 42, { a: { b: { c: 0 } } });
-// { a: { b: { c: 42 } } }
-
-assocPath(['a', 'b', 'c'], 42, { a: 5 });
-// { a: { b: { c: 42 } } }
-
-assocPath(['a', 1, 'c'], 42, { a: [] });
-// { a: [undefined, { c: 42 }] }
-
-assocPath(['a', -1], 42, { a: [1, 2] });
-// { a: [1, 42] }`}
+const result = pipe(
+  { user: { name: 'Ada', id: 1 } },
+  assocPath(['user', 'name'], 42)
+); // user.name is number; user.id stays number`}
     />
 
-    <div class="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 rounded">
-      <p class="text-sm md:text-base text-yellow-900 dark:text-yellow-100">
-        <strong class="font-semibold">Note:</strong> In data-last pipelines, TypeScript may not infer the final data type for this utility.
-        Use pipeHint, a small type hint, or a data-first wrapper. See{' '}
-        <a
-          href="/guide/type-usage"
-          onClick={(e: Event) => {
-            e.preventDefault();
-            navigateTo('/guide/type-usage');
-          }}
-          class="underline decoration-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-200"
-        >
-          Type Usage
-        </a>{' '}
-        and{' '}
-        <a
-          href="/guide"
-          onClick={(e: Event) => {
-            e.preventDefault();
-            navigateTo('/guide');
-          }}
-          class="underline decoration-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-200"
-        >
-          Detailed Guide
-        </a>.
-      </p>
-    </div>
+    <p class="text-sm text-gray-700 dark:text-gray-300 my-6">
+      The written value changes the selected property type while preserving untouched properties. Results are
+      inferred from the source, path and value; remove old output-only generic arguments.
+    </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 

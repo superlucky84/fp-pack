@@ -11,6 +11,14 @@ type NonFunction<T> = T extends AnyFn ? never : T;
 
 type FnInput<F> = F extends (a: infer A) => any ? A : never;
 type FnReturn<F> = F extends (...args: any[]) => infer R ? R : never;
+// Read a first step at its own parameter type. Reading a generic step's return type
+// directly can collapse to never (stream partials such as filter(fn) whose result
+// element depends on the input), which loses every later step's types.
+type FirstOutput<F> = F extends (a: infer A) => any
+  ? F extends (a: A) => infer R
+    ? R
+    : FnReturn<F>
+  : FnReturn<F>;
 type FnValue<F> = Awaited<FnReturn<F>>;
 
 type PipeCheckResult<Fns extends [AnyFn, ...AnyFn[]]> =
@@ -50,13 +58,15 @@ type PipeAsyncEntry<F1, R> = F1 extends { readonly __from: true }
 // `any` input is data, not a function-first step.
 type IsFn<I> = 0 extends 1 & I ? false : [I] extends [AnyFn] ? true : false;
 type Last<Rs extends any[], Fallback> = Rs extends [...any[], infer L] ? L : Fallback;
-type Head<I> = IsFn<I> extends true ? Awaited<FnReturn<I>> : I;
+type Head<I> = IsFn<I> extends true ? Awaited<FirstOutput<I>> : I;
 type Result<I, Rs extends any[]> = IsFn<I> extends true
-  ? PipeAsyncEntry<I, Last<Rs, Awaited<FnReturn<I>>>>
+  ? PipeAsyncEntry<I, Last<Rs, Awaited<FirstOutput<I>>>>
   : Promise<Last<Rs, I>>;
 type PipeCheckFrom<Input, Fns extends [AnyFn, ...AnyFn[]]> =
   Fns & (PipeCheckResult<[() => Input, ...Fns]> extends true ? unknown : PipeCheckResult<[() => Input, ...Fns]>);
 
+function pipeAsync<T>(first: FromFn<T>): (input?: unknown) => Promise<Awaited<T>>;
+function pipeAsync<Args extends [] | [unknown?], R>(first: (...args: Args) => R): (...args: Args) => Promise<Awaited<R>>;
 function pipeAsync<I>(first: I): Result<I, []>;
 function pipeAsync<I, R1>(
   first: I,

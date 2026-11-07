@@ -31,20 +31,23 @@ export const StreamFlatten = () => (
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Type Signature
+      Input modes and inference
     </h2>
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      Sync sources use sync iteration; async or promised sources use async iteration. The source anchors inline
+      pipe callbacks; saved steps without callbacks infer elements when supplied an input. Async predicates,
+      flatMap callbacks and accumulators require an async source: use toAsync once before those steps. toArray
+      returns a Promise in either mode.
+    </p>
 
+    {/* inference-usability: flatten */}
     <CodeBlock
       language="typescript"
-      code={`// Sync iterable of iterables
-function flatten<T>(
-  iterable: Iterable<Iterable<T>>
-): IterableIterator<T>;
+      code={`import { pipe } from 'fp-pack';
+import { flatten, toAsync, toArray } from 'fp-pack/stream';
 
-// Async iterable or async nested iterables
-function flatten<T>(
-  iterable: AnyIterableInput<PromiseLikeValue<Iterable<T>>>
-): AsyncIterableIterator<T>;`}
+const sync = pipe([[1], [2, 3]], flatten, toArray);
+const async = pipe([[1], [2, 3]], toAsync, flatten, toArray);`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -158,7 +161,7 @@ for await (const user of allUsers) {
 
     <CodeBlock
       language="typescript"
-      code={`import { flatten } from 'fp-pack/stream';
+      code={`import { flatten, toAsync } from 'fp-pack/stream';
 
 interface LogEntry {
   timestamp: Date;
@@ -167,41 +170,34 @@ interface LogEntry {
   source: string;
 }
 
-async function* readLogsFromDatabase(): AsyncIterableIterator<LogEntry> {
+async function readLogsFromDatabase(): Promise<LogEntry[]> {
   // Fetch logs from database
-  const logs = await fetchDatabaseLogs();
-  for (const log of logs) {
-    yield log;
-  }
+  return fetchDatabaseLogs();
 }
 
-async function* readLogsFromFiles(): AsyncIterableIterator<LogEntry> {
+async function readLogsFromFiles(): Promise<LogEntry[]> {
   // Read logs from log files
   const files = await getLogFiles();
+  const logs: LogEntry[] = [];
   for (const file of files) {
-    const logs = await parseLogFile(file);
-    for (const log of logs) {
-      yield log;
-    }
+    logs.push(...(await parseLogFile(file)));
   }
+  return logs;
 }
 
-async function* readLogsFromCloudStorage(): AsyncIterableIterator<LogEntry> {
+async function readLogsFromCloudStorage(): Promise<LogEntry[]> {
   // Fetch logs from cloud storage
-  const cloudLogs = await fetchCloudLogs();
-  for (const log of cloudLogs) {
-    yield log;
-  }
+  return fetchCloudLogs();
 }
 
-// Combine all log sources
+// Each source resolves to one batch; toAsync awaits the batches and flatten yields their entries
 const dataSources = [
   readLogsFromDatabase(),
   readLogsFromFiles(),
   readLogsFromCloudStorage(),
 ];
 
-const allLogs = flatten(dataSources);
+const allLogs = flatten(toAsync(dataSources));
 
 // Process logs from all sources uniformly
 for await (const log of allLogs) {

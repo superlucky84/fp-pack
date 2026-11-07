@@ -30,9 +30,11 @@ If you want functional composition without a lot of ceremony, `fp-pack` is desig
 
 ## Table of Contents
 
+- [Interactive Playground](#interactive-playground)
 - [Why fp-pack?](#why-fp-pack)
 - [Design Principles](#design-principles)
 - [Installation](#installation)
+- [Upgrading to 0.16.0](#upgrading-to-0160)
 - [Upgrading to 0.15.0](#upgrading-to-0150)
 - [AI Agent Skills (Optional)](#ai-agent-skills-optional)
 - [Quick Start](#quick-start)
@@ -65,6 +67,28 @@ If you want functional composition without a lot of ceremony, `fp-pack` is desig
 - [License](#license)
 
 ---
+
+## Interactive Playground
+
+The [docs playground](https://superlucky84.github.io/fp-pack/#/playground)
+([한국어](https://superlucky84.github.io/fp-pack/#/ko/playground)) has six hands-on
+experiments: curryN defaults/optional/rest arguments, readonly order pipelines, object transformations, lazy sync/async
+streams, effect short-circuiting and a live type laboratory. Change inputs, try
+21 curated cases or edit TypeScript and inspect actual inferred types/errors.
+Edited code is type-checked only; runtime controls execute the library examples.
+
+```bash
+# Existing docs, including #/ko/playground and #/playground
+npm --prefix docs run dev
+
+# Standalone build; starts on the Korean playground
+npm run demo:build
+python3 -m http.server 8080 --directory demo-dist
+```
+
+The normal docs build retains `/fp-pack/` for GitHub Pages. The standalone build
+uses `/` and the current checkout's library implementation, not the npm release.
+The browser loads the TypeScript compiler only when a type check is requested.
 
 ## Why fp-pack?
 
@@ -164,6 +188,79 @@ pnpm add fp-pack
 # or
 yarn add fp-pack
 ```
+
+## Upgrading to 0.16.0
+
+0.16.0 makes inferred types follow what the code returns at runtime, adds
+`curryN` for default, optional and rest parameters, and adds an interactive
+playground. Some calls that compiled before now report errors because their
+types did not match the runtime result:
+
+- Drop output-only type arguments such as `path<string>(keys, obj)` and
+  `assocPath<Desired>(keys, value, obj)`; results are inferred from the input.
+- Async stream predicates, `flatMap` callbacks and accumulators need an async
+  source: add `toAsync`, e.g. `pipe(items, toAsync, filter(async n => ...), toArray)`.
+  Accumulator initial values are plain values, not Promises.
+- A saved stream pipeline that starts with a stream step now accepts sync and
+  async sources. Ending with `toArray` or another collector keeps its result type.
+  Ending with an iterator, such as `pipe(map(fn), take(2))`, gives
+  `IterableIterator<T> | AsyncIterableIterator<T>`; for a sync iterator write
+  `(items: Item[]) => pipe(items, map(fn), take(2))`.
+- `compose(...fns)` over a runtime array no longer type-checks. Pass a tuple, or
+  fold same-typed functions with `fns.reduceRight((acc, fn) => fn(acc), input)`.
+
+See the [0.16.0 migration notes](CHANGELOG.md#0160) for the full list.
+
+### Inference improvements
+
+Object transforms infer changed properties, defaults retain incoming array elements,
+and nonmutating array helpers accept readonly inputs. Literal paths infer from the
+source without output generics or `as const`; dynamic paths and paths beyond eight
+keys return `unknown`. Deep flattening derives leaves up to sixteen levels.
+
+<!-- inference-usability: object pipeline -->
+
+```typescript
+import { pipe, evolve, prop } from 'fp-pack';
+
+const label = pipe(
+  { count: 2, name: 'items' },
+  evolve({ count: n => n.toFixed() }),
+  prop('count'),
+  count => count.toUpperCase()
+); // string
+```
+
+Saved count-only stream steps infer their element type and execution mode from
+each input. Async predicates, `flatMap` callbacks and accumulators require an
+async or promised source. Use `toAsync` once to cross that boundary; `pipeAsync`
+alone does not turn a synchronous iterable into an async iterable. Sync `map`
+and `zipWith` can yield Promise elements, which `toArray` resolves.
+
+<!-- inference-usability: async stream boundary -->
+
+```typescript
+import { pipe } from 'fp-pack';
+import { take, toAsync, filter, map, toArray } from 'fp-pack/stream';
+
+const firstTwo = take(2);
+const sync = firstTwo([1, 2, 3]); // IterableIterator<number>
+const async = firstTwo(Promise.resolve([1, 2, 3])); // AsyncIterableIterator<number>
+const result = pipe(
+  [1, 2, 3],
+  toAsync,
+  filter(async n => n > 1),
+  map(n => n.toFixed()),
+  toArray
+); // Promise<string[]>
+```
+
+Single-step `pipe` and `pipeAsync` preserve supported generic unary relationships
+such as `identity`. For chains starting with an arbitrary generic function, or
+fully staged callbacks supplied before any input context, prefer a value-first
+pipeline or declare the reusable function's input contract. See the
+[inference review](research/inference-usability/README.md) and
+[migration notes](CHANGELOG.md#0160).
 
 ## Upgrading to 0.15.0
 
@@ -335,7 +432,8 @@ When you write your own helpers that should compose cleanly with `pipe`/`pipeAsy
 
 - **Data-last arguments** so partial application works naturally in pipelines.
 - **Curry multi-argument functions** to make them pipe-friendly.
-- **Fixed signatures** can use `curry(fn)` directly.
+- **Fixed required-parameter signatures** can use `curry(fn)` directly.
+- **Default, optional or rest parameters** can use `curryN(arity, fn)` to choose when enough arguments have arrived. Use a literal count from 0 to 32 that covers the required parameters.
 - **Generic or overloaded signatures** should be wrapped with an explicit type alias and a cast to preserve inference.
 
 ```typescript
@@ -360,6 +458,29 @@ const curriedChunk = curry(chunk) as Chunk;
 export default curriedChunk;
 ```
 
+`curryN` infers argument and return types from the original function. Every
+supplied value counts, including `undefined`; extra valid values in the completing
+call are forwarded. Zero returns a function that runs when called, and empty
+calls keep positive stages waiting. An uncertain-length spread has an `unknown`
+result until its known prefix proves completion. Bind explicit receivers first.
+
+<!-- inference-usability: curryN authoring -->
+
+```typescript
+import { curryN, pipe } from 'fp-pack';
+
+const add = (a: number, b = 10) => a + b;
+curryN(1, add)(2);            // 12
+curryN(2, add)(2)(3);         // 5
+curryN(2, add)(2)(undefined); // 12
+
+const addFive = curryN(2, add)(5);
+const label = pipe(3, addFive, value => value.toFixed()); // string
+
+const sum = curryN(3, (...values: number[]) => values.reduce((a, b) => a + b, 0));
+sum(1)(2, 3, 4); // 10
+```
+
 ## API Reference
 
 ### Composition
@@ -373,6 +494,7 @@ Functions for composing and transforming other functions.
 - **pipeSideEffectStrict** - *Deprecated* alias of `pipeSideEffect` (removed in 1.0)
 - **compose** - Compose functions right to left (h → g → f)
 - **curry** - Transform a function to support partial application
+- **curryN** - Curry with an explicit execution count for default, optional and rest parameters
 - **partial** - Pre-fill function arguments
 - **flip** - Reverse the order of function arguments
 - **complement** - Logical negation of a predicate

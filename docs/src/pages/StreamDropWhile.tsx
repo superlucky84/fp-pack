@@ -74,28 +74,24 @@ console.log(result); // [3, 4, 2, 1] - includes 3 and everything after`}
       <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
       <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-        Type Signature
+        Input modes and inference
       </h2>
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      Sync sources use sync iteration; async or promised sources use async iteration. The source anchors inline
+      pipe callbacks; saved steps without callbacks infer elements when supplied an input. Async predicates,
+      flatMap callbacks and accumulators require an async source: use toAsync once before those steps. toArray
+      returns a Promise in either mode.
+    </p>
 
+      {/* inference-usability: dropWhile */}
       <CodeBlock
         language="typescript"
-        code={`function dropWhile<T>(
-  predicate: (value: T) => boolean,
-  iterable: Iterable<T>
-): IterableIterator<T>;
+        code={`import { pipe } from 'fp-pack';
+import { dropWhile, toAsync, toArray } from 'fp-pack/stream';
 
-function dropWhile<T>(
-  predicate: (value: T) => boolean | Promise<boolean>,
-  iterable: AnyIterableInput<PromiseLikeValue<T>>
-): AsyncIterableIterator<T>;
-
-function dropWhile<T>(
-  predicate: (value: T) => boolean
-): (iterable: Iterable<T>) => IterableIterator<T>;
-
-function dropWhile<T>(
-  predicate: (value: T) => boolean | Promise<boolean>
-): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<T>;`}
+const sync = pipe([1, 2, 3], dropWhile(n => n < 2), toArray);
+const async = pipe([1, 2, 3], toAsync, dropWhile(n => n < 2), toArray);
+const awaited = pipe([1, 2, 3], toAsync, dropWhile(async n => n < 2), toArray);`}
       />
 
       <div class="mt-6 space-y-4">

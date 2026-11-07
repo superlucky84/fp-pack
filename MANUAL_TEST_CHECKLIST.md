@@ -1,4 +1,116 @@
-# MANUAL TEST CHECKLIST — Pipe Soundness Release (0.15.0)
+# MANUAL TEST CHECKLIST — Inference Usability
+
+## Pre-release review fix checks — 2026-11-07
+
+| ID | Check | Pass criterion |
+|---|---|---|
+| RF-MT-3 | In an editor, `pipe(order, ifElse(o => o.total > 100, o => ({ ...o, d: 1 }), o => ({ ...o, d: 0 })))` | No error; hover on the false branch's `o` shows the order type |
+| RF-MT-4 | Open the IfElse, TypeUsage and stream append/prepend/map/filter/flatMap docs pages (EN/KO) | Examples read naturally in the 0.16 forms |
+| RF-MT-5 | Hover README's `processLargeDataset` in an editor | `(a: InputFor<number>) => Promise<number[]>` |
+| RF-MT-6 | `pipe(n, when(x => x > 0, tap(() => log())))` in an editor | Result hovers as `number`, no error |
+
+## Release 0.16.0 checks — 2026-11-07
+
+| ID | Check | Pass criterion |
+|---|---|---|
+| REL-MT-1 | npmjs.com → fp-pack → Settings → Trusted publishing: GitHub Actions, owner `superlucky84`, repository `fp-pack`, workflow `release.yml` | Publisher saved (or an `NPM_TOKEN` repository secret instead) |
+| REL-MT-2 | After merge: Actions → Release to npm → Run workflow on main with dry run checked | All steps green; log shows the 0.16.0 dry-run tarball |
+| REL-MT-3 | Run again without dry run | npm shows 0.16.0 with provenance; tag `fp-pack@0.16.0` exists |
+| REL-MT-4 | Run once more | Ends with "already on npm"; nothing published |
+| REL-MT-5 | Run from another branch | Fails at the main-branch step |
+| REL-MT-6 | Merge PR #8; Actions → Deploy docs runs on main | gh-pages gets a `docs: deploy` commit; playground and curryN pages are live |
+| REL-MT-7 | Settings → Pages still serves the gh-pages branch | Site updates within a few minutes of the deploy commit |
+
+## Combined-branch review fix checks — 2026-10-23
+
+| ID | Check | Pass criterion |
+|---|---|---|
+| RF-MT-1 | `pipe(zip(slowSource, failingSource), toArray)` in an app | Error appears at once, not after the slow source; the slow source's `finally` still runs |
+| RF-MT-2 | Open `/compose` docs | Type Signature lists right-to-left overloads, no `any` catch-all |
+
+## Interactive playground checks — 2026-10-23
+
+| ID | Check | Pass criterion |
+|---|---|---|
+| PG-MT-1 | Open EN/KO playground, sidebar/search, return to docs | Correct route/language and full-width layout |
+| PG-MT-2 | Change curryN presets, grouped/default/undefined/rest/reuse/zero | Real results and stages match independently expected values |
+| PG-MT-3 | Order filters, optional profile, merge/evolve changes | Results update; input remains unchanged; empty/missing cases work |
+| PG-MT-4 | Sync/async streams and early zip termination | Correct sequence, mapped-count trace and both cleanup markers |
+| PG-MT-5 | Valid/blocked effect pipeline | Early exit prevents later steps; handled output is visible |
+| PG-MT-6 | Edit TypeScript and check valid/invalid presets | Genuine inferred variable types and line diagnostics; no code execution |
+| PG-MT-7 | Run all cases, random challenge, reset, switch while async pending | Repeatable results, no stale output, useful busy/error recovery |
+| PG-MT-8 | Narrow viewport and keyboard navigation | No page overflow, labeled controls, visible focus, readable results |
+| PG-MT-9 | Open deployed private demo | Default Korean playground, assets/worker load and presets work |
+
+Status: automated scenario/compiler coverage passed (53 new tests); full suite
+467 tests/167 files, source/docs types, lint, standard/standalone builds and
+installed-package TS 5.9 consumer passed. Chromium against development and
+production builds verified desktop 1440x1000/mobile 390x844: 21 batch checks,
+worker positive/negative examples, edited code, async supersession, language/docs
+navigation and optional-argument controls; no unexpected console/page errors or
+horizontal overflow. Extended production browser checks passed order/profile/gate
+controls, zip cleanup, curry reuse/zero, random/reset, a 320px viewport and an
+intentionally blocked worker request followed by successful retry.
+
+PG-MT-9 deployment to the owner-private demo host succeeded. The artifact defaults
+to the Korean playground, has root-relative assets and correct metadata.
+Authenticated interaction on the remote host remains owner sign-off. The same
+application/worker was exercised locally in a production build.
+
+## curryN checks — 2026-10-23
+
+| ID | Check | Pass criterion |
+|---|---|---|
+| CN-MT-1 | Default and optional parameters, count 1 vs 2 | Execution follows chosen count; no added result generic/cast |
+| CN-MT-2 | Required prefix plus rest and grouped final call | Correct argument order and return type; invalid rest values rejected |
+| CN-MT-3 | Reuse partials, call an empty stage, pass undefined | Partials stay independent; empty call waits; defaults apply to undefined |
+| CN-MT-4 | Count 0/32 and invalid count/argument values | No eager zero execution; correct upper-bound typing and clear errors |
+| CN-MT-5 | Callback parameters, literal/Promise results and pipes | IDE types agree with source and installed-consumer regressions |
+| CN-MT-6 | EN/KO curryN navigation and examples | Sidebar/search/route discover the page; rendered examples follow contract |
+
+Status: implementation and automated coverage complete. Source types and all
+414 runtime tests pass. Installed ESM/CJS execution and declaration emission on
+TS 5.9.3 / 6.0.3 / 7.0.2 pass, including the new curryN corpus and 59 documentation
+snippets (nine new curryN snippets). Library/declaration build and docs lint/build
+pass. Route/sidebar/search registrations include both language pages.
+Interactive editor/browser inspection remains unsigned and is separate from the
+compiler/runtime evidence.
+
+## Active checks — 2026-10-22
+
+Use the installed package in an editor, with its workspace TypeScript selected.
+Automation verifies types/runtime separately; do not mark IDE checks as performed
+based solely on compiler results. See REQUIREMENTS IU-* and DESIGN IU-DC-*.
+
+| ID | Check | Pass criterion |
+|---|---|---|
+| IU-MT-1 | Pipe an object through evolve changing number to string | Callback input is number, result property string; downstream numeric operation is rejected |
+| IU-MT-2 | Merge conflicting property types and nested records | Output matches the right-hand runtime value, not an impossible intersection |
+| IU-MT-3 | Read required/optional props; pick/omit optional keys | No added hints; exact optionality is retained |
+| IU-MT-4 | Nullable arrays through getOrElse([]) and map | Element callback is the input model, with no never[] or corrective cast |
+| IU-MT-5 | Path and flattenDeep inference | Hover comes from source/path; false expected output types are rejected |
+| IU-MT-6 | Use readonly arrays and inferred type guards | Nonmutating operations accept input; narrowed values flow to next step |
+| IU-MT-7 | Save stream.take(2), then use with sync/async sources | Both modes retain element type and correct iterator protocol |
+| IU-MT-8 | Async predicate over toAsync([1,2,3]) | Result is [2,3]; invalid sync/async mixtures fail clearly |
+| IU-MT-9 | Compose incompatible functions and use generic single pipe | Incompatible chain is rejected; supported generic relationship retained |
+| IU-MT-10 | Curried branches and SideEffect matching | Inferred result union survives; no unknown at the handling boundary |
+| IU-MT-11 | Read migration examples in README and EN/KO docs | Contracts and examples agree with installed declarations and runtime |
+
+Status: implementation and automated coverage complete. Interactive editor hover
+inspection and browser sign-off remain pending; they are not implied by compiler
+or build success.
+
+Hardening automation also checks optional transformer tables, enumerable symbols,
+Promise-valued sync elements versus awaited async elements, and accumulator modes.
+
+Automated evidence (2026-10-22, `feat/inference-usability`): 403/403 runtime tests
+in 164 files; source types and generated-signature check; library/declaration
+build; installed ESM/CJS execution; installed new type corpus plus 50 README/EN/KO
+examples and declaration emission on TypeScript 5.9.3 / 6.0.3 / 7.0.2 with
+exactOptionalPropertyTypes; docs lint/build; `git diff --check`. IU-MT-1–11 have
+matching automated evidence; the interactive parts remain unsigned.
+
+## Historical checks — Pipe Soundness Release (0.15.0)
 
 Run these in a fresh consumer project that installs the packed tarball (`npm pack`), in VS Code, once with TS 5.9 and once with TS 7.0 (select the workspace TS version).
 Pass = every row behaves as described. Any deviation fails the release.

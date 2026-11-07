@@ -11,58 +11,21 @@ export const Evolve_ko = () => (
       스키마 함수를 이용해 객체 값을 변환합니다
     </p>
 
+    {/* inference-usability: Evolve */}
     <CodeBlock
       language="typescript"
-      code={`import { evolve } from 'fp-pack';
+      code={`import { pipe, evolve } from 'fp-pack';
 
-const user = { id: 1, name: 'A' };
-const updated = evolve({
-  id: (value: number) => value + 1,
-  name: (value: string) => value.toLowerCase(),
-}, user);
-
-// { id: 2, name: "a" }`}
+const result = pipe(
+  { count: 2, label: 'items' },
+  evolve({ count: n => n.toFixed() }),
+  item => item.count.toUpperCase() + item.label
+); // string`}
     />
 
-    <div class="bg-blue-50 dark:bg-blue-900/20 p-4 mb-6 rounded border border-blue-200 dark:border-blue-800">
-      <p class="text-sm md:text-base text-blue-800 dark:text-blue-200 leading-relaxed">
-        <span class="font-medium">팁:</span>
-        <br />
-        data-last(커링)으로 쓸 때는 제네릭을 빼고 변환 함수 파라미터에 타입을 적어주세요 (예:{' '}
-        <code class="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">value: number</code>). 제네릭이 필요하면
-        data-first로 호출하세요:{' '}
-        <code class="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">evolve&lt;MyType&gt;(schema, obj)</code>.
-      </p>
-    </div>
-
-    <div class="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 rounded">
-      <p class="text-sm md:text-base text-yellow-900 dark:text-yellow-100">
-        <strong class="font-semibold">참고:</strong> data-last 파이프라인에서는 TypeScript가 이 유틸의 최종 데이터 타입을 추론하지 못할 수 있습니다.
-        pipeHint, 간단한 타입 힌트, 또는 data-first 래핑을 사용하세요. 자세한 내용은{' '}
-        <a
-          href="/guide/type-usage"
-          onClick={(e: Event) => {
-            e.preventDefault();
-            navigateTo('/guide/type-usage');
-          }}
-          class="underline decoration-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-200"
-        >
-          타입 활용
-        </a>{' '}
-        과{' '}
-        <a
-          href="/guide"
-          onClick={(e: Event) => {
-            e.preventDefault();
-            navigateTo('/guide');
-          }}
-          class="underline decoration-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-200"
-        >
-          상세 가이드
-        </a>
-        를 참고하세요.
-      </p>
-    </div>
+    <p class="text-sm text-gray-700 dark:text-gray-300 my-6">
+      pipe(value, evolve(...))에서는 입력이 변환 함수의 인자와 바뀐 속성의 반환 타입을 결정합니다. 선택적인 변환 함수가 없으면 원래 값이 유지됩니다.
+    </p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 

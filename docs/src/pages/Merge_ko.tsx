@@ -29,34 +29,7 @@ merge(a, b);
       중첩 객체를 병합하려면 <code>mergeDeep</code>을 사용하세요. <code>merge</code>는 얕은 병합만 수행합니다.
     </p>
 
-    <div class="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 rounded">
-      <p class="text-sm md:text-base text-yellow-900 dark:text-yellow-100">
-        <strong class="font-semibold">참고:</strong> data-last 파이프라인에서는 TypeScript가 이 유틸의 최종 데이터 타입을 추론하지 못할 수 있습니다.
-        pipeHint, 간단한 타입 힌트, 또는 data-first 래핑을 사용하세요. 자세한 내용은{' '}
-        <a
-          href="/guide/type-usage"
-          onClick={(e: Event) => {
-            e.preventDefault();
-            navigateTo('/guide/type-usage');
-          }}
-          class="underline decoration-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-200"
-        >
-          타입 활용
-        </a>{' '}
-        과{' '}
-        <a
-          href="/guide"
-          onClick={(e: Event) => {
-            e.preventDefault();
-            navigateTo('/guide');
-          }}
-          class="underline decoration-yellow-400 hover:text-yellow-700 dark:hover:text-yellow-200"
-        >
-          상세 가이드
-        </a>
-        를 참고하세요.
-      </p>
-    </div>
+    <p class="text-sm text-gray-700 dark:text-gray-300 my-6">두 번째 객체가 덮어쓰며, 속성 타입이 달라도 실제 결과를 따릅니다. 오른쪽 속성이 선택적이면 누락 시 왼쪽 값이 유지됩니다.</p>
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 

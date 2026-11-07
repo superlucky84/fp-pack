@@ -1,7 +1,7 @@
 /**
  * uniq - 중복 제거
  */
-function uniq<T>(arr: T[]): T[] {
+function uniq<T>(arr: readonly T[]): T[] {
   const seen = new Set<T>();
   const result: T[] = [];
   for (const item of arr) {

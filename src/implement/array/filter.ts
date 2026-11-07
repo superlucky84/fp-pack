@@ -1,16 +1,16 @@
 import curry from '../composition/curry';
 
 type Filter = {
-  <T, S extends T>(...args: [predicate: (value: T) => value is S]): (arr: T[]) => S[];
-  <T, S extends T>(...args: [predicate: (value: T) => value is S, arr: T[]]): S[];
-  <T>(...args: [predicate: (value: T) => boolean]): (arr: T[]) => T[];
-  <T>(...args: [predicate: (value: T) => boolean, arr: T[]]): T[];
+  <T, S extends T>(...args: [predicate: (value: T) => value is S]): (arr: readonly T[]) => S[];
+  <T, S extends T>(...args: [predicate: (value: T) => value is S, arr: readonly T[]]): S[];
+  <T>(...args: [predicate: (value: T) => boolean]): (arr: readonly T[]) => T[];
+  <T>(...args: [predicate: (value: T) => boolean, arr: readonly T[]]): T[];
 };
 
 /**
  * filter - 조건 필터링
  */
-function filter<T>(predicate: (value: T) => boolean, arr: T[]): T[] {
+function filter<T>(predicate: (value: T) => boolean, arr: readonly T[]): T[] {
   return arr.filter(predicate);
 }
 

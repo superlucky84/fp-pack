@@ -1,7 +1,7 @@
 /**
  * head - 첫 요소 가져오기
  */
-function head<T>(arr: T[]): T | undefined {
+function head<T>(arr: readonly T[]): T | undefined {
   return arr[0];
 }
 

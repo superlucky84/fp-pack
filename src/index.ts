@@ -32,4 +32,16 @@ export * from './implement/nullable';
 export * from './implement/debug';
 
 // Stream Types
-export type { AnyIterable, AnyIterableInput, PromiseLikeValue } from './stream/utils';
+export type {
+  AnyIterable,
+  AnyIterableInput,
+  AsyncIterableInput,
+  PromiseLikeValue,
+  InputFor,
+  InputItem,
+  IteratorResultFor,
+  ScalarResultFor,
+  CombinedIterator,
+  CombinedItem,
+  Accumulator
+} from './stream/utils';

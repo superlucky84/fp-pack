@@ -15,6 +15,8 @@
 - `SideEffect` is an instance type: use `SideEffect<E>` (not `typeof SideEffect`).
 - If TS inference stalls in data-last generics, use `pipeHint` or a tiny wrapper.
 - Use `fp-pack/stream` for large/lazy iterables; array/object utils for small/eager data.
+- Async stream predicates, flatMap callbacks and accumulators need an async/promised source; call `toAsync` once for a sync source. `pipeAsync` does not itself change the iterator protocol.
+- Let anchored object transforms, literal paths, defaults and readonly inputs infer. Do not supply output-only path/flatten generics or add casts to force a desired result.
 - Keep DOM/imperative work at the edge; use fp-pack for data transforms.
 - Avoid mutation; return new objects/arrays.
 - When unsure, check `dist/index.d.ts` or `dist/stream/index.d.ts`.

@@ -31,27 +31,24 @@ export const StreamAppend = () => (
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Type Signature
+      Input modes and inference
     </h2>
 
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      Sync sources use sync iteration; async or promised sources use async iteration. The source anchors inline
+      pipe callbacks; saved steps without callbacks infer elements when supplied an input. Async predicates,
+      flatMap callbacks and accumulators require an async source: use toAsync once before those steps. toArray
+      returns a Promise in either mode.
+    </p>
+
+    {/* inference-usability: append */}
     <CodeBlock
       language="typescript"
-      code={`// Sync version - append value to sync iterable
-function append<T>(value: T, iterable: Iterable<T>): IterableIterator<T>;
+      code={`import { pipe } from 'fp-pack';
+import { append, toAsync, toArray } from 'fp-pack/stream';
 
-// Async version - append value to async iterable
-function append<T>(
-  value: PromiseLikeValue<T>,
-  iterable: AnyIterableInput<PromiseLikeValue<T>>
-): AsyncIterableIterator<T>;
-
-// Curried sync version - returns function that appends value
-function append<T>(value: T): (iterable: Iterable<T>) => IterableIterator<T>;
-
-// Curried async version - returns function that appends value
-function append<T>(
-  value: PromiseLikeValue<T>
-): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<T>;`}
+const sync = pipe([1, 2, 3], append(4), toArray);
+const async = pipe([1, 2, 3], toAsync, append(4), toArray);`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -92,7 +89,7 @@ console.log(Array.from(withFour));
     <CodeBlock
       language="typescript"
       code={`import { append } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { map } from 'fp-pack/stream';
 
 // Create reusable append functions
@@ -100,10 +97,12 @@ const addFooter = append('--- End of List ---');
 const addTotal = append('Total: $1,234.56');
 
 // Use in functional pipelines
-const processItems = pipe(
-  map((item: string) => \`• \${item}\`),
-  addFooter
-);
+const processItems = (items: string[]) =>
+  pipe(
+    items,
+    map((item) => \`• \${item}\`),
+    addFooter
+  );
 
 const items = ['Apple', 'Banana', 'Cherry'];
 console.log(Array.from(processItems(items)));
@@ -139,7 +138,7 @@ async function* readFileChunks(filename: string) {
 const withEOF = append({ type: 'EOF' }, readFileChunks('data.txt'));
 
 for await (const chunk of withEOF) {
-  if (chunk.type === 'EOF') {
+  if (typeof chunk === 'object') { // the EOF marker
     console.log('File reading complete');
   } else {
     console.log('Processing:', chunk);
@@ -159,7 +158,7 @@ for await (const chunk of withEOF) {
     <CodeBlock
       language="typescript"
       code={`import { append } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { map } from 'fp-pack/stream';
 
 interface Transaction {
@@ -171,13 +170,12 @@ interface Transaction {
 function generateReport(transactions: Transaction[]) {
   const total = transactions.reduce((sum, t) => sum + t.amount, 0);
 
-  const reportLines = pipe(
-    map((t: Transaction) => \`\${t.id}: \${t.description} - $\${t.amount}\`),
+  return pipe(
+    transactions,
+    map((t) => \`\${t.id}: \${t.description} - $\${t.amount}\`),
     append('─'.repeat(50)),
     append(\`Total: $\${total.toFixed(2)}\`)
   );
-
-  return reportLines(transactions);
 }
 
 const transactions = [
@@ -301,7 +299,7 @@ for await (const item of usersWithCount) {
       language="typescript"
       code={`import { append } from 'fp-pack/stream';
 import { map } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 
 interface LogEntry {
   level: 'INFO' | 'WARN' | 'ERROR';
@@ -313,12 +311,13 @@ function formatLogs(logs: LogEntry[]) {
   const now = new Date().toISOString();
 
   return pipe(
-    map((log: LogEntry) =>
+    logs,
+    map((log) =>
       \`[\${new Date(log.timestamp).toISOString()}] \${log.level}: \${log.message}\`
     ),
     append(''),
     append(\`Log generated at: \${now}\`)
-  )(logs);
+  );
 }
 
 const logs: LogEntry[] = [
@@ -346,7 +345,7 @@ for (const line of formatLogs(logs)) {
       language="typescript"
       code={`import { append } from 'fp-pack/stream';
 import { take } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 
 function* fibonacci() {
   let a = 0, b = 1;
@@ -357,12 +356,11 @@ function* fibonacci() {
 }
 
 // Take first 10 fibonacci numbers and add a marker
-const limitedFibonacci = pipe(
+const result = pipe(
+  fibonacci(),
   take(10),
   append('... (sequence continues)')
 );
-
-const result = limitedFibonacci(fibonacci());
 
 for (const value of result) {
   console.log(value);

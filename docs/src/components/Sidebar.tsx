@@ -12,6 +12,7 @@ export const Sidebar = mount(renew => {
         title: isKorean ? '시작하기' : 'Getting Started',
         items: [
           { title: isKorean ? '소개' : 'Introduction', path: '/' },
+          { title: isKorean ? '플레이그라운드 ↗' : 'Playground ↗', path: '/playground' },
           { title: isKorean ? '상세 가이드' : 'Detailed Guide', path: '/guide' },
           {
             title: isKorean ? '파이프 선택 가이드' : 'Pipe Choice Guide',
@@ -38,6 +39,7 @@ export const Sidebar = mount(renew => {
           { title: 'pipeSideEffectStrict (deprecated)', path: '/composition/pipeSideEffectStrict' },
           { title: 'compose', path: '/composition/compose' },
           { title: 'curry', path: '/composition/curry' },
+          { title: 'curryN', path: '/composition/curryN' },
           { title: 'partial', path: '/composition/partial' },
           { title: 'flip', path: '/composition/flip' },
           { title: 'identity', path: '/composition/identity' },

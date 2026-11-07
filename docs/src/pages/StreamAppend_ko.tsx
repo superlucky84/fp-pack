@@ -31,27 +31,22 @@ export const StreamAppend_ko = () => (
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Type Signature
+      입력 모드와 타입 추론
     </h2>
 
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      동기 입력은 동기 순회를, 비동기·Promise 입력은 비동기 순회를 사용합니다. pipe 입력은 인라인 콜백의 타입을 결정하며, 콜백 없는 저장 단계는 입력을 받을 때 원소 타입을
+      추론합니다. 비동기 조건 함수·flatMap·누산 함수는 toAsync로 입력을 변환한 뒤 사용하세요. toArray는 어느 모드에서든 Promise를 반환합니다.
+    </p>
+
+    {/* inference-usability: append */}
     <CodeBlock
       language="typescript"
-      code={`// 동기 버전 - 동기 이터러블에 값 추가
-function append<T>(value: T, iterable: Iterable<T>): IterableIterator<T>;
+      code={`import { pipe } from 'fp-pack';
+import { append, toAsync, toArray } from 'fp-pack/stream';
 
-// 비동기 버전 - 비동기 이터러블에 값 추가
-function append<T>(
-  value: PromiseLikeValue<T>,
-  iterable: AnyIterableInput<PromiseLikeValue<T>>
-): AsyncIterableIterator<T>;
-
-// 커리된 동기 버전 - 값을 추가하는 함수를 반환
-function append<T>(value: T): (iterable: Iterable<T>) => IterableIterator<T>;
-
-// 커리된 비동기 버전 - 값을 추가하는 함수를 반환
-function append<T>(
-  value: PromiseLikeValue<T>
-): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<T>;`}
+const sync = pipe([1, 2, 3], append(4), toArray);
+const async = pipe([1, 2, 3], toAsync, append(4), toArray);`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -92,7 +87,7 @@ console.log(Array.from(withFour));
     <CodeBlock
       language="typescript"
       code={`import { append } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { map } from 'fp-pack/stream';
 
 // 재사용 가능한 append 함수 생성
@@ -100,10 +95,12 @@ const addFooter = append('--- 리스트 끝 ---');
 const addTotal = append('합계: ₩1,234,560');
 
 // 함수형 파이프라인에서 사용
-const processItems = pipe(
-  map((item: string) => \`• \${item}\`),
-  addFooter
-);
+const processItems = (items: string[]) =>
+  pipe(
+    items,
+    map((item) => \`• \${item}\`),
+    addFooter
+  );
 
 const items = ['사과', '바나나', '체리'];
 console.log(Array.from(processItems(items)));
@@ -139,7 +136,7 @@ async function* readFileChunks(filename: string) {
 const withEOF = append({ type: 'EOF' }, readFileChunks('data.txt'));
 
 for await (const chunk of withEOF) {
-  if (chunk.type === 'EOF') {
+  if (typeof chunk === 'object') { // EOF 표시
     console.log('파일 읽기 완료');
   } else {
     console.log('처리 중:', chunk);
@@ -159,7 +156,7 @@ for await (const chunk of withEOF) {
     <CodeBlock
       language="typescript"
       code={`import { append } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { map } from 'fp-pack/stream';
 
 interface Transaction {
@@ -171,13 +168,12 @@ interface Transaction {
 function generateReport(transactions: Transaction[]) {
   const total = transactions.reduce((sum, t) => sum + t.amount, 0);
 
-  const reportLines = pipe(
-    map((t: Transaction) => \`\${t.id}: \${t.description} - ₩\${t.amount.toLocaleString()}\`),
+  return pipe(
+    transactions,
+    map((t) => \`\${t.id}: \${t.description} - ₩\${t.amount.toLocaleString()}\`),
     append('─'.repeat(50)),
     append(\`합계: ₩\${total.toLocaleString()}\`)
   );
-
-  return reportLines(transactions);
 }
 
 const transactions = [
@@ -301,7 +297,7 @@ for await (const item of usersWithCount) {
       language="typescript"
       code={`import { append } from 'fp-pack/stream';
 import { map } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 
 interface LogEntry {
   level: 'INFO' | 'WARN' | 'ERROR';
@@ -313,12 +309,13 @@ function formatLogs(logs: LogEntry[]) {
   const now = new Date().toISOString();
 
   return pipe(
-    map((log: LogEntry) =>
+    logs,
+    map((log) =>
       \`[\${new Date(log.timestamp).toISOString()}] \${log.level}: \${log.message}\`
     ),
     append(''),
     append(\`로그 생성 시각: \${now}\`)
-  )(logs);
+  );
 }
 
 const logs: LogEntry[] = [
@@ -346,7 +343,7 @@ for (const line of formatLogs(logs)) {
       language="typescript"
       code={`import { append } from 'fp-pack/stream';
 import { take } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 
 function* fibonacci() {
   let a = 0, b = 1;
@@ -357,12 +354,11 @@ function* fibonacci() {
 }
 
 // 처음 10개의 피보나치 수를 가져오고 마커 추가
-const limitedFibonacci = pipe(
+const result = pipe(
+  fibonacci(),
   take(10),
   append('... (시퀀스 계속됨)')
 );
-
-const result = limitedFibonacci(fibonacci());
 
 for (const value of result) {
   console.log(value);

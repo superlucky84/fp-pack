@@ -1,15 +1,13 @@
-import type { AnyIterableInput, PromiseLikeValue } from './utils';
+import type { AnyIterableInput, PromiseLikeValue, InputItem, IteratorResultFor } from './utils';
 import { isAsyncInput, isIterable } from './utils';
 import toAsync from './toAsync';
 
-/** drop - lazily skip first n values */
-function drop<T>(count: number): (iterable: Iterable<T>) => IterableIterator<T>;
-function drop<T>(count: number): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<T>;
-function drop<T>(count: number, iterable: Iterable<T>): IterableIterator<T>;
-function drop<T>(count: number, iterable: AnyIterableInput<PromiseLikeValue<T>>): AsyncIterableIterator<T>;
+/** drop - preserve source element types and execution mode. */
+function drop(count: number): <I extends AnyIterableInput<unknown>>(iterable: I) => IteratorResultFor<I, InputItem<I>>;
+function drop<I extends AnyIterableInput<unknown>>(count: number, iterable: I): IteratorResultFor<I, InputItem<I>>;
 function drop<T>(count: number, iterable?: AnyIterableInput<PromiseLikeValue<T>>): any {
   if (iterable === undefined) {
-    return (next: AnyIterableInput<PromiseLikeValue<T>>) => drop(count, next);
+    return (next: AnyIterableInput<PromiseLikeValue<T>>) => drop(count, next as never);
   }
 
   const limit = Math.floor(count);

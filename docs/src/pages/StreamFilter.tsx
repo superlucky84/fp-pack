@@ -31,32 +31,24 @@ export const StreamFilter = () => (
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Type Signature
+      Input modes and inference
     </h2>
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      Sync sources use sync iteration; async or promised sources use async iteration. The source anchors inline
+      pipe callbacks; saved steps without callbacks infer elements when supplied an input. Async predicates,
+      flatMap callbacks and accumulators require an async source: use toAsync once before those steps. toArray
+      returns a Promise in either mode.
+    </p>
 
+    {/* inference-usability: filter */}
     <CodeBlock
       language="typescript"
-      code={`// Sync version - filter sync iterable with sync predicate
-function filter<T>(
-  predicate: (value: T) => boolean,
-  iterable: Iterable<T>
-): IterableIterator<T>;
+      code={`import { pipe } from 'fp-pack';
+import { filter, toAsync, toArray } from 'fp-pack/stream';
 
-// Async version - filter with async predicate or async iterable
-function filter<T>(
-  predicate: (value: T) => boolean | Promise<boolean>,
-  iterable: AnyIterableInput<PromiseLikeValue<T>>
-): AsyncIterableIterator<T>;
-
-// Curried sync version - returns function that filters iterable
-function filter<T>(
-  predicate: (value: T) => boolean
-): (iterable: Iterable<T>) => IterableIterator<T>;
-
-// Curried async version - returns function that filters iterable
-function filter<T>(
-  predicate: (value: T) => boolean | Promise<boolean>
-): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<T>;`}
+const sync = pipe([1, 2, 3], filter(n => n > 1), toArray);
+const async = pipe([1, 2, 3], toAsync, filter(n => n > 1), toArray);
+const awaited = pipe([1, 2, 3], toAsync, filter(async n => n > 1), toArray);`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -97,7 +89,7 @@ console.log(Array.from(activeUsers));
     <CodeBlock
       language="typescript"
       code={`import { filter } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { map } from 'fp-pack/stream';
 
 // Create reusable filter functions
@@ -106,11 +98,13 @@ const isEven = filter((n: number) => n % 2 === 0);
 const isLongString = filter((s: string) => s.length > 5);
 
 // Use in functional pipelines
-const processNumbers = pipe(
-  isPositive,
-  isEven,
-  map((n: number) => n * 2)
-);
+const processNumbers = (items: Iterable<number>) =>
+  pipe(
+    items,
+    isPositive,
+    isEven,
+    map((n: number) => n * 2)
+  );
 
 const numbers = [-2, -1, 0, 1, 2, 3, 4, 5];
 console.log(Array.from(processNumbers(numbers)));
@@ -130,7 +124,7 @@ console.log(Array.from(processNumbers(numbers)));
     <CodeBlock
       language="typescript"
       code={`import { filter } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 
 interface FormData {
   email: string;
@@ -149,11 +143,13 @@ const isValidEmail = (email: string) => /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(em
 const isAdult = (age: number) => age >= 18;
 
 // Filter valid submissions
-const validSubmissions = pipe(
-  filter((data: FormData) => isValidEmail(data.email)),
-  filter((data: FormData) => isAdult(data.age)),
-  filter((data: FormData) => data.agreed)
-);
+const validSubmissions = (items: Iterable<FormData>) =>
+  pipe(
+    items,
+    filter((data: FormData) => isValidEmail(data.email)),
+    filter((data: FormData) => isAdult(data.age)),
+    filter((data: FormData) => data.agreed)
+  );
 
 const valid = Array.from(validSubmissions(submissions));
 console.log(valid);
@@ -212,7 +208,7 @@ console.log(results);
     <CodeBlock
       language="typescript"
       code={`import { filter } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { map } from 'fp-pack/stream';
 
 interface LogEntry {
@@ -237,14 +233,16 @@ async function* readLogs(): AsyncIterableIterator<LogEntry> {
 }
 
 // Filter critical errors from specific service
-const criticalApiErrors = pipe(
-  filter((log: LogEntry) => log.service === 'api'),
-  filter((log: LogEntry) => log.level === 'ERROR'),
-  map((log: LogEntry) => ({
-    ...log,
-    alert: true
-  }))
-);
+const criticalApiErrors = (logs: AsyncIterable<LogEntry>) =>
+  pipe(
+    logs,
+    filter((log) => log.service === 'api'),
+    filter((log) => log.level === 'ERROR'),
+    map((log) => ({
+      ...log,
+      alert: true
+    }))
+  );
 
 for await (const error of criticalApiErrors(readLogs())) {
   console.log(\`[ALERT] \${error.service}: \${error.message}\`);
@@ -306,7 +304,7 @@ console.log(authorizedUsers.map(u => u.name));
     <CodeBlock
       language="typescript"
       code={`import { filter } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { map } from 'fp-pack/stream';
 
 interface RawData {
@@ -324,16 +322,18 @@ const rawDataset: RawData[] = [
 ];
 
 // Remove null/undefined values
-const cleanData = pipe(
-  filter((d: RawData) => d.id !== null && d.id !== undefined),
-  filter((d: RawData) => d.value !== null && d.value !== undefined),
-  filter((d: RawData) => d.metadata !== undefined),
-  map((d: RawData) => ({
-    id: d.id as string,
-    value: d.value as number,
-    metadata: d.metadata as string
-  }))
-);
+const cleanData = (items: Iterable<RawData>) =>
+  pipe(
+    items,
+    filter((d: RawData) => d.id !== null && d.id !== undefined),
+    filter((d: RawData) => d.value !== null && d.value !== undefined),
+    filter((d: RawData) => d.metadata !== undefined),
+    map((d: RawData) => ({
+      id: d.id as string,
+      value: d.value as number,
+      metadata: d.metadata as string
+    }))
+  );
 
 const cleaned = Array.from(cleanData(rawDataset));
 console.log(cleaned);
@@ -350,7 +350,7 @@ console.log(cleaned);
     <CodeBlock
       language="typescript"
       code={`import { filter } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { take, map } from 'fp-pack/stream';
 
 // Infinite sequence of natural numbers
@@ -373,11 +373,13 @@ const isPrime = (n: number): boolean => {
 };
 
 // Filter primes from infinite sequence
-const first10Primes = pipe(
-  filter(isPrime),
-  take(10),
-  map((n: number) => ({ value: n, isPrime: true }))
-);
+const first10Primes = (numbers: Iterable<number>) =>
+  pipe(
+    numbers,
+    filter(isPrime),
+    take(10),
+    map((n) => ({ value: n, isPrime: true }))
+  );
 
 const primes = Array.from(first10Primes(naturalNumbers()));
 console.log(primes.map(p => p.value));
@@ -423,7 +425,7 @@ console.log(primes.map(p => p.value));
           Universal Compatibility
         </h3>
         <p class="text-sm text-orange-800 dark:text-orange-200">
-          Works with any iterable (arrays, generators, async iterables, sets, maps) and automatically handles both sync and async predicates.
+          Works with any iterable (arrays, generators, async iterables, sets, maps) and awaits async predicates when the source is async or promised. Use toAsync for an ordinary iterable.
         </p>
       </div>
     </div>

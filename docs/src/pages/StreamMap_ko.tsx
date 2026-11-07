@@ -31,27 +31,21 @@ export const StreamMap_ko = () => (
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Type Signature
+      입력 모드와 타입 추론
     </h2>
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      동기 입력은 동기 순회를, 비동기·Promise 입력은 비동기 순회를 사용합니다. pipe 입력은 인라인 콜백의 타입을 결정하며, 콜백 없는 저장 단계는 입력을 받을 때 원소 타입을
+      추론합니다. 비동기 조건 함수·flatMap·누산 함수는 toAsync로 입력을 변환한 뒤 사용하세요. toArray는 어느 모드에서든 Promise를 반환합니다.
+    </p>
 
+    {/* inference-usability: map */}
     <CodeBlock
       language="typescript"
-      code={`// 동기 버전 - 동기 함수로 동기 이터러블 변환
-function map<T, R>(fn: (value: T) => R, iterable: Iterable<T>): IterableIterator<R>;
+      code={`import { pipe } from 'fp-pack';
+import { map, toAsync, toArray } from 'fp-pack/stream';
 
-// 비동기 버전 - 비동기 함수 또는 비동기 이터러블로 변환
-function map<T, R>(
-  fn: (value: T) => R | Promise<R>,
-  iterable: AnyIterableInput<PromiseLikeValue<T>>
-): AsyncIterableIterator<R>;
-
-// 커리된 동기 버전 - 이터러블을 변환하는 함수를 반환
-function map<T, R>(fn: (value: T) => R): (iterable: Iterable<T>) => IterableIterator<R>;
-
-// 커리된 비동기 버전 - 이터러블을 변환하는 함수를 반환
-function map<T, R>(
-  fn: (value: T) => R | Promise<R>
-): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<R>;`}
+const sync = pipe([1, 2, 3], map(n => n.toFixed()), toArray);
+const async = pipe([1, 2, 3], toAsync, map(n => n.toFixed()), toArray);`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -91,7 +85,7 @@ console.log(Array.from(names));
     <CodeBlock
       language="typescript"
       code={`import { map } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { filter } from 'fp-pack/stream';
 
 // 재사용 가능한 변환 함수 생성
@@ -99,11 +93,13 @@ const double = map((n: number) => n * 2);
 const toUpperCase = map((s: string) => s.toUpperCase());
 
 // 함수형 파이프라인에서 사용
-const processNumbers = pipe(
-  filter((n: number) => n > 0),
-  double,
-  map((n: number) => \`결과: \${n}\`)
-);
+const processNumbers = (items: Iterable<number>) =>
+  pipe(
+    items,
+    filter((n: number) => n > 0),
+    double,
+    map((n: number) => \`결과: \${n}\`)
+  );
 
 const numbers = [-1, 2, -3, 4, 5];
 console.log(Array.from(processNumbers(numbers)));
@@ -123,7 +119,7 @@ console.log(Array.from(processNumbers(numbers)));
     <CodeBlock
       language="typescript"
       code={`import { map } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 
 interface RawUser {
   first_name: string;
@@ -204,7 +200,7 @@ for await (const profile of userProfiles) {
     <CodeBlock
       language="typescript"
       code={`import { map } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { filter } from 'fp-pack/stream';
 
 interface LogEntry {
@@ -263,7 +259,7 @@ for await (const entry of logEntries) {
     <CodeBlock
       language="typescript"
       code={`import { map } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 
 interface Product {
   id: string;
@@ -358,7 +354,7 @@ console.log(imagesWithUrls[0]);
     <CodeBlock
       language="typescript"
       code={`import { map } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { take } from 'fp-pack/stream';
 
 // 자연수의 무한 시퀀스
@@ -370,11 +366,13 @@ function* naturalNumbers() {
 }
 
 // 무한 시퀀스 변환
-const processSequence = pipe(
-  map((n: number) => n * n),           // 각 숫자를 제곱
-  map((n: number) => ({ square: n, isEven: n % 2 === 0 })),
-  take(5)                               // 처음 5개 가져오기
-);
+const processSequence = (numbers: Iterable<number>) =>
+  pipe(
+    numbers,
+    map((n) => n * n),           // 각 숫자를 제곱
+    map((n) => ({ square: n, isEven: n % 2 === 0 })),
+    take(5)                               // 처음 5개 가져오기
+  );
 
 const result = Array.from(processSequence(naturalNumbers()));
 console.log(result);

@@ -1,14 +1,14 @@
 import curry from '../composition/curry';
 
 type OmitFn = {
-  <K extends PropertyKey>(...args: [keys: K[]]): <T extends Record<K, unknown>>(obj: T) => Omit<T, K>;
-  <T extends object, K extends keyof T = keyof T>(...args: [keys: K[], obj: T]): Omit<T, K>;
+  <K extends PropertyKey>(...args: [keys: readonly K[]]): <T extends Partial<Record<K, unknown>>>(obj: T) => Omit<T, K>;
+  <T extends object, K extends keyof T = keyof T>(...args: [keys: readonly K[], obj: T]): Omit<T, K>;
 };
 
 /**
  * omit - 일부 속성 제거
  */
-function omit<T, K extends keyof T = keyof T>(keys: K[], obj: T): Omit<T, K> {
+function omit<T, K extends keyof T = keyof T>(keys: readonly K[], obj: T): Omit<T, K> {
   const result = { ...(obj as object) } as T;
   for (const key of keys) {
     delete (result as Record<PropertyKey, unknown>)[key];

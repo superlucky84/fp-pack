@@ -100,28 +100,22 @@ iter.next(); // { done: true, value: undefined }`}
       <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
       <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-        Type Signature
+        입력 모드와 타입 추론
       </h2>
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      동기 입력은 동기 순회를, 비동기·Promise 입력은 비동기 순회를 사용합니다. pipe 입력은 인라인 콜백의 타입을 결정하며, 콜백 없는 저장 단계는 입력을 받을 때 원소 타입을
+      추론합니다. 비동기 조건 함수·flatMap·누산 함수는 toAsync로 입력을 변환한 뒤 사용하세요. toArray는 어느 모드에서든 Promise를 반환합니다.
+    </p>
 
+      {/* inference-usability: chunk */}
       <CodeBlock
         language="typescript"
-        code={`function chunk<T>(
-  size: number,
-  iterable: Iterable<T>
-): IterableIterator<T[]>;
+        code={`import { chunk, toArray } from 'fp-pack/stream';
 
-function chunk<T>(
-  size: number,
-  iterable: AsyncIterable<T> | Promise<Iterable<T> | AsyncIterable<T>>
-): AsyncIterableIterator<T[]>;
-
-function chunk<T>(
-  size: number
-): (iterable: Iterable<T>) => IterableIterator<T[]>;
-
-function chunk<T>(
-  size: number
-): (iterable: AsyncIterable<T> | Promise<Iterable<T> | AsyncIterable<T>>) => AsyncIterableIterator<T[]>;`}
+const saved = chunk(2);
+const sync = saved([1, 2, 3]); // IterableIterator<number[]>
+const async = saved(Promise.resolve([1, 2, 3])); // AsyncIterableIterator<number[]>
+const values = toArray(async);`}
       />
 
       <div class="mt-6 space-y-4">

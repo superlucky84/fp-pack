@@ -52,6 +52,46 @@ transform(5);  // "20"
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
+      타입 시그니처
+    </h2>
+
+    <CodeBlock
+      language="typescript"
+      code={`// 오른쪽에서 왼쪽: 마지막 함수가 입력을 받습니다.
+function compose<A, R>(f: (a: A) => R): (a: A) => R;
+function compose<A, B, R>(
+  g: (b: B) => R,
+  f: (a: A) => B
+): (a: A) => R;
+function compose<A, B, C, R>(
+  h: (c: C) => R,
+  g: (b: B) => C,
+  f: (a: A) => B
+): (a: A) => R;
+// ...함수 10개까지의 타입 오버로드,
+// 인자 없는 함수와 from() 시작 형태 포함.
+
+// 더 긴 체인: 인접한 연결을 모두 계속 검사합니다.
+function compose<Fns extends [Fn, ...Fn[]]>(
+  ...funcs: Fns & ComposeCheck<Fns>
+): (input: InputOfLast<Fns>) => OutputOfFirst<Fns>;`}
+    />
+
+    <p class="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6 mt-4">
+      타입 검사 없는 catch-all 오버로드가 없으므로, 연결이 맞지 않으면{' '}
+      <code class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">any</code>를 반환하지 않고 컴파일 오류가 납니다.
+      같은 이유로 런타임 배열을 펼쳐 넣는 호출(
+      <code class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">fns: Array&lt;Fn&gt;</code>일 때{' '}
+      <code class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">compose(...fns)</code>)도 거절됩니다. 튜플(
+      <code class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">[f, g] as const</code>)을 넘기거나, 같은 타입의
+      함수 목록이면{' '}
+      <code class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">fns.reduceRight((acc, fn) =&gt; fn(acc), input)</code>
+      로 접으세요.
+    </p>
+
+    <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
+
+    <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
       기본 사용법
     </h2>
 

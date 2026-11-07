@@ -1,9 +1,9 @@
 import curry from '../composition/curry';
 
 type Reduce = {
-  <T, R>(...args: [fn: (acc: R, value: T) => R]): (initial: R) => (arr: T[]) => R;
-  <T, R>(...args: [fn: (acc: R, value: T) => R, initial: R]): (arr: T[]) => R;
-  <T, R>(...args: [fn: (acc: R, value: T) => R, initial: R, arr: T[]]): R;
+  <T, R>(...args: [fn: (acc: R, value: T) => R]): (initial: R) => (arr: readonly T[]) => R;
+  <T, R>(...args: [fn: (acc: R, value: T) => R, initial: R]): (arr: readonly T[]) => R;
+  <T, R>(...args: [fn: (acc: R, value: T) => R, initial: R, arr: readonly T[]]): R;
 };
 
 /**
@@ -12,7 +12,7 @@ type Reduce = {
 function reduce<T, R>(
   fn: (acc: R, value: T) => R,
   initial: R,
-  arr: T[]
+  arr: readonly T[]
 ): R {
   return arr.reduce(fn, initial);
 }

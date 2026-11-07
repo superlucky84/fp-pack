@@ -31,32 +31,22 @@ export const StreamFilter_ko = () => (
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
 
     <h2 class="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white mb-4">
-      Type Signature
+      입력 모드와 타입 추론
     </h2>
+    <p class="text-sm text-gray-700 dark:text-gray-300 mb-6">
+      동기 입력은 동기 순회를, 비동기·Promise 입력은 비동기 순회를 사용합니다. pipe 입력은 인라인 콜백의 타입을 결정하며, 콜백 없는 저장 단계는 입력을 받을 때 원소 타입을
+      추론합니다. 비동기 조건 함수·flatMap·누산 함수는 toAsync로 입력을 변환한 뒤 사용하세요. toArray는 어느 모드에서든 Promise를 반환합니다.
+    </p>
 
+    {/* inference-usability: filter */}
     <CodeBlock
       language="typescript"
-      code={`// 동기 버전 - 동기 조건으로 동기 이터러블 필터링
-function filter<T>(
-  predicate: (value: T) => boolean,
-  iterable: Iterable<T>
-): IterableIterator<T>;
+      code={`import { pipe } from 'fp-pack';
+import { filter, toAsync, toArray } from 'fp-pack/stream';
 
-// 비동기 버전 - 비동기 조건 또는 비동기 이터러블로 필터링
-function filter<T>(
-  predicate: (value: T) => boolean | Promise<boolean>,
-  iterable: AnyIterableInput<PromiseLikeValue<T>>
-): AsyncIterableIterator<T>;
-
-// 커리된 동기 버전 - 이터러블을 필터링하는 함수를 반환
-function filter<T>(
-  predicate: (value: T) => boolean
-): (iterable: Iterable<T>) => IterableIterator<T>;
-
-// 커리된 비동기 버전 - 이터러블을 필터링하는 함수를 반환
-function filter<T>(
-  predicate: (value: T) => boolean | Promise<boolean>
-): (iterable: AnyIterableInput<PromiseLikeValue<T>>) => AsyncIterableIterator<T>;`}
+const sync = pipe([1, 2, 3], filter(n => n > 1), toArray);
+const async = pipe([1, 2, 3], toAsync, filter(n => n > 1), toArray);
+const awaited = pipe([1, 2, 3], toAsync, filter(async n => n > 1), toArray);`}
     />
 
     <hr class="border-t border-gray-200 dark:border-gray-700 my-10" />
@@ -97,7 +87,7 @@ console.log(Array.from(activeUsers));
     <CodeBlock
       language="typescript"
       code={`import { filter } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { map } from 'fp-pack/stream';
 
 // 재사용 가능한 필터 함수 생성
@@ -106,11 +96,13 @@ const isEven = filter((n: number) => n % 2 === 0);
 const isLongString = filter((s: string) => s.length > 5);
 
 // 함수형 파이프라인에서 사용
-const processNumbers = pipe(
-  isPositive,
-  isEven,
-  map((n: number) => n * 2)
-);
+const processNumbers = (items: Iterable<number>) =>
+  pipe(
+    items,
+    isPositive,
+    isEven,
+    map((n: number) => n * 2)
+  );
 
 const numbers = [-2, -1, 0, 1, 2, 3, 4, 5];
 console.log(Array.from(processNumbers(numbers)));
@@ -130,7 +122,7 @@ console.log(Array.from(processNumbers(numbers)));
     <CodeBlock
       language="typescript"
       code={`import { filter } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 
 interface FormData {
   email: string;
@@ -149,11 +141,13 @@ const isValidEmail = (email: string) => /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(em
 const isAdult = (age: number) => age >= 18;
 
 // 유효한 제출만 필터링
-const validSubmissions = pipe(
-  filter((data: FormData) => isValidEmail(data.email)),
-  filter((data: FormData) => isAdult(data.age)),
-  filter((data: FormData) => data.agreed)
-);
+const validSubmissions = (items: Iterable<FormData>) =>
+  pipe(
+    items,
+    filter((data: FormData) => isValidEmail(data.email)),
+    filter((data: FormData) => isAdult(data.age)),
+    filter((data: FormData) => data.agreed)
+  );
 
 const valid = Array.from(validSubmissions(submissions));
 console.log(valid);
@@ -212,7 +206,7 @@ console.log(results);
     <CodeBlock
       language="typescript"
       code={`import { filter } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { map } from 'fp-pack/stream';
 
 interface LogEntry {
@@ -237,14 +231,16 @@ async function* readLogs(): AsyncIterableIterator<LogEntry> {
 }
 
 // 특정 서비스의 중요 오류만 필터링
-const criticalApiErrors = pipe(
-  filter((log: LogEntry) => log.service === 'api'),
-  filter((log: LogEntry) => log.level === 'ERROR'),
-  map((log: LogEntry) => ({
-    ...log,
-    alert: true
-  }))
-);
+const criticalApiErrors = (logs: AsyncIterable<LogEntry>) =>
+  pipe(
+    logs,
+    filter((log) => log.service === 'api'),
+    filter((log) => log.level === 'ERROR'),
+    map((log) => ({
+      ...log,
+      alert: true
+    }))
+  );
 
 for await (const error of criticalApiErrors(readLogs())) {
   console.log(\`[경고] \${error.service}: \${error.message}\`);
@@ -306,7 +302,7 @@ console.log(authorizedUsers.map(u => u.name));
     <CodeBlock
       language="typescript"
       code={`import { filter } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { map } from 'fp-pack/stream';
 
 interface RawData {
@@ -324,16 +320,18 @@ const rawDataset: RawData[] = [
 ];
 
 // null/undefined 값 제거
-const cleanData = pipe(
-  filter((d: RawData) => d.id !== null && d.id !== undefined),
-  filter((d: RawData) => d.value !== null && d.value !== undefined),
-  filter((d: RawData) => d.metadata !== undefined),
-  map((d: RawData) => ({
-    id: d.id as string,
-    value: d.value as number,
-    metadata: d.metadata as string
-  }))
-);
+const cleanData = (items: Iterable<RawData>) =>
+  pipe(
+    items,
+    filter((d: RawData) => d.id !== null && d.id !== undefined),
+    filter((d: RawData) => d.value !== null && d.value !== undefined),
+    filter((d: RawData) => d.metadata !== undefined),
+    map((d: RawData) => ({
+      id: d.id as string,
+      value: d.value as number,
+      metadata: d.metadata as string
+    }))
+  );
 
 const cleaned = Array.from(cleanData(rawDataset));
 console.log(cleaned);
@@ -350,7 +348,7 @@ console.log(cleaned);
     <CodeBlock
       language="typescript"
       code={`import { filter } from 'fp-pack/stream';
-import { pipe } from 'fp-pack/composition';
+import { pipe } from 'fp-pack';
 import { take, map } from 'fp-pack/stream';
 
 // 자연수의 무한 시퀀스
@@ -373,11 +371,13 @@ const isPrime = (n: number): boolean => {
 };
 
 // 무한 시퀀스에서 소수 필터링
-const first10Primes = pipe(
-  filter(isPrime),
-  take(10),
-  map((n: number) => ({ value: n, isPrime: true }))
-);
+const first10Primes = (numbers: Iterable<number>) =>
+  pipe(
+    numbers,
+    filter(isPrime),
+    take(10),
+    map((n) => ({ value: n, isPrime: true }))
+  );
 
 const primes = Array.from(first10Primes(naturalNumbers()));
 console.log(primes.map(p => p.value));
@@ -423,7 +423,7 @@ console.log(primes.map(p => p.value));
           범용 호환성
         </h3>
         <p class="text-sm text-orange-800 dark:text-orange-200">
-          모든 이터러블(배열, 제너레이터, 비동기 이터러블, Set, Map)과 작동하며 동기 및 비동기 조건을 자동으로 처리합니다.
+          모든 이터러블(배열, 제너레이터, 비동기 이터러블, Set, Map)과 작동하며 비동기·Promise 입력에서는 비동기 조건을 기다립니다. 일반 이터러블에는 먼저 toAsync를 적용하세요.
         </p>
       </div>
     </div>

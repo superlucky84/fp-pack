@@ -72,10 +72,10 @@ type ThemeState = {
 };
 
 const setTheme = (value: ThemeState) =>
-  assocPath<ThemeState>(["profile", "prefs", "theme"], "dark", value);
+  assocPath(["profile", "prefs", "theme"], "dark", value);
 const clearTheme = dissocPath<ThemeState>(["profile", "prefs", "theme"]);
 const readTheme = (value: ThemeState) =>
-  path<string>(["profile", "prefs", "theme"], value);
+  path(["profile", "prefs", "theme"], value);
 
 export const pipeObjectTheme = pipe(setTheme, clearTheme, readTheme);
 
@@ -163,8 +163,8 @@ type Account = {
 };
 
 const setRole = (value: Account) =>
-  assocPath<Account>(["profile", "role"], "member", value);
-const readRole = (value: Account) => path<string>(["profile", "role"], value);
+  assocPath(["profile", "role"], "member", value);
+const readRole = (value: Account) => path(["profile", "role"], value);
 const clearRole = dissocPath<Account>(["profile", "role"]);
 
 export const pipeSideEffectStrictObject = pipeSideEffectStrict(
@@ -275,8 +275,8 @@ type Payload = {
 };
 
 const setValue = (value: Payload) =>
-  assocPath<Payload>(["data", "value"], 1, value);
-const readValue = (value: Payload) => path<number>(["data", "value"], value);
+  assocPath(["data", "value"], 1, value);
+const readValue = (value: Payload) => path(["data", "value"], value);
 
 export const pipeAsyncSideEffectStrictObject = pipeAsyncSideEffectStrict(
   setValue,

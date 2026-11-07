@@ -389,17 +389,21 @@ const db: Database = {
   ]
 };
 
-// Define a type-safe path
-const themePath: PathKey[] = ['users', 0, 'settings', 'theme'];
-
-// Read a nested value
-const currentTheme = path<string>(themePath, db);
+// A literal path infers the value type from the source
+const currentTheme = path(['users', 0, 'settings', 'theme'], db); // string | undefined
 console.log(currentTheme);  // 'dark'
+
+// Keep a reusable path literal with as const
+const themePath = ['users', 0, 'settings', 'theme'] as const;
 
 // Update a nested value immutably
 const updatedDb = assocPath(themePath, 'light', db);
-console.log(path<string>(themePath, updatedDb));  // 'light'
-console.log(path<string>(themePath, db));  // 'dark' (original unchanged)`}
+console.log(path(themePath, updatedDb));  // 'light'
+console.log(path(themePath, db));  // 'dark' (original unchanged)
+
+// A PathKey[] built at runtime still works, but its value type is unknown
+const dynamicPath: PathKey[] = ['users', 0, 'settings', 'theme'];
+const dynamicTheme = path(dynamicPath, db);  // unknown`}
     />
 
     <h3 class="text-xl md:text-2xl font-medium text-gray-900 dark:text-white mb-3 mt-8">
@@ -408,22 +412,15 @@ console.log(path<string>(themePath, db));  // 'dark' (original unchanged)`}
 
     <CodeBlock
       language="typescript"
-      code={`import { path, assocPath } from 'fp-pack';
-import type { PathKey } from 'fp-pack';
+      code={`import { path } from 'fp-pack';
 
-// Create a path builder utility
-function buildPath(...keys: PathKey[]): PathKey[] {
-  return keys;
-}
+// Keep reusable paths literal with as const
+const userNamePath = ['users', 0, 'name'] as const;
+const userThemePath = ['users', 0, 'settings', 'theme'] as const;
 
-// Define common paths
-const userNamePath = buildPath('users', 0, 'name');
-const userSettingsPath = buildPath('users', 0, 'settings');
-const userThemePath = buildPath('users', 0, 'settings', 'theme');
-
-// Create curried accessors
-const getName = path<string>(userNamePath);
-const getTheme = path<string>(userThemePath);
+// Create curried accessors: value types come from the object they read
+const getName = path(userNamePath);
+const getTheme = path(userThemePath);
 
 const db = {
   users: [
