@@ -180,7 +180,7 @@ for (const emp of allEmployees) {
 
     <CodeBlock
       language="typescript"
-      code={`import { flatMap, toArray } from 'fp-pack/stream';
+      code={`import { flatMap, toArray, toAsync } from 'fp-pack/stream';
 
 interface User {
   id: number;
@@ -209,7 +209,8 @@ const users: User[] = [
 // 모든 사용자의 모든 게시물 가져오기
 const allPosts = flatMap(
   async (user: User) => await getUserPosts(user.id),
-  users
+  // async 콜백에는 비동기 소스가 필요하므로 toAsync로 감쌉니다
+  toAsync(users)
 );
 
 const posts = await toArray(allPosts);

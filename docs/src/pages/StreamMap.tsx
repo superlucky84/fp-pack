@@ -366,11 +366,13 @@ function* naturalNumbers() {
 }
 
 // Transform infinite sequence
-const processSequence = pipe(
-  map((n: number) => n * n),           // Square each number
-  map((n: number) => ({ square: n, isEven: n % 2 === 0 })),
-  take(5)                               // Take first 5
-);
+const processSequence = (numbers: Iterable<number>) =>
+  pipe(
+    numbers,
+    map((n) => n * n),           // Square each number
+    map((n) => ({ square: n, isEven: n % 2 === 0 })),
+    take(5)                               // Take first 5
+  );
 
 const result = Array.from(processSequence(naturalNumbers()));
 console.log(result);

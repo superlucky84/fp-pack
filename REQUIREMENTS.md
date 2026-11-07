@@ -1,5 +1,19 @@
 # REQUIREMENTS — Inference Usability
 
+## Active revision — pre-release review fixes (2026-11-07)
+
+Before releasing 0.16.0, every TypeScript example in the docs site, README, skills
+and AI guides (1,835) was compiled on main and on this branch. It found one
+library regression and docs that did not follow 0.16.0 contracts.
+
+| ID | Requirement | Validation |
+|---|---|---|
+| RF-03 | In pipes, `ifElse`/`when`/`unless` with plain boolean predicates and unannotated callbacks give each callback the input type (never `never`) and compile as on main. Type-guard narrowing and staged inference from IU-09 stay | case matrix on main and branch; new type regressions; existing type tests |
+| RF-04 | Docs examples follow 0.16.0: no output generics on `path`, async stream callbacks get an async source, saved stream pipelines have a known input | example corpus: nothing that compiled on main fails now |
+| RF-05 | CHANGELOG and README upgrade notes name the saved stream pipeline change and its value-first or typed-wrapper replacement | docs review |
+
+Scope: type declarations and docs only; runtime behavior is unchanged.
+
 ## Active release — 0.16.0 (2026-11-07)
 
 Branch `ccr-80cfc3e1-vwp61m` (`5ba6b88`) carries the IU, CN, PG and RF work. The

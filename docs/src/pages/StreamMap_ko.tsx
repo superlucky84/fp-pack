@@ -364,11 +364,13 @@ function* naturalNumbers() {
 }
 
 // 무한 시퀀스 변환
-const processSequence = pipe(
-  map((n: number) => n * n),           // 각 숫자를 제곱
-  map((n: number) => ({ square: n, isEven: n % 2 === 0 })),
-  take(5)                               // 처음 5개 가져오기
-);
+const processSequence = (numbers: Iterable<number>) =>
+  pipe(
+    numbers,
+    map((n) => n * n),           // 각 숫자를 제곱
+    map((n) => ({ square: n, isEven: n % 2 === 0 })),
+    take(5)                               // 처음 5개 가져오기
+  );
 
 const result = Array.from(processSequence(naturalNumbers()));
 console.log(result);

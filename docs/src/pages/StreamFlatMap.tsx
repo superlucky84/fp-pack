@@ -182,7 +182,7 @@ for (const emp of allEmployees) {
 
     <CodeBlock
       language="typescript"
-      code={`import { flatMap, toArray } from 'fp-pack/stream';
+      code={`import { flatMap, toArray, toAsync } from 'fp-pack/stream';
 
 interface User {
   id: number;
@@ -211,7 +211,8 @@ const users: User[] = [
 // Fetch all posts for all users
 const allPosts = flatMap(
   async (user: User) => await getUserPosts(user.id),
-  users
+  // Async callbacks need an async source, so wrap the array with toAsync
+  toAsync(users)
 );
 
 const posts = await toArray(allPosts);

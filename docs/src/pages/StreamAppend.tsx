@@ -97,10 +97,12 @@ const addFooter = append('--- End of List ---');
 const addTotal = append('Total: $1,234.56');
 
 // Use in functional pipelines
-const processItems = pipe(
-  map((item: string) => \`• \${item}\`),
-  addFooter
-);
+const processItems = (items: string[]) =>
+  pipe(
+    items,
+    map((item) => \`• \${item}\`),
+    addFooter
+  );
 
 const items = ['Apple', 'Banana', 'Cherry'];
 console.log(Array.from(processItems(items)));
@@ -136,7 +138,7 @@ async function* readFileChunks(filename: string) {
 const withEOF = append({ type: 'EOF' }, readFileChunks('data.txt'));
 
 for await (const chunk of withEOF) {
-  if (chunk.type === 'EOF') {
+  if (typeof chunk === 'object') { // the EOF marker
     console.log('File reading complete');
   } else {
     console.log('Processing:', chunk);
@@ -168,13 +170,12 @@ interface Transaction {
 function generateReport(transactions: Transaction[]) {
   const total = transactions.reduce((sum, t) => sum + t.amount, 0);
 
-  const reportLines = pipe(
-    map((t: Transaction) => \`\${t.id}: \${t.description} - $\${t.amount}\`),
+  return pipe(
+    transactions,
+    map((t) => \`\${t.id}: \${t.description} - $\${t.amount}\`),
     append('─'.repeat(50)),
     append(\`Total: $\${total.toFixed(2)}\`)
   );
-
-  return reportLines(transactions);
 }
 
 const transactions = [
@@ -310,12 +311,13 @@ function formatLogs(logs: LogEntry[]) {
   const now = new Date().toISOString();
 
   return pipe(
-    map((log: LogEntry) =>
+    logs,
+    map((log) =>
       \`[\${new Date(log.timestamp).toISOString()}] \${log.level}: \${log.message}\`
     ),
     append(''),
     append(\`Log generated at: \${now}\`)
-  )(logs);
+  );
 }
 
 const logs: LogEntry[] = [
@@ -354,12 +356,11 @@ function* fibonacci() {
 }
 
 // Take first 10 fibonacci numbers and add a marker
-const limitedFibonacci = pipe(
+const result = pipe(
+  fibonacci(),
   take(10),
   append('... (sequence continues)')
 );
-
-const result = limitedFibonacci(fibonacci());
 
 for (const value of result) {
   console.log(value);

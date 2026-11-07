@@ -379,8 +379,8 @@ const matrix = [
 
 const processMatrix = (matrix: number[][]) =>
   pipe(
-    matrix,
-    flatMap((row, rowIdx) =>
+    zip(range(0, matrix.length), matrix), // [row, rowIdx]
+    flatMap(([row, rowIdx]) =>
       pipe(
         zip(range(0, row.length), row),
         map(([value, colIdx]) => ({

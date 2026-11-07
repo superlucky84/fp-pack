@@ -7,9 +7,9 @@ type When = {
   <T, S extends T, R>(predicate: (value: T) => value is S, fn: (value: S) => R): (value: T) => T | R;
   <T, S extends T, R>(predicate: (value: T) => value is S, fn: (value: S) => R, value: T): T | R;
   <T>(predicate: (value: Widen<T>) => boolean): <R>(fn: (value: Widen<T>) => R) => (value: Widen<T>) => Widen<T> | R;
-  <T>(predicate: (value: Widen<T>) => boolean, fn: (value: Widen<T>) => Widen<T>): (value: Widen<T>) => Widen<T>;
+  <T>(predicate: (value: Widen<T>) => boolean, fn: (value: Widen<T>) => NoInfer<Widen<T>>): (value: Widen<T>) => Widen<T>;
   <T, R>(predicate: (value: Widen<T>) => boolean, fn: (value: Widen<T>) => R): (value: Widen<T>) => Widen<T> | R;
-  <T>(predicate: (value: Widen<T>) => boolean, fn: (value: Widen<T>) => Widen<T>, value: Widen<T>): Widen<T>;
+  <T>(predicate: (value: Widen<T>) => boolean, fn: (value: Widen<T>) => NoInfer<Widen<T>>, value: Widen<T>): Widen<T>;
   <T, R>(predicate: (value: Widen<T>) => boolean, fn: (value: Widen<T>) => R, value: Widen<T>): Widen<T> | R;
 };
 

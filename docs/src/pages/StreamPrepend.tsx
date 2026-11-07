@@ -96,10 +96,12 @@ const addHeader = prepend('=== Report Header ===');
 const addTimestamp = prepend(\`Generated: \${new Date().toISOString()}\`);
 
 // Use in functional pipelines
-const processItems = pipe(
-  map((item: string) => \`  \${item}\`),
-  addHeader
-);
+const processItems = (items: string[]) =>
+  pipe(
+    items,
+    map((item) => \`  \${item}\`),
+    addHeader
+  );
 
 const items = ['Item 1', 'Item 2', 'Item 3'];
 console.log(Array.from(processItems(items)));

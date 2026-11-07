@@ -1,5 +1,35 @@
 # IMPLEMENT — Inference Usability
 
+## Active revision — pre-release review fixes (2026-11-07)
+
+1. [x] **RF Phase 4 — Reproduce.** Case matrix on main and branch; add failing
+   type regressions for the conditional shapes.
+2. [x] **RF Phase 5 — Fix.** ifElse/when/unless declarations. Gate: regressions,
+   existing type tests, case matrix.
+3. [x] **RF Phase 6 — Docs.** Rewrite failing EN/KO examples; CHANGELOG/README
+   migration note. Gate: example corpus comparison.
+4. [x] **RF Phase 7 — Integration.** `pnpm release:check`; commit, push to PR #8.
+
+Handoff (complete):
+
+- done: guard overloads of ifElse/unless use `Rest<T, S>` for the false side;
+  same-type when/unless overloads take `T` from the input (`NoInfer` result).
+  Five regressions in `boundary-inference.type-test.ts` failed first and pass now.
+  Rewrote 0.16-breaking examples on 20 EN/KO pages (saved stream pipelines,
+  `path` generics, async flatMap/takeWhile sources) and fixed examples that were
+  already wrong at runtime (stream flatten inputs, zip row index, append EOF
+  check). AI guide: value-first cond example, `ifElse` given a function.
+  CHANGELOG/README name the saved stream pipeline change.
+- validation: case matrix 12/12, and seven probe result types equal main's;
+  `pnpm release:check` (468 tests, build, packed consumer, docs lint/build);
+  packed consumer on TS 5.9.3, 6.0.3 and 7.0.2. Example corpus: no example that
+  compiled on main fails and no failing example gained an error; failing
+  examples 535 → 511 (main 611). The two changed AI guide examples are pseudo
+  code with undefined names and fewer errors than on main.
+- known: 511 examples still fail on both main and this branch, mostly fragments
+  with undefined names; older mistakes such as TypeUsage's explicit
+  `curriedFilter<User>` are outside this revision.
+
 ## Active release — 0.16.0 (2026-11-07)
 
 Branch `ccr-80cfc3e1-vwp61m`, baseline `5ba6b88`.

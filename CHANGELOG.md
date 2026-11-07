@@ -16,6 +16,9 @@
 - Stream partial applications retain source element types and sync/async mode.
   Async predicates/flatMap/accumulators require `toAsync(input)` or another async
   input; previously accepted sync input combinations could silently misbehave.
+  A saved pipeline that starts with a stream step (`pipe(map(fn), take(2))`) has
+  no input yet, so its result is a sync/async union. Start from the value
+  (`pipe(items, map(fn), take(2))`) or wrap it in a function with a typed input.
   Strings are valid stream inputs; deep flattening preserves string leaves.
   Zip operations close both inputs when consumption stops early or the shorter
   input ends. An async input rejection is reported at once; the other input

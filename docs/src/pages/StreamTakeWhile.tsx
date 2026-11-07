@@ -318,7 +318,7 @@ const settings = pipe(
     <CodeBlock
       language="typescript"
       code={`import { pipe } from 'fp-pack';
-import { takeWhile, toArray } from 'fp-pack/stream';
+import { takeWhile, toArray, toAsync } from 'fp-pack/stream';
 
 // Process async stream until condition
 async function* fetchPages() {
@@ -351,12 +351,14 @@ const messages = [
 ];
 
 const beforeSpam = await pipe(
-  takeWhile(async (msg: any) => {
+  messages,
+  toAsync, // async predicates need an async source
+  takeWhile(async (msg) => {
     const isSpam = await checkSpam(msg.content);
     return !isSpam;
   }),
   toArray
-)(messages);
+);
 // Stops at first spam message`}
     />
 

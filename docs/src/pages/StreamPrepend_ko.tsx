@@ -94,10 +94,12 @@ const addHeader = prepend('=== 보고서 헤더 ===');
 const addTimestamp = prepend(\`생성일시: \${new Date().toISOString()}\`);
 
 // 함수형 파이프라인에서 사용
-const processItems = pipe(
-  map((item: string) => \`  \${item}\`),
-  addHeader
-);
+const processItems = (items: string[]) =>
+  pipe(
+    items,
+    map((item) => \`  \${item}\`),
+    addHeader
+  );
 
 const items = ['항목 1', '항목 2', '항목 3'];
 console.log(Array.from(processItems(items)));

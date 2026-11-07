@@ -229,14 +229,16 @@ async function* readLogs(): AsyncIterableIterator<LogEntry> {
 }
 
 // Filter critical errors from specific service
-const criticalApiErrors = pipe(
-  filter((log: LogEntry) => log.service === 'api'),
-  filter((log: LogEntry) => log.level === 'ERROR'),
-  map((log: LogEntry) => ({
-    ...log,
-    alert: true
-  }))
-);
+const criticalApiErrors = (logs: AsyncIterable<LogEntry>) =>
+  pipe(
+    logs,
+    filter((log) => log.service === 'api'),
+    filter((log) => log.level === 'ERROR'),
+    map((log) => ({
+      ...log,
+      alert: true
+    }))
+  );
 
 for await (const error of criticalApiErrors(readLogs())) {
   console.log(\`[ALERT] \${error.service}: \${error.message}\`);
@@ -365,11 +367,13 @@ const isPrime = (n: number): boolean => {
 };
 
 // Filter primes from infinite sequence
-const first10Primes = pipe(
-  filter(isPrime),
-  take(10),
-  map((n: number) => ({ value: n, isPrime: true }))
-);
+const first10Primes = (numbers: Iterable<number>) =>
+  pipe(
+    numbers,
+    filter(isPrime),
+    take(10),
+    map((n) => ({ value: n, isPrime: true }))
+  );
 
 const primes = Array.from(first10Primes(naturalNumbers()));
 console.log(primes.map(p => p.value));

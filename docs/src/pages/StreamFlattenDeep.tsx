@@ -97,7 +97,7 @@ const async = pipe([[1], [2, [3]]], toAsync, flattenDeep, toArray);`}
       language="typescript"
       code={`import { flatten, flattenDeep, toArray } from 'fp-pack/stream';
 
-const nested = [1, [2, [3, 4]], 5];
+const nested = [[1], [2, [3, 4]], [5]];
 
 // flatten - only one level
 const oneLevel = toArray(flatten(nested));

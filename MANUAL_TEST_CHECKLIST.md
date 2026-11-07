@@ -1,5 +1,12 @@
 # MANUAL TEST CHECKLIST — Inference Usability
 
+## Pre-release review fix checks — 2026-11-07
+
+| ID | Check | Pass criterion |
+|---|---|---|
+| RF-MT-3 | In an editor, `pipe(order, ifElse(o => o.total > 100, o => ({ ...o, d: 1 }), o => ({ ...o, d: 0 })))` | No error; hover on the false branch's `o` shows the order type |
+| RF-MT-4 | Open the IfElse, TypeUsage and stream append/prepend/map/filter/flatMap docs pages (EN/KO) | Examples read naturally in the 0.16 forms |
+
 ## Release 0.16.0 checks — 2026-11-07
 
 | ID | Check | Pass criterion |

@@ -201,6 +201,9 @@ types did not match the runtime result:
 - Async stream predicates, `flatMap` callbacks and accumulators need an async
   source: add `toAsync`, e.g. `pipe(items, toAsync, filter(async n => ...), toArray)`.
   Accumulator initial values are plain values, not Promises.
+- A saved stream pipeline that starts with a stream step, such as
+  `pipe(map(fn), take(2))`, cannot tell a sync input from an async one, so its
+  result is a sync/async union. Write `(items: Item[]) => pipe(items, map(fn), take(2))`.
 - `compose(...fns)` over a runtime array no longer type-checks. Pass a tuple, or
   fold same-typed functions with `fns.reduceRight((acc, fn) => fn(acc), input)`.
 

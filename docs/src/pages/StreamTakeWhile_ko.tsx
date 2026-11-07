@@ -314,7 +314,7 @@ const settings = pipe(
     <CodeBlock
       language="typescript"
       code={`import { pipe } from 'fp-pack';
-import { takeWhile, toArray } from 'fp-pack/stream';
+import { takeWhile, toArray, toAsync } from 'fp-pack/stream';
 
 // 조건까지 비동기 스트림 처리
 async function* fetchPages() {
@@ -347,12 +347,14 @@ const messages = [
 ];
 
 const beforeSpam = await pipe(
-  takeWhile(async (msg: any) => {
+  messages,
+  toAsync, // async 조건에는 비동기 소스가 필요합니다
+  takeWhile(async (msg) => {
     const isSpam = await checkSpam(msg.content);
     return !isSpam;
   }),
   toArray
-)(messages);
+);
 // 첫 스팸 메시지에서 중단`}
     />
 

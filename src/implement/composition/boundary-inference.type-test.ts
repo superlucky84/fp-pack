@@ -117,3 +117,58 @@ export const exactEffect = matchSideEffect(outcome, {
   effect: (effect) => effect.effect()
 });
 export type ExactEffect = Expect<Equal<typeof exactEffect, undefined | 'MISSING' | 'INVALID'>>;
+
+// RF-03: plain boolean predicates with unannotated callbacks keep the input type.
+interface Order {
+  total: number;
+  priority: boolean;
+}
+declare const order: Order;
+export const plainBranch = pipe(
+  order,
+  ifElse(
+    (o) => o.total > 100,
+    (o) => o.total,
+    (o) => o
+  )
+);
+export type PlainBranch = Expect<Equal<typeof plainBranch, number | Order>>;
+export const plainSpreadBranch = pipe(
+  order,
+  ifElse(
+    (o) => o.total > 100,
+    (o) => ({ ...o, discount: o.total * 0.1 }),
+    (o) => ({ ...o, discount: 0 })
+  )
+);
+export const plainSpreadDiscount: number = plainSpreadBranch.discount;
+export const plainWhen = pipe(
+  order,
+  when(
+    (o) => o.total > 100,
+    (o) => ({ ...o, priority: true })
+  )
+);
+export type PlainWhen = Expect<Equal<typeof plainWhen, Order>>;
+export const plainUnless = pipe(
+  order,
+  unless(
+    (o) => o.priority,
+    (o) => ({ ...o, total: o.total + 20 })
+  )
+);
+export type PlainUnless = Expect<Equal<typeof plainUnless, Order>>;
+export const savedBranches = pipe(
+  ifElse(
+    (o: Order) => o.priority,
+    (o) => ({ ...o, shipping: 'express' }),
+    (o) => ({ ...o, shipping: 'standard' })
+  ),
+  ifElse(
+    (o) => o.total > 100,
+    (o) => ({ ...o, discount: o.total * 0.1 }),
+    (o) => ({ ...o, discount: 0 })
+  )
+);
+export const savedBranchesDiscount: number = savedBranches(order).discount;
+export const savedBranchesShipping: string = savedBranches(order).shipping;

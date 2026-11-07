@@ -95,10 +95,12 @@ const addFooter = append('--- 리스트 끝 ---');
 const addTotal = append('합계: ₩1,234,560');
 
 // 함수형 파이프라인에서 사용
-const processItems = pipe(
-  map((item: string) => \`• \${item}\`),
-  addFooter
-);
+const processItems = (items: string[]) =>
+  pipe(
+    items,
+    map((item) => \`• \${item}\`),
+    addFooter
+  );
 
 const items = ['사과', '바나나', '체리'];
 console.log(Array.from(processItems(items)));
@@ -134,7 +136,7 @@ async function* readFileChunks(filename: string) {
 const withEOF = append({ type: 'EOF' }, readFileChunks('data.txt'));
 
 for await (const chunk of withEOF) {
-  if (chunk.type === 'EOF') {
+  if (typeof chunk === 'object') { // EOF 표시
     console.log('파일 읽기 완료');
   } else {
     console.log('처리 중:', chunk);
@@ -166,13 +168,12 @@ interface Transaction {
 function generateReport(transactions: Transaction[]) {
   const total = transactions.reduce((sum, t) => sum + t.amount, 0);
 
-  const reportLines = pipe(
-    map((t: Transaction) => \`\${t.id}: \${t.description} - ₩\${t.amount.toLocaleString()}\`),
+  return pipe(
+    transactions,
+    map((t) => \`\${t.id}: \${t.description} - ₩\${t.amount.toLocaleString()}\`),
     append('─'.repeat(50)),
     append(\`합계: ₩\${total.toLocaleString()}\`)
   );
-
-  return reportLines(transactions);
 }
 
 const transactions = [
@@ -308,12 +309,13 @@ function formatLogs(logs: LogEntry[]) {
   const now = new Date().toISOString();
 
   return pipe(
-    map((log: LogEntry) =>
+    logs,
+    map((log) =>
       \`[\${new Date(log.timestamp).toISOString()}] \${log.level}: \${log.message}\`
     ),
     append(''),
     append(\`로그 생성 시각: \${now}\`)
-  )(logs);
+  );
 }
 
 const logs: LogEntry[] = [
@@ -352,12 +354,11 @@ function* fibonacci() {
 }
 
 // 처음 10개의 피보나치 수를 가져오고 마커 추가
-const limitedFibonacci = pipe(
+const result = pipe(
+  fibonacci(),
   take(10),
   append('... (시퀀스 계속됨)')
 );
-
-const result = limitedFibonacci(fibonacci());
 
 for (const value of result) {
   console.log(value);

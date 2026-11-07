@@ -1,5 +1,22 @@
 # fp-pack Design Document
 
+## Pre-release review fixes design — 2026-11-07
+
+- [x] **RF-DC-3 — Guard overloads must not poison callbacks.** TypeScript fixes an
+  unannotated callback's parameter type the first time an overload contextually
+  types it, even if that overload is then rejected. A plain boolean predicate
+  first meets the type-guard overloads, where `S` falls back to `T` and
+  `Exclude<T, S>` is `never`; the false branch keeps `never`. The guard overloads
+  use `[Exclude<T, S>] extends [never] ? T : Exclude<T, S>` for the false side, so
+  a rejected guard attempt leaves the input type. A guard covering all of `T`
+  gives its unreachable branch `T` instead of `never`, which is harmless.
+  Same-type `when`/`unless` overloads must not infer `T` from the callback result
+  of an already fixed callback; they take `T` from the input only. Validate RF-03.
+- [x] **RF-DC-4 — Examples teach the 0.16 forms.** Saved stream pipelines become
+  value-first pipelines inside a typed function; `path` drops output generics and
+  uses literal paths for precise results; async `flatMap` uses `toAsync`. Validate
+  RF-04/RF-05.
+
 ## Release 0.16.0 design — 2026-11-07
 
 - [x] **REL-DC-1 — Manual trigger, main only.** `.github/workflows/release.yml`

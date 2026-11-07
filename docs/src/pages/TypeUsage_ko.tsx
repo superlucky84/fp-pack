@@ -388,17 +388,21 @@ const db: Database = {
   ]
 };
 
-// 타입 안전한 경로 정의
-const themePath: PathKey[] = ['users', 0, 'settings', 'theme'];
-
-// 중첩된 값 읽기
-const currentTheme = path<string>(themePath, db);
+// 리터럴 경로는 원본에서 값 타입을 추론합니다
+const currentTheme = path(['users', 0, 'settings', 'theme'], db); // string | undefined
 console.log(currentTheme);  // 'dark'
+
+// 재사용할 경로는 as const로 리터럴을 유지합니다
+const themePath = ['users', 0, 'settings', 'theme'] as const;
 
 // 중첩된 값을 불변적으로 업데이트
 const updatedDb = assocPath(themePath, 'light', db);
-console.log(path<string>(themePath, updatedDb));  // 'light'
-console.log(path<string>(themePath, db));  // 'dark' (원본은 변경되지 않음)`}
+console.log(path(themePath, updatedDb));  // 'light'
+console.log(path(themePath, db));  // 'dark' (원본은 변경되지 않음)
+
+// 실행 중에 만든 PathKey[]도 쓸 수 있지만 값 타입은 unknown입니다
+const dynamicPath: PathKey[] = ['users', 0, 'settings', 'theme'];
+const dynamicTheme = path(dynamicPath, db);  // unknown`}
     />
 
     <h3 class="text-xl md:text-2xl font-medium text-gray-900 dark:text-white mb-3 mt-8">
@@ -407,22 +411,15 @@ console.log(path<string>(themePath, db));  // 'dark' (원본은 변경되지 않
 
     <CodeBlock
       language="typescript"
-      code={`import { path, assocPath } from 'fp-pack';
-import type { PathKey } from 'fp-pack';
+      code={`import { path } from 'fp-pack';
 
-// 경로 빌더 유틸리티 생성
-function buildPath(...keys: PathKey[]): PathKey[] {
-  return keys;
-}
+// 재사용할 경로는 as const로 리터럴을 유지합니다
+const userNamePath = ['users', 0, 'name'] as const;
+const userThemePath = ['users', 0, 'settings', 'theme'] as const;
 
-// 공통 경로 정의
-const userNamePath = buildPath('users', 0, 'name');
-const userSettingsPath = buildPath('users', 0, 'settings');
-const userThemePath = buildPath('users', 0, 'settings', 'theme');
-
-// 커리된 접근자 생성
-const getName = path<string>(userNamePath);
-const getTheme = path<string>(userThemePath);
+// 커리된 접근자 생성: 값 타입은 적용하는 객체에서 추론됩니다
+const getName = path(userNamePath);
+const getTheme = path(userThemePath);
 
 const db = {
   users: [

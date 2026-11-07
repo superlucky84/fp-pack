@@ -1,24 +1,28 @@
 import curry from '../composition/curry';
 
+// A rejected guard overload still fixes an unannotated callback's parameter type,
+// so a plain boolean predicate must leave the false side T rather than never.
+type Rest<T, S> = [Exclude<T, S>] extends [never] ? T : Exclude<T, S>;
+
 type IfElse = {
   <T, S extends T>(
     predicate: (value: T) => value is S
   ): <RTrue>(
     onTrue: (value: S) => RTrue
-  ) => <RFalse>(onFalse: (value: Exclude<T, S>) => RFalse) => (value: T) => RTrue | RFalse;
+  ) => <RFalse>(onFalse: (value: Rest<T, S>) => RFalse) => (value: T) => RTrue | RFalse;
   <T, S extends T, RTrue>(
     predicate: (value: T) => value is S,
     onTrue: (value: S) => RTrue
-  ): <RFalse>(onFalse: (value: Exclude<T, S>) => RFalse) => (value: T) => RTrue | RFalse;
+  ): <RFalse>(onFalse: (value: Rest<T, S>) => RFalse) => (value: T) => RTrue | RFalse;
   <T, S extends T, RTrue, RFalse>(
     predicate: (value: T) => value is S,
     onTrue: (value: S) => RTrue,
-    onFalse: (value: Exclude<T, S>) => RFalse
+    onFalse: (value: Rest<T, S>) => RFalse
   ): (value: T) => RTrue | RFalse;
   <T, S extends T, RTrue, RFalse>(
     predicate: (value: T) => value is S,
     onTrue: (value: S) => RTrue,
-    onFalse: (value: Exclude<T, S>) => RFalse,
+    onFalse: (value: Rest<T, S>) => RFalse,
     value: T
   ): RTrue | RFalse;
   <T>(

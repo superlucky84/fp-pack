@@ -159,7 +159,7 @@ for await (const user of allUsers) {
 
     <CodeBlock
       language="typescript"
-      code={`import { flatten } from 'fp-pack/stream';
+      code={`import { flatten, toAsync } from 'fp-pack/stream';
 
 interface LogEntry {
   timestamp: Date;
@@ -168,41 +168,34 @@ interface LogEntry {
   source: string;
 }
 
-async function* readLogsFromDatabase(): AsyncIterableIterator<LogEntry> {
+async function readLogsFromDatabase(): Promise<LogEntry[]> {
   // 데이터베이스에서 로그 가져오기
-  const logs = await fetchDatabaseLogs();
-  for (const log of logs) {
-    yield log;
-  }
+  return fetchDatabaseLogs();
 }
 
-async function* readLogsFromFiles(): AsyncIterableIterator<LogEntry> {
+async function readLogsFromFiles(): Promise<LogEntry[]> {
   // 로그 파일에서 로그 읽기
   const files = await getLogFiles();
+  const logs: LogEntry[] = [];
   for (const file of files) {
-    const logs = await parseLogFile(file);
-    for (const log of logs) {
-      yield log;
-    }
+    logs.push(...(await parseLogFile(file)));
   }
+  return logs;
 }
 
-async function* readLogsFromCloudStorage(): AsyncIterableIterator<LogEntry> {
+async function readLogsFromCloudStorage(): Promise<LogEntry[]> {
   // 클라우드 스토리지에서 로그 가져오기
-  const cloudLogs = await fetchCloudLogs();
-  for (const log of cloudLogs) {
-    yield log;
-  }
+  return fetchCloudLogs();
 }
 
-// 모든 로그 소스 결합
+// 각 소스는 로그 배치 하나로 resolve됩니다. toAsync가 배치를 기다리고 flatten이 항목을 꺼냅니다
 const dataSources = [
   readLogsFromDatabase(),
   readLogsFromFiles(),
   readLogsFromCloudStorage(),
 ];
 
-const allLogs = flatten(dataSources);
+const allLogs = flatten(toAsync(dataSources));
 
 // 모든 소스의 로그를 균일하게 처리
 for await (const log of allLogs) {

@@ -1332,7 +1332,8 @@ const saveIfValid = pipe(
 );
 
 // GOOD: Use cond for multi-branch logic (instead of switch/if-else chain)
-const processUserAction = pipe(
+const processUserAction = (event: { action: UserAction }) => pipe(
+  event,
   prop('action'),
   cond([
     [
@@ -1484,7 +1485,7 @@ const useStore = create((set, get) => ({
     map((u: User) =>
       ifElse(
         () => u.id === id,
-        merge(u, updates),
+        () => merge(u, updates),
         () => u
       )(u)
     ),
@@ -1502,7 +1503,7 @@ const useStore = create((set, get) => ({
     map((u: User) => u.id === id
       ? pipe(
           ifElse(
-            (user) => user.status === 'active',
+            (user: User) => user.status === 'active',
             assoc('status', 'inactive'),
             assoc('status', 'active')
           )

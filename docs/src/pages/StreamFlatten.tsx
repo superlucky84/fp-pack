@@ -161,7 +161,7 @@ for await (const user of allUsers) {
 
     <CodeBlock
       language="typescript"
-      code={`import { flatten } from 'fp-pack/stream';
+      code={`import { flatten, toAsync } from 'fp-pack/stream';
 
 interface LogEntry {
   timestamp: Date;
@@ -170,41 +170,34 @@ interface LogEntry {
   source: string;
 }
 
-async function* readLogsFromDatabase(): AsyncIterableIterator<LogEntry> {
+async function readLogsFromDatabase(): Promise<LogEntry[]> {
   // Fetch logs from database
-  const logs = await fetchDatabaseLogs();
-  for (const log of logs) {
-    yield log;
-  }
+  return fetchDatabaseLogs();
 }
 
-async function* readLogsFromFiles(): AsyncIterableIterator<LogEntry> {
+async function readLogsFromFiles(): Promise<LogEntry[]> {
   // Read logs from log files
   const files = await getLogFiles();
+  const logs: LogEntry[] = [];
   for (const file of files) {
-    const logs = await parseLogFile(file);
-    for (const log of logs) {
-      yield log;
-    }
+    logs.push(...(await parseLogFile(file)));
   }
+  return logs;
 }
 
-async function* readLogsFromCloudStorage(): AsyncIterableIterator<LogEntry> {
+async function readLogsFromCloudStorage(): Promise<LogEntry[]> {
   // Fetch logs from cloud storage
-  const cloudLogs = await fetchCloudLogs();
-  for (const log of cloudLogs) {
-    yield log;
-  }
+  return fetchCloudLogs();
 }
 
-// Combine all log sources
+// Each source resolves to one batch; toAsync awaits the batches and flatten yields their entries
 const dataSources = [
   readLogsFromDatabase(),
   readLogsFromFiles(),
   readLogsFromCloudStorage(),
 ];
 
-const allLogs = flatten(dataSources);
+const allLogs = flatten(toAsync(dataSources));
 
 // Process logs from all sources uniformly
 for await (const log of allLogs) {
