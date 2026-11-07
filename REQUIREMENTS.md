@@ -1,5 +1,22 @@
 # REQUIREMENTS — Inference Usability
 
+## Active release — 0.16.0 (2026-11-07)
+
+Branch `ccr-80cfc3e1-vwp61m` (`5ba6b88`) carries the IU, CN, PG and RF work. The
+user asked for the version bump, a PR to main, and an npm release that runs only
+when started by hand from main, never on merge.
+
+| ID | Requirement | Validation |
+|---|---|---|
+| REL-01 | Version 0.16.0 in package.json, CHANGELOG, README upgrade notes and shipped guides; nothing shipped says unreleased or points at a feature branch | grep, release:check |
+| REL-02 | A GitHub Actions workflow publishes to npm only on manual dispatch from main; pushes and merges never publish | workflow lint, trigger review |
+| REL-03 | It publishes only when package.json holds a stable version newer than npm's; an already published version ends without publishing; a lower version or prerelease fails | version check run against the registry with each case |
+| REL-04 | It runs the repository's `release:check` first, offers a dry run, and tags `fp-pack@<version>` after a real publish | workflow review; first dry run on GitHub |
+| REL-05 | Public docs drop the private demo host address, hosting identifiers and local log paths | grep |
+
+Scope: npm package only; the GitHub Pages docs deployment stays manual. No
+dependency changes. Merging and the first real publish are the owner's actions.
+
 ## Active revision — combined-branch review fixes (2026-10-23)
 
 Branch `ccr-80cfc3e1-vwp61m` fast-forwards `feat/inference-usability`,

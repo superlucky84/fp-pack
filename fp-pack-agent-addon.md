@@ -303,7 +303,7 @@ This add-on intentionally avoids:
 
 The goal is minimal, actionable guidance that modifies agent behavior without overwhelming the context window or duplicating external documentation.
 
-## Inference usability (unreleased)
+## Inference usability (since 0.16.0)
 
 Prefer `pipe(value, ...)` so source types reach utility callbacks. Evolve and merge
 track changed properties; literal path outputs derive from their source. Async

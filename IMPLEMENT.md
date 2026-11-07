@@ -1,5 +1,30 @@
 # IMPLEMENT — Inference Usability
 
+## Active release — 0.16.0 (2026-11-07)
+
+Branch `ccr-80cfc3e1-vwp61m`, baseline `5ba6b88`.
+
+1. [x] **REL Phase 0 — Contracts.** REL-* sections in the four documents.
+2. [x] **REL Phase 1 — Version.** package.json, CHANGELOG, README, guides and
+   playground labels; remove private hosting details. Gate: grep.
+3. [x] **REL Phase 2 — Workflow.** release.yml and the version check. Gate:
+   actionlint; version check against npm for new, published, lower and
+   prerelease versions.
+4. [x] **REL Phase 3 — Integration.** `pnpm release:check`; commit, push, PR to main.
+
+Handoff (complete):
+
+- done: version 0.16.0 in package.json, CHANGELOG, README (new upgrade section
+  holding the former unreleased notes), AI guides and playground labels.
+  `.github/workflows/release.yml` (manual dispatch, main only) and
+  `scripts/release-version-check.mjs`. Private demo host details removed.
+- validation: `pnpm release:check` (468 tests, build, packed 0.16.0 consumer with
+  59 examples and ESM/CJS, docs lint/build); `npm publish --dry-run` shows
+  fp-pack@0.16.0; actionlint 1.7.12 clean. The version check against the live
+  registry: 0.16.0 publishes, 0.15.0 is a no-op notice, 0.14.9 and
+  0.16.0-beta.1 fail, an unpublished package publishes.
+- manual: REL-MT-1 to REL-MT-6 need the owner (npm setting, GitHub runs, docs).
+
 ## Active revision — combined-branch review fixes (2026-10-23)
 
 Branch `ccr-80cfc3e1-vwp61m`, baseline `2958e5d` (467 tests, types pass).
@@ -60,23 +85,11 @@ Handoff (complete):
   examples and edited code, sliders/toggles, zip cleanup, curry reuse/zero,
   random/reset, async supersession, language/docs navigation and worker network
   failure followed by successful retry. No unexpected console/page errors or
-  horizontal overflow. Logs `/tmp/fp-playground-browser.log`,
-  `/tmp/fp-playground-production-browser.log`, `/tmp/fp-playground-extra-browser.log`.
-- deployment: new owner-private Site succeeded. Ready-to-open URL:
-  https://fp-pack-flow-lab.vastslug258.chatgpt.site (defaults to Korean playground).
-  Site project `appgprj_6adabe94e8e48191a3212df049dbe587`, deployment
-  `appgdep_6adac1030cf881919f043736af177c34`, saved version
-  `appgprj_6adabe94e8e48191a3212df049dbe587~appgver_234ce58a29f081919e6c79ca76ddd139`.
-  Native Sites status confirmed success; protected remote browser interaction
-  remains owner sign-off. Local production browser checks exercised the same app.
-- source: implementation `bf7212c4abc469156e3bee163f9ff5549d3409e4` pushed and
-  remote verified. Hosted source snapshot commit
-  `7ce317642f628417ad68b94c464452755668f951` corresponds to that implementation;
-  standalone build metadata uses the Site origin. Site checkout is
-  `/workspace/sites/fp-pack-flow-lab`, separate from fp-pack git. Helper scripts
-  were not mounted; ordinary Git used the returned credential through hidden
-  stdin, with a verified source push and 6,272,871-byte artifact archive.
-- next: owner can exercise the deployed URL; implementation is complete. This
+  horizontal overflow.
+- deployment: a standalone build (`npm run demo:build`) of implementation
+  `bf7212c` was deployed to an owner-private demo host for sign-off. Its address
+  and hosting identifiers live in the private handoff, not in this repository.
+- next: owner can exercise the private demo; implementation is complete. This
   documentation checkpoint follows the implementation commit. Final pushed HEAD
   and continuation are saved/read back under ctxbin
   `fp-pack/feat/inference-playground`; parent `fp-pack/feat/curry-n` points there.

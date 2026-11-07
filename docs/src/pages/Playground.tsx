@@ -270,7 +270,7 @@ export const Playground = mount(renew => {
           <nav aria-label={t('페이지 메뉴', 'Page navigation')}>
             <span class="pg-build">
               <i />
-              {t('개선 브랜치 데모', 'Feature branch demo')}
+              {t('소스 기반 실행', 'Built from source')}
             </span>
             <button
               type="button"
@@ -879,12 +879,12 @@ export const Playground = mount(renew => {
             </span>
             <span>
               {t(
-                '이 데모는 아직 출시되지 않은 개선 브랜치를 사용합니다.',
-                'This demo uses the unreleased feature branch.'
+                '이 데모는 문서와 함께 빌드된 fp-pack 소스로 실행됩니다.',
+                'This demo runs the fp-pack source the docs were built from.'
               )}
             </span>
             <a
-              href="https://github.com/superlucky84/fp-pack/tree/feat/inference-playground"
+              href="https://github.com/superlucky84/fp-pack"
               target="_blank"
               rel="noopener noreferrer"
             >

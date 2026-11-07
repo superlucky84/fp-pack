@@ -1,5 +1,16 @@
 # MANUAL TEST CHECKLIST — Inference Usability
 
+## Release 0.16.0 checks — 2026-11-07
+
+| ID | Check | Pass criterion |
+|---|---|---|
+| REL-MT-1 | npmjs.com → fp-pack → Settings → Trusted publishing: GitHub Actions, owner `superlucky84`, repository `fp-pack`, workflow `release.yml` | Publisher saved (or an `NPM_TOKEN` repository secret instead) |
+| REL-MT-2 | After merge: Actions → Release to npm → Run workflow on main with dry run checked | All steps green; log shows the 0.16.0 dry-run tarball |
+| REL-MT-3 | Run again without dry run | npm shows 0.16.0 with provenance; tag `fp-pack@0.16.0` exists |
+| REL-MT-4 | Run once more | Ends with "already on npm"; nothing published |
+| REL-MT-5 | Run from another branch | Fails at the main-branch step |
+| REL-MT-6 | Deploy docs to GitHub Pages as before | Playground and curryN pages are live |
+
 ## Combined-branch review fix checks — 2026-10-23
 
 | ID | Check | Pass criterion |
@@ -31,11 +42,10 @@ horizontal overflow. Extended production browser checks passed order/profile/gat
 controls, zip cleanup, curry reuse/zero, random/reset, a 320px viewport and an
 intentionally blocked worker request followed by successful retry.
 
-PG-MT-9 deployment succeeded according to native Sites status at
-https://fp-pack-flow-lab.vastslug258.chatgpt.site. The artifact defaults to the
-Korean playground, has root-relative assets and correct Site metadata. The site
-is owner-private; authenticated interaction on the remote host remains owner
-sign-off. The same application/worker was exercised locally in a production build.
+PG-MT-9 deployment to the owner-private demo host succeeded. The artifact defaults
+to the Korean playground, has root-relative assets and correct metadata.
+Authenticated interaction on the remote host remains owner sign-off. The same
+application/worker was exercised locally in a production build.
 
 ## curryN checks — 2026-10-23
 

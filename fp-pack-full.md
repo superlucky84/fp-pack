@@ -1816,7 +1816,7 @@ const processAction = (action) => {
 
 Your goal is to write clean, readable, functional code that leverages fp-pack's full potential in real-world UI applications.
 
-## Inference usability (unreleased)
+## Inference usability (since 0.16.0)
 
 Value-first pipelines infer changed evolve/merge properties, optional reads,
 nullable defaults and readonly arrays without corrective assertions. Literal path

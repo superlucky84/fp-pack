@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased — Inference usability
+## 0.16.0
 
 - Add an EN/KO interactive playground with six experiments, 21 checked runtime
   presets, random challenges and an editable TypeScript worker that reports real
@@ -49,9 +49,6 @@
   `flattenDeep`'s generic describes its input element, not an asserted output.
   Literal paths infer without `as const`; dynamic paths and recursion beyond the
   documented type budget remain unknown.
-
-This entry describes development on `feat/inference-usability`; no version has
-been published by this work.
 
 ## 0.15.0
 

@@ -30,10 +30,11 @@ If you want functional composition without a lot of ceremony, `fp-pack` is desig
 
 ## Table of Contents
 
-- [Interactive Playground (Unreleased)](#interactive-playground-unreleased)
+- [Interactive Playground](#interactive-playground)
 - [Why fp-pack?](#why-fp-pack)
 - [Design Principles](#design-principles)
 - [Installation](#installation)
+- [Upgrading to 0.16.0](#upgrading-to-0160)
 - [Upgrading to 0.15.0](#upgrading-to-0150)
 - [AI Agent Skills (Optional)](#ai-agent-skills-optional)
 - [Quick Start](#quick-start)
@@ -67,10 +68,11 @@ If you want functional composition without a lot of ceremony, `fp-pack` is desig
 
 ---
 
-## Interactive Playground (Unreleased)
+## Interactive Playground
 
-The feature branch includes six hands-on experiments: curryN defaults/optional/
-rest arguments, readonly order pipelines, object transformations, lazy sync/async
+The [docs playground](https://superlucky84.github.io/fp-pack/#/playground)
+([한국어](https://superlucky84.github.io/fp-pack/#/ko/playground)) has six hands-on
+experiments: curryN defaults/optional/rest arguments, readonly order pipelines, object transformations, lazy sync/async
 streams, effect short-circuiting and a live type laboratory. Change inputs, try
 21 curated cases or edit TypeScript and inspect actual inferred types/errors.
 Edited code is type-checked only; runtime controls execute the library examples.
@@ -187,13 +189,24 @@ pnpm add fp-pack
 yarn add fp-pack
 ```
 
-## Upgrading to 0.15.0
+## Upgrading to 0.16.0
 
-Choose among `pipe`, `pipeAsync`, `pipeSideEffect` and `pipeAsyncSideEffect` based on async work and early exits. All four now check step compatibility while preserving contextual inference. The four `*Strict` names remain deprecated compatibility aliases until 1.0; replace them with their base names when convenient.
+0.16.0 makes inferred types follow what the code returns at runtime, adds
+`curryN` for default, optional and rest parameters, and adds an interactive
+playground. Some calls that compiled before now report errors because their
+types did not match the runtime result:
 
-Previously hidden mismatches or missing inference context can now produce compile errors. Prefer `pipe(value, ...)` to anchor generic helpers; use `pipeHint` or a typed first step for reusable generic-first pipelines. SideEffect-aware pipes infer the precise effect union and return plain values when no effect can occur. See the [0.15.0 migration notes](CHANGELOG.md#0150) and [Pipe Choice Guide](https://superlucky84.github.io/fp-pack/#/guide/pipe-choice-guide).
+- Drop output-only type arguments such as `path<string>(keys, obj)` and
+  `assocPath<Desired>(keys, value, obj)`; results are inferred from the input.
+- Async stream predicates, `flatMap` callbacks and accumulators need an async
+  source: add `toAsync`, e.g. `pipe(items, toAsync, filter(async n => ...), toArray)`.
+  Accumulator initial values are plain values, not Promises.
+- `compose(...fns)` over a runtime array no longer type-checks. Pass a tuple, or
+  fold same-typed functions with `fns.reduceRight((acc, fn) => fn(acc), input)`.
 
-### Unreleased inference improvements
+See the [0.16.0 migration notes](CHANGELOG.md#0160) for the full list.
+
+### Inference improvements
 
 Object transforms infer changed properties, defaults retain incoming array elements,
 and nonmutating array helpers accept readonly inputs. Literal paths infer from the
@@ -242,7 +255,13 @@ such as `identity`. For chains starting with an arbitrary generic function, or
 fully staged callbacks supplied before any input context, prefer a value-first
 pipeline or declare the reusable function's input contract. See the
 [inference review](research/inference-usability/README.md) and
-[migration notes](CHANGELOG.md#unreleased--inference-usability).
+[migration notes](CHANGELOG.md#0160).
+
+## Upgrading to 0.15.0
+
+Choose among `pipe`, `pipeAsync`, `pipeSideEffect` and `pipeAsyncSideEffect` based on async work and early exits. All four now check step compatibility while preserving contextual inference. The four `*Strict` names remain deprecated compatibility aliases until 1.0; replace them with their base names when convenient.
+
+Previously hidden mismatches or missing inference context can now produce compile errors. Prefer `pipe(value, ...)` to anchor generic helpers; use `pipeHint` or a typed first step for reusable generic-first pipelines. SideEffect-aware pipes infer the precise effect union and return plain values when no effect can occur. See the [0.15.0 migration notes](CHANGELOG.md#0150) and [Pipe Choice Guide](https://superlucky84.github.io/fp-pack/#/guide/pipe-choice-guide).
 
 ## AI Agent Skills (Optional)
 

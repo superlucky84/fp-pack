@@ -1,5 +1,24 @@
 # fp-pack Design Document
 
+## Release 0.16.0 design — 2026-11-07
+
+- [x] **REL-DC-1 — Manual trigger, main only.** `.github/workflows/release.yml`
+  has only `workflow_dispatch`. Its first step fails unless the run is on
+  `refs/heads/main`, so a merge never publishes and another branch cannot.
+- [x] **REL-DC-2 — The version decides.** `scripts/release-version-check.mjs`
+  compares package.json with npm's published versions. Already published: notice
+  and stop successfully. Newer stable x.y.z: publish. Lower, or a prerelease:
+  fail with a message (prereleases need a dist-tag and stay manual). npm itself
+  still refuses a duplicate version. A registry error stops the run.
+- [x] **REL-DC-3 — Same gate as a local publish.** CI runs `pnpm release:check`
+  (prepublishOnly's command), then `npm publish --ignore-scripts` so the gate does
+  not run twice. `dry_run` runs everything with `npm publish --dry-run`, no tag.
+- [x] **REL-DC-4 — Tokenless auth first.** npm trusted publishing (OIDC,
+  `id-token: write`, npm 11.5.1+) needs no stored secret and adds provenance; a
+  one-time npmjs.com setting names this repository and `release.yml`. An optional
+  `NPM_TOKEN` secret is the fallback. A real publish pushes the lightweight tag
+  `fp-pack@<version>`, matching earlier tags.
+
 ## Combined-branch review fixes design — 2026-10-23
 
 - [x] **RF-DC-1 — Never hold an error behind a pending read.** Async zip inputs
