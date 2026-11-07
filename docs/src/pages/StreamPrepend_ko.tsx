@@ -350,21 +350,25 @@ function* getNumbers() {
 }
 
 // 10보다 큰 숫자 필터링 (비어있게 됨)
-const largeNumbers = pipe(
-  filter((n: number) => n > 10),
-  // 기본값 추가
-  prepend(-1)
-);
+const largeNumbers = (items: Iterable<number>) =>
+  pipe(
+    items,
+    filter((n: number) => n > 10),
+    // 기본값 추가
+    prepend(-1)
+  );
 
 const result = Array.from(largeNumbers(getNumbers()));
 console.log(result);
 // 출력: [-1] (10보다 큰 숫자가 없으므로 기본값만 출력)
 
 // 일치하는 숫자가 있는 경우
-const evenNumbers = pipe(
-  filter((n: number) => n % 2 === 0),
-  prepend(0) // 첫 번째 짝수로 0 추가
-);
+const evenNumbers = (items: Iterable<number>) =>
+  pipe(
+    items,
+    filter((n: number) => n % 2 === 0),
+    prepend(0) // 첫 번째 짝수로 0 추가
+  );
 
 const result2 = Array.from(evenNumbers(getNumbers()));
 console.log(result2);

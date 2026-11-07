@@ -10,13 +10,20 @@ type PipeMode = 'sync' | 'async' | 'sideEffect' | 'asyncSideEffect';
 type IsFn<I> = 0 extends 1 & I ? false : [I] extends [AnyFn] ? true : false;
 type StepInput<F> = F extends (value: infer A, ...args: any[]) => any ? A : never;
 type StepOutput<F> = F extends (...args: any[]) => infer R ? R : never;
-type Initial<I> = IsFn<I> extends true ? StepOutput<I> : I;
+// Read a first step at its own parameter types; a generic step's bare return type
+// can collapse to never (see FirstOutput in pipe.ts).
+type FirstOutput<F> = F extends (value: infer A, ...args: infer Rest) => any
+  ? F extends (value: A, ...args: Rest) => infer R
+    ? R
+    : StepOutput<F>
+  : StepOutput<F>;
+type Initial<I> = IsFn<I> extends true ? FirstOutput<I> : I;
 type NonSideEffect<T> = Exclude<T, SideEffect<any>>;
 type NextInput<M extends PipeMode, R> = M extends 'asyncSideEffect' ? NonSideEffect<Awaited<R>>
   : M extends 'sideEffect' ? NonSideEffect<R>
   : M extends 'async' ? Awaited<R> : R;
 // Async pipes await step outputs, not the data-first input before the first step.
-type Head<M extends PipeMode, I> = IsFn<I> extends true ? NextInput<M, StepOutput<I>>
+type Head<M extends PipeMode, I> = IsFn<I> extends true ? NextInput<M, FirstOutput<I>>
   : M extends 'sideEffect' | 'asyncSideEffect' ? NonSideEffect<I> : I;
 type EffectOf<R> = R extends SideEffect<infer E> ? E : never;
 type Effects<M extends PipeMode, R> = M extends 'asyncSideEffect' ? EffectOf<Awaited<R>>

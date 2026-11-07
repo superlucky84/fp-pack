@@ -16,9 +16,14 @@
 - Stream partial applications retain source element types and sync/async mode.
   Async predicates/flatMap/accumulators require `toAsync(input)` or another async
   input; previously accepted sync input combinations could silently misbehave.
-  A saved pipeline that starts with a stream step (`pipe(map(fn), take(2))`) has
-  no input yet, so its result is a sync/async union. Start from the value
-  (`pipe(items, map(fn), take(2))`) or wrap it in a function with a typed input.
+  A saved pipeline that starts with a stream step keeps its element types and now
+  accepts sync or async sources; ending with `toArray` or `reduce` gives the same
+  result type as before. Ending with an iterator (`pipe(map(fn), take(2))`) gives
+  `IterableIterator<T> | AsyncIterableIterator<T>` until it is called; for a sync
+  iterator, start from the value, wrap it in a function with a typed input, or use
+  `pipeHint`. Stream helper types (`InputFor`, `InputItem`, `IteratorResultFor`,
+  `ScalarResultFor`, `CombinedIterator`, ...) are exported so inferred stream steps
+  and saved pipelines can be exported with declarations.
   Strings are valid stream inputs; deep flattening preserves string leaves.
   Zip operations close both inputs when consumption stops early or the shorter
   input ends. An async input rejection is reported at once; the other input

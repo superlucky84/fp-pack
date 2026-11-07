@@ -93,11 +93,13 @@ const double = map((n: number) => n * 2);
 const toUpperCase = map((s: string) => s.toUpperCase());
 
 // 함수형 파이프라인에서 사용
-const processNumbers = pipe(
-  filter((n: number) => n > 0),
-  double,
-  map((n: number) => \`결과: \${n}\`)
-);
+const processNumbers = (items: Iterable<number>) =>
+  pipe(
+    items,
+    filter((n: number) => n > 0),
+    double,
+    map((n: number) => \`결과: \${n}\`)
+  );
 
 const numbers = [-1, 2, -3, 4, 5];
 console.log(Array.from(processNumbers(numbers)));

@@ -16,6 +16,25 @@
   value-first pipelines inside a typed function; `path` drops output generics and
   uses literal paths for precise results; async `flatMap` uses `toAsync`. Validate
   RF-04/RF-05.
+- [x] **RF-DC-5 — One conditional overload family.** `ifElse`/`when`/`unless`
+  declare one overload per arity with `P extends Predicate<T>`; `Passed<T, P>` and
+  `Failed<T, P>` read a type predicate from `P` (guard narrowing) or fall back to
+  `T`. No rejected guard attempt is left to fix an inline callback such as
+  `tap(...)` at `unknown`. Same-type overloads (`NoInfer<T>` result) stay first;
+  explicit type arguments from earlier versions (`ifElse<T, RTrue, RFalse>`,
+  `when`/`unless<T, R>`) keep legacy overloads at the end. Validate RF-06.
+- [x] **RF-DC-6 — Read the first step at its own parameter type.** Function-first
+  pipes read the first step's output as `F extends (a: A) => infer R`, `A` being
+  its parameter. A generic step's bare return type collapsed to `never` for stream
+  partials whose element depends on the input (`filter`), erasing every later
+  step. Applies to pipe, pipeAsync, both SideEffect pipes and pipeWithDeps. Saved
+  stream pipelines accept sync or async input, collectors keep their 0.15 result
+  types, and iterator results are the honest sync/async union (pipeHint or a
+  typed wrapper gives a sync iterator). Validate RF-07.
+- [x] **RF-DC-7 — Name every type an inferred stream step shows.** `fp-pack` and
+  `fp-pack/stream` export the stream helper types (`InputFor`, `InputItem`,
+  `IteratorResultFor`, ...) so consumers can emit declarations for exported saved
+  steps and pipelines. Validate RF-08.
 
 ## Release 0.16.0 design — 2026-11-07
 

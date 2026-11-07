@@ -352,21 +352,25 @@ function* getNumbers() {
 }
 
 // Filter for numbers greater than 10 (will be empty)
-const largeNumbers = pipe(
-  filter((n: number) => n > 10),
-  // Prepend a default value
-  prepend(-1)
-);
+const largeNumbers = (items: Iterable<number>) =>
+  pipe(
+    items,
+    filter((n: number) => n > 10),
+    // Prepend a default value
+    prepend(-1)
+  );
 
 const result = Array.from(largeNumbers(getNumbers()));
 console.log(result);
 // Output: [-1] (only the default value, as no numbers > 10)
 
 // With numbers that match
-const evenNumbers = pipe(
-  filter((n: number) => n % 2 === 0),
-  prepend(0) // Add 0 as the first even number
-);
+const evenNumbers = (items: Iterable<number>) =>
+  pipe(
+    items,
+    filter((n: number) => n % 2 === 0),
+    prepend(0) // Add 0 as the first even number
+  );
 
 const result2 = Array.from(evenNumbers(getNumbers()));
 console.log(result2);

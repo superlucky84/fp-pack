@@ -98,11 +98,13 @@ const isEven = filter((n: number) => n % 2 === 0);
 const isLongString = filter((s: string) => s.length > 5);
 
 // Use in functional pipelines
-const processNumbers = pipe(
-  isPositive,
-  isEven,
-  map((n: number) => n * 2)
-);
+const processNumbers = (items: Iterable<number>) =>
+  pipe(
+    items,
+    isPositive,
+    isEven,
+    map((n: number) => n * 2)
+  );
 
 const numbers = [-2, -1, 0, 1, 2, 3, 4, 5];
 console.log(Array.from(processNumbers(numbers)));
@@ -141,11 +143,13 @@ const isValidEmail = (email: string) => /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(em
 const isAdult = (age: number) => age >= 18;
 
 // Filter valid submissions
-const validSubmissions = pipe(
-  filter((data: FormData) => isValidEmail(data.email)),
-  filter((data: FormData) => isAdult(data.age)),
-  filter((data: FormData) => data.agreed)
-);
+const validSubmissions = (items: Iterable<FormData>) =>
+  pipe(
+    items,
+    filter((data: FormData) => isValidEmail(data.email)),
+    filter((data: FormData) => isAdult(data.age)),
+    filter((data: FormData) => data.agreed)
+  );
 
 const valid = Array.from(validSubmissions(submissions));
 console.log(valid);
@@ -318,16 +322,18 @@ const rawDataset: RawData[] = [
 ];
 
 // Remove null/undefined values
-const cleanData = pipe(
-  filter((d: RawData) => d.id !== null && d.id !== undefined),
-  filter((d: RawData) => d.value !== null && d.value !== undefined),
-  filter((d: RawData) => d.metadata !== undefined),
-  map((d: RawData) => ({
-    id: d.id as string,
-    value: d.value as number,
-    metadata: d.metadata as string
-  }))
-);
+const cleanData = (items: Iterable<RawData>) =>
+  pipe(
+    items,
+    filter((d: RawData) => d.id !== null && d.id !== undefined),
+    filter((d: RawData) => d.value !== null && d.value !== undefined),
+    filter((d: RawData) => d.metadata !== undefined),
+    map((d: RawData) => ({
+      id: d.id as string,
+      value: d.value as number,
+      metadata: d.metadata as string
+    }))
+  );
 
 const cleaned = Array.from(cleanData(rawDataset));
 console.log(cleaned);

@@ -6,6 +6,8 @@
 |---|---|---|
 | RF-MT-3 | In an editor, `pipe(order, ifElse(o => o.total > 100, o => ({ ...o, d: 1 }), o => ({ ...o, d: 0 })))` | No error; hover on the false branch's `o` shows the order type |
 | RF-MT-4 | Open the IfElse, TypeUsage and stream append/prepend/map/filter/flatMap docs pages (EN/KO) | Examples read naturally in the 0.16 forms |
+| RF-MT-5 | Hover README's `processLargeDataset` in an editor | `(a: InputFor<number>) => Promise<number[]>` |
+| RF-MT-6 | `pipe(n, when(x => x > 0, tap(() => log())))` in an editor | Result hovers as `number`, no error |
 
 ## Release 0.16.0 checks — 2026-11-07
 

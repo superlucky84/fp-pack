@@ -21,4 +21,17 @@ export { default as toArray } from './toArray';
 export { default as toAsync } from './toAsync';
 export { default as zip } from './zip';
 export { default as zipWith } from './zipWith';
-export type { AnyIterable, AnyIterableInput, PromiseLikeValue } from './utils';
+// Public so inferred stream steps and saved pipelines can be exported with declarations.
+export type {
+  AnyIterable,
+  AnyIterableInput,
+  AsyncIterableInput,
+  PromiseLikeValue,
+  InputFor,
+  InputItem,
+  IteratorResultFor,
+  ScalarResultFor,
+  CombinedIterator,
+  CombinedItem,
+  Accumulator
+} from './utils';

@@ -11,7 +11,8 @@ import {
   cond,
   fold,
   SideEffect,
-  matchSideEffect
+  matchSideEffect,
+  tap
 } from '../../index';
 
 type Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false;
@@ -172,3 +173,47 @@ export const savedBranches = pipe(
 );
 export const savedBranchesDiscount: number = savedBranches(order).discount;
 export const savedBranchesShipping: string = savedBranches(order).shipping;
+
+// RF-06: inline generic callbacks such as tap(...) keep the input type.
+declare function log(value?: unknown): void;
+export const whenTap = pipe(
+  order,
+  when(
+    (o) => o.total > 100,
+    tap(() => log())
+  )
+);
+export type WhenTap = Expect<Equal<typeof whenTap, Order>>;
+export const unlessTap = pipe(
+  order,
+  unless(
+    (o) => o.priority,
+    tap((o) => log(o.total))
+  )
+);
+export type UnlessTap = Expect<Equal<typeof unlessTap, Order>>;
+export const ifElseTap = pipe(
+  order,
+  ifElse(
+    (o) => o.priority,
+    tap((o) => log(o.total)),
+    (o) => o
+  )
+);
+export type IfElseTap = Expect<Equal<typeof ifElseTap, Order>>;
+export const explicitBranch = ifElse<number, string, boolean>(
+  (n) => n > 0,
+  (n) => n.toFixed(),
+  (n) => n < -1
+);
+export type ExplicitBranch = Expect<Equal<typeof explicitBranch, (value: number) => string | boolean>>;
+export const explicitWhen = when<number, string>(
+  (n) => n > 0,
+  (n) => n.toFixed()
+);
+export type ExplicitWhen = Expect<Equal<typeof explicitWhen, (value: number) => number | string>>;
+export const explicitUnless = unless<number, string>(
+  (n) => n > 0,
+  (n) => n.toFixed()
+);
+export type ExplicitUnless = Expect<Equal<typeof explicitUnless, (value: number) => number | string>>;

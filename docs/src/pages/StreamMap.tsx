@@ -95,11 +95,13 @@ const double = map((n: number) => n * 2);
 const toUpperCase = map((s: string) => s.toUpperCase());
 
 // Use in functional pipelines
-const processNumbers = pipe(
-  filter((n: number) => n > 0),
-  double,
-  map((n: number) => \`Result: \${n}\`)
-);
+const processNumbers = (items: Iterable<number>) =>
+  pipe(
+    items,
+    filter((n: number) => n > 0),
+    double,
+    map((n: number) => \`Result: \${n}\`)
+  );
 
 const numbers = [-1, 2, -3, 4, 5];
 console.log(Array.from(processNumbers(numbers)));

@@ -1,16 +1,21 @@
 import curry from '../composition/curry';
 
-type Widen<T> = T extends string ? string : T extends number ? number : T extends boolean ? boolean : T;
+type Predicate<T> = (value: T) => boolean;
+// One overload family serves type guards and plain predicates. Separate guard
+// overloads were tried first and, when rejected, left inline generic callbacks
+// such as tap(...) typed as unknown.
+type Passed<T, P> = P extends (value: any) => value is infer S ? S : T;
 
 type When = {
-  <T, S extends T>(predicate: (value: T) => value is S): <R>(fn: (value: S) => R) => (value: T) => T | R;
-  <T, S extends T, R>(predicate: (value: T) => value is S, fn: (value: S) => R): (value: T) => T | R;
-  <T, S extends T, R>(predicate: (value: T) => value is S, fn: (value: S) => R, value: T): T | R;
-  <T>(predicate: (value: Widen<T>) => boolean): <R>(fn: (value: Widen<T>) => R) => (value: Widen<T>) => Widen<T> | R;
-  <T>(predicate: (value: Widen<T>) => boolean, fn: (value: Widen<T>) => NoInfer<Widen<T>>): (value: Widen<T>) => Widen<T>;
-  <T, R>(predicate: (value: Widen<T>) => boolean, fn: (value: Widen<T>) => R): (value: Widen<T>) => Widen<T> | R;
-  <T>(predicate: (value: Widen<T>) => boolean, fn: (value: Widen<T>) => NoInfer<Widen<T>>, value: Widen<T>): Widen<T>;
-  <T, R>(predicate: (value: Widen<T>) => boolean, fn: (value: Widen<T>) => R, value: Widen<T>): Widen<T> | R;
+  <T, P extends Predicate<T> = Predicate<T>>(predicate: P & Predicate<T>): <R>(fn: (value: Passed<T, P>) => R) => (value: T) => T | R;
+  <T, P extends Predicate<T> = Predicate<T>>(predicate: P & Predicate<T>, fn: (value: Passed<T, P>) => NoInfer<T>): (value: T) => T;
+  <T, P extends Predicate<T> = Predicate<T>, R = unknown>(predicate: P & Predicate<T>, fn: (value: Passed<T, P>) => R): (value: T) => T | R;
+  <T, P extends Predicate<T> = Predicate<T>>(predicate: P & Predicate<T>, fn: (value: Passed<T, P>) => NoInfer<T>, value: T): T;
+  <T, P extends Predicate<T> = Predicate<T>, R = unknown>(predicate: P & Predicate<T>, fn: (value: Passed<T, P>) => R, value: T): T | R;
+  // Explicit <T, R> type arguments from earlier versions.
+  <T, R>(predicate: (value: T) => boolean): (fn: (value: T) => R) => (value: T) => T | R;
+  <T, R>(predicate: (value: T) => boolean, fn: (value: T) => R): (value: T) => T | R;
+  <T, R>(predicate: (value: T) => boolean, fn: (value: T) => R, value: T): T | R;
 };
 
 /**

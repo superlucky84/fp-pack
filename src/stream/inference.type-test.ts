@@ -143,3 +143,31 @@ export const zipMap = pipe(
   toArray
 );
 export type ZipMap = Expect<Equal<typeof zipMap, Promise<string[]>>>;
+
+// RF-07: saved pipelines that start with a stream step keep element types and
+// accept sync or async sources. Ending with an iterator leaves the mode open.
+export const savedEvensSquared = pipe(
+  filter((n: number) => n % 2 === 0),
+  map((n) => n * n),
+  take(100),
+  toArray
+);
+export const savedSyncResult = savedEvensSquared([1, 2, 3, 4]);
+export type SavedSyncResult = Expect<Equal<typeof savedSyncResult, Promise<number[]>>>;
+export const savedAsyncResult = savedEvensSquared(toAsync([1, 2, 3, 4]));
+export type SavedAsyncResult = Expect<Equal<typeof savedAsyncResult, Promise<number[]>>>;
+export const savedAsyncPipe = pipeAsync(
+  filter((n: number) => n > 0),
+  map((n) => n.toFixed()),
+  toArray
+);
+export type SavedAsyncPipe = Expect<Equal<Awaited<ReturnType<typeof savedAsyncPipe>>, string[]>>;
+export const savedIterator = pipe(
+  filter((n: number) => n > 0),
+  map((n) => n.toFixed())
+);
+export type SavedIterator = Expect<
+  Equal<ReturnType<typeof savedIterator>, IterableIterator<string> | AsyncIterableIterator<string>>
+>;
+export const savedEvens = filter((n: number) => n % 2 === 0);
+export const savedTake = take(2);

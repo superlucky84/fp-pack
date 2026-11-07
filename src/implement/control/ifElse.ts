@@ -1,37 +1,35 @@
 import curry from '../composition/curry';
 
-// A rejected guard overload still fixes an unannotated callback's parameter type,
-// so a plain boolean predicate must leave the false side T rather than never.
+type Predicate<T> = (value: T) => boolean;
+// One overload family serves type guards and plain predicates. Separate guard
+// overloads were tried first and, when rejected, left callbacks typed as never
+// (false side) or inline generic callbacks such as tap(...) typed as unknown.
 type Rest<T, S> = [Exclude<T, S>] extends [never] ? T : Exclude<T, S>;
+type Passed<T, P> = P extends (value: any) => value is infer S ? S : T;
+type Failed<T, P> = P extends (value: any) => value is infer S ? Rest<T, S> : T;
 
 type IfElse = {
-  <T, S extends T>(
-    predicate: (value: T) => value is S
+  <T, P extends Predicate<T> = Predicate<T>>(
+    predicate: P & Predicate<T>
   ): <RTrue>(
-    onTrue: (value: S) => RTrue
-  ) => <RFalse>(onFalse: (value: Rest<T, S>) => RFalse) => (value: T) => RTrue | RFalse;
-  <T, S extends T, RTrue>(
-    predicate: (value: T) => value is S,
-    onTrue: (value: S) => RTrue
-  ): <RFalse>(onFalse: (value: Rest<T, S>) => RFalse) => (value: T) => RTrue | RFalse;
-  <T, S extends T, RTrue, RFalse>(
-    predicate: (value: T) => value is S,
-    onTrue: (value: S) => RTrue,
-    onFalse: (value: Rest<T, S>) => RFalse
+    onTrue: (value: Passed<T, P>) => RTrue
+  ) => <RFalse>(onFalse: (value: Failed<T, P>) => RFalse) => (value: T) => RTrue | RFalse;
+  <T, P extends Predicate<T> = Predicate<T>, RTrue = unknown>(
+    predicate: P & Predicate<T>,
+    onTrue: (value: Passed<T, P>) => RTrue
+  ): <RFalse>(onFalse: (value: Failed<T, P>) => RFalse) => (value: T) => RTrue | RFalse;
+  <T, P extends Predicate<T> = Predicate<T>, RTrue = unknown, RFalse = unknown>(
+    predicate: P & Predicate<T>,
+    onTrue: (value: Passed<T, P>) => RTrue,
+    onFalse: (value: Failed<T, P>) => RFalse
   ): (value: T) => RTrue | RFalse;
-  <T, S extends T, RTrue, RFalse>(
-    predicate: (value: T) => value is S,
-    onTrue: (value: S) => RTrue,
-    onFalse: (value: Rest<T, S>) => RFalse,
+  <T, P extends Predicate<T> = Predicate<T>, RTrue = unknown, RFalse = unknown>(
+    predicate: P & Predicate<T>,
+    onTrue: (value: Passed<T, P>) => RTrue,
+    onFalse: (value: Failed<T, P>) => RFalse,
     value: T
   ): RTrue | RFalse;
-  <T>(
-    predicate: (value: T) => boolean
-  ): <RTrue>(onTrue: (value: T) => RTrue) => <RFalse>(onFalse: (value: T) => RFalse) => (value: T) => RTrue | RFalse;
-  <T, RTrue>(
-    predicate: (value: T) => boolean,
-    onTrue: (value: T) => RTrue
-  ): <RFalse>(onFalse: (value: T) => RFalse) => (value: T) => RTrue | RFalse;
+  // Explicit <T, RTrue, RFalse> type arguments from earlier versions.
   <T, RTrue, RFalse>(
     predicate: (value: T) => boolean,
     onTrue: (value: T) => RTrue,

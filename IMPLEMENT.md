@@ -30,6 +30,31 @@ Handoff (complete):
   with undefined names; older mistakes such as TypeUsage's explicit
   `curriedFilter<User>` are outside this revision.
 
+## Active revision — 0.15 parity for inference (2026-11-07)
+
+1. [x] **RF Phase 8 — Measure.** Compile the 1,802 examples from main's docs on
+   0.15 and 0.16 source; compare compile results and every top-level variable type.
+2. [x] **RF Phase 9 — Conditionals.** One overload family (RF-DC-5); RF-06
+   regressions failed on the old declarations first.
+3. [x] **RF Phase 10 — Saved stream pipelines.** FirstOutput in all pipes
+   (RF-DC-6), public stream types (RF-DC-7); RF-07 regressions failed first.
+4. [x] **RF Phase 11 — Integration.** release:check, TS 6.0/7.0 consumer, both
+   example corpora, docs for iterator-ending saved pipelines.
+
+Handoff (complete):
+
+- result: 0.15 examples on 0.16 keep 3,728 variable types and improve or
+  correct the rest; the 17 that gain `unknown` are generic partials shown with
+  their constraint, intended rejections (async callbacks on sync sources, `path`
+  output generics) or explicit `any` inputs. Compile results: 4 intended
+  rejections, 17 examples that only compile on 0.16.
+- before this revision: exporting a saved stream step such as
+  `filter((n: number) => ...)` failed declaration emit with TS2742 in consumers.
+- validation: release:check (468 tests, build, packed consumer with 59 examples,
+  docs), packed consumer on TS 6.0.3/7.0.2, case matrix 12/12, inline tap
+  probes 8/8 equal to 0.15, branch example corpus with no new failures.
+  Type-check instantiations 327,523 → 333,083 (+1.7%, new fixtures included).
+
 ## Active release — 0.16.0 (2026-11-07)
 
 Branch `ccr-80cfc3e1-vwp61m`, baseline `5ba6b88`.

@@ -12,6 +12,11 @@ library regression and docs that did not follow 0.16.0 contracts.
 | RF-04 | Docs examples follow 0.16.0: no output generics on `path`, async stream callbacks get an async source, saved stream pipelines have a known input | example corpus: nothing that compiled on main fails now |
 | RF-05 | CHANGELOG and README upgrade notes name the saved stream pipeline change and its value-first or typed-wrapper replacement | docs review |
 
+| RF-06 | Inline generic callbacks such as `tap(...)` in `when`/`unless`/`ifElse` with an unannotated predicate keep the input type as on 0.15 | 0.15 vs 0.16 probes; type regressions |
+| RF-07 | A saved stream pipeline that starts with a stream step keeps its element types (0.15: `Promise<number[]>`), without losing 0.16's sync/async inference for value-first pipelines; if TypeScript cannot express both, docs and migration notes say so | 0.15 examples compiled on 0.15 and 0.16: variable type comparison |
+
+| RF-08 | Saved stream steps and pipelines exported from user code emit declarations (no TS2742 from unexported helper types) | packed consumer declaration emit on TS 5.9/6.0/7.0 |
+
 Scope: type declarations and docs only; runtime behavior is unchanged.
 
 ## Active release — 0.16.0 (2026-11-07)

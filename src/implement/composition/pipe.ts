@@ -6,6 +6,14 @@ type FallbackFn = (value: never) => unknown;
 type NonFunction<T> = T extends AnyFn ? never : T;
 type FnInput<F> = F extends (a: infer A) => any ? A : never;
 type FnOutput<F> = F extends (...args: any[]) => infer R ? R : never;
+// Read a first step at its own parameter type. Reading a generic step's return type
+// directly can collapse to never (stream partials such as filter(fn) whose result
+// element depends on the input), which loses every later step's types.
+type FirstOutput<F> = F extends (a: infer A) => any
+  ? F extends (a: A) => infer R
+    ? R
+    : FnOutput<F>
+  : FnOutput<F>;
 type PipeCheckResult<Fns extends [AnyFn, ...AnyFn[]]> =
   Fns extends [infer F, infer G, ...infer Rest]
     ? F extends AnyFn
@@ -42,9 +50,9 @@ type PipeEntry<F1, R> = F1 extends { readonly __from: true }
 // `any` input is data, not a function-first step.
 type IsFn<I> = 0 extends 1 & I ? false : [I] extends [AnyFn] ? true : false;
 type Last<Rs extends any[], Fallback> = Rs extends [...any[], infer L] ? L : Fallback;
-type Head<I> = IsFn<I> extends true ? FnOutput<I> : I;
+type Head<I> = IsFn<I> extends true ? FirstOutput<I> : I;
 type Result<I, Rs extends any[]> = IsFn<I> extends true
-  ? PipeEntry<I, Last<Rs, FnOutput<I>>>
+  ? PipeEntry<I, Last<Rs, FirstOutput<I>>>
   : Last<Rs, I>;
 type PipeCheckFrom<Input, Fns extends [AnyFn, ...AnyFn[]]> =
   Fns & (PipeCheckResult<[() => Input, ...Fns]> extends true ? unknown : PipeCheckResult<[() => Input, ...Fns]>);
